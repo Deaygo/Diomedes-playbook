@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<application xmlns="http://ns.adobe.com/air/application/1.5"> 
+  <id>diomedes.apphackers.com</id> 
+  <version>0.1</version> 
+  <filename>Diomedes</filename> 
+  <initialWindow> 
+    <content>index.html</content> 
+    <visible>true</visible> 
+    <width>800</width> 
+    <height>600</height> 
+    <x>150</x> 
+    <y>150</y> 
+  </initialWindow> 
+  <icon>
+    <image128x128>icons/DiomedesIcon128.png</image128x128>
+    <image48x48>icons/DiomedesIcon48.png</image48x48>
+    <image32x32>icons/DiomedesIcon32.png</image32x32>
+    <image16x16>icons/DiomedesIcon16.png</image16x16>
+  </icon>
+</application>
+
