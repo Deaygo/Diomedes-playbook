@@ -74,11 +74,9 @@ if ( window.runtime && air ) {
   }
 
   util.log = function ( msg ) {
-    /*
     var d = new Date( );
     air.trace( "[" + d.toString() + "] UTIL LOG: " + msg + "\n" );
     delete d;
-    */
   }
 
   util.get = function ( id ) {
