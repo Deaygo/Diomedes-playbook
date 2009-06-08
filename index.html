@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html> 
+<head> 
+  <title>Diomedes</title> 
+  <link rel="stylesheet" type="text/css" media="screen" href="css/view.css" />
+  <link rel="stylesheet" type="text/css" media="screen" href="css/activityWindow.css" />
+  <link rel="stylesheet" type="text/css" media="screen" href="css/nickList.css" />
+  <link rel="stylesheet" type="text/css" media="screen" href="css/channelList.css" />
+  <link rel="stylesheet" type="text/css" media="screen" href="css/inputForm.css" />
+  <link rel="stylesheet" type="text/css" media="screen" href="css/themes/default.css" />
+</head> 
+<body onLoad="appLoad()" onUnload="appUnload()"> 
+  <div id="titlebar">
+    <h1>Diomedes</h1> 
+  </div>
+  <div id="view">
+    <div id="channelList"></div>
+    <div id="mainWindow">
+      <div id="activityWindow">Try /help for more commands.</div>
+      <div id="nickList"></div>
+      <br style="clear:both;" />
+    </div>
+    <div id="inputFormCon">
+      <form id="inputForm">
+        <!-- <textarea id="textInput" name="textInput" rows="1" >/help</textarea> -->
+        <textarea id="textInput" name="textInput" rows="1" >/server irc.netgamers.org:6667</textarea>
+      </form>
+    </div>
+  </div>
+  <script src="servicemonitor.swf" type="application/x-shockwave-flash"/>
+  <script type="text/javascript" src="js/AIRAliases.js"></script> 
+  <script type="text/javascript" src="js/util.js"></script> 
+  <script type="text/javascript" src="js/topics.js"></script> 
+  <script type="text/javascript" src="js/irc.js"></script> 
+  <script type="text/javascript" src="js/connection.js"></script> 
+  <script type="text/javascript" src="js/view.js"></script> 
+  <script type="text/javascript" src="js/controller.js"></script> 
+  <script type="text/javascript"> 
+
+    var v, c;
+    
+    var console =  air.Introspector.Console;
+
+    function appLoad () { 
+      util.log("appLoad"); 
+
+
+      v = new view.View();
+      c = new controller.Controller(v);
+
+    }  
+
+    function appUnload () {
+      c.destroy();
+      delete c;
+      v.destroy();
+      delete v;
+    }
+
+  </script> 
+</body> 
+</html>
+

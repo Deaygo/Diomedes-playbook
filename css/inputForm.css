@@ -1,0 +1,12 @@
+#inputFormCon {
+  height: 35px;
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+}
+
+#inputForm #textInput { 
+  width: 99%;
+  min-width: 300px;
+}

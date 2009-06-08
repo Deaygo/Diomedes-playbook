@@ -1,0 +1,22 @@
+* { margin: 0px; padding: 0px; }
+
+#view {
+  border: 1px solid;
+}
+
+#titlebar {
+  height: 30px;
+}
+
+#titlebar h1 {
+  font-size: 12px;
+}
+
+#mainWindow {
+  position: absolute;
+  top: 95px;
+  left: 0px;
+  right: 0px;
+  bottom: 35px;
+}
+

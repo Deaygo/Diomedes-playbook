@@ -1,0 +1,18 @@
+
+:s|k!~s|k@c-76-126-66-202.hsd1.ca.comcast.net JOIN #diomedes
+
+:s|k!~s|k@c-76-126-66-202.hsd1.ca.comcast.net PRIVMSG #diomedes :test
+:AngryParsley!AngryParsl@c-76-126-191-145.hsd1.ca.comcast.net PRIVMSG #php :I see no javascript
+
+:s|k!~s|k@c-76-126-66-202.hsd1.ca.comcast.net PRIVMSG Diomedes :test
+
+:s|k!~s|k@c-76-126-66-202.hsd1.ca.comcast.net NOTICE Diomedes :test
+
+:s|k!~s|k@c-76-126-66-202.hsd1.ca.comcast.net NOTICE #diomedes :test
+
+:s|k!~s|k@c-76-126-66-202.hsd1.ca.comcast.net PART #diomedes :wtf
+
+AngryParsley!AngryParsl@c-76-126-191-145.hsd1.ca.comcast.net	
+
+:s|k!~s|k@c-76-126-66-202.hsd1.ca.comcast.net MODE #Diomedes +s
+

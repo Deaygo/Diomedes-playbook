@@ -1,0 +1,16 @@
+
+#channelList {
+  overflow-x: hidden;
+  overflow-y: auto;
+  height: 50px;
+}
+.channelActivity {
+  text-align: center;
+  font-size: 12px;
+}
+.channelButton {
+  display: block;
+  margin: 3px;
+  float: left;
+}
+
