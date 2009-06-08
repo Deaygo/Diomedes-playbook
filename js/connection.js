@@ -620,7 +620,7 @@ if(window.runtime && air && util) {
 
   _clp.addActivity = function ( msg ) {
     this.activityList.addMessage( msg.clone( ) );
-    var activityTypes = {"privmsg":1,"action":1,"notice":1};
+    var activityTypes = {"privmsg":1,"action":1};
     this.publishActivity( ( msg.cmd in activityTypes ) );
     delete msg;
   }
