@@ -241,7 +241,7 @@ if ( window.runtime && air && util ) {
       icon.bounce( nt.CRITICAL );
     } else if ( nw.supportsNotification ) {
       //flash taskbar
-      nw.notifyUser( nt.CRITICAL );
+      window.nativeWindow.notifyUser( nt.CRITICAL );
     }
   }
 
@@ -387,6 +387,7 @@ if ( window.runtime && air && util ) {
         this.nickFragment = word;
         this.savedValue = value;
       }
+      word = word.split("|").join("\\|").split("^").join("\\^").split("-").join("\\-");
       for ( var i = startIndex; i < this.nicks.length; i++ ) {
         var nick = this.nicks[i];
         var nickLC = nick.toLowerCase( );
