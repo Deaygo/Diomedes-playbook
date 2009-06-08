@@ -212,7 +212,7 @@ if(window.runtime && air && util) {
 
   _cnp.referencesUser = function ( msg, target, nick ) {
     if ( msg && msg.length && ( nick != this.nick ) ) { 
-      var referencesUser = ( msg.search( this.nick.split("-").join("\-").split( "|" ).join( "\\|" ).split( "^" ).join( "\\^" ) ) != -1 );
+      var referencesUser = ( msg.search( this.nick.split("-").join("\\-").split( "|" ).join( "\\|" ).split( "^" ).join( "\\^" ) ) != -1 );
       if ( referencesUser ) {
         util.publish( topics.USER_HIGHLIGHT, [ this.getChannelName( target ), this.server, this.nick ] );
         return true;
