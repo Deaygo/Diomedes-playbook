@@ -18,6 +18,13 @@ if ( window.runtime && air && util ) {
     this.performs = new model.PerformModel( this );
     this.networks = new model.NetworksModel( this );
     this.conn = null;
+    this.SQL_TYPES = {
+      "INTEGER" : "INTEGER",
+      "TEXT" : "TEXT",
+      "BOOL" : "BOOLEAN",
+      "PRIMARY KEY" : "PRIMARY KEY",
+      "AUTOINCREMENT" : "AUTOINCREMENT",
+    };
     this.statements = [];
   }
 
@@ -74,6 +81,17 @@ if ( window.runtime && air && util ) {
     resultHandler( e );
   }
 
+  _mmp._createTable = function ( name, types, resultHandler, errorHandler ) {
+    var tableName = "networks";
+    var sql = [];
+    sql = sql.concat( [ "CREATE TABLE IF NOT EXISTS ", name, " (" ] );  
+    for ( var name in types ) {
+      sql.push( [ name, types[ name ] ].join( " " ) );
+    }
+    sql.push( ")" );
+    this._executeSQL( sql.join( "" ), air.SQLMode.CREATE, resultHandler, errorHandler );
+  }
+
   _mmp._handleError = function ( e ) {
     this.log("Error message:", e.error.message); 
     this.log("Details:", e.error.details); 
@@ -99,47 +117,44 @@ if ( window.runtime && air && util ) {
   var _mnp = model.NetworksModel.prototype;
 
   _mnp.createTables = function ( e ) {
-    // Table: servers
-    // Columns: 
-    //   id autoincrement integer primary key
-    //   networkId integer
-    //   name
-    //   lastConnected integer
-    //   active integer
-    //
-    // Table: channels
-    // Columns:
-    //   id autoincrement integer primary key
-    //   networkId integer
-    //   name text
-    //   lastConnected integer
-    //   autojoin integer
-    //
-    // Table: perform
-    // Columns:
-    //   id autoincrement integer primary key
-    //   networkid
-    //   name
-    //   command
-    //   active
-    var tableName = "networks";
-    var sql = [].concat( [
-    "CREATE TABLE IF NOT EXISTS ", employees, " (",   
-    "    id INTEGER PRIMARY KEY AUTOINCREMENT, ",
-    "    name TEXT, ",
-    "    nick TEXT, ",
-    "    altNick TEXT, ",
-    "    userName TEXT, ",
-    "    realName TEXT, ",
-    "    password TEXT, ",
-    "    finger TEXT, ",
-    "    active BOOLEAN, ",
-    "    autojoin BOOLEAN, ",
-    "    lastConnected INTEGER, ",
-    ")"
-    ] ); 
-    var type = air.SQLMode.CREATE;
-    this.model._executeSQL = function ( sql, type, util.hitch( this, "_handleCreateTable", [ tableName ] );
+    var st = this.model.SQL_TYPES;
+    var types; 
+    types = {
+      id : [ st.INTEGER, st.PRIMARY_KEY, st.AUTOINCREMENT ].join( " " ),
+      name : st.TEXT,
+      altNick : st.TEXT,
+      userName : st.TEXT,
+      realName : st.TEXT,
+      finger : st.TEXT,
+      active : st.BOOL,
+      autojoin : st.BOOL,
+      lastConnected : st.INTEGER,
+    }
+    this.model._createTable( "networks", types, util.hitch( this, "_handleCreateTable", [ tableName ], null );
+    types = {
+      id : [ st.INTEGER, st.PRIMARY_KEY, st.AUTOINCREMENT ].join( " " ),
+      networkId : st.INTEGER,
+      name : st.TEXT,
+      lastConnected : st.INTEGER,
+      active : st.BOOL,
+    }
+    this.model._createTable( "servers", types, util.hitch( this, "_handleCreateTable", [ tableName ], null );
+    types = {
+      id : [ st.INTEGER, st.PRIMARY_KEY, st.AUTOINCREMENT ].join( " " ),
+      networkId : st.INTEGER,
+      name : st.TEXT,
+      lastConnected : st.INTEGER,
+      autojoin : st.BOOL,
+    }
+    this.model._createTable( "channels", types, util.hitch( this, "_handleCreateTable", [ tableName ], null );
+    types = {
+      id : [ st.INTEGER, st.PRIMARY_KEY, st.AUTOINCREMENT ].join( " " ),
+      networkId : st.INTEGER,
+      name : st.TEXT,
+      command : st.TEXT,
+      active : st.BOOL,
+    }
+    this.model._createTable( "channels", types, util.hitch( this, "_handleCreateTable", [ tableName ], null );
   }
 
   _mnp.handleCreateTable = function ( e, tableName ) {
