@@ -12,16 +12,45 @@ if ( window.runtime && air && util ) {
   //requires AIR and util
 
   model.Model = function ( ) {
-    //check to see if database exists
-    this.prefs = new model.PrefModel( );
-    this.aliases = new model.AliasModel( );
-    this.performs = new model.PerformModel( );
-    this.networks = new model.NetworksModel( );
+    this.DATABASE_NAME = "diomedesModel.db";
+    this.prefs = new model.PrefModel( this );
+    this.aliases = new model.AliasModel( this );
+    this.performs = new model.PerformModel( this );
+    this.networks = new model.NetworksModel( this );
+    this.conn = null;
   }
 
   var _mmp = model.Model.prototype;
 
-  model.NetworksModel = function ( ) {
+  _mmp._openSQLCon = function ( type, openHandler, errorHandler ) {
+    if ( !openHandler || !type ) return;
+    if ( !errorHandler ) errorHandler = util.hitch( this, "handleError" );
+    if ( this.conn ) this.closeConnection( );
+    this.conn = new air.SQLConnection( ); 
+    conn.addEventListener( air.SQLEvent.OPEN, openHandler ); 
+    conn.addEventListener( air.SQLErrorEvent.ERROR, errorHandler ); 
+    var dbFile = air.File.applicationStorageDirectory.resolvePath( this.DATABASE_NAME ); 
+    conn.openAsync( dbFile ); 
+  }
+
+  _mmp._handleError = function ( e ) {
+    this.log("Error message:", e.error.message); 
+    this.log("Details:", e.error.details); 
+  }
+
+  _mmp.log = function ( msg ) {
+    util.log("\nSQL LOG: " + msg );
+  }
+
+  _mmp.closeConnection = function ( ) {
+    if ( this.conn && this.conn.connected ) {
+      this.conn.close( );
+    }
+    this.conn = null;
+  }
+
+  model.NetworksModel = function ( model ) {
+    this.model = model;
     //check to see if tables exists
     // Table: networks
     // Columns: 
@@ -64,7 +93,8 @@ if ( window.runtime && air && util ) {
 
   var _mnp = model.NetworksModel.prototype;
 
-  model.AliasModel = function ( ) {
+  model.AliasModel = function ( model ) {
+    this.model = model;
     //check to see if table exists
     // Table: aliases
     // Columns: 
@@ -76,7 +106,8 @@ if ( window.runtime && air && util ) {
 
   var _map = model.AliasModel.prototype;
 
-  model.PrefModel = function ( ) {
+  model.PrefModel = function ( model ) {
+    this.model = model;
     //use xml file
     //theme name
     //history length
