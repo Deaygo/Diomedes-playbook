@@ -18,7 +18,7 @@ if ( window.runtime && air && util ) {
     this.performs = new model.PerformModel( this );
     this.networks = new model.NetworksModel( this );
     this.conn = null;
-    this.statement = null;
+    this.statements = [];
   }
 
   var _mmp = model.Model.prototype;
@@ -44,23 +44,19 @@ if ( window.runtime && air && util ) {
       this.log( "Required params missing for _executeSQL" );
       return;
     }
-    if ( this.statement ) {
-      this.log( "Another statement is executing" );
-      return;
-    }
     if ( !errorHandler ) errorHandler = util.hitch( this, "handleError" );
     if ( !this.conn ) { 
       this.log( "Connection not open when calling _executeSQL, opening it");
-      var o = this;
       this._openSQLConn( type, util.hitch( this, "_reExecuteSQL" [ sql, type, resultHandler, errorHandler ] ), errorHandler );
       return;
     }
-    this.statement = new air.SQLStatement( ); 
-    this.statement.sqlConnection = this.conn; 
-    this.statement.text = sql; 
-    this.statement.addEventListener( air.SQLEvent.RESULT, util.hitch( this, "_statementResultHandler", [ resultHandler ] ) ); 
-    this.statement.addEventListener( air.SQLErrorEvent.ERROR, util.hitch( this, "_statementResultHandler", [ errorHandler ] ) ); 
-    this.statement.execute( ); 
+    var s = new air.SQLStatement( ); 
+    s.sqlConnection = this.conn; 
+    s.text = sql; 
+    s.addEventListener( air.SQLEvent.RESULT, util.hitch( this, "_statementResultHandler", [ resultHandler ] ) ); 
+    s.addEventListener( air.SQLErrorEvent.ERROR, util.hitch( this, "_statementResultHandler", [ errorHandler ] ) ); 
+    s.execute( ); 
+    this.statements.push( s );
   }
 
   _mmp._reExecuteSQL = function ( e, sql, type, resultHandler, errorHandler ) {
@@ -70,13 +66,13 @@ if ( window.runtime && air && util ) {
 
   _mmp._statementResultHandler = function ( e, resultHandler ) {
     this.log( "Handling statement completion." );
-    this.closeConnection( );
-    delete this.statement;
-    this.statement = null;
+    var s = this.statements.shift( );
+    delete s;
+    if ( !this.statements.length ) {
+      this.closeConnection( );
+    }
     resultHandler( e );
   }
-
-
 
   _mmp._handleError = function ( e ) {
     this.log("Error message:", e.error.message); 
@@ -98,20 +94,11 @@ if ( window.runtime && air && util ) {
     this.model = model;
     //check to see if tables exists by attempting to create them
     this.createTables( );
-    // Table: networks
-    // Columns: 
-    //   id autoincrement integer primary key
-    //   name text
-    //   nick text
-    //   altNick text
-    //   username text
-    //   real name text
-    //   password text
-    //   finger text
-    //   active integer
-    //   autojoin integer
-    //   lastConnected integer
-    //
+  }
+
+  var _mnp = model.NetworksModel.prototype;
+
+  _mnp.createTables = function ( e ) {
     // Table: servers
     // Columns: 
     //   id autoincrement integer primary key
@@ -135,11 +122,28 @@ if ( window.runtime && air && util ) {
     //   name
     //   command
     //   active
+    var tableName = "networks";
+    var sql = [].concat( [
+    "CREATE TABLE IF NOT EXISTS ", employees, " (",   
+    "    id INTEGER PRIMARY KEY AUTOINCREMENT, ",
+    "    name TEXT, ",
+    "    nick TEXT, ",
+    "    altNick TEXT, ",
+    "    userName TEXT, ",
+    "    realName TEXT, ",
+    "    password TEXT, ",
+    "    finger TEXT, ",
+    "    active BOOLEAN, ",
+    "    autojoin BOOLEAN, ",
+    "    lastConnected INTEGER, ",
+    ")"
+    ] ); 
+    var type = air.SQLMode.CREATE;
+    this.model._executeSQL = function ( sql, type, util.hitch( this, "_handleCreateTable", [ tableName ] );
   }
 
-  var _mnp = model.NetworksModel.prototype;
-
-  _mnp.createTables = function ( e ) {
+  _mnp.handleCreateTable = function ( e, tableName ) {
+    this.model.log( "Created NetworksModel table: "  + tableName );
   }
 
   model.AliasModel = function ( model ) {
