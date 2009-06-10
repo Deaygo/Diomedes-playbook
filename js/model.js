@@ -136,6 +136,7 @@ if ( window.runtime && air && util ) {
     types = {
       id : [ st.INTEGER, st.PRIMARY_KEY, st.AUTOINCREMENT ].join( " " ),
       name : st.TEXT,
+      nick : st.TEXT,
       altNick : st.TEXT,
       userName : st.TEXT,
       realName : st.TEXT,
@@ -175,6 +176,54 @@ if ( window.runtime && air && util ) {
     this.model._createTable( tableName, types, util.hitch( this, "_handleCreateTable", [ tableName ], null ) );
   }
 
+  _mnp.getNetworks = function ( ) {
+  }
+
+  _mnp.addNetwork = function ( name, nick, altNick, userName, realName, finger, autojoin, active ) {
+  }
+
+  _mnp.editNetwork = function ( name, nick, altNick, userName, realName, finger, autojoin, active ) {
+  }
+
+ _mnp.remNetwork = function ( name ) {
+   //rem servers, channels and performs too
+ }
+
+ _mnp.getServers = function ( networkName ) {
+ }
+
+ _mnp.addServer = function ( networkName, serverName, autojoin, active ) {
+ }
+
+ _mnp.editServer = function ( networkName, serverName, autojoin, active ) {
+ }
+
+ _mnp.remServer = function ( networkName, serverName ) {
+ }
+
+ _mnp.getChannels = function ( networkName ) {
+ }
+
+ _mnp.addChannel = function ( networkName, channelName, autojoin ) {
+ }
+
+ _mnp.remChannel = function ( networkName, channelName ) {
+ }
+
+ _mnp.getPerforms = function (networkName ) {
+ }
+
+ _mnp.addPerform = function ( networkName, performName, command, active ) {
+   //XXX: maybe use default names such as performX where X is a number
+   //so as to not force people to think up a name for each perform
+ }
+
+ _mnp.editPerform = function ( networkName, performName, command, active ) {
+ }
+
+ _mnp.remPerform = function ( networkName, performName ) {
+ }
+
   _mnp._handleCreateTable = function ( e, tableName ) {
     this.model.log( "Created NetworksModel table: "  + tableName );
   }
@@ -201,6 +250,18 @@ if ( window.runtime && air && util ) {
     var tableName = "aliases";
     this.model._createTable( tableName, types, util.hitch( this, "_handleCreateTable", [ tableName ], null ) );
     util.log("createtables end");
+  }
+
+  _map.addAlias = function ( name, command, active ) {
+  }
+
+  _map.editAlias = function ( name, command, active ) {
+  }
+
+  _map.remAlias = function ( name ) {
+  }
+
+  _map.getAliases = function ( ) {
   }
 
   _map._handleCreateTable = function ( e, tableName ) {
