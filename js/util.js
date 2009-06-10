@@ -55,6 +55,8 @@ if ( window.runtime && air ) {
   }
 
   util.hitch = function ( o, f, args ) {
+    if ( !f ) throw "util.hitch failure: invalid function: " + f;
+    if ( !o ) throw "util.hitch failure: invalid scope: " + o;
     if ( !args )  {
       args = [];
     }

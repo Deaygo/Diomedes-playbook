@@ -44,19 +44,19 @@
     
     var console =  air.Introspector.Console;
 
-    function appLoad () { 
-      util.log("appLoad"); 
+    function appLoad ( ) { 
+      util.log( "appLoad" ); 
 
-
-      v = new view.View();
-      c = new controller.Controller(v);
+      m = new model.Model( );
+      v = new view.View( );
+      c = new controller.Controller( v );
 
     }  
 
-    function appUnload () {
-      c.destroy();
+    function appUnload ( ) {
+      c.destroy( );
       delete c;
-      v.destroy();
+      v.destroy( );
       delete v;
     }
 

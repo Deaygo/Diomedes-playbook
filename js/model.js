@@ -12,20 +12,20 @@ if ( window.runtime && air && util ) {
   //requires AIR and util
 
   model.Model = function ( ) {
-    this.DATABASE_NAME = "diomedesModel.db";
-    this.prefs = new model.PrefModel( this );
-    this.aliases = new model.AliasModel( this );
-    this.performs = new model.PerformModel( this );
-    this.networks = new model.NetworksModel( this );
-    this.conn = null;
     this.SQL_TYPES = {
       "INTEGER" : "INTEGER",
       "TEXT" : "TEXT",
       "BOOL" : "BOOLEAN",
-      "PRIMARY KEY" : "PRIMARY KEY",
+      "PRIMARY_KEY" : "PRIMARY KEY",
       "AUTOINCREMENT" : "AUTOINCREMENT",
     };
     this.statements = [];
+    this.DATABASE_NAME = "diomedesModel.db";
+    this.prefs = new model.PrefModel( this );
+    this.aliases = new model.AliasModel( this );
+    this.networks = new model.NetworksModel( this );
+    this.conn = null;
+    this.connLocked = false;
   }
 
   var _mmp = model.Model.prototype;
@@ -36,13 +36,13 @@ if ( window.runtime && air && util ) {
       this.log( "Required params missing for _openSQLConn" );
       return;
     }
-    if ( !errorHandler ) errorHandler = util.hitch( this, "handleError" );
+    if ( !errorHandler ) errorHandler = util.hitch( this, "_handleError", [ "openSQLConnection" ] );
     if ( this.conn ) this.closeConnection( );
     this.conn = new air.SQLConnection( ); 
-    conn.addEventListener( air.SQLEvent.OPEN, openHandler ); 
-    conn.addEventListener( air.SQLErrorEvent.ERROR, errorHandler ); 
+    this.conn.addEventListener( air.SQLEvent.OPEN, openHandler ); 
+    this.conn.addEventListener( air.SQLErrorEvent.ERROR, errorHandler ); 
     var dbFile = air.File.applicationStorageDirectory.resolvePath( this.DATABASE_NAME ); 
-    conn.openAsync( dbFile ); 
+    this.conn.openAsync( dbFile ); 
   }
 
   _mmp._executeSQL = function ( sql, type, resultHandler, errorHandler ) {
@@ -51,12 +51,19 @@ if ( window.runtime && air && util ) {
       this.log( "Required params missing for _executeSQL" );
       return;
     }
-    if ( !errorHandler ) errorHandler = util.hitch( this, "handleError" );
-    if ( !this.conn ) { 
+    if ( !errorHandler ) errorHandler = util.hitch( this, "_handleError", [ "SQL: " + sql ] );
+    if ( !this.conn || !this.conn.connected ) { 
       this.log( "Connection not open when calling _executeSQL, opening it");
-      this._openSQLConn( type, util.hitch( this, "_reExecuteSQL" [ sql, type, resultHandler, errorHandler ] ), errorHandler );
+      this._openSQLConn( type, util.hitch( this, "_reExecuteSQL", [ sql, type, resultHandler, errorHandler ] ), errorHandler );
       return;
     }
+    if ( this.connLocked ) {
+      util.log( "Connection locked.");
+      window.setTimeout( util.hitch( this, "_executeSQL", [ sql, type, resultHandler, errorHandler ] ), 1 );
+      return;
+    } 
+    util.log("executing begins");
+    this.connLocked = true;
     var s = new air.SQLStatement( ); 
     s.sqlConnection = this.conn; 
     s.text = sql; 
@@ -78,21 +85,25 @@ if ( window.runtime && air && util ) {
     if ( !this.statements.length ) {
       this.closeConnection( );
     }
+    this.connLocked = false;
     resultHandler( e );
   }
 
   _mmp._createTable = function ( name, types, resultHandler, errorHandler ) {
-    var tableName = "networks";
+    util.log("createTable mmp");
     var sql = [];
     sql = sql.concat( [ "CREATE TABLE IF NOT EXISTS ", name, " (" ] );  
     for ( var name in types ) {
       sql.push( [ name, types[ name ] ].join( " " ) );
+      sql.push( ", ");
     }
+    sql.pop( ); //get rid of last comma
     sql.push( ")" );
     this._executeSQL( sql.join( "" ), air.SQLMode.CREATE, resultHandler, errorHandler );
   }
 
-  _mmp._handleError = function ( e ) {
+  _mmp._handleError = function ( e, msg ) {
+    util.log("error");
     this.log("Error message:", e.error.message); 
     this.log("Details:", e.error.details); 
   }
@@ -102,6 +113,7 @@ if ( window.runtime && air && util ) {
   }
 
   _mmp.closeConnection = function ( ) {
+    util.log("close connection");
     if ( this.conn && this.conn.connected ) {
       this.conn.close( );
     }
@@ -109,6 +121,7 @@ if ( window.runtime && air && util ) {
   }
 
   model.NetworksModel = function ( model ) {
+    util.log("NetworksModel");
     this.model = model;
     //check to see if tables exists by attempting to create them
     this.createTables( );
@@ -117,6 +130,7 @@ if ( window.runtime && air && util ) {
   var _mnp = model.NetworksModel.prototype;
 
   _mnp.createTables = function ( ) {
+    util.log("createTables");
     var st = this.model.SQL_TYPES;
     var types; 
     types = {
@@ -130,7 +144,8 @@ if ( window.runtime && air && util ) {
       autojoin : st.BOOL,
       lastConnected : st.INTEGER,
     }
-    this.model._createTable( "networks", types, util.hitch( this, "_handleCreateTable", [ tableName ], null );
+    var tableName = "networks";
+    this.model._createTable( tableName, types, util.hitch( this, "_handleCreateTable", [ tableName ], null ) );
     types = {
       id : [ st.INTEGER, st.PRIMARY_KEY, st.AUTOINCREMENT ].join( " " ),
       networkId : st.INTEGER,
@@ -138,7 +153,8 @@ if ( window.runtime && air && util ) {
       lastConnected : st.INTEGER,
       active : st.BOOL,
     }
-    this.model._createTable( "servers", types, util.hitch( this, "_handleCreateTable", [ tableName ], null );
+    tableName = "servers";
+    this.model._createTable( tableName, types, util.hitch( this, "_handleCreateTable", [ tableName ], null ) );
     types = {
       id : [ st.INTEGER, st.PRIMARY_KEY, st.AUTOINCREMENT ].join( " " ),
       networkId : st.INTEGER,
@@ -146,7 +162,8 @@ if ( window.runtime && air && util ) {
       lastConnected : st.INTEGER,
       autojoin : st.BOOL,
     }
-    this.model._createTable( "channels", types, util.hitch( this, "_handleCreateTable", [ tableName ], null );
+    tableName = "channels";
+    this.model._createTable( tableName, types, util.hitch( this, "_handleCreateTable", [ tableName ], null ) );
     types = {
       id : [ st.INTEGER, st.PRIMARY_KEY, st.AUTOINCREMENT ].join( " " ),
       networkId : st.INTEGER,
@@ -154,10 +171,11 @@ if ( window.runtime && air && util ) {
       command : st.TEXT,
       active : st.BOOL,
     }
-    this.model._createTable( "performs", types, util.hitch( this, "_handleCreateTable", [ tableName ], null );
+    tableName = "performs";
+    this.model._createTable( tableName, types, util.hitch( this, "_handleCreateTable", [ tableName ], null ) );
   }
 
-  _mnp.handleCreateTable = function ( e, tableName ) {
+  _mnp._handleCreateTable = function ( e, tableName ) {
     this.model.log( "Created NetworksModel table: "  + tableName );
   }
 
@@ -169,7 +187,9 @@ if ( window.runtime && air && util ) {
   var _map = model.AliasModel.prototype;
 
   _map.createTables = function ( ) {
+    util.log("createtables begn");
     var st = this.model.SQL_TYPES;
+    this.model.log("moo");  
     var types; 
     types = {
       id : [ st.INTEGER, st.PRIMARY_KEY, st.AUTOINCREMENT ].join( " " ),
@@ -178,9 +198,12 @@ if ( window.runtime && air && util ) {
       active : st.BOOL,
       lastUsed : st.INTEGER,
     }
-    this.model._createTable( "aliases", types, util.hitch( this, "_handleCreateTable", [ tableName ], null );
+    var tableName = "aliases";
+    this.model._createTable( tableName, types, util.hitch( this, "_handleCreateTable", [ tableName ], null ) );
+    util.log("createtables end");
   }
-  _mnp.handleCreateTable = function ( e, tableName ) {
+
+  _map._handleCreateTable = function ( e, tableName ) {
     this.model.log( "Created NetworksModel table: "  + tableName );
   }
 
