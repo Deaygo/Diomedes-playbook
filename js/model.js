@@ -116,7 +116,7 @@ if ( window.runtime && air && util ) {
 
   var _mnp = model.NetworksModel.prototype;
 
-  _mnp.createTables = function ( e ) {
+  _mnp.createTables = function ( ) {
     var st = this.model.SQL_TYPES;
     var types; 
     types = {
@@ -154,7 +154,7 @@ if ( window.runtime && air && util ) {
       command : st.TEXT,
       active : st.BOOL,
     }
-    this.model._createTable( "channels", types, util.hitch( this, "_handleCreateTable", [ tableName ], null );
+    this.model._createTable( "performs", types, util.hitch( this, "_handleCreateTable", [ tableName ], null );
   }
 
   _mnp.handleCreateTable = function ( e, tableName ) {
@@ -163,16 +163,27 @@ if ( window.runtime && air && util ) {
 
   model.AliasModel = function ( model ) {
     this.model = model;
-    //check to see if table exists
-    // Table: aliases
-    // Columns: 
-    //   id autoincrement integer primary key
-    //   name text
-    //   command text
-    //   active integer
+    this.createTables( );
   }
 
   var _map = model.AliasModel.prototype;
+
+  _map.createTables = function ( ) {
+    var st = this.model.SQL_TYPES;
+    var types; 
+    types = {
+      id : [ st.INTEGER, st.PRIMARY_KEY, st.AUTOINCREMENT ].join( " " ),
+      name : st.TEXT,
+      command : st.TEXT,
+      active : st.BOOL,
+      lastUsed : st.INTEGER,
+    }
+    this.model._createTable( "aliases", types, util.hitch( this, "_handleCreateTable", [ tableName ], null );
+  }
+  _mnp.handleCreateTable = function ( e, tableName ) {
+    this.model.log( "Created NetworksModel table: "  + tableName );
+  }
+
 
   model.PrefModel = function ( model ) {
     this.model = model;
