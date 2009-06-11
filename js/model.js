@@ -418,15 +418,52 @@ if ( window.runtime && air && util ) {
 
   model.PrefModel = function ( model ) {
     this.model = model;
+    this.fileName = "preferences.xml";
+    this.preferences = {};
     //use xml file
-    //theme name
+    //default nick
+    //alt nick
+    //username
+    //real name
+    //finger
     //history length
+    //theme name
     //poll time (for auto-reconnect)
     //font type
     //font size
   }
 
   var _mpp = model.PrefModel.prototype;
+
+  _mpp.getFile = function ( ) {
+    return air.File.applicationDirectory.resolvePath( this.fileName );
+  }
+
+  _mpp.getPref = function ( key ) {
+    if ( key in this.preferences ) {
+      return this.preferences[ key ];
+    } else {
+      return null;
+    }
+  }
+
+  _mpp.setPref = function ( key, value ) {
+    this.preferences[ key ] = value;
+  }
+
+  _mpp.getPrefs = function ( ) {
+    //need to hard code defaults into here in case user destroys 
+    //xml file and app stops working (so if read fails recreate the prefs file)
+    var fileStream = new air.FileStream( ); 
+    fileStream.open( this.getFile( ), air.FileMode.READ ); 
+  }
+
+  _mpp.savePrefs = function ( ) {
+    var fileStream = new air.FileStream( ); 
+    //(new XMLSerializer()).serializeToString(document.implementation.createDocument("","preference",null));
+    fileStream.open( this.getFile( ), air.FileMode.WRITE ); //WRITE truncates
+  }
+    
 
 }
 
