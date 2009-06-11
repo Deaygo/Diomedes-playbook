@@ -19,7 +19,7 @@ if ( window.runtime && air && util ) {
       "PRIMARY_KEY" : "PRIMARY KEY",
       "AUTOINCREMENT" : "AUTOINCREMENT",
     };
-    this.statements = [];
+    this.statement = null;
     this.DATABASE_NAME = "diomedesModel.db";
     this.prefs = new model.PrefModel( this );
     this.aliases = new model.AliasModel( this );
@@ -70,7 +70,7 @@ if ( window.runtime && air && util ) {
     s.addEventListener( air.SQLEvent.RESULT, util.hitch( this, "_statementResultHandler", [ resultHandler ] ) ); 
     s.addEventListener( air.SQLErrorEvent.ERROR, util.hitch( this, "_statementResultHandler", [ errorHandler ] ) ); 
     s.execute( ); 
-    this.statements.push( s );
+    this.statement = s ;
   }
 
   _mmp._reExecuteSQL = function ( e, sql, type, resultHandler, errorHandler ) {
@@ -80,13 +80,12 @@ if ( window.runtime && air && util ) {
 
   _mmp._statementResultHandler = function ( e, resultHandler ) {
     this.log( "Handling statement completion." );
-    var s = this.statements.shift( );
-    delete s;
-    if ( !this.statements.length ) {
-      this.closeConnection( );
-    }
+    var result = this.statement.getResult( );
+    delete this.statement;
+    this.statement = null;
+    this.closeConnection( );
     this.connLocked = false;
-    resultHandler( e );
+    resultHandler( e, result );
   }
 
   _mmp._createTable = function ( name, types, resultHandler, errorHandler ) {
