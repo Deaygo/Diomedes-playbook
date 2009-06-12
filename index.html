@@ -10,9 +10,16 @@
   <link rel="stylesheet" type="text/css" media="screen" href="css/inputForm.css" />
   <link rel="stylesheet" type="text/css" media="screen" href="css/themes/default.css" />
 </head> 
-<body onLoad="appLoad()" onUnload="appUnload()"> 
-  <div id="titlebar">
-    <h1>Diomedes</h1> 
+<body onLoad="appLoad( );" onUnload="appUnload( );"> 
+  <div id="titleBar">
+    <a href="#" class="titleBarBtn" id="PrefBtn">Preferences</a>
+    <a href="#" class="titleBarBtn" id="NetworksBtn">Networks</a>
+    <a href="#" class="titleBarBtn" id="ServersBtn">Servers</a>
+    <a href="#" class="titleBarBtn" id="ChannelsBtn">Channels</a>
+    <a href="#" class="titleBarBtn" id="PerformBtn">Performs</a>
+    <a href="#" class="titleBarBtn" id="AliasesBtn">Aliases</a>
+    <a href="#" class="titleBarBtn" id="HelpBtn">Help</a>
+    <a href="#" class="titleBarBtn" id="AboutBtn">About</a>
   </div>
   <div id="view">
     <div id="channelList"></div>
@@ -48,8 +55,8 @@
       util.log( "appLoad" ); 
 
       m = new model.Model( );
-      v = new view.View( );
-      c = new controller.Controller( v );
+      v = new view.View( m );
+      c = new controller.Controller( m, v );
 
     }  
 

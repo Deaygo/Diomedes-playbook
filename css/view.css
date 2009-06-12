@@ -4,11 +4,11 @@
   border: 1px solid;
 }
 
-#titlebar {
+#titleBar {
   height: 30px;
 }
 
-#titlebar h1 {
+#titleBar h1 {
   font-size: 12px;
 }
 
@@ -18,5 +18,9 @@
   left: 0px;
   right: 0px;
   bottom: 35px;
+}
+
+.hidden {
+  display: none !important;
 }
 

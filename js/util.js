@@ -134,8 +134,10 @@ if ( window.runtime && air ) {
   }
 
   util.stopEvent = function ( e ) {
-    e.preventDefault( );
-    e.stopPropagation( );
+    if ( e ) {
+      e.preventDefault( );
+      e.stopPropagation( );
+    }
   }
   
   util.Timer = function ( ) {

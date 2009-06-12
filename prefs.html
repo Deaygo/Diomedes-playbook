@@ -1,0 +1,72 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html> 
+<head> 
+  <title>Diomedes - Preferences</title> 
+  <link rel="stylesheet" type="text/css" media="screen" href="css/view.css" />
+  <link rel="stylesheet" type="text/css" media="screen" href="css/forms.css" />
+</head> 
+<body class="prefWindow popUpWindow" onLoad="prefLoad( )"> 
+  <h1>Preferences</h1>
+  <form onsubmit="savePrefs()">
+    <div>
+      <label for="nick">Nick: </label> <input type="text" id="nick" />
+    </div>
+    <div>
+      <label for="nick">Alternate nick: </label> <input type="text" id="altNick" />
+    </div>
+    <div>
+      <label for="nick">Username: </label> <input type="text" id="altNick" />
+    </div>
+    <div>
+      <label for="nick">Real name: </label> <input type="text" id="altNick" />
+    </div>
+    <div>
+      <label for="nick">Finger (shows up for a CTCP finger): </label> <input type="text" id="altNick" />
+    </div>
+    <div>
+      <label for="nick">History Length: </label> <input type="text" id="altNick" />
+    </div>
+    <div>
+      <label for="nick">Theme: </label> <input type="text" id="altNick" />
+    </div>
+    <div>
+      <label for="nick">Connection reconnect attempt wait (in seconds, 0 means none): </label> <input type="text" id="altNick" />
+    </div>
+    <div>
+      <label for="nick">Font: </label> <input type="text" id="altNick" />
+    </div>
+    <div>
+      <label for="nick">Font size: </label> <input type="text" id="altNick" />
+    </div>
+    <input type="submit" value="Save" />
+    <button onclick="cancelPrefs( );">Cancel</button>
+  </form>
+  <script type="text/javascript">
+
+    var bridge = window.opener.prefBridge;
+    var util = bridge.util;
+    var topics = bridge.topics;
+    var prefs = bridge.preferences;
+
+    function prefLoad ( ) {
+      util.log( "Preferences window launched." );
+      //load values to form
+    }
+
+    function savePrefs ( e ) {
+      util.stopEvent( e );
+      util.log( "Saving preferences." );
+      //publish a topic to cancel here
+    }
+
+    function cancelPrefs ( ) {
+      window.close( );
+    }
+
+  </script>
+</body>
+</html>
+
+
+

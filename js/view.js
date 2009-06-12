@@ -11,16 +11,19 @@ if ( !view ) {
 if ( window.runtime && air && util ) {
   //requires AIR and util
 
-  view.View = function ( ) {
+  view.View = function ( model ) {
+    this.model = model;
     this.prevWord = null;
     this.input = new view.FormInput( util.get( "textInput" ), util.get("inputForm") );
     this.activityWindow = util.get( "activityWindow" );
     this.channelList = util.get( "channelList" );
+    this.titleBar = util.get( "titleBar" );
     this.nickList = util.get( "nickList" );
     this.activityWindows = {};
     this.activeWin = null;
     util.connect( this.channelList, "onclick", this, "handleChannelListClick" );
     util.connect( this.activityWindow, "onclick", this, "handleActivityWindowClick" );
+    util.connect( this.titleBar, "onclick", this, "handleTitleBarClick" );
     util.subscribe(topics.USER_HIGHLIGHT, this, "highlight", []);
   }
 
@@ -252,6 +255,26 @@ if ( window.runtime && air && util ) {
   _vvp.destroy = function ( ) {
     util.log( "destroying view" );
     this.input.destroy();
+  }
+
+  _vvp.handlePrefBtnClick = function ( e ) {
+    window.prefBridge = {
+      util : util,
+      topics : topics,
+      preferences : this.model.prefs.getPrefs( ),
+    }
+    window.open("prefs.html", "prefsWindow", "height=600, width=400, top=50, left=50");
+  }
+
+  _vvp.handleTitleBarClick = function ( e ) {
+    util.stopEvent( e );
+    var id = e.target.id;
+    if ( id ) { 
+      var funcName = "handle" + id + "Click"; 
+      if ( this[ funcName ] ) {
+        this[ funcName ]( e );
+      }
+    }
   }
 
   //FormInput Class
