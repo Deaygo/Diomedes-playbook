@@ -420,17 +420,17 @@ if ( window.runtime && air && util ) {
     this.model = model;
     this.fileName = "preferences.xml";
     this.preferences = {};
-    //use xml file
-    //default nick
-    //alt nick
+    //Current Prefs:
+    //nick
+    //altNick
     //username
-    //real name
+    //realName
     //finger
-    //history length
-    //theme name
-    //poll time (for auto-reconnect)
-    //font type
-    //font size
+    //historyLength
+    //theme
+    //pollTime (for auto-reconnect)
+    //font
+    //fontSize
   }
 
   var _mpp = model.PrefModel.prototype;
@@ -456,14 +456,54 @@ if ( window.runtime && air && util ) {
     //xml file and app stops working (so if read fails recreate the prefs file)
     var fileStream = new air.FileStream( ); 
     fileStream.open( this.getFile( ), air.FileMode.READ ); 
+    var p = fileStream.readUTFBytes( fileStream.bytesAvailable );
+    fileStream.close( );
+    var domParser = new DOMParser( );
+    var d = domParser.parseFromString( p , "text/xml" );
+    //get prefs
+    var pNodes = d.getElementsByTagName( "preference" );
+    this.preferences = {};
+    for ( var i = 0; i < pNodes.length; i++ ) {
+      var pNode = pNodes[ i ];
+      var name = pNode.getAttribute( "name" );
+      var value = pNode.getAttribute( "value" );
+      //0's and empty strings are valid values
+      if ( name && ( value || value === 0 || value === "" ) ) {
+        this.preferences[ name ] = value;
+      }
+    }
+    //clean up
+    delete fileStream;
+    delete domParser
   }
 
   _mpp.savePrefs = function ( ) {
     var fileStream = new air.FileStream( ); 
-    //(new XMLSerializer()).serializeToString(document.implementation.createDocument("","preference",null));
     fileStream.open( this.getFile( ), air.FileMode.WRITE ); //WRITE truncates
+    var d = document.implementation.createDocument( "", "preferences", null );
+    //add prefs
+    for ( var name in this.preferences ) {
+      if ( this.preferences.hasOwnProperty( name ) ) {
+        var value = this.preferences[ name ];
+        var p = d.createElement("preference"); 
+        //0's and empty strings are valid values
+        if ( name && ( value || value === 0 || value === "" ) ) {
+          p.setAttribute( "name", name );
+          p.setAttribute( "value", value );
+        } 
+        d.firstChild.appendChild( p );
+      }
+    }
+    //write prefs to file
+    var x = new XMLSerializer( );
+    var s = x.serializeToString( d );
+    fileStream.writeUTFBytes( s );
+    //clean up
+    fileStream.close( );
+    delete fileStream;
+    delete d;
+    delete x;
   }
-    
 
 }
 
