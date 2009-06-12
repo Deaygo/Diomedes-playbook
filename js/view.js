@@ -263,7 +263,9 @@ if ( window.runtime && air && util ) {
       topics : topics,
       preferences : this.model.prefs.getPrefs( ),
     }
-    window.open("prefs.html", "prefsWindow", "height=600, width=400, top=50, left=50");
+    var x = window.nativeWindow.x + 150;
+    var y = window.nativeWindow.y + 100;
+    window.open("prefs.html", "prefsWindow", "height=400, width=500, top=" + y + ", left=" + x);
   }
 
   _vvp.handleTitleBarClick = function ( e ) {

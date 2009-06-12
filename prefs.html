@@ -9,39 +9,40 @@
 <body class="prefWindow popUpWindow" onLoad="prefLoad( )"> 
   <h1>Preferences</h1>
   <form onsubmit="savePrefs()">
-    <div>
+    <div class="formItem">
       <label for="nick">Nick: </label> <input type="text" id="nick" />
     </div>
-    <div>
+    <div class="formItem">
       <label for="nick">Alternate nick: </label> <input type="text" id="altNick" />
     </div>
-    <div>
+    <div class="formItem">
       <label for="nick">Username: </label> <input type="text" id="altNick" />
     </div>
-    <div>
+    <div class="formItem">
       <label for="nick">Real name: </label> <input type="text" id="altNick" />
     </div>
-    <div>
+    <div class="formItem">
       <label for="nick">Finger (shows up for a CTCP finger): </label> <input type="text" id="altNick" />
     </div>
-    <div>
+    <div class="formItem">
       <label for="nick">History Length: </label> <input type="text" id="altNick" />
     </div>
-    <div>
+    <div class="formItem">
       <label for="nick">Theme: </label> <input type="text" id="altNick" />
     </div>
-    <div>
-      <label for="nick">Connection reconnect attempt wait (in seconds, 0 means none): </label> <input type="text" id="altNick" />
+    <div class="formItem">
+      <label for="nick">Connection reconnect wait (in seconds): </label> <input type="text" id="altNick" />
     </div>
-    <div>
+    <div class="formItem">
       <label for="nick">Font: </label> <input type="text" id="altNick" />
     </div>
-    <div>
+    <div class="formItem">
       <label for="nick">Font size: </label> <input type="text" id="altNick" />
     </div>
     <input type="submit" value="Save" />
     <button onclick="cancelPrefs( );">Cancel</button>
   </form>
+  <script type="text/javascript" src="js/AIRIntrospector.js"></script> 
   <script type="text/javascript">
 
     var bridge = window.opener.prefBridge;
