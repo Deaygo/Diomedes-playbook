@@ -11,8 +11,9 @@ if(!controller) {
 if ( window.runtime && air && util ) {
   //requires AIR and util
 
-  controller.Controller = function ( view ) {
+  controller.Controller = function ( model, view ) {
 
+    this.model = model;
     this.view = view;
     this.channelSubscription = null;
     this.channelList = new controller.ChannelList( );
