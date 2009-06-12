@@ -69,7 +69,7 @@ if ( window.runtime && air && util ) {
     s.text = sql; 
     if ( parameters ) {
       for ( var i in parameters ) {
-        if ( parameters.hasOwnProperty( i ) ) {
+        if ( parameters.hasOwnProperty( i ) && i != "prototype" ) {
           s.parameters[ i ] = parameters[ i ];
         }
       }
@@ -117,6 +117,7 @@ if ( window.runtime && air && util ) {
   }
 
   _mmp._handleError = function ( e, msg ) {
+    console.dump(arguments);
     util.log("error");
     this.log("Error message:", e.error.message); 
     this.log("Details:", e.error.details); 
@@ -137,6 +138,7 @@ if ( window.runtime && air && util ) {
   model.NetworksModel = function ( model ) {
     util.log("NetworksModel");
     this.model = model;
+    this.createTablesList = [];
     //check to see if tables exists by attempting to create them
     this.createTables( );
   }
@@ -159,8 +161,10 @@ if ( window.runtime && air && util ) {
       autoJoin : st.BOOL,
       lastConnected : st.INTEGER,
     }
+    util.log("creating networks");
     var tableName = "networks";
-    this.model._createTable( tableName, types, util.hitch( this, "_handleCreateTable", [ tableName ], null ) );
+    this.createTablesList.push( { tableName : tableName, types : types } );
+    //this.model._createTable( tableName, types, util.hitch( this, "_handleCreateTable", [ tableName ], null ) );
     types = {
       id : [ st.INTEGER, st.PRIMARY_KEY, st.AUTOINCREMENT ].join( " " ),
       networkId : st.INTEGER,
@@ -168,8 +172,10 @@ if ( window.runtime && air && util ) {
       lastConnected : st.INTEGER,
       active : st.BOOL,
     }
+    util.log("creating servers");
     tableName = "servers";
-    this.model._createTable( tableName, types, util.hitch( this, "_handleCreateTable", [ tableName ], null ) );
+    this.createTablesList.push( { tableName : tableName, types : types } );
+    //this.model._createTable( tableName, types, util.hitch( this, "_handleCreateTable", [ tableName ], null ) );
     types = {
       id : [ st.INTEGER, st.PRIMARY_KEY, st.AUTOINCREMENT ].join( " " ),
       networkId : st.INTEGER,
@@ -177,8 +183,10 @@ if ( window.runtime && air && util ) {
       lastConnected : st.INTEGER,
       autoJoin : st.BOOL,
     }
+    util.log("creating channels");
     tableName = "channels";
-    this.model._createTable( tableName, types, util.hitch( this, "_handleCreateTable", [ tableName ], null ) );
+    this.createTablesList.push( { tableName : tableName, types : types } );
+    //this.model._createTable( tableName, types, util.hitch( this, "_handleCreateTable", [ tableName ], null ) );
     types = {
       id : [ st.INTEGER, st.PRIMARY_KEY, st.AUTOINCREMENT ].join( " " ),
       networkId : st.INTEGER,
@@ -186,8 +194,11 @@ if ( window.runtime && air && util ) {
       command : st.TEXT,
       active : st.BOOL,
     }
+    util.log("creating preforms");
     tableName = "performs";
-    this.model._createTable( tableName, types, util.hitch( this, "_handleCreateTable", [ tableName ], null ) );
+    this.createTablesList.push( { tableName : tableName, types : types } );
+    this._handleCreateTable( );
+    //this.model._createTable( tableName, types, util.hitch( this, "_handleCreateTable", [ tableName ], null ) );
   }
 
   _mnp.getNetworks = function ( resultsHandler ) {
@@ -340,7 +351,13 @@ if ( window.runtime && air && util ) {
   }
 
   _mnp._handleCreateTable = function ( e, tableName ) {
-    this.model.log( "Created NetworksModel table: "  + tableName );
+    if ( tableName ) {
+      this.model.log( "Created NetworksModel table: "  + tableName );
+    }
+    if ( this.createTablesList.length ) {
+      var args = this.createTablesList.shift( );
+      this.model._createTable( args.tableName, args.types, util.hitch( this, "_handleCreateTable", [ args.tableName ], null ) );
+    }
   }
 
   _mnp._handleChange = function ( e ) {
@@ -420,17 +437,7 @@ if ( window.runtime && air && util ) {
     this.model = model;
     this.fileName = "preferences.xml";
     this.preferences = {};
-    //Current Prefs:
-    //nick
-    //altNick
-    //username
-    //realName
-    //finger
-    //historyLength
-    //theme
-    //pollTime (for auto-reconnect)
-    //font
-    //fontSize
+    this.getPrefs( );
   }
 
   var _mpp = model.PrefModel.prototype;
