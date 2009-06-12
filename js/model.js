@@ -117,7 +117,7 @@ if ( window.runtime && air && util ) {
   }
 
   _mmp._handleError = function ( e, msg ) {
-    console.dump(arguments);
+    //console.dump(arguments);
     util.log("error");
     this.log("Error message:", e.error.message); 
     this.log("Details:", e.error.details); 
@@ -437,10 +437,14 @@ if ( window.runtime && air && util ) {
     this.model = model;
     this.fileName = "preferences.xml";
     this.preferences = {};
+    this.preferencesChanges = new Date( ).getTime( );
     this.getPrefs( );
   }
 
   var _mpp = model.PrefModel.prototype;
+
+  _mpp.checkPrefs = function ( ) {
+  }
 
   _mpp.getFile = function ( ) {
     return air.File.applicationDirectory.resolvePath( this.fileName );
@@ -482,6 +486,11 @@ if ( window.runtime && air && util ) {
     //clean up
     delete fileStream;
     delete domParser
+    return this.preferences;
+  }
+
+  _mpp.setPrefs = function ( prefs ) {
+    this.preferences = prefs;
   }
 
   _mpp.savePrefs = function ( ) {

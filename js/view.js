@@ -258,6 +258,10 @@ if ( window.runtime && air && util ) {
   }
 
   _vvp.handlePrefBtnClick = function ( e ) {
+    util.log("handleprefbtnclick00000");
+    var prefs = this.model.prefs.getPrefs( );
+    util.log("handleprefbtnclick00001");
+    util.log("handleprefbtnclick00002: " + prefs);
     window.prefBridge = {
       util : util,
       topics : topics,
@@ -265,7 +269,10 @@ if ( window.runtime && air && util ) {
     }
     var x = window.nativeWindow.x + 150;
     var y = window.nativeWindow.y + 100;
-    window.open("prefs.html", "prefsWindow", "height=400, width=500, top=" + y + ", left=" + x);
+    var win = window.open("prefs.html", "prefsWindow", "height=400, width=500, top=" + y + ", left=" + x);
+    win = win.nativeWindow;
+    this.model.prefs.savePrefs( );
+    win.addEventListener( air.Event.CLOSE, util.hitch( this.model.prefs, "savePrefs" )  ); 
   }
 
   _vvp.handleTitleBarClick = function ( e ) {

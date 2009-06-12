@@ -12,6 +12,7 @@ if(!topics) {
     USER_ACTIVITY: "/user/activity",
     USER_INPUT: "/user/input/",
     USER_HIGHLIGHT: "/user/highlight/",
+    PREFS_SAVE: "/prefs/save/",
   };
 }
 

@@ -28,9 +28,15 @@ if ( window.runtime && air && util ) {
     util.subscribe( topics.CHANNEL_SELECTED, this, "handleChannelSelect", [] );
     util.subscribe( topics.CHANNEL_ACTIVITY, this, "handleChannelActivity", [] );
     util.subscribe( topics.USER_HIGHLIGHT, this, "handleHighlight", [] );
+    util.subscribe( topics.PREFS_SAVE, this, "handlePrefsSave", [] );
   }
 
   _ccp = controller.Controller.prototype;
+
+  _ccp.handlePrefsSave = function ( prefs ) {
+    util.log("handleprefssave controller: " + prefs);
+    this.model.prefs.setPrefs( prefs );
+  }
 
   _ccp.handleChannelSelect = function (server, type, name) {
     util.log("handlechannelselect");

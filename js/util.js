@@ -81,8 +81,11 @@ if ( window.runtime && air ) {
     delete d;
   }
 
-  util.get = function ( id ) {
-    return document.getElementById( id );
+  util.get = function ( id, doc ) {
+    if ( !doc ) {
+      doc = document;
+    } 
+    return doc.getElementById( id );
   }
 
   util.connect = function ( o, type, scope, method ) {

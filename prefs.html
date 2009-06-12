@@ -13,34 +13,34 @@
       <label for="nick">Nick: </label> <input type="text" id="nick" />
     </div>
     <div class="formItem">
-      <label for="nick">Alternate nick: </label> <input type="text" id="altNick" />
+      <label for="altNick">Alternate nick: </label> <input type="text" id="altNick" />
     </div>
     <div class="formItem">
-      <label for="nick">Username: </label> <input type="text" id="altNick" />
+      <label for="userName">Username: </label> <input type="text" id="userName" />
     </div>
     <div class="formItem">
-      <label for="nick">Real name: </label> <input type="text" id="altNick" />
+      <label for="realName">Real name: </label> <input type="text" id="realName" />
     </div>
     <div class="formItem">
-      <label for="nick">Finger (shows up for a CTCP finger): </label> <input type="text" id="altNick" />
+      <label for="finger">Finger (shows up for a CTCP finger): </label> <input type="text" id="finger" />
     </div>
     <div class="formItem">
-      <label for="nick">History Length: </label> <input type="text" id="altNick" />
+      <label for="historyLength">History Length: </label> <input type="text" id="historyLength" />
     </div>
     <div class="formItem">
-      <label for="nick">Theme: </label> <input type="text" id="altNick" />
+      <label for="theme">Theme: </label> <input type="text" id="theme" />
     </div>
     <div class="formItem">
-      <label for="nick">Connection reconnect wait (in seconds): </label> <input type="text" id="altNick" />
+      <label for="pollTime">Connection reconnect wait (seconds): </label> <input type="text" id="pollTime" />
     </div>
     <div class="formItem">
-      <label for="nick">Font: </label> <input type="text" id="altNick" />
+      <label for="font">Font: </label> <input type="text" id="font" />
     </div>
     <div class="formItem">
-      <label for="nick">Font size: </label> <input type="text" id="altNick" />
+      <label for="fontSize">Font size: </label> <input type="text" id="fontSize" />
     </div>
     <input type="submit" value="Save" />
-    <button onclick="cancelPrefs( );">Cancel</button>
+    <button onclick="closePrefs( );">Close</button>
   </form>
   <script type="text/javascript" src="js/AIRIntrospector.js"></script> 
   <script type="text/javascript">
@@ -51,17 +51,32 @@
     var prefs = bridge.preferences;
 
     function prefLoad ( ) {
-      util.log( "Preferences window launched." );
       //load values to form
+      for ( pref in prefs ) {
+        var n = util.get( pref, document );
+        if ( n ) {
+          n.value = prefs[ pref ];
+        }
+      }
     }
 
     function savePrefs ( e ) {
       util.stopEvent( e );
       util.log( "Saving preferences." );
-      //publish a topic to cancel here
+      //get prefs
+      for ( pref in prefs ) {
+        var n = util.get( pref, document );
+        if ( n ) {
+          var value = n.value;
+          if ( value || value === 0 || value === "" ) {
+            prefs[ pref ] = value;
+          }
+        }
+      }
+      util.publish( topics.PREFS_SAVE, [ prefs ] );
     }
 
-    function cancelPrefs ( ) {
+    function closePrefs ( ) {
       window.close( );
     }
 
