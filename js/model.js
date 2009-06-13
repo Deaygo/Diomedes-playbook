@@ -171,7 +171,6 @@ if ( window.runtime && air && util ) {
     util.log("creating networks");
     var tableName = "networks";
     this.createTablesList.push( { tableName : tableName, types : types } );
-    //this.model._createTable( tableName, types, util.hitch( this, "_handleCreateTable", [ tableName ], null ) );
     types = {
       id : [ st.INTEGER, st.PRIMARY_KEY, st.AUTOINCREMENT ].join( " " ),
       networkId : st.INTEGER,
@@ -182,7 +181,6 @@ if ( window.runtime && air && util ) {
     util.log("creating servers");
     tableName = "servers";
     this.createTablesList.push( { tableName : tableName, types : types } );
-    //this.model._createTable( tableName, types, util.hitch( this, "_handleCreateTable", [ tableName ], null ) );
     types = {
       id : [ st.INTEGER, st.PRIMARY_KEY, st.AUTOINCREMENT ].join( " " ),
       networkId : st.INTEGER,
@@ -193,7 +191,6 @@ if ( window.runtime && air && util ) {
     util.log("creating channels");
     tableName = "channels";
     this.createTablesList.push( { tableName : tableName, types : types } );
-    //this.model._createTable( tableName, types, util.hitch( this, "_handleCreateTable", [ tableName ], null ) );
     types = {
       id : [ st.INTEGER, st.PRIMARY_KEY, st.AUTOINCREMENT ].join( " " ),
       networkId : st.INTEGER,
@@ -205,7 +202,6 @@ if ( window.runtime && air && util ) {
     tableName = "performs";
     this.createTablesList.push( { tableName : tableName, types : types } );
     this._handleCreateTable( );
-    //this.model._createTable( tableName, types, util.hitch( this, "_handleCreateTable", [ tableName ], null ) );
   }
 
   _mnp.getNetworks = function ( resultsHandler ) {
@@ -272,13 +268,12 @@ if ( window.runtime && air && util ) {
     this.model._executeSQL( sql, air.SQLMode.READ, this.model._getResultHandler( resultsHandler ), p ); 
   }
 
-  _mnp.addServer = function ( networkId, name, autoJoin, active ) {
-    var sql = "INSERT INTO servers ( networkId, name, autoJoin, active ) " +
-      "Values ( :networkId, :name, :autoJoin, :active )";
+  _mnp.addServer = function ( networkId, name, active ) {
+    var sql = "INSERT INTO servers ( networkId, name, active ) " +
+      "Values ( :networkId, :name, :active )";
     var p = {
       networkId : networkId,
       name : name,
-      autoJoin : autoJoin,
       active : active,
     }
     this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 

@@ -40,10 +40,9 @@
     <button onclick="closeForm( event );">Cancel</button>
   </form>
   <button onclick="closeWindow( event );">Close Window</button>
-  <script type="text/javascript" src="js/AIRIntrospector.js"></script> 
   <script type="text/javascript">
 
-    var bridge = window.opener.prefBridge;
+    var bridge = window.opener.networksBridge;
     var util = bridge.util;
     var topics = bridge.topics;
     var prefs = bridge.preferences;
@@ -96,7 +95,6 @@
       if ( !this.getItem( "finger", "Finger", networkData ) ) return;
       if ( !this.getItem( "active", "Active", networkData, true ) ) return;
       if ( !this.getItem( "autoJoin", "Auto join", networkData, true ) ) return;
-      util.log( "networkData.nick: " + networkData.nick );
       if ( id === 0 ) {
         util.publish( topics.NETWORK_ADD, [ networkData ] );
         closeWindow( event );

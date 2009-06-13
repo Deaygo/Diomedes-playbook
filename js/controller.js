@@ -32,9 +32,19 @@ if ( window.runtime && air && util ) {
     util.subscribe( topics.NETWORK_ADD, this, "handleNetworkAdd", [] );
     util.subscribe( topics.NETWORK_EDIT, this, "handleNetworksEdit", [] );
     util.subscribe( topics.NETWORK_DELETE, this, "handleNetworksDelete", [] );
+    util.subscribe( topics.SERVER_ADD, this, "handleServerAdd", [] );
+    util.subscribe( topics.SERVER_DELETE, this, "handleServerDelete", [] );
   }
 
   _ccp = controller.Controller.prototype;
+
+  _ccp.handleServerDelete = function ( id ) {
+    this.model.networks.remServer( id );
+  }
+
+  _ccp.handleServerAdd = function ( data ) {
+    this.model.networks.addServer( data.networkId, data.name, data.active );
+  }
 
   _ccp.handlePrefsSave = function ( prefs ) {
     this.model.prefs.setPrefs( prefs );
