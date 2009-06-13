@@ -257,6 +257,24 @@ if ( window.runtime && air && util ) {
     this.input.destroy();
   }
   
+  _vvp.openPerformsWindow = function ( networks ) {
+    if ( !networks ) networks = {};
+    window.performsBridge = {
+      util : util,
+      topics : topics,
+      networks : networks,
+      getPerforms : util.hitch( this.model.networks, "getPerforms" ),
+    }
+    var x = window.nativeWindow.x + 150;
+    var y = window.nativeWindow.y + 100;
+    var win = window.open("performs.html", "performsWindow", "height=400, width=500, top=" + y + ", left=" + x);
+    win = win.nativeWindow;
+  }
+
+  _vvp.handlePerformBtnClick = function ( e ) {
+    this.model.networks.getNetworks( util.hitch( this, "openPerformsWindow" ) );
+  }
+  
   _vvp.openChannelsWindow = function ( networks ) {
     if ( !networks ) networks = {};
     window.channelsBridge = {
