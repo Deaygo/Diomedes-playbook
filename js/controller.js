@@ -30,6 +30,8 @@ if ( window.runtime && air && util ) {
     util.subscribe( topics.USER_HIGHLIGHT, this, "handleHighlight", [] );
     util.subscribe( topics.PREFS_SAVE, this, "handlePrefsSave", [] );
     util.subscribe( topics.NETWORK_ADD, this, "handleNetworkAdd", [] );
+    util.subscribe( topics.NETWORK_EDIT, this, "handleNetworksEdit", [] );
+    util.subscribe( topics.NETWORK_DELETE, this, "handleNetworksDelete", [] );
   }
 
   _ccp = controller.Controller.prototype;
@@ -40,6 +42,14 @@ if ( window.runtime && air && util ) {
 
   _ccp.handleNetworkAdd = function ( data ) {
     this.model.networks.addNetwork( data.name, data.nick, data.altNick, data.userName, data.realName, data.finger, data.autoJoin, data.active );
+  }
+
+  _ccp.handleNetworksEdit = function ( id, data ) {
+    this.model.networks.editNetwork( id, data.name, data.nick, data.altNick, data.userName, data.realName, data.finger, data.autoJoin, data.active );
+  }
+
+  _ccp.handleNetworksDelete = function ( id ) {
+    this.model.networks.remNetwork( id );
   }
 
   _ccp.handleChannelSelect = function (server, type, name) {

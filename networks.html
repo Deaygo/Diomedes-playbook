@@ -8,8 +8,10 @@
 </head> 
 <body class="prefWindow popUpWindow" onLoad="load( )"> 
   <h1>Networks</h1>
-  <a href="#" onclick="showForm( e );">Add a Network</a>
-  <form onsubmit="saveNetworks( event );">
+  <div id="networksList" onclick="handleListClick( event );"></div>
+  <a href="#" onclick="showAddForm( event );">Add a Network</a>
+  <form class="hidden" id="form" onsubmit="saveNetworks( event );">
+    <input type="hidden" id="id" value="0"/>
     <div class="formItem">
       <label for="name">Name: </label> <input type="text" id="name" />
     </div>
@@ -35,8 +37,9 @@
       <label for="autoJoin">Auto join: </label> <input type="checkbox" id="autoJoin" checked="true" />
     </div>
     <input type="submit" value="Save" />
-    <button onclick="closeForm( event );">Close</button>
+    <button onclick="closeForm( event );">Cancel</button>
   </form>
+  <button onclick="closeWindow( event );">Close Window</button>
   <script type="text/javascript" src="js/AIRIntrospector.js"></script> 
   <script type="text/javascript">
 
@@ -44,11 +47,35 @@
     var util = bridge.util;
     var topics = bridge.topics;
     var prefs = bridge.preferences;
+    var networks = bridge.networks;
 
     function load ( ) {
-      //load values to form
+      displayNetworks ( networks );
+    }
+
+    function displayNetworks ( networks ) {
+      var n = get( "networksList" );
+      n.innerHTML = "";
+      var r = [];
+      for ( var i = 0; i < networks.length; i++ ) {
+        r.push( getNetworkHTML( networks[ i ] ) ); 
+      }
+      n.innerHTML = r.join( "" );
+    }
+
+    function getNetworkHTML( network ) {
+      return [
+        '<div><span class="networkName">', network.name, '</span> ',
+        '<a href="#" id="edit.', network.id, '">Edit</a> ',
+        '<a href="#" id="delete.', network.id, '">Delete</a> ',
+        '</div>'].join( "" );
+    }
+
+    function clearForm ( ) {
+      get( "name" ).value = "";
+      get( "id" ).value = "0";
       for ( pref in prefs ) {
-        var n = util.get( pref, document );
+        var n = get( pref );
         if ( n ) {
           n.value = prefs[ pref ];
         }
@@ -60,6 +87,7 @@
       util.log( "Saving Networks." );
       var networkData = {};
       //get prefs
+      var id = parseInt( get( "id" ).value, 10 );
       if ( !this.getItem( "name", "Network name", networkData ) ) return;
       if ( !this.getItem( "nick", "Nick", networkData ) ) return;
       if ( !this.getItem( "altNick", "Alternate nick", networkData ) ) return;
@@ -69,20 +97,35 @@
       if ( !this.getItem( "active", "Active", networkData, true ) ) return;
       if ( !this.getItem( "autoJoin", "Auto join", networkData, true ) ) return;
       util.log( "networkData.nick: " + networkData.nick );
-      
-      util.publish( topics.NETWORK_ADD, [ networkData ] );
+      if ( id === 0 ) {
+        util.publish( topics.NETWORK_ADD, [ networkData ] );
+        closeWindow( event );
+        return;
+      } else {
+        util.publish( topics.NETWORK_EDIT, [ id, networkData ] );
+      }
+      closeForm( event );
+    }
+
+    function closeForm ( event ) {
+      util.stopEvent( event );
+      util.addClass( get( "form" ), "hidden" );
+    }
+
+    function showForm ( ) {
+      util.remClass( get( "form" ), "hidden" );
     }
 
     function getItem( id, name, o, isCheckbox ) {
       util.log( "id: " + id );
       if ( isCheckbox ) {
-        var value = util.get( id, document ).checked;
+        var value = get( id ).checked;
         if ( value === true || value === false ) {
           o[ id ] = value;
           return true;
         }
       }
-      var value =  util.get( id, document ).value;
+      var value =  get( id ).value;
       value = util.trim( value );
       util.log( "value: " + value );
       if ( !value ) {
@@ -93,7 +136,65 @@
       return true;
     }
 
-    function closeForm ( event ) {
+    function get ( name ) {
+      return util.get( name, document );
+    }
+
+    function handleListClick ( event ) {
+      var id = event.target.id;
+      if ( id ) {
+        var parts = id.split( "." );
+        if ( parts.length ) {
+          var cmd = parts[ 0 ];
+          var id = parts [ 1 ];
+          if ( cmd == "edit" ) {
+            showEditForm( id );
+          } else if ( cmd == "delete" ) {
+            deleteNetwork( id );
+          }
+        }
+      }
+    }
+
+    function deleteNetwork ( id ) {
+      util.publish( topics.NETWORK_DELETE, [ id ] );
+      var newNetworks = [];
+      for ( var i = 0; i < networks.length; i++ ) {
+        var network = networks[ i ];
+        if ( network.id != id ) {
+          newNetworks.push( network );
+        }
+      }
+      networks = newNetworks;
+      displayNetworks( networks );
+    }
+
+    function showEditForm ( id ) {
+      var network = null;
+      for ( var i = 0; i < networks.length; i++ ) {
+        if ( networks[ i ].id == id ) {
+          network = networks[ i ];
+          break;
+        }
+      }
+      if ( !network ) return;
+      var keys = [ "id", "name", "nick", "altNick", "userName", "realName", "finger" ];
+      for ( var i = 0; i < keys.length; i++ ) {
+        var key = keys[ i ];
+        get( key ).value = network[ key ];
+      }
+      get( "active" ).checked = network[ "active" ];
+      get( "autoJoin" ).checked = network[ "autoJoin" ];
+      showForm( );
+    }
+
+    function showAddForm ( event ) {
+      util.stopEvent( event );
+      clearForm( );
+      showForm( );
+    }
+
+    function closeWindow ( event ) {
       util.stopEvent( event );
       window.close( );
     }

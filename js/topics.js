@@ -14,6 +14,8 @@ if(!topics) {
     USER_HIGHLIGHT: "/user/highlight/",
     PREFS_SAVE: "/prefs/save/",
     NETWORK_ADD: "/network/add/",
+    NETWORK_EDIT: "/network/edit/",
+    NETWORK_DELETE: "/network/delete/",
   };
 }
 

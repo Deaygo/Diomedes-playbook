@@ -81,6 +81,34 @@ if ( window.runtime && air ) {
     delete d;
   }
 
+  util.addClass = function ( node, className ) {
+    var classes = node.getAttribute( "class" ).split( " " );
+    var hasClass = false;
+    for ( var i = 0; i < classes.length; i++ ) {
+      var name = classes[ i ];
+      if ( name == className ) {
+        hasClass = true;
+        break;
+      }
+    }
+    if ( !hasClass ) {
+      classes.push( className );
+    }
+    node.setAttribute( "class", classes.join( " " ) );
+  }
+
+  util.remClass = function ( node, className ) {
+    var classes = node.getAttribute( "class" ).split( " " );
+    var keep = [];
+    for ( var i = 0; i < classes.length; i++ ) {
+      var name = classes[ i ];
+      if ( name != className ) {
+        keep.push( name );
+      }
+    }
+    node.setAttribute( "class", keep.join( " " ) );
+  }
+
   util.get = function ( id, doc ) {
     if ( !doc ) {
       doc = document;
