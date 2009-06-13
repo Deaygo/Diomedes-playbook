@@ -29,9 +29,13 @@ if(!topics) {
     CHANNEL_ADD: "/channel/add/",
     CHANNEL_DELETE: "/channel/delete/",
 
-    PERFORM_ADD: "/perform/add",
-    PERFORM_EDIT: "/perform/edit",
-    PERFORM_DELETE: "/perform/delete",
+    PERFORM_ADD: "/perform/add/",
+    PERFORM_EDIT: "/perform/edit/",
+    PERFORM_DELETE: "/perform/delete/",
+
+    ALIAS_ADD: "/alias/add/",
+    ALIAS_EDIT: "/alias/edit/",
+    ALIAS_DELETE: "/alias/delete",
 
   };
 }
