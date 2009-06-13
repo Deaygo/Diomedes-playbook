@@ -438,6 +438,7 @@ if ( window.runtime && air && util ) {
     this.fileName = "preferences.xml";
     this.preferences = {};
     this.preferencesChanges = new Date( ).getTime( );
+    this.prefVersion = 0;
     this.getPrefs( );
   }
 
@@ -447,7 +448,17 @@ if ( window.runtime && air && util ) {
   }
 
   _mpp.getFile = function ( ) {
-    return air.File.applicationDirectory.resolvePath( this.fileName );
+    return air.File.applicationStorageDirectory.resolvePath( this.fileName );
+  }
+
+  _mpp.createFile = function ( ) {
+    var defaultPrefsFile = air.File.applicationDirectory.resolvePath( this.fileName );
+    var fileStream = new air.FileStream( ); 
+    fileStream.open( defaultPrefsFile, air.FileMode.READ ); 
+    var xml = fileStream.readUTFBytes( fileStream.bytesAvailable );
+    this.preferences = this.getPrefsFromXML( xml );
+    this.savePrefs( );
+    return this.preferences
   }
 
   _mpp.getPref = function ( key ) {
@@ -462,31 +473,39 @@ if ( window.runtime && air && util ) {
     this.preferences[ key ] = value;
   }
 
-  _mpp.getPrefs = function ( ) {
-    //need to hard code defaults into here in case user destroys 
-    //xml file and app stops working (so if read fails recreate the prefs file)
-    var fileStream = new air.FileStream( ); 
-    fileStream.open( this.getFile( ), air.FileMode.READ ); 
-    var p = fileStream.readUTFBytes( fileStream.bytesAvailable );
-    fileStream.close( );
+  _mpp.getPrefsFromXML = function ( xml ) {
     var domParser = new DOMParser( );
-    var d = domParser.parseFromString( p , "text/xml" );
+    var d = domParser.parseFromString( xml , "text/xml" );
+    var prefs = {};
     //get prefs
+    this.version = d.firstChild.getAttribute("version");
     var pNodes = d.getElementsByTagName( "preference" );
-    this.preferences = {};
     for ( var i = 0; i < pNodes.length; i++ ) {
       var pNode = pNodes[ i ];
       var name = pNode.getAttribute( "name" );
       var value = pNode.getAttribute( "value" );
       //0's and empty strings are valid values
       if ( name && ( value || value === 0 || value === "" ) ) {
-        this.preferences[ name ] = value;
+        prefs[ name ] = value;
       }
     }
-    //clean up
-    delete fileStream;
     delete domParser
-    return this.preferences;
+    return prefs;
+  }
+
+  _mpp.getPrefs = function ( ) {
+    var fileStream = new air.FileStream( ); 
+    var file = this.getFile( );
+    if ( file.exists ) {
+      fileStream.open( file, air.FileMode.READ ); 
+      var xml = fileStream.readUTFBytes( fileStream.bytesAvailable );
+      fileStream.close( );
+      delete fileStream;
+      this.preferences = this.getPrefsFromXML( xml );
+      return this.preferences;
+    } else {
+      return this.createFile( );
+    }
   }
 
   _mpp.setPrefs = function ( prefs ) {
@@ -508,6 +527,7 @@ if ( window.runtime && air && util ) {
           p.setAttribute( "value", value );
         } 
         d.firstChild.appendChild( p );
+        d.firstChild.setAttribute( "version", this.version );
       }
     }
     //write prefs to file
