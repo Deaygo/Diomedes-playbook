@@ -51,6 +51,12 @@
     
     var console =  air.Introspector.Console;
 
+    function checkClose ( e ) {
+      if ( !confirm( "Are you sure you want to quit?" ) ) {
+        util.stopEvent( e );
+      }
+    }
+
     function appLoad ( ) { 
       util.log( "appLoad" ); 
 
@@ -66,6 +72,8 @@
       v.destroy( );
       delete v;
     }
+
+    window.nativeWindow.addEventListener( air.Event.CLOSING, checkClose );
 
   </script> 
 </body> 
