@@ -13,6 +13,7 @@ if(!topics) {
     USER_INPUT: "/user/input/",
     USER_HIGHLIGHT: "/user/highlight/",
     PREFS_SAVE: "/prefs/save/",
+    NETWORK_ADD: "/network/add/",
   };
 }
 

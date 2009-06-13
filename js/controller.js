@@ -29,12 +29,17 @@ if ( window.runtime && air && util ) {
     util.subscribe( topics.CHANNEL_ACTIVITY, this, "handleChannelActivity", [] );
     util.subscribe( topics.USER_HIGHLIGHT, this, "handleHighlight", [] );
     util.subscribe( topics.PREFS_SAVE, this, "handlePrefsSave", [] );
+    util.subscribe( topics.NETWORK_ADD, this, "handleNetworkAdd", [] );
   }
 
   _ccp = controller.Controller.prototype;
 
   _ccp.handlePrefsSave = function ( prefs ) {
     this.model.prefs.setPrefs( prefs );
+  }
+
+  _ccp.handleNetworkAdd = function ( data ) {
+    this.model.networks.addNetwork( data.name, data.nick, data.altNick, data.userName, data.realName, data.finger, data.autoJoin, data.active );
   }
 
   _ccp.handleChannelSelect = function (server, type, name) {

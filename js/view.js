@@ -262,8 +262,7 @@ if ( window.runtime && air && util ) {
   }
 
   _vvp.openNetworksWindow = function ( networks ) {
-    console.dump(networks);
-    return;
+    if ( !networks ) networks = {};
     window.prefBridge = {
       util : util,
       topics : topics,

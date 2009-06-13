@@ -8,7 +8,7 @@
 </head> 
 <body class="prefWindow popUpWindow" onLoad="prefLoad( )"> 
   <h1>Preferences</h1>
-  <form onsubmit="savePrefs()">
+  <form onsubmit="savePrefs( event );">
     <div class="formItem">
       <label for="nick">Nick: </label> <input type="text" id="nick" />
     </div>
@@ -40,7 +40,7 @@
       <label for="fontSize">Font size: </label> <input type="text" id="fontSize" />
     </div>
     <input type="submit" value="Save" />
-    <button onclick="closePrefs( );">Close</button>
+    <button onclick="closePrefs( event );">Close</button>
   </form>
   <script type="text/javascript">
 
@@ -59,8 +59,8 @@
       }
     }
 
-    function savePrefs ( e ) {
-      util.stopEvent( e );
+    function savePrefs ( event ) {
+      util.stopEvent( event );
       util.log( "Saving preferences." );
       //get prefs
       for ( pref in prefs ) {
@@ -75,7 +75,8 @@
       util.publish( topics.PREFS_SAVE, [ prefs ] );
     }
 
-    function closePrefs ( ) {
+    function closePrefs ( event ) {
+      util.stopEvent( event );
       window.close( );
     }
 

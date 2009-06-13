@@ -54,7 +54,7 @@ if ( window.runtime && air && util ) {
     if ( !errorHandler ) errorHandler = util.hitch( this, "_handleError", [ "SQL: " + sql ] );
     if ( !this.conn || !this.conn.connected ) { 
       this.log( "Connection not open when calling _executeSQL, opening it");
-      this._openSQLConn( type, util.hitch( this, "_reExecuteSQL", [ sql, type, resultsHandler, errorHandler ] ), errorHandler );
+      this._openSQLConn( type, util.hitch( this, "_reExecuteSQL", [ sql, type, resultsHandler, parameters, errorHandler ] ), errorHandler );
       return;
     }
     if ( this.connLocked ) {
@@ -66,11 +66,12 @@ if ( window.runtime && air && util ) {
     this.connLocked = true;
     var s = new air.SQLStatement( ); 
     s.sqlConnection = this.conn; 
+    util.log( "executing sql: " + sql );
     s.text = sql; 
     if ( parameters ) {
       for ( var i in parameters ) {
         if ( parameters.hasOwnProperty( i ) && i != "prototype" ) {
-          s.parameters[ i ] = parameters[ i ];
+          s.parameters[ ":" + i ] = parameters[ i ];
         }
       }
     }
@@ -123,7 +124,8 @@ if ( window.runtime && air && util ) {
 
   _mmp._handleError = function ( e, msg ) {
     //console.dump(arguments);
-    this.log("error");
+    this.log("error: " + e);
+    this.log("message: " + msg );
     this.log("Error message:", e.error.message); 
     this.log("Details:", e.error.details); 
   }

@@ -6,15 +6,36 @@
   <link rel="stylesheet" type="text/css" media="screen" href="css/view.css" />
   <link rel="stylesheet" type="text/css" media="screen" href="css/forms.css" />
 </head> 
-<body class="prefWindow popUpWindow" onLoad="prefLoad( )"> 
+<body class="prefWindow popUpWindow" onLoad="load( )"> 
   <h1>Networks</h1>
   <a href="#" onclick="showForm( e );">Add a Network</a>
-  <form onsubmit="saveNetworks()">
+  <form onsubmit="saveNetworks( event );">
+    <div class="formItem">
+      <label for="name">Name: </label> <input type="text" id="name" />
+    </div>
     <div class="formItem">
       <label for="nick">Nick: </label> <input type="text" id="nick" />
     </div>
+    <div class="formItem">
+      <label for="altNick">Alternative nick: </label> <input type="text" id="altNick" />
+    </div>
+    <div class="formItem">
+      <label for="userName">Username: </label> <input type="text" id="userName" />
+    </div>
+    <div class="formItem">
+      <label for="realName">Real Name: </label> <input type="text" id="realName" />
+    </div>
+    <div class="formItem">
+      <label for="finger">Finger: </label> <input type="text" id="finger" />
+    </div>
+    <div class="formItem">
+      <label for="active">Active: </label> <input type="checkbox" id="active"  checked="true"/>
+    </div>
+    <div class="formItem">
+      <label for="autoJoin">Auto join: </label> <input type="checkbox" id="autoJoin" checked="true" />
+    </div>
     <input type="submit" value="Save" />
-    <button onclick="closeForm( );">Close</button>
+    <button onclick="closeForm( event );">Close</button>
   </form>
   <script type="text/javascript" src="js/AIRIntrospector.js"></script> 
   <script type="text/javascript">
@@ -24,7 +45,7 @@
     var topics = bridge.topics;
     var prefs = bridge.preferences;
 
-    function prefLoad ( ) {
+    function load ( ) {
       //load values to form
       for ( pref in prefs ) {
         var n = util.get( pref, document );
@@ -34,23 +55,46 @@
       }
     }
 
-    function savePrefs ( e ) {
-      util.stopEvent( e );
-      util.log( "Saving preferences." );
+    function saveNetworks ( event ) {
+      util.stopEvent( event );
+      util.log( "Saving Networks." );
+      var networkData = {};
       //get prefs
-      for ( pref in prefs ) {
-        var n = util.get( pref, document );
-        if ( n ) {
-          var value = n.value;
-          if ( value || value === 0 || value === "" ) {
-            prefs[ pref ] = value;
-          }
-        }
-      }
-      util.publish( topics.PREFS_SAVE, [ prefs ] );
+      if ( !this.getItem( "name", "Network name", networkData ) ) return;
+      if ( !this.getItem( "nick", "Nick", networkData ) ) return;
+      if ( !this.getItem( "altNick", "Alternate nick", networkData ) ) return;
+      if ( !this.getItem( "userName", "Username", networkData ) ) return;
+      if ( !this.getItem( "realName", "Real name", networkData ) ) return;
+      if ( !this.getItem( "finger", "Finger", networkData ) ) return;
+      if ( !this.getItem( "active", "Active", networkData, true ) ) return;
+      if ( !this.getItem( "autoJoin", "Auto join", networkData, true ) ) return;
+      util.log( "networkData.nick: " + networkData.nick );
+      
+      util.publish( topics.NETWORK_ADD, [ networkData ] );
     }
 
-    function closePrefs ( ) {
+    function getItem( id, name, o, isCheckbox ) {
+      util.log( "id: " + id );
+      if ( isCheckbox ) {
+        var value = util.get( id, document ).checked;
+        if ( value === true || value === false ) {
+          o[ id ] = value;
+          return true;
+        }
+      }
+      var value =  util.get( id, document ).value;
+      value = util.trim( value );
+      util.log( "value: " + value );
+      if ( !value ) {
+        alert( name + " required." );
+        return false;
+      }
+      o[ id ] = value;
+      return true;
+    }
+
+    function closeForm ( event ) {
+      util.stopEvent( event );
       window.close( );
     }
 
