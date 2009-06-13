@@ -34,7 +34,6 @@ if ( window.runtime && air && util ) {
   _ccp = controller.Controller.prototype;
 
   _ccp.handlePrefsSave = function ( prefs ) {
-    util.log("handleprefssave controller: " + prefs);
     this.model.prefs.setPrefs( prefs );
   }
 

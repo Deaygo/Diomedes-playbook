@@ -258,10 +258,7 @@ if ( window.runtime && air && util ) {
   }
 
   _vvp.handlePrefBtnClick = function ( e ) {
-    util.log("handleprefbtnclick00000");
     var prefs = this.model.prefs.getPrefs( );
-    util.log("handleprefbtnclick00001");
-    util.log("handleprefbtnclick00002: " + prefs);
     window.prefBridge = {
       util : util,
       topics : topics,
