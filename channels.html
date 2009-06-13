@@ -1,0 +1,220 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html> 
+<head> 
+  <title>Diomedes - Channels</title> 
+  <link rel="stylesheet" type="text/css" media="screen" href="css/view.css" />
+  <link rel="stylesheet" type="text/css" media="screen" href="css/forms.css" />
+</head> 
+<body class="prefWindow popUpWindow" onLoad="load( )"> 
+  <h1>Channels</h1>
+  <div id="networksList"></div>
+  <div id="channelInfo" class="hidden">
+    <div>Channels for <span id="networkName"></span>:</div>
+    <div id="channelList" onclick="handleListClick( event );"></div>
+    <a href="#" onclick="showAddForm( event );">Add a Channel</a>
+    <form class="hidden" id="form" onsubmit="saveChannel( event );">
+      <input type="hidden" id="id" value="0"/>
+      <input type="hidden" id="networkId" value="0"/>
+      <div class="formItem">
+        <label for="name">Name: </label> <input type="text" id="name" />
+      </div>
+      <div class="formItem">
+        <label for="autoJoin">Auto join: </label> <input type="checkbox" id="autoJoin"  checked="true"/>
+      </div>
+      <input type="submit" value="Save" />
+      <button onclick="closeForm( event );">Cancel</button>
+    </form>
+  </div>
+  <button onclick="closeWindow( event );">Close Window</button>
+  <script type="text/javascript" src="js/AIRIntrospector.js"></script> 
+  <script type="text/javascript">
+
+    var console;
+
+    var bridge = window.opener.channelsBridge;
+    var util = bridge.util;
+    var topics = bridge.topics;
+    var networks = bridge.networks;
+    var getChannels = bridge.getChannels;
+    var selectedNetworkId = null;
+
+    function load ( ) {
+      displayNetworks ( networks );
+      if ( air.Introspector ) {
+        console = air.Introspector.Console;
+      }
+    }
+
+    function displayNetworks ( networks ) {
+      var n = get( "networksList" );
+      n.innerHTML = "";
+      if ( networks && networks.length ) {
+        var r = ['<select id="selectNetwork" onchange="selectNetwork( event );">'];
+        r.push( '<option selected="selected" disabled="disabled">Select a network</option>' );
+        for ( var i = 0; i < networks.length; i++ ) {
+          r.push( getNetworkHTML( networks[ i ] ) ); 
+        }
+        r.push('</select>');
+        n.innerHTML = r.join( "" );
+      } else {
+        n.innerHTML = "You have not created any networks.";
+      }
+    }
+
+    function getNetworkHTML ( network ) {
+      return [
+        '<option value="', network.id, '",>', network.name, '</option> ',
+      ].join( "" );
+    }
+
+    function selectNetwork ( event ) {
+      var n = event.target;
+      var networkId = n.options[ n.selectedIndex ].value;
+      selectedNetworkId = networkId;
+      getChannels( networkId, listChannels );
+    }
+
+    function listChannels ( channels ) {
+      var networkName = getNetworkName( selectedNetworkId );
+      if ( networkName ) {
+        get( "networkName" ).innerHTML = networkName;
+      } else {
+        return;
+      }
+      var n = get( "channelList" );
+      if ( !channels || !channels.length ) {
+        n.innerHTML = "No channels currently added for network.";
+      } else {
+        var r = [];
+        for ( var i = 0; i < channels.length; i++ ) {
+          r.push( getChannelHTML( channels[ i ] ) ); 
+        }
+        n.innerHTML = r.join( "" );
+      }
+      showChannelInfo( );
+    }
+
+    function getNetworkName( id ) {
+      for ( var i = 0; i < networks.length; i++ ) {
+        var network = networks[ i ];
+        if ( id == network.id ) {
+          return network.name;
+        }
+      }
+      return null;
+    }
+
+    function getChannelHTML( channel ) {
+      return [
+        '<div><span class="channelname">', channel.name, '</span> ',
+        '<a href="#" id="delete.', channel.id, '">Delete</a> ',
+        '</div>'].join( "" );
+    }
+
+    function showChannelInfo ( ) {
+      n = get( "channelInfo" );
+      util.remClass( n, "hidden" );
+    }
+
+    function clearForm ( ) {
+      get( "name" ).value = "";
+      get( "id" ).value = "0";
+    }
+
+    function deselectChannel ( ) {
+      get( "selectNetwork" ).selectedIndex = 0;
+      n = get( "channelInfo" );
+      selectedNetworkId = null;
+      util.addClass( n, "hidden" );
+      util.addClass( get( "form" ), "hidden" );
+    }
+
+    function saveChannel ( event ) {
+      util.stopEvent( event );
+      util.log( "Saving channel." );
+      var channelData = {};
+      //get prefs
+      var id = parseInt( get( "id" ).value, 10 );
+      channelData.networkId = parseInt( get( "networkId" ).value, 10 );
+      if ( !this.getItem( "name", "Channel name", channelData ) ) return;
+      if ( !this.getItem( "autoJoin", "Auto join", channelData, true ) ) return;
+      if ( id === 0 ) {
+        util.publish( topics.CHANNEL_ADD, [ channelData ] );
+      }  
+      deselectChannel( );
+    }
+
+    function closeForm ( event ) {
+      util.stopEvent( event );
+      util.addClass( get( "form" ), "hidden" );
+    }
+
+    function showForm ( ) {
+      if ( selectedNetworkId ) {
+        get( "networkId" ).value = selectedNetworkId;
+        util.remClass( get( "form" ), "hidden" );
+      }
+    }
+
+    function getItem( id, name, o, isCheckbox ) {
+      if ( isCheckbox ) {
+        var value = get( id ).checked;
+        if ( value === true || value === false ) {
+          o[ id ] = value;
+          return true;
+        }
+      }
+      var value =  get( id ).value;
+      value = util.trim( value );
+      if ( !value ) {
+        alert( name + " required." );
+        return false;
+      }
+      o[ id ] = value;
+      return true;
+    }
+
+    function get ( name ) {
+      return util.get( name, document );
+    }
+
+    function handleListClick ( event ) {
+      var id = event.target.id;
+      if ( id ) {
+        var parts = id.split( "." );
+        if ( parts.length ) {
+          var cmd = parts[ 0 ];
+          var id = parts [ 1 ];
+          if ( cmd == "delete" ) {
+            deleteChannel( id );
+          }
+        }
+      }
+    }
+
+    function deleteChannel ( id ) {
+      util.publish( topics.CHANNEL_DELETE, [ id ] );
+      deselectChannel( );
+    }
+
+    function showAddForm ( event ) {
+      util.stopEvent( event );
+      clearForm( );
+      showForm( );
+    }
+
+    function closeWindow ( event ) {
+      util.stopEvent( event );
+      window.close( );
+    }
+
+  </script>
+</body>
+</html>
+
+
+
+
+
+

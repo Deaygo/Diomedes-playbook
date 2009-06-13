@@ -34,9 +34,19 @@ if ( window.runtime && air && util ) {
     util.subscribe( topics.NETWORK_DELETE, this, "handleNetworksDelete", [] );
     util.subscribe( topics.SERVER_ADD, this, "handleServerAdd", [] );
     util.subscribe( topics.SERVER_DELETE, this, "handleServerDelete", [] );
+    util.subscribe( topics.CHANNEL_ADD, this, "handleChannelAdd", [] );
+    util.subscribe( topics.CHANNEL_DELETE, this, "handleChannelDelete", [] );
   }
 
   _ccp = controller.Controller.prototype;
+
+  _ccp.handleChannelDelete = function ( id ) {
+    this.model.networks.remChannel( id );
+  }
+
+  _ccp.handleChannelAdd = function ( data ) {
+    this.model.networks.addChannel( data.networkId, data.name, data.autoJoin );
+  }
 
   _ccp.handleServerDelete = function ( id ) {
     this.model.networks.remServer( id );

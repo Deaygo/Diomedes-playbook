@@ -256,6 +256,24 @@ if ( window.runtime && air && util ) {
     util.log( "destroying view" );
     this.input.destroy();
   }
+  
+  _vvp.openChannelsWindow = function ( networks ) {
+    if ( !networks ) networks = {};
+    window.channelsBridge = {
+      util : util,
+      topics : topics,
+      networks : networks,
+      getChannels : util.hitch( this.model.networks, "getChannels" ),
+    }
+    var x = window.nativeWindow.x + 150;
+    var y = window.nativeWindow.y + 100;
+    var win = window.open("channels.html", "channelsWindow", "height=400, width=500, top=" + y + ", left=" + x);
+    win = win.nativeWindow;
+  }
+
+  _vvp.handleChannelsBtnClick = function ( e ) {
+    this.model.networks.getNetworks( util.hitch( this, "openChannelsWindow" ) );
+  }
 
   _vvp.openServersWindow = function ( networks ) {
     if ( !networks ) networks = {};
