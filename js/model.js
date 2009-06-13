@@ -58,11 +58,11 @@ if ( window.runtime && air && util ) {
       return;
     }
     if ( this.connLocked ) {
-      util.log( "Connection locked.");
+      this.log( "Connection locked.");
       window.setTimeout( util.hitch( this, "_executeSQL", [ sql, type, resultsHandler, parameters, errorHandler ] ), 1 );
       return;
     } 
-    util.log("executing begins");
+    this.log("executing begins");
     this.connLocked = true;
     var s = new air.SQLStatement( ); 
     s.sqlConnection = this.conn; 
@@ -99,12 +99,17 @@ if ( window.runtime && air && util ) {
     resultsHandler( result.data );
   }
 
+  _mmp._getFilterResult = function ( e, results, resultsHandler ) {
+    //filters the event, and returns just the data;
+    resultsHandler( results.data );
+  }
+
   _mmp._getResultHandler = function ( resultsHandler ) {
     return util.hitch( this, "_getFilterResult", [ resultsHandler ] );
   }
 
   _mmp._createTable = function ( name, types, resultsHandler, parameters, errorHandler ) {
-    util.log("createTable mmp");
+    this.log("createTable mmp");
     var sql = [];
     sql = sql.concat( [ "CREATE TABLE IF NOT EXISTS ", name, " (" ] );  
     for ( var name in types ) {
@@ -118,7 +123,7 @@ if ( window.runtime && air && util ) {
 
   _mmp._handleError = function ( e, msg ) {
     //console.dump(arguments);
-    util.log("error");
+    this.log("error");
     this.log("Error message:", e.error.message); 
     this.log("Details:", e.error.details); 
   }
@@ -128,7 +133,7 @@ if ( window.runtime && air && util ) {
   }
 
   _mmp.closeConnection = function ( ) {
-    util.log("close connection");
+    this.log("close connection");
     if ( this.conn && this.conn.connected ) {
       this.conn.close( );
     }
@@ -202,6 +207,7 @@ if ( window.runtime && air && util ) {
   }
 
   _mnp.getNetworks = function ( resultsHandler ) {
+    util.log("getNetworks");
     var sql = "SELECT * FROM networks";
     var p = {};
     this.model._executeSQL( sql, air.SQLMode.READ, this.model._getResultHandler( resultsHandler ), p ); 

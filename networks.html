@@ -2,46 +2,21 @@
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html> 
 <head> 
-  <title>Diomedes - Preferences</title> 
+  <title>Diomedes - Networks</title> 
   <link rel="stylesheet" type="text/css" media="screen" href="css/view.css" />
   <link rel="stylesheet" type="text/css" media="screen" href="css/forms.css" />
 </head> 
 <body class="prefWindow popUpWindow" onLoad="prefLoad( )"> 
-  <h1>Preferences</h1>
-  <form onsubmit="savePrefs()">
+  <h1>Networks</h1>
+  <a href="#" onclick="showForm( e );">Add a Network</a>
+  <form onsubmit="saveNetworks()">
     <div class="formItem">
       <label for="nick">Nick: </label> <input type="text" id="nick" />
     </div>
-    <div class="formItem">
-      <label for="altNick">Alternate nick: </label> <input type="text" id="altNick" />
-    </div>
-    <div class="formItem">
-      <label for="userName">Username: </label> <input type="text" id="userName" />
-    </div>
-    <div class="formItem">
-      <label for="realName">Real name: </label> <input type="text" id="realName" />
-    </div>
-    <div class="formItem">
-      <label for="finger">Finger (shows up for a CTCP finger): </label> <input type="text" id="finger" />
-    </div>
-    <div class="formItem">
-      <label for="historyLength">History Length: </label> <input type="text" id="historyLength" />
-    </div>
-    <div class="formItem">
-      <label for="theme">Theme: </label> <input type="text" id="theme" />
-    </div>
-    <div class="formItem">
-      <label for="pollTime">Connection reconnect wait (seconds): </label> <input type="text" id="pollTime" />
-    </div>
-    <div class="formItem">
-      <label for="font">Font: </label> <input type="text" id="font" />
-    </div>
-    <div class="formItem">
-      <label for="fontSize">Font size: </label> <input type="text" id="fontSize" />
-    </div>
     <input type="submit" value="Save" />
-    <button onclick="closePrefs( );">Close</button>
+    <button onclick="closeForm( );">Close</button>
   </form>
+  <script type="text/javascript" src="js/AIRIntrospector.js"></script> 
   <script type="text/javascript">
 
     var bridge = window.opener.prefBridge;
@@ -82,6 +57,7 @@
   </script>
 </body>
 </html>
+
 
 
 

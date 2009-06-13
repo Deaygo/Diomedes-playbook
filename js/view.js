@@ -257,6 +257,27 @@ if ( window.runtime && air && util ) {
     this.input.destroy();
   }
 
+  _vvp.handleNetworksBtnClick = function ( e ) {
+    this.model.networks.getNetworks( util.hitch( this, "openNetworksWindow" ) );
+  }
+
+  _vvp.openNetworksWindow = function ( networks ) {
+    console.dump(networks);
+    return;
+    window.prefBridge = {
+      util : util,
+      topics : topics,
+      preferences : this.model.prefs.getPrefs( ),
+      networks : networks,
+    }
+    var x = window.nativeWindow.x + 150;
+    var y = window.nativeWindow.y + 100;
+    var win = window.open("networks.html", "networksWindow", "height=400, width=500, top=" + y + ", left=" + x);
+    win = win.nativeWindow;
+    //win.addEventListener( air.Event.CLOSE, util.hitch( this.model.prefs, "savePrefs" )  ); 
+  }
+
+
   _vvp.handlePrefBtnClick = function ( e ) {
     var prefs = this.model.prefs.getPrefs( );
     window.prefBridge = {
