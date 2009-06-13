@@ -216,6 +216,7 @@ if ( window.runtime && air && util ) {
   }
 
   _mnp.addNetwork = function ( name, nick, altNick, userName, realName, finger, autoJoin, active ) {
+    util.log("adding network.");
     var sql = "INSERT INTO networks ( name, nick, altNick, userName, realName, finger, autoJoin, active ) " +
       "Values ( :name, :nick, :altNick, :userName, :realName, :finger, :autoJoin, :active )";
     var p = {
@@ -232,6 +233,7 @@ if ( window.runtime && air && util ) {
   }
 
   _mnp.editNetwork = function ( id, name, nick, altNick, userName, realName, finger, autoJoin, active ) {
+    util.log("Edit network.");
     var sql = "UPDATE networks SET name = :name, nick = :nick, altNick = :altNick, userName = :userName, " + 
       "realName = :realName, finger = :finger, autoJoin = :autoJoin, active = :active  " +
       "WHERE id = :id ";
@@ -250,6 +252,7 @@ if ( window.runtime && air && util ) {
   }
 
   _mnp.remNetwork = function ( id ) {
+    util.log("Removing network.");
     var sql;
     var p = { id : id };
     sql = "DELETE FROM networks WHERE id = :id";

@@ -102,9 +102,22 @@
         closeWindow( event );
         return;
       } else {
+        networkData.id = id;
+        updateNetworks( networkData );
         util.publish( topics.NETWORK_EDIT, [ id, networkData ] );
       }
       closeForm( event );
+    }
+
+    function updateNetworks ( network ) {
+      for ( var i = 0; i < networks.length; i++ ) {
+        var temp = networks[ i ];
+        if ( temp.id == network.id ) {
+          networks[ i ] = network;
+          displayNetworks( networks );
+          return;
+        }
+      }
     }
 
     function closeForm ( event ) {
@@ -117,7 +130,6 @@
     }
 
     function getItem( id, name, o, isCheckbox ) {
-      util.log( "id: " + id );
       if ( isCheckbox ) {
         var value = get( id ).checked;
         if ( value === true || value === false ) {
@@ -127,7 +139,6 @@
       }
       var value =  get( id ).value;
       value = util.trim( value );
-      util.log( "value: " + value );
       if ( !value ) {
         alert( name + " required." );
         return false;
