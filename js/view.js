@@ -267,7 +267,7 @@ if ( window.runtime && air && util ) {
     }
     var x = window.nativeWindow.x + 150;
     var y = window.nativeWindow.y + 100;
-    var win = window.open("performs.html", "performsWindow", "height=400, width=500, top=" + y + ", left=" + x);
+    var win = window.open("performs.html", "performsWindow", "height=400, width=600, top=" + y + ", left=" + x);
     win = win.nativeWindow;
   }
 
@@ -285,7 +285,7 @@ if ( window.runtime && air && util ) {
     }
     var x = window.nativeWindow.x + 150;
     var y = window.nativeWindow.y + 100;
-    var win = window.open("channels.html", "channelsWindow", "height=400, width=500, top=" + y + ", left=" + x);
+    var win = window.open("channels.html", "channelsWindow", "height=500, width=500, top=" + y + ", left=" + x);
     win = win.nativeWindow;
   }
 
@@ -303,7 +303,7 @@ if ( window.runtime && air && util ) {
     }
     var x = window.nativeWindow.x + 150;
     var y = window.nativeWindow.y + 100;
-    var win = window.open("servers.html", "serversWindow", "height=400, width=500, top=" + y + ", left=" + x);
+    var win = window.open("servers.html", "serversWindow", "height=500, width=500, top=" + y + ", left=" + x);
     win = win.nativeWindow;
   }
 
@@ -324,7 +324,7 @@ if ( window.runtime && air && util ) {
     }
     var x = window.nativeWindow.x + 150;
     var y = window.nativeWindow.y + 100;
-    var win = window.open("aliases.html", "aliasesWindow", "height=400, width=500, top=" + y + ", left=" + x);
+    var win = window.open("aliases.html", "aliasesWindow", "height=400, width=600, top=" + y + ", left=" + x);
     win = win.nativeWindow;
   }
 

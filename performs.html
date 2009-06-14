@@ -111,6 +111,7 @@
     function getPerformHTML( perform ) {
       return [
         '<div><span class="performname">', perform.name, '</span> ',
+        '<span class="command">', perform.command, '</span> ',
         '<a href="#" id="delete.', perform.id, '">Delete</a> ',
         '</div>'].join( "" );
     }
