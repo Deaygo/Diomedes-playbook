@@ -181,6 +181,14 @@ if ( window.runtime && air ) {
     }
   }
   
+  util.fromIndex = function ( arr, index ) {
+    if ( arr.length && arr.length > index ) {
+      return arr[index];
+    } else {
+      return null;
+    }
+  }
+
   util.Timer = function ( ) {
     this.startTime = null;
     this.endTime = null;

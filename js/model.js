@@ -226,6 +226,7 @@ if ( window.runtime && air && util ) {
       active : active 
     }
     this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
+    util.publish( topics.NETWORK_CHANGE, [ null ] );
   }
 
   _mnp.editNetwork = function ( id, name, nick, altNick, userName, realName, finger, autoJoin, active ) {
@@ -245,6 +246,7 @@ if ( window.runtime && air && util ) {
       active : active 
     }
     this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
+    util.publish( topics.NETWORK_CHANGE, [ id ] );
   }
 
   _mnp.remNetwork = function ( id ) {
@@ -259,6 +261,7 @@ if ( window.runtime && air && util ) {
     this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
     sql = "DELETE FROM performs WHERE networkId = :id";
     this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
+    util.publish( topics.NETWORK_CHANGE, [ null ] );
     //rem servers, channels and performs too
   }
 
@@ -277,6 +280,7 @@ if ( window.runtime && air && util ) {
       active : active,
     }
     this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
+    util.publish( topics.NETWORK_CHANGE, [ networkId ] );
   }
 
   _mnp.editServer = function ( id, networkId, name, autoJoin, active ) {
@@ -290,12 +294,14 @@ if ( window.runtime && air && util ) {
       active : active 
     }
     this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
+    util.publish( topics.NETWORK_CHANGE, [ networkId ] );
   }
 
   _mnp.remServer = function ( id ) {
     var sql = "DELETE FROM servers WHERE id = :id";
     var p = { id : id };
     this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
+    util.publish( topics.NETWORK_CHANGE, [ networkId ] );
   }
 
   _mnp.getChannels = function ( networkId, resultsHandler ) {
@@ -309,12 +315,14 @@ if ( window.runtime && air && util ) {
       "VALUES ( :networkId, :name, :autoJoin )";
     p = { networkId : networkId, name : name, autoJoin : autoJoin };
     this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
+    util.publish( topics.NETWORK_CHANGE, [ networkId ] );
   }
 
   _mnp.remChannel = function ( id ) {
     var sql = "DELETE FROM channels WHERE id = :id";
     p = { id : id };
     this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
+    util.publish( topics.NETWORK_CHANGE, [ networkId ] );
   }
 
   _mnp.getPerforms = function ( networkId, resultsHandler ) {
@@ -335,6 +343,7 @@ if ( window.runtime && air && util ) {
       active : active
     }
     this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
+    util.publish( topics.NETWORK_CHANGE, [ networkId ] );
   }
 
   _mnp.editPerform = function ( id, networkId, name, command, active ) {
@@ -348,12 +357,14 @@ if ( window.runtime && air && util ) {
       active : active
     }
     this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
+    util.publish( topics.NETWORK_CHANGE, [ networkId ] );
   }
 
   _mnp.remPerform = function ( id ) {
     var sql = "DELETE FROM performs WHERE id = :id";
     var p = { id : id };
     this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
+    util.publish( topics.NETWORK_CHANGE, [ networkId ] );
   }
 
   _mnp._handleCreateTable = function ( e, tableName ) {

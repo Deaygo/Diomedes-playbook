@@ -12,6 +12,8 @@ if(!topics) {
     CHANNEL_SELECTED: "/channel/selected/",
     CHANNEL_ACTIVITY: "/channel/activity/",
 
+    CONNECTION_DISCONNECTED: "/connection/disconnected",
+
     USER_ACTIVITY: "/user/activity",
     USER_INPUT: "/user/input/",
     USER_HIGHLIGHT: "/user/highlight/",
@@ -22,6 +24,7 @@ if(!topics) {
     NETWORK_ADD: "/network/add/",
     NETWORK_EDIT: "/network/edit/",
     NETWORK_DELETE: "/network/delete/",
+    NETWORK_CHANGE: "/network/change/",
 
     SERVER_ADD: "/server/add/",
     SERVER_EDIT: "/server/edit/",

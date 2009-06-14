@@ -350,5 +350,78 @@ if ( window.runtime && air && util ) {
     //TODO: destroy connections;
   }
 
+  controller.NetworkController = function ( networkData, channelList, pollTime ) {
+    this.channelList = channelList;
+    this.pollTime = pollTime;
+    this.servers = networkData.servers;
+    this.channels = networkData.channels;
+    this.performs = networkData.performs;
+    this.performsProgress = 0;
+    this.connection = null;
+    this.currentHostIndex = null;
+    this.currentHost = null;
+    util.subscribe( topics.CONNECTION_DISCONNECTED, this, "handleDisconnect" ) ;
+  }
+
+  var _cnc = controller.NetworkController.prototype;
+
+  _cnc.handleDisconnect = function ( host ) {
+    if ( this.pollTime && host == this.currentHost ) {
+      window.setTimeOut( util.hitch( this, "connect" ), this.pollTime );
+    }
+  }
+
+  _cnc.connect = function ( ) {
+    var parts = this.getNextServer( ).split( ":" );
+    this.currentHost = util.fromIndex( parts, 0 );
+    var port = util.fromIndex( parts, 1 );
+    this.channelList.createNewConnection( this.currentHost, port, this.model.prefs.getPrefs( ) );
+    this.connection = this.channelList.getConnection( this.currentHost );
+  }
+
+  _cnc.getNextServer = function ( ) {
+    if ( this.currentHostIndex === null || this.currentHostIndex == ( this.servers.length - 1 ) ) {
+      this.currentHostIndex = 0;
+    } else {
+      do {
+        this.currentHostIndex++;
+      } while ( !this.servers[ this.currentHostIndex ].active );
+    }
+    return this.getServer( );
+  }
+
+  _cnc.getHost = function ( ) {
+    return this.currentHost;
+  }
+
+  _cnc.getServer = function ( ) {
+    return this.servers[ this.currentHostIndex ].name;
+  }
+
+  _cnc.getConnection = function ( ) {
+    return this.connection;
+  }
+
+  _cnc.joinDefaultChannels = function ( ) {
+    var channels = this.channels;
+    if ( channels.length ) {
+      util.publish( topics.USER_INPUT, [ "/join " + channels.join(", ") ] );
+    }
+  }
+
+  _cnc.perform = function ( ) {
+    var performs = this.performs;
+    if ( this.performsProgress >= performs.length ) {
+      this.joinDefaultChannels( );
+      this.performsProgress = 0;
+      return;
+    }
+    this.currentConnection
+    util.publish( topics.USER_INPUT, [ util.fromIndex( performs, this.performsProgress ) ] );
+    this.performsProgress++;
+    window.setTimeout( util.hitch( this, "perform" ), 1000 );
+  }
+
+
 }
 
