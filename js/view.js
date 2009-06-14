@@ -61,7 +61,7 @@ if ( window.runtime && air && util ) {
       this.activityWindows[ serverName ] = {};
     }
     if ( !( channelName in this.activityWindows[ serverName ] ) ) {
-      this.activityWindows[ serverName ][ channelName ] = new view.ActivityWindow( serverName, channelName );
+      this.activityWindows[ serverName ][ channelName ] = new view.ActivityWindow( serverName, channelName, this.model.prefs.getPrefs().historyLength );
     }
     this.activeWin = this.activityWindows[ serverName ][ channelName ];
     if ( this.activityWindow.childNodes.length ) {
@@ -348,7 +348,6 @@ if ( window.runtime && air && util ) {
 
 
   _vvp.handlePrefBtnClick = function ( e ) {
-    var prefs = this.model.prefs.getPrefs( );
     window.prefBridge = {
       util : util,
       topics : topics,
@@ -535,7 +534,7 @@ if ( window.runtime && air && util ) {
     delete this.form;
   }
 
-  view.ActivityWindow = function ( serverName, channelName ) {
+  view.ActivityWindow = function ( serverName, channelName, maxItems ) {
     this.linkRegex = /(https?:\/\/\S+)\s?/g;
     this.colorCode = String.fromCharCode( 003 );
     this.normalCode = String.fromCharCode( 017 );
@@ -566,12 +565,25 @@ if ( window.runtime && air && util ) {
     this.channelName = channelName;
     this.isInStyle = false;
     this.isInBold = false;
-    this.MAX_ITEMS = 500;
+    this.maxItems = maxItems;
+    util.subscribe( topics.PREFS_CHANGE_HISTORY_LENGTH, this, "handleChangeHistoryLength", [] );
   }
 
   _vap = view.ActivityWindow.prototype;
 
   _vap.setContents = _vvp.setContents;
+
+  _vap.handleChangeHistoryLength = function ( newLen ) {
+    this.maxItems = newLen;
+    window.setTimeout( util.hitch( this, "shrinkActivity", [ newLen ] ), 0 );
+  }
+
+  _vap.shrinkActivity = function ( len ) {
+    var w = this.win;
+    for ( var i = this.win.childNodes.length; i > len; i-- ) {
+      w.removeChild( w.firstChild );
+    }
+  }
 
   _vap.clear = function ( ) {
     this.win.innerHTML = "";
@@ -587,8 +599,8 @@ if ( window.runtime && air && util ) {
     }
     if ( !messages || !messages.length) return;
     var r = [], msg;
-    for ( var i = 0; i < messages.length; i++ ) {
-      msg = messages[i];
+    while ( messages.length ) {
+      msg = messages.shift( );
       var newMsg = msg.getDisplay( );
       if ( !newMsg ) {
         var showBrackets = true;
@@ -688,6 +700,10 @@ if ( window.runtime && air && util ) {
               '</span> ',
             '</div>'
         ] );
+        var childNodes = w.childNodes;
+        if ( childNodes.length > this.maxItems ) {
+          w.removeChild( w.firstChild );
+        }
         var n = document.createElement("div");
         n.innerHTML = newMsg.join( "" );
         w.appendChild( n );

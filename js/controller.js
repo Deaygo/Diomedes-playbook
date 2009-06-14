@@ -122,7 +122,7 @@ if ( window.runtime && air && util ) {
             connection.connect( );
             this.handleChannelSelect( host, "SERVER",  null );
           } else {
-            this.channelList.createNewConnection( host, port, [], nick, nick, nick );
+            this.channelList.createNewConnection( host, port, this.model.prefs.getPrefs( ) );
             if ( !this.currentConnection ) {
               this.currentConnection = this.channelList.getConnection( host );
               this.setCurrentChannel( this.currentConnection.getServerChannel( ) );
@@ -159,9 +159,6 @@ if ( window.runtime && air && util ) {
         this.queryCurrentChannel( );
       } else {
         //hand command over to currentConnection
-        if ( cmd == "nick" && argsR && argsR.length ) {
-          this.defaultNick == argsR[0];
-        }
         if ( this.currentConnection ) {
           this.currentConnection.sendCommand( cmd, argsR, this.getCurrentChannelName( ) );
         }

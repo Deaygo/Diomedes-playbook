@@ -109,6 +109,16 @@ if ( window.runtime && air ) {
     node.setAttribute( "class", keep.join( " " ) );
   }
 
+  util.cloneObject = function ( o ) {
+    var newO = {};
+    for ( var key in o ) {
+      if ( o.hasOwnProperty( key ) && key != "prototype" ) {
+        newO[ key ] = o[ key ];
+      }
+    }
+    return newO;
+  }
+
   util.get = function ( id, doc ) {
     if ( !doc ) {
       doc = document;

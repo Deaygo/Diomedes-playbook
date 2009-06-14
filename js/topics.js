@@ -17,6 +17,7 @@ if(!topics) {
     USER_HIGHLIGHT: "/user/highlight/",
 
     PREFS_SAVE: "/prefs/save/",
+    PREFS_CHANGE_HISTORY_LENGTH: "/prefs/change/history/length/",
 
     NETWORK_ADD: "/network/add/",
     NETWORK_EDIT: "/network/edit/",

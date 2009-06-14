@@ -61,6 +61,10 @@ if ( window.runtime && air && util ) {
 
   var _icp = irc.Client.prototype;
 
+  _icp.getNick = function ( ) {
+    return this.nick;
+  }
+
   _icp.setJoinDelegate = function ( del ) {
     //delegate signature must be
       //joinDelegate(nick, host, target)
@@ -109,7 +113,8 @@ if ( window.runtime && air && util ) {
   }
   _icp.setConnectionDelegate = function ( del ) {
     //delegate signature must be:
-    // connectionDelegate( msg, connected )
+    //nickInUse is a boolean and only is triggered when first joining
+    // connectionDelegate( msg, connected, nickInUse )
     this.connectionDelegate = del;
   }
   _icp.setTopicDelegate = function ( del ) {
@@ -147,13 +152,15 @@ if ( window.runtime && air && util ) {
     var status_ = this.socketMonitor.available;
     if ( this.stayConnected && !this.isConnected ) {
       this._connect( );
-      this.connectionDelegate( "Connecting to server.", false );
+      if ( this.connectionDelegate ) {
+        this.connectionDelegate( "Connecting to server.", false, false );
+      }
     } else if ( !status_ && this.stayConnected && this.isConnected ) {
       this.connectionEstablished = false;
       this.connectionAccepted = false;
       this.isConnected = false;
       if ( this.connectionDelegate ) {
-        this.connectionDelegate( "Disconnected from server.", false );
+        this.connectionDelegate( "Disconnected from server.", false, false );
       }
     }
   }
@@ -250,8 +257,8 @@ if ( window.runtime && air && util ) {
       msg = null;
     }
     var cmdParts = line.split( " " );
-    if ( !this.connectionAccepted && ( line.search( "433" ) != -1 ) ) {
-        this.connectionDelegate( "Nickname is alread in use. Type /nick newNick to change it.", true );
+    if ( !this.connectionAccepted && ( line.search( "433" ) != -1 ) && this.connectionDelegate ) {
+        this.connectionDelegate( "Nickname is alread in use. Type /nick newNick to change it.", true, true );
     }
     if ( !this.connectionAccepted && ( line.search( "001" ) != -1 ) ) {
       this.host = this.getIndex( cmdParts, 0 );
@@ -264,7 +271,7 @@ if ( window.runtime && air && util ) {
       this.log( "host: " + this.host );
       this.connectionAccepted = true;
       if ( this.connectionDelegate ) {
-        this.connectionDelegate( "Connected to server.", true );
+        this.connectionDelegate( "Connected to server.", true, false );
       }
     }
     var host = this.getIndex( cmdParts, 0 );
@@ -338,6 +345,9 @@ if ( window.runtime && air && util ) {
   _icp.NICK = function ( nick, host, cmd, target, msg ) {
     if ( this.nickDelegate && nick && msg ) {
       this.nickDelegate( nick, host, msg );
+    }
+    if ( nick == this.nick && msg ) {
+      this.nick = msg;
     }
   }
 
@@ -683,7 +693,7 @@ if ( window.runtime && air && util ) {
       if ( msg ) {
         quitMsg += msg;
       }
-      this.connectionDelegate( quitMsg, false );
+      this.connectionDelegate( quitMsg, false, false );
     }
     if ( this.socketMonitor && this.socketMonitor.running ) {
       this.socketMonitor.stop( );

@@ -4,27 +4,29 @@
 
 var connection;
 
-if(!connection) {
+if ( !connection ) {
   connection = {};
 }
 
-if(window.runtime && air && util) {
+if ( window.runtime && air && util ) {
   //requires AIR and util
   
-  connection.CHANNEL_TYPES = { "SERVER":"server", "PM":"pm", "CHANNEL":"channel"}
+  connection.CHANNEL_TYPES = { "SERVER":"server", "PM":"pm", "CHANNEL":"channel" }
   
-  connection.Connection = function (server, port, defaultChannels, nick, userName, realName) {
+  connection.Connection = function ( server, port, preferences ) {
 
+    var nick = preferences.nick;
     this.channels = {};
     this.users = {};
-    this.nick = nick;
+    this.preferences = preferences;
     this.host = "";
-    this.users[nick] = new connection.User( nick, "" ); 
+    this.users[ nick ] = new connection.User( nick, "" ); 
     this.server = server;
     this.serverChannel = null;
     this.port = port;
+    this.altNickTries = 0;
 
-    this.client = new irc.Client(server, port, defaultChannels, nick, userName, realName);
+    this.client = new irc.Client( server, port, [], nick, preferences.userName, preferences.realName );
 
     //set delegates
     this.client.setConnectionDelegate(util.hitch(this,"handleConnection"));
@@ -45,8 +47,7 @@ if(window.runtime && air && util) {
   _cnp = connection.Connection.prototype;
 
   _cnp.getNick = function ( ) {
-    var nick = this.nick;
-    return nick;
+    return this.client.getNick( );
   }
 
   _cnp.getUser = function (nick) {
@@ -58,10 +59,11 @@ if(window.runtime && air && util) {
 
   _cnp.addActivityToChannel = function( target, msg ) {
     var isPM = false;
+    var _nick = this.getNick( );
     //determine if channel or PM first
     if ( target[0] != "#" && target[0] != "&" ) {
       isPM = true;
-      if ( msg.nick != this.nick ) {
+      if ( msg.nick != _nick ) {
         var channelName = this.getChannelName( msg.nick );
       } else {
         var channelName = this.getChannelName( target );
@@ -83,7 +85,7 @@ if(window.runtime && air && util) {
         this.users[ target ] = new connection.User( target, "" );
       }
       channel.addUser( this.users[ target ] );
-      channel.addUser( this.users[ this.nick ] );
+      channel.addUser( this.users[ _nick ] );
       channel.publishUserActivity( );
     }
     delete msg;
@@ -95,8 +97,12 @@ if(window.runtime && air && util) {
     util.publish(topics.CHANNELS_CHANGED, []);
   }
 
-  _cnp.handleConnection = function ( msg, connected ) {
+  _cnp.handleConnection = function ( msg, connected, nickInUse ) {
     var msg_ = new connection.ActivityItem("server", null, null, msg);
+    if ( nickInUse && this.getNick( ) != this.preferences.altNick && !this.altNickTries ) {
+      this.altNickTries = 1;
+      this.client.changeNick( this.preferences.altNick );
+    }
     if ( !connected ) {
       for ( var target in this.channels ) {
         this.channels[ target ].addActivity( msg_ );
@@ -180,7 +186,7 @@ if(window.runtime && air && util) {
     util.log( "handling kick nick: "  + nick + " kickedNick: " + kickedNick );
     var msg = new connection.ActivityItem( "kick", nick, target, msg );
     msg.setAltNick( kickedNick );
-    if ( kickedNick != this.nick ) {
+    if ( kickedNick != this.getNick( ) ) {
       this.remUserFromChannel( kickedNick, target );
       this.addActivityToChannel( target, msg );
     } else {
@@ -202,7 +208,7 @@ if(window.runtime && air && util) {
   }
 
   _cnp.handleMessage = function ( nick, host, target, msg ) {
-    //XXX: if target is this.nick and nick not a channel, open new channel
+    //XXX: if target is this.getNick( ) and nick not a channel, open new channel
     var msg = new connection.ActivityItem( "privmsg", nick, target, msg );
     if ( this.referencesUser( msg.msg, target, nick ) ) {
       msg.setReferencesUser( );
@@ -211,10 +217,11 @@ if(window.runtime && air && util) {
   }
 
   _cnp.referencesUser = function ( msg, target, nick ) {
-    if ( msg && msg.length && ( nick != this.nick ) ) { 
-      var referencesUser = ( msg.search( this.nick.split("-").join("\\-").split( "|" ).join( "\\|" ).split( "^" ).join( "\\^" ) ) != -1 );
+    var _nick = this.getNick( );
+    if ( msg && msg.length && ( nick != _nick ) ) { 
+      var referencesUser = ( msg.search( _nick.split("-").join("\\-").split( "|" ).join( "\\|" ).split( "^" ).join( "\\^" ) ) != -1 );
       if ( referencesUser ) {
-        util.publish( topics.USER_HIGHLIGHT, [ this.getChannelName( target ), this.server, this.nick ] );
+        util.publish( topics.USER_HIGHLIGHT, [ this.getChannelName( target ), this.server, _nick ] );
         return true;
       }
     }
@@ -281,18 +288,20 @@ if(window.runtime && air && util) {
       util.publish( topics.CHANNELS_CHANGED, [ "nick", channelName, this.server, newChannelName ] );
     }
 
-    if ( nick == this.nick ) {
-      this.nick = newNick;
+    if ( nick == this.getNick( ) ) {
+      this.serverChannel.addActivity( msg );
     }
+    delete msg;
   }
 
-  _cnp.handleServerMessage = function (host, msg, target) {
-    var msg = new connection.ActivityItem("server", null, target, msg);
+  _cnp.handleServerMessage = function ( host, msg, target ) {
+    var msg = new connection.ActivityItem( "server", null, target, msg );
     if ( target ) {
-      this.addActivityToChannel(target, msg);
+      this.addActivityToChannel( target, msg );
     } else {
-      this.serverChannel.addActivity(msg);
+      this.serverChannel.addActivity( msg );
     }
+    delete msg;
   }
 
   _cnp.getChannelName = function ( target ) {
@@ -432,7 +441,7 @@ if(window.runtime && air && util) {
       case "me":
         var msg = args.join( " " );
         this.client.sendAction( target, msg );
-        this.handleAction( this.nick, this.host, target, msg );
+        this.handleAction( this.getNick( ), this.host, target, msg );
         break;
       case "names":
         if ( target[0] == "#" ) {
@@ -450,7 +459,7 @@ if(window.runtime && air && util) {
           var target = args.shift( );
           var msg = args.join( " " );
           this.client.sendNotice( target, msg );
-          this.handleNotice( this.nick, this.host, target, msg );
+          this.handleNotice( this.getNick( ), this.host, target, msg );
         }
         break;
       case "topic":
@@ -473,7 +482,7 @@ if(window.runtime && air && util) {
   _cnp.sendMessage = function ( target, msg ) {
     if ( msg ) {
       this.client.sendPM( target, msg ); 
-      this.handleMessage( this.nick, this.host, target, msg );
+      this.handleMessage( this.getNick( ), this.host, target, msg );
     }
   }
 
@@ -718,15 +727,20 @@ if(window.runtime && air && util) {
   }
 
   //ActivityList Class
-  connection.ActivityList = function ( ) {
+  connection.ActivityList = function ( maxItems ) {
     this.messages = [];
-    this.maxMessages = 500; //XXX: should be a preference
+    this.maxItems = 500; //XXX: should be a preference
+    util.subscribe( topics.PREFS_CHANGE_HISTORY_LENGTH, this, "handleChangeHistoryLength", [] );
   }
 
   _cap = connection.ActivityList.prototype;
 
+  _cap.handleChangeHistoryLength = function ( newLen ) {
+    this.maxItems = newLen;
+  }
+
   _cap.addMessage = function ( msg ) {
-    if ( this.messages.length >= this.maxMessages ) {
+    if ( this.messages.length >= this.maxItems ) {
       var t_msg = this.messages.shift( );
       delete t_msg;
     }

@@ -445,6 +445,7 @@ if ( window.runtime && air && util ) {
     this.preferences = {};
     this.preferencesChanges = new Date( ).getTime( );
     this.prefVersion = 0;
+    this.updated = true;
     this.getPrefs( );
   }
 
@@ -500,6 +501,8 @@ if ( window.runtime && air && util ) {
   }
 
   _mpp.getPrefs = function ( ) {
+    if ( !this.updated ) return util.cloneObject( this.preferences );
+    this.updated = false;
     var fileStream = new air.FileStream( ); 
     var file = this.getFile( );
     if ( file.exists ) {
@@ -508,17 +511,22 @@ if ( window.runtime && air && util ) {
       fileStream.close( );
       delete fileStream;
       this.preferences = this.getPrefsFromXML( xml );
-      return this.preferences;
+      return util.cloneObject( this.preferences );
     } else {
-      return this.createFile( );
+      return util.cloneObject( this.createFile( ) );
     }
   }
 
   _mpp.setPrefs = function ( prefs ) {
+    if ( !prefs ) return;
+    if ( prefs.historyLength != this.preferences.historyLength ) {
+      util.publish( topics.PREFS_CHANGE_HISTORY_LENGTH, [ prefs.historyLength ] );
+    }
     this.preferences = prefs;
   }
 
   _mpp.savePrefs = function ( ) {
+    this.updated = true;
     var fileStream = new air.FileStream( ); 
     fileStream.open( this.getFile( ), air.FileMode.WRITE ); //WRITE truncates
     var d = document.implementation.createDocument( "", "preferences", null );
