@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html> 
+<head> 
+  <title>Diomedes - Aliases</title> 
+  <link rel="stylesheet" type="text/css" media="screen" href="css/view.css" />
+  <link rel="stylesheet" type="text/css" media="screen" href="css/forms.css" />
+</head> 
+<body class="aliasWindow popUpWindow" onLoad="load( )"> 
+  <h1>Aliases</h1>
+  <div id="aliasesList" onclick="handleListClick( event );"></div>
+  <a href="#" onclick="showAddForm( event );">Add a Alias</a>
+  <form class="hidden" id="form" onsubmit="saveAliases( event );">
+    <input type="hidden" id="id" value="0"/>
+    <div class="formItem">
+      <label for="name">Name: </label> <input type="text" id="name" />
+    </div>
+    <div class="formItem">
+      <label for="nick">Command: </label> <input type="text" id="command" />
+    </div>
+    <div class="formItem">
+      <label for="active">Active: </label> <input type="checkbox" id="active"  checked="true"/>
+    </div>
+    <input type="submit" value="Save" />
+    <button onclick="closeForm( event );">Cancel</button>
+  </form>
+  <button onclick="closeWindow( event );">Close Window</button>
+  <script type="text/javascript">
+
+    var bridge = window.opener.aliasesBridge;
+    var util = bridge.util;
+    var topics = bridge.topics;
+    var aliases = bridge.aliases;
+
+    function load ( ) {
+      displayAliases ( aliases );
+    }
+
+    function displayAliases ( aliases ) {
+      var n = get( "aliasesList" );
+      n.innerHTML = "";
+      var r = [];
+      for ( var i = 0; i < aliases.length; i++ ) {
+        r.push( getAliasHTML( aliases[ i ] ) ); 
+      }
+      n.innerHTML = r.join( "" );
+    }
+
+    function getAliasHTML( alisas ) {
+      return [
+        '<div><span class="alisasName">', alisas.name, '</span> ',
+        '<a href="#" id="delete.', alisas.id, '">Delete</a> ',
+        '</div>'].join( "" );
+    }
+
+    function clearForm ( ) {
+      get( "name" ).value = "";
+      get( "command" ).value = "";
+      get( "id" ).value = "0";
+    }
+
+    function saveAliases ( event ) {
+      util.stopEvent( event );
+      util.log( "Saving Aliases." );
+      var alisasData = {};
+      var id = parseInt( get( "id" ).value, 10 );
+      if ( !this.getItem( "name", "Alias name", alisasData ) ) return;
+      if ( !this.getItem( "command", "Command", alisasData ) ) return;
+      if ( !this.getItem( "active", "Active", alisasData, true ) ) return;
+      if ( id === 0 ) {
+        util.publish( topics.ALIAS_ADD, [ alisasData ] );
+        closeWindow( event );
+        return;
+      } 
+      closeForm( event );
+    }
+
+    function updateAliases ( alisas ) {
+      for ( var i = 0; i < aliases.length; i++ ) {
+        var temp = aliases[ i ];
+        if ( temp.id == alisas.id ) {
+          aliases[ i ] = alisas;
+          displayAliases( aliases );
+          return;
+        }
+      }
+    }
+
+    function closeForm ( event ) {
+      util.stopEvent( event );
+      util.addClass( get( "form" ), "hidden" );
+    }
+
+    function showForm ( ) {
+      util.remClass( get( "form" ), "hidden" );
+    }
+
+    function getItem( id, name, o, isCheckbox ) {
+      if ( isCheckbox ) {
+        var value = get( id ).checked;
+        if ( value === true || value === false ) {
+          o[ id ] = value;
+          return true;
+        }
+      }
+      var value =  get( id ).value;
+      value = util.trim( value );
+      if ( !value ) {
+        alert( name + " required." );
+        return false;
+      }
+      o[ id ] = value;
+      return true;
+    }
+
+    function get ( name ) {
+      return util.get( name, document );
+    }
+
+    function handleListClick ( event ) {
+      var id = event.target.id;
+      if ( id ) {
+        var parts = id.split( "." );
+        if ( parts.length ) {
+          var cmd = parts[ 0 ];
+          var id = parts [ 1 ];
+          if ( cmd == "delete" ) {
+            deleteAlias( id );
+          }
+        }
+      }
+    }
+
+    function deleteAlias ( id ) {
+      util.publish( topics.ALIAS_DELETE, [ id ] );
+      var newAliases = [];
+      for ( var i = 0; i < aliases.length; i++ ) {
+        var alisas = aliases[ i ];
+        if ( alisas.id != id ) {
+          newAliases.push( alisas );
+        }
+      }
+      aliases = newAliases;
+      displayAliases( aliases );
+    }
+
+    function showAddForm ( event ) {
+      util.stopEvent( event );
+      clearForm( );
+      showForm( );
+    }
+
+    function closeWindow ( event ) {
+      util.stopEvent( event );
+      window.close( );
+    }
+
+  </script>
+</body>
+</html>
+
+
+
+
+

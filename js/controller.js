@@ -38,9 +38,19 @@ if ( window.runtime && air && util ) {
     util.subscribe( topics.CHANNEL_DELETE, this, "handleChannelDelete", [] );
     util.subscribe( topics.PERFORM_ADD, this, "handlePerformAdd", [] );
     util.subscribe( topics.PERFORM_DELETE, this, "handlePerformDelete", [] );
+    util.subscribe( topics.ALIAS_ADD, this, "handleAliasAdd", [] );
+    util.subscribe( topics.ALIAS_DELETE, this, "handleAliasDelete", [] );
   }
 
   _ccp = controller.Controller.prototype;
+
+  _ccp.handleAliasDelete = function ( id ) {
+    this.model.aliases.remAlias( id );
+  }
+
+  _ccp.handleAliasAdd = function ( data ) {
+    this.model.aliases.addAlias( data.name, data.command, data.active, 0 );
+  }
 
   _ccp.handlePerformDelete = function ( id ) {
     this.model.networks.remPerform( id );

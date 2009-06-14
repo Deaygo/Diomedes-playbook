@@ -258,7 +258,7 @@ if ( window.runtime && air && util ) {
   }
   
   _vvp.openPerformsWindow = function ( networks ) {
-    if ( !networks ) networks = {};
+    if ( !networks ) networks = [];
     window.performsBridge = {
       util : util,
       topics : topics,
@@ -276,7 +276,7 @@ if ( window.runtime && air && util ) {
   }
   
   _vvp.openChannelsWindow = function ( networks ) {
-    if ( !networks ) networks = {};
+    if ( !networks ) networks = [];
     window.channelsBridge = {
       util : util,
       topics : topics,
@@ -294,7 +294,7 @@ if ( window.runtime && air && util ) {
   }
 
   _vvp.openServersWindow = function ( networks ) {
-    if ( !networks ) networks = {};
+    if ( !networks ) networks = [];
     window.serversBridge = {
       util : util,
       topics : topics,
@@ -311,12 +311,29 @@ if ( window.runtime && air && util ) {
     this.model.networks.getNetworks( util.hitch( this, "openServersWindow" ) );
   }
 
+  _vvp.handleAliasesBtnClick = function ( e ) {
+    this.model.aliases.getAliases( util.hitch( this, "openAliasesWindow" ) );
+  }
+
+  _vvp.openAliasesWindow = function ( aliases ) {
+    if ( !aliases ) aliases = [];
+    window.aliasesBridge = {
+      util : util,
+      topics : topics,
+      aliases : aliases,
+    }
+    var x = window.nativeWindow.x + 150;
+    var y = window.nativeWindow.y + 100;
+    var win = window.open("aliases.html", "aliasesWindow", "height=400, width=500, top=" + y + ", left=" + x);
+    win = win.nativeWindow;
+  }
+
   _vvp.handleNetworksBtnClick = function ( e ) {
     this.model.networks.getNetworks( util.hitch( this, "openNetworksWindow" ) );
   }
 
   _vvp.openNetworksWindow = function ( networks ) {
-    if ( !networks ) networks = {};
+    if ( !networks ) networks = [];
     window.networksBridge = {
       util : util,
       topics : topics,
