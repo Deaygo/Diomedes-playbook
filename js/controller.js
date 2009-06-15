@@ -17,12 +17,16 @@ if ( window.runtime && air && util ) {
     this.view = view;
     this.channelSubscription = null;
     this.channelList = new controller.ChannelList( );
-    this.currentChannel = null;
+    this.currentChannel = null;G
     this.currentConnection = null;
     this.defaultNick = "diomedesuser"; //TODO: need model & preferences
     this.queryTimer = null;
     this.channelsWithActivity = {};
     this.channelsHighlighted  = {};
+
+    this.getNetworks( );
+    this.networks = {};
+
     util.subscribe( topics.USER_INPUT, this, "handleInput", [] );
     util.subscribe( topics.CHANNELS_CHANGED, this, "handleChannelChange", [] );
     util.subscribe( topics.CHANNEL_SELECTED, this, "handleChannelSelect", [] );
@@ -32,6 +36,7 @@ if ( window.runtime && air && util ) {
     util.subscribe( topics.NETWORK_ADD, this, "handleNetworkAdd", [] );
     util.subscribe( topics.NETWORK_EDIT, this, "handleNetworksEdit", [] );
     util.subscribe( topics.NETWORK_DELETE, this, "handleNetworksDelete", [] );
+    util.subscribe( topics.NETWORK_CHANGE, this, "handleNetworksChanged", [] );
     util.subscribe( topics.SERVER_ADD, this, "handleServerAdd", [] );
     util.subscribe( topics.SERVER_DELETE, this, "handleServerDelete", [] );
     util.subscribe( topics.CHANNEL_ADD, this, "handleChannelAdd", [] );
@@ -40,9 +45,35 @@ if ( window.runtime && air && util ) {
     util.subscribe( topics.PERFORM_DELETE, this, "handlePerformDelete", [] );
     util.subscribe( topics.ALIAS_ADD, this, "handleAliasAdd", [] );
     util.subscribe( topics.ALIAS_DELETE, this, "handleAliasDelete", [] );
+    util.subscribe( topics.CONNECTION_CLOSE, this, "closeConnection", [] );
   }
 
   _ccp = controller.Controller.prototype;
+
+  _ccp.getNetworks = function ( ) {
+    this.model.networks.getNetworks( util.hitch( this, "handleGetNetworks" ) );
+  }
+
+  _ccp.handleGetNetworks = function ( networks ) {
+    if ( !networks ) return;
+    for ( var i = 0; i < networks.length; i++ ) {
+      var network = networks[ i ];
+      this.networks[ network.name ] = new network.Network( network, this.model.networks, this.channelList, this.model.prefs.getPrefs( ).pollTime );
+    }
+  }
+
+  _ccp.handleNetworksChanged = function ( ) {
+    this.model.networks.getNetworks( util.hitch( this, "handleUpdateNetworks" ) );
+  }
+
+  _ccp.handleUpdateNetworks = function ( networks ) {
+    for ( var i = 0; i< networks.length; i++ ) {
+      var network = networks[ i ];
+      if ( !( network.name in this.networks ) ) {
+        this.networks[ network.name ] = new network.Network( network, this.model.networks, this.channelList, this.model.prefs.getPrefs( ).pollTime );
+      }
+    }
+  }
 
   _ccp.handleAliasDelete = function ( id ) {
     this.model.aliases.remAlias( id );
@@ -138,6 +169,7 @@ if ( window.runtime && air && util ) {
       } else if ( cmd == "close" ) {
         if ( this.view.getConfirmation( "close a connection" ) ) {
           if ( this.currentConnection ) {
+            this.closeConnection( this.currentConnection.server );
             this.currentConnection.sendCommand( "quit", ["Leaving."], this.getCurrentChannelName( ) );
             var host = this.currentConnection.server;
             this.channelList.destroyConnection( host );
@@ -168,6 +200,25 @@ if ( window.runtime && air && util ) {
       if ( this.currentConnection ) {
         this.currentConnection.sendMessage( this.getCurrentChannelName( ), input );
       }
+    }
+  }
+
+  _ccp.closeConnection = function ( host ) {
+    var currentHost = null;
+    if ( this.currentConnection ) {
+      currentHost = this.currentConnection.server;
+    } 
+    var connection = this.channelList.getConnection( host );
+    connection.sendCommand( "quit", ["Leaving."], this.getCurrentChannelName( ) );
+    this.channelList.destroyConnection( host );
+    this.handleChannelChange( "destroy", null , host );
+    if ( currentHost == host ) {
+      this.view.clearActivityView( );
+      this.view.clearNickView( );
+      delete this.currentConnection;
+      delete this.currentChannel;
+      this.currentConnection = null;
+      this.currentChannel = null;
     }
   }
 
@@ -349,79 +400,6 @@ if ( window.runtime && air && util ) {
   _cclp.destroy = function () {
     //TODO: destroy connections;
   }
-
-  controller.NetworkController = function ( networkData, channelList, pollTime ) {
-    this.channelList = channelList;
-    this.pollTime = pollTime;
-    this.servers = networkData.servers;
-    this.channels = networkData.channels;
-    this.performs = networkData.performs;
-    this.performsProgress = 0;
-    this.connection = null;
-    this.currentHostIndex = null;
-    this.currentHost = null;
-    util.subscribe( topics.CONNECTION_DISCONNECTED, this, "handleDisconnect" ) ;
-  }
-
-  var _cnc = controller.NetworkController.prototype;
-
-  _cnc.handleDisconnect = function ( host ) {
-    if ( this.pollTime && host == this.currentHost ) {
-      window.setTimeOut( util.hitch( this, "connect" ), this.pollTime );
-    }
-  }
-
-  _cnc.connect = function ( ) {
-    var parts = this.getNextServer( ).split( ":" );
-    this.currentHost = util.fromIndex( parts, 0 );
-    var port = util.fromIndex( parts, 1 );
-    this.channelList.createNewConnection( this.currentHost, port, this.model.prefs.getPrefs( ) );
-    this.connection = this.channelList.getConnection( this.currentHost );
-  }
-
-  _cnc.getNextServer = function ( ) {
-    if ( this.currentHostIndex === null || this.currentHostIndex == ( this.servers.length - 1 ) ) {
-      this.currentHostIndex = 0;
-    } else {
-      do {
-        this.currentHostIndex++;
-      } while ( !this.servers[ this.currentHostIndex ].active );
-    }
-    return this.getServer( );
-  }
-
-  _cnc.getHost = function ( ) {
-    return this.currentHost;
-  }
-
-  _cnc.getServer = function ( ) {
-    return this.servers[ this.currentHostIndex ].name;
-  }
-
-  _cnc.getConnection = function ( ) {
-    return this.connection;
-  }
-
-  _cnc.joinDefaultChannels = function ( ) {
-    var channels = this.channels;
-    if ( channels.length ) {
-      util.publish( topics.USER_INPUT, [ "/join " + channels.join(", ") ] );
-    }
-  }
-
-  _cnc.perform = function ( ) {
-    var performs = this.performs;
-    if ( this.performsProgress >= performs.length ) {
-      this.joinDefaultChannels( );
-      this.performsProgress = 0;
-      return;
-    }
-    this.currentConnection
-    util.publish( topics.USER_INPUT, [ util.fromIndex( performs, this.performsProgress ) ] );
-    this.performsProgress++;
-    window.setTimeout( util.hitch( this, "perform" ), 1000 );
-  }
-
 
 }
 

@@ -108,6 +108,7 @@ if ( window.runtime && air && util ) {
         this.channels[ target ].addActivity( msg_ );
       }
       this.serverChannel.addActivity( msg_ );
+      util.publish( topics.CONNECTION_DISCONNECTED, [ this.host ] );
     } else {
       var channels = [];
       for ( var channelName in this.channels ) {

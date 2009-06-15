@@ -13,6 +13,7 @@ if(!topics) {
     CHANNEL_ACTIVITY: "/channel/activity/",
 
     CONNECTION_DISCONNECTED: "/connection/disconnected",
+    CONNECTION_CLOSE: "/connection/close",
 
     USER_ACTIVITY: "/user/activity",
     USER_INPUT: "/user/input/",
