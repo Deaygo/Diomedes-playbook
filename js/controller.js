@@ -17,7 +17,7 @@ if ( window.runtime && air && util ) {
     this.view = view;
     this.channelSubscription = null;
     this.channelList = new controller.ChannelList( );
-    this.currentChannel = null;G
+    this.currentChannel = null;
     this.currentConnection = null;
     this.defaultNick = "diomedesuser"; //TODO: need model & preferences
     this.queryTimer = null;

@@ -35,7 +35,7 @@ if ( window.runtime && air && util ) {
     util.subscribe( topics.NETWORK_CHANGE, this, "handleNetworksChanged", [] );
   }
 
-  var _nn = controller.NetworkController.prototype;
+  var _nn = network.Network.prototype;
 
   _nn.handleNetworksChanged = function ( id ) {
     if ( id && id == this.data.id ) {
@@ -150,4 +150,6 @@ if ( window.runtime && air && util ) {
     this.performsProgress++;
     window.setTimeout( util.hitch( this, "perform" ), 1000 );
   }
+
+}
 
