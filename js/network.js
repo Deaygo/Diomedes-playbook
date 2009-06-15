@@ -12,10 +12,10 @@ if ( window.runtime && air && util ) {
   //requires AIR and util
   
 
-  dNetwork.Network = function ( data, model, channelList, pollTime ) {
+  dNetwork.Network = function ( data, model, channelList, prefs ) {
+    this.prefs = prefs;
     this.data = data;
     this.channelList = channelList;
-    this.pollTime = pollTime;
     this.servers = [];
     this.channels = [];
     this.performs = [];
@@ -30,19 +30,27 @@ if ( window.runtime && air && util ) {
     model.getServers( id, util.hitch( this, "handleServerInfo" ) ); 
     model.getChannels( id, util.hitch( this, "handleChannelInfo" ) );
     model.getPerforms( id, util.hitch( this, "handlePerformInfo" ) );
+    this.model = model;
     this.checkInfoProgress( );
-    util.subscribe( topics.CONNECTION_DISCONNECTED, this, "handleDisconnect" ) ;
+    util.subscribe( topics.CONNECTION_DISCONNECTED, this, "handleDisconnect", [] ) ;
     util.subscribe( topics.NETWORK_CHANGE, this, "handleNetworksChanged", [] );
+    util.subscribe( topics.CHANNELS_CHANGED, this, "handleNetworkConnect", [] );
   }
 
   var _nn = dNetwork.Network.prototype;
 
+  _nn.handleNetworkConnect = function ( type, channelName, host ) {
+    if ( type == "connect" && host == this.currentHost ) {
+      this.perform( );
+    }
+  }
+
   _nn.handleNetworksChanged = function ( id ) {
     util.log("hnc in nn");
     if ( id && id == this.data.id ) {
-      model.getServers( id, util.hitch( this, "handleServerInfo" ) ); 
-      model.getChannels( id, util.hitch( this, "handleChannelInfo" ) );
-      model.getPerforms( id, util.hitch( this, "handlePerformInfo" ) );
+      this.model.getServers( id, util.hitch( this, "handleServerInfo" ) ); 
+      this.model.getChannels( id, util.hitch( this, "handleChannelInfo" ) );
+      this.model.getPerforms( id, util.hitch( this, "handlePerformInfo" ) );
     }
   }
 
@@ -88,8 +96,10 @@ if ( window.runtime && air && util ) {
   }
 
   _nn.handleDisconnect = function ( host ) {
-    if ( this.pollTime && host == this.currentHost ) {
-      window.setTimeOut( util.hitch( this, "resetConnection" ), this.pollTime );
+    var pollTime = parseInt( this.prefs.getPrefs( ).pollTime, 10 );
+    if ( pollTime && pollTime !== 0 && host == this.currentHost ) {
+      return;
+      window.setTimeout( util.hitch( this, "resetConnection", [ host ] ), pollTime );
     }
   }
 
@@ -105,7 +115,7 @@ if ( window.runtime && air && util ) {
     var parts = this.getNextServer( ).split( ":" );
     this.currentHost = util.fromIndex( parts, 0 );
     var port = util.fromIndex( parts, 1 );
-    this.channelList.createNewConnection( this.currentHost, port, this.model.prefs.getPrefs( ) );
+    this.channelList.createNewConnection( this.currentHost, port, this.prefs.getPrefs( ) );
     this.connection = this.channelList.getConnection( this.currentHost );
   }
 
@@ -133,9 +143,15 @@ if ( window.runtime && air && util ) {
   }
 
   _nn.joinDefaultChannels = function ( ) {
-    var channels = this.channels;
+    var channelsData = this.channels;
+    var channels = [];
+    for ( var i = 0; i < channelsData.length; i ++ ) {
+      var channel = channelsData[ i ];
+      channels.push( channel.name );
+    }
     if ( channels.length ) {
-      util.publish( topics.USER_INPUT, [ "/join " + channels.join(", ") ] );
+      util.log("this.connection: " + this.connection );
+      this.connection.sendCommand( "join", channels, null ); 
     }
   }
 
@@ -146,8 +162,7 @@ if ( window.runtime && air && util ) {
       this.performsProgress = 0;
       return;
     }
-    this.currentConnection
-    util.publish( topics.USER_INPUT, [ util.fromIndex( performs, this.performsProgress ) ] );
+    util.publish( topics.USER_INPUT, [ util.fromIndex( performs, this.performsProgress ).command, this.currentHost ] );
     this.performsProgress++;
     window.setTimeout( util.hitch( this, "perform" ), 1000 );
   }

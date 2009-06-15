@@ -108,7 +108,8 @@ if ( window.runtime && air && util ) {
         this.channels[ target ].addActivity( msg_ );
       }
       this.serverChannel.addActivity( msg_ );
-      util.publish( topics.CONNECTION_DISCONNECTED, [ this.host ] );
+      util.log("PUBLISHING CONNECTION_DISCONNECTED: " + this.server );
+      util.publish( topics.CONNECTION_DISCONNECTED, [ this.server ] );
     } else {
       var channels = [];
       for ( var channelName in this.channels ) {
@@ -116,11 +117,9 @@ if ( window.runtime && air && util ) {
       }
       this.serverChannel.addActivity( msg_ );
       if ( channels.length ) {
-        util.log("channels length");
         this.client.join( channels );
       } else {
-        util.log("no channels length");
-        util.publish( topics.CHANNELS_CHANGED, [ "connect", channelName, this.server ] );
+        util.publish( topics.CHANNELS_CHANGED, [ "connect", null, this.server ] );
       }
     }
   }

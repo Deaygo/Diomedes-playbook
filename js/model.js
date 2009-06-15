@@ -12,6 +12,7 @@ if ( window.runtime && air && util ) {
   //requires AIR and util
 
   dModel.Model = function ( ) {
+    this.connLocked = false;
     this.SQL_TYPES = {
       "INTEGER" : "INTEGER",
       "TEXT" : "TEXT",
@@ -25,7 +26,6 @@ if ( window.runtime && air && util ) {
     this.aliases = new dModel.AliasModel( this );
     this.networks = new dModel.NetworksModel( this );
     this.conn = null;
-    this.connLocked = false;
   }
 
   var _mmp = dModel.Model.prototype;
@@ -63,10 +63,12 @@ if ( window.runtime && air && util ) {
       return;
     } 
     this.log("executing begins");
+    this.log("connection locked? " + this.connLocked);
     this.connLocked = true;
+    this.log("connection locked now? " + this.connLocked);
     var s = new air.SQLStatement( ); 
     s.sqlConnection = this.conn; 
-    util.log( "executing sql: " + sql );
+    this.log( "executing sql: " + sql );
     s.text = sql; 
     if ( parameters ) {
       for ( var i in parameters ) {
@@ -89,6 +91,7 @@ if ( window.runtime && air && util ) {
   _mmp._statementResultHandler = function ( e, resultsHandler ) {
     this.log( "Handling statement completion." );
     var result = this.statement.getResult( );
+    this.log("deleting statement with sql of: " + this.statement.text );
     delete this.statement;
     this.statement = null;
     this.closeConnection( );
@@ -123,7 +126,6 @@ if ( window.runtime && air && util ) {
   }
 
   _mmp._handleError = function ( e, msg ) {
-    //console.dump(arguments);
     this.log("error: " + e);
     this.log("message: " + msg );
     this.log("Error message:", e.error.message); 

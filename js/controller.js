@@ -58,7 +58,7 @@ if ( window.runtime && air && util ) {
     if ( !networks ) return;
     for ( var i = 0; i < networks.length; i++ ) {
       var network = networks[ i ];
-      this.networks[ network.name ] = new dNetwork.Network( network, this.model.networks, this.channelList, this.model.prefs.getPrefs( ).pollTime );
+      this.networks[ network.name ] = new dNetwork.Network( network, this.model.networks, this.channelList, this.model.prefs );
     }
   }
 
@@ -72,7 +72,7 @@ if ( window.runtime && air && util ) {
       var network = networks[ i ];
       if ( !( network.name in this.networks ) ) {
         util.log("network.Network: " + network.Network );
-        this.networks[ network.name ] = new dNetwork.Network( network, this.model.networks, this.channelList, this.model.prefs.getPrefs( ).pollTime );
+        this.networks[ network.name ] = new dNetwork.Network( network, this.model.networks, this.channelList, this.model.prefs );
       }
     }
   }
@@ -125,23 +125,24 @@ if ( window.runtime && air && util ) {
     this.model.networks.remNetwork( id );
   }
 
-  _ccp.handleChannelSelect = function (server, type, name) {
-    util.log("handlechannelselect");
+  _ccp.handleChannelSelect = function ( server, type, name ) {
+    util.log( "handlechannelselect" );
     delete this.currentConnection;
-    this.currentConnection = this.channelList.getConnection(server);
-    if (type == "SERVER") {
+    this.currentConnection = this.channelList.getConnection( server );
+    if ( type == "SERVER" ) {
       this.setCurrentChannel( this.channelList.getServerChannel( server ) );
     } else {
       this.setCurrentChannel( this.channelList.getChannel( name, server ) );
     }
   }
 
-  _ccp.handleInput = function ( input ) {
+  _ccp.handleInput = function ( input, server ) {
     util.log( "input: " + input );
     if ( input.search( "/" ) == 0 ) {
       //it's a command
       var argsR = input.substr( 1 ).split( " " );
       var cmd = argsR.shift( ).toLowerCase( );
+      util.log("cmd:" + cmd);
       if ( cmd == "server" ) {
         util.log( "Connecting to a server." );
         if ( argsR.length > 0 ) {
@@ -179,16 +180,6 @@ if ( window.runtime && air && util ) {
         if ( this.view.getConfirmation( "close a connection" ) ) {
           if ( this.currentConnection ) {
             this.closeConnection( this.currentConnection.server );
-            this.currentConnection.sendCommand( "quit", ["Leaving."], this.getCurrentChannelName( ) );
-            var host = this.currentConnection.server;
-            this.channelList.destroyConnection( host );
-            this.handleChannelChange( "destroy", null , host );
-            this.view.clearActivityView( );
-            this.view.clearNickView( );
-            delete this.currentConnection;
-            delete this.currentChannel;
-            this.currentConnection = null;
-            this.currentChannel = null;
           }
         }
       } else if ( cmd == "help" ) {
@@ -201,7 +192,13 @@ if ( window.runtime && air && util ) {
       } else {
         //hand command over to currentConnection
         if ( this.currentConnection ) {
-          this.currentConnection.sendCommand( cmd, argsR, this.getCurrentChannelName( ) );
+          util.log("cascading cmd down to connection");
+          this.currentConnection.sendCommand( cmd, this.replaceTokens( argsR, this.currentConnection ), this.getCurrentChannelName( ) );
+        } else if ( server ) {
+          var connection = this.channelList.getConnection( server );
+          if ( connection ) {
+            connection.sendCommand( cmd, this.replaceTokens( argsR, connection ), server );
+          }
         }
       }
     } else {
@@ -210,6 +207,25 @@ if ( window.runtime && air && util ) {
         this.currentConnection.sendMessage( this.getCurrentChannelName( ), input );
       }
     }
+  }
+
+  _ccp.replaceTokens = function ( args, connection ) {
+    if ( !args || !args.length ) return args;
+    var tokens = {
+      "$nick" : connection.getNick( ),
+      "$channel" : ( this.currentChannel && this.currentChannel.name ? this.currentChannel.name : connection.server ),
+      "$server" : connection,
+    }
+    var newArgs = [];
+    for ( var i = 0; i < args.length; i++ ) {
+      var arg = args[ i ];
+      if ( arg in tokens ) {
+        newArgs[ i ] = tokens[ arg ];
+      } else {
+        newArgs[ i ] = arg;
+      }
+    }
+    return newArgs;
   }
 
   _ccp.closeConnection = function ( host ) {
@@ -246,6 +262,8 @@ if ( window.runtime && air && util ) {
         this.setCurrentChannel( this.currentConnection.getChannel( arg ) );
       } else if ( type && type == "connect" ) {
         this.handleChannelSelect( serverName, "SERVER",  null );
+        this.currentConnection = this.channelList.getConnection( server );
+        this.setCurrentChannel( this.channelList.getServerChannel( server ) );
       } else if ( type && type == "join" ) {
         this.setCurrentChannel( this.currentConnection.getChannel( channelName ) );
       }
