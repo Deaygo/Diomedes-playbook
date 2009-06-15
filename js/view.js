@@ -2,19 +2,19 @@
   Copyright (c) 2009 Apphacker apphacker@gmail.com
 */
 
-var view;
+var dView;
 
-if ( !view ) {
-  view = { };
+if ( !dView ) {
+  dView = { };
 }
 
 if ( window.runtime && air && util ) {
   //requires AIR and util
 
-  view.View = function ( model ) {
+  dView.View = function ( model ) {
     this.model = model;
     this.prevWord = null;
-    this.input = new view.FormInput( util.get( "textInput" ), util.get("inputForm") );
+    this.input = new dView.FormInput( util.get( "textInput" ), util.get("inputForm") );
     this.activityWindow = util.get( "activityWindow" );
     this.channelList = util.get( "channelList" );
     this.titleBar = util.get( "titleBar" );
@@ -27,7 +27,7 @@ if ( window.runtime && air && util ) {
     util.subscribe(topics.USER_HIGHLIGHT, this, "highlight", []);
   }
 
-  _vvp = view.View.prototype;
+  _vvp = dView.View.prototype;
 
   _vvp.getConfirmation = function ( msg ) {
     return window.confirm( "You're about to " + msg + ". Are you sure? " );
@@ -61,7 +61,7 @@ if ( window.runtime && air && util ) {
       this.activityWindows[ serverName ] = {};
     }
     if ( !( channelName in this.activityWindows[ serverName ] ) ) {
-      this.activityWindows[ serverName ][ channelName ] = new view.ActivityWindow( serverName, channelName, this.model.prefs.getPrefs().historyLength );
+      this.activityWindows[ serverName ][ channelName ] = new dView.ActivityWindow( serverName, channelName, this.model.prefs.getPrefs().historyLength );
     }
     this.activeWin = this.activityWindows[ serverName ][ channelName ];
     if ( this.activityWindow.childNodes.length ) {
@@ -374,7 +374,7 @@ if ( window.runtime && air && util ) {
 
   //FormInput Class
 
-  view.FormInput = function ( node, form ) {
+  dView.FormInput = function ( node, form ) {
     this.MAX_HISTORY_LENGTH = 50;
     this.input = node;
     this.form = form;
@@ -389,7 +389,7 @@ if ( window.runtime && air && util ) {
     this.reset( );
   }
 
-  _vip = view.FormInput.prototype;
+  _vip = dView.FormInput.prototype;
 
   _vip.getValue = function ( ) {
     //TODO: add history here and uparrow behavior
@@ -534,7 +534,7 @@ if ( window.runtime && air && util ) {
     delete this.form;
   }
 
-  view.ActivityWindow = function ( serverName, channelName, maxItems ) {
+  dView.ActivityWindow = function ( serverName, channelName, maxItems ) {
     this.linkRegex = /(https?:\/\/\S+)\s?/g;
     this.colorCode = String.fromCharCode( 003 );
     this.normalCode = String.fromCharCode( 017 );
@@ -569,7 +569,7 @@ if ( window.runtime && air && util ) {
     util.subscribe( topics.PREFS_CHANGE_HISTORY_LENGTH, this, "handleChangeHistoryLength", [] );
   }
 
-  _vap = view.ActivityWindow.prototype;
+  _vap = dView.ActivityWindow.prototype;
 
   _vap.setContents = _vvp.setContents;
 

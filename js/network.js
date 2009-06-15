@@ -2,17 +2,17 @@
   Copyright (c) 2009 Apphacker apphacker@gmail.com
 */
 
-var network;
+var dNetwork;
 
-if ( !network ) {
-  network = {};
+if ( !dNetwork ) {
+  dNetwork = {};
 }
 
 if ( window.runtime && air && util ) {
   //requires AIR and util
   
 
-  network.Network = function ( data, model, channelList, pollTime ) {
+  dNetwork.Network = function ( data, model, channelList, pollTime ) {
     this.data = data;
     this.channelList = channelList;
     this.pollTime = pollTime;
@@ -35,9 +35,10 @@ if ( window.runtime && air && util ) {
     util.subscribe( topics.NETWORK_CHANGE, this, "handleNetworksChanged", [] );
   }
 
-  var _nn = network.Network.prototype;
+  var _nn = dNetwork.Network.prototype;
 
   _nn.handleNetworksChanged = function ( id ) {
+    util.log("hnc in nn");
     if ( id && id == this.data.id ) {
       model.getServers( id, util.hitch( this, "handleServerInfo" ) ); 
       model.getChannels( id, util.hitch( this, "handleChannelInfo" ) );

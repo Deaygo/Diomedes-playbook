@@ -2,21 +2,21 @@
   Copyright (c) 2009 Apphacker apphacker@gmail.com
 */
 
-var controller;
+var dController;
 
-if(!controller) {
-  controller = {};
+if(!dController) {
+  dController = {};
 }
 
 if ( window.runtime && air && util ) {
   //requires AIR and util
 
-  controller.Controller = function ( model, view ) {
+  dController.Controller = function ( model, view ) {
 
     this.model = model;
     this.view = view;
     this.channelSubscription = null;
-    this.channelList = new controller.ChannelList( );
+    this.channelList = new dController.ChannelList( );
     this.currentChannel = null;
     this.currentConnection = null;
     this.defaultNick = "diomedesuser"; //TODO: need model & preferences
@@ -48,7 +48,7 @@ if ( window.runtime && air && util ) {
     util.subscribe( topics.CONNECTION_CLOSE, this, "closeConnection", [] );
   }
 
-  _ccp = controller.Controller.prototype;
+  _ccp = dController.Controller.prototype;
 
   _ccp.getNetworks = function ( ) {
     this.model.networks.getNetworks( util.hitch( this, "handleGetNetworks" ) );
@@ -58,11 +58,12 @@ if ( window.runtime && air && util ) {
     if ( !networks ) return;
     for ( var i = 0; i < networks.length; i++ ) {
       var network = networks[ i ];
-      this.networks[ network.name ] = new network.Network( network, this.model.networks, this.channelList, this.model.prefs.getPrefs( ).pollTime );
+      this.networks[ network.name ] = new dNetwork.Network( network, this.model.networks, this.channelList, this.model.prefs.getPrefs( ).pollTime );
     }
   }
 
   _ccp.handleNetworksChanged = function ( ) {
+    util.log("hnc in dController");
     this.model.networks.getNetworks( util.hitch( this, "handleUpdateNetworks" ) );
   }
 
@@ -70,7 +71,8 @@ if ( window.runtime && air && util ) {
     for ( var i = 0; i< networks.length; i++ ) {
       var network = networks[ i ];
       if ( !( network.name in this.networks ) ) {
-        this.networks[ network.name ] = new network.Network( network, this.model.networks, this.channelList, this.model.prefs.getPrefs( ).pollTime );
+        util.log("network.Network: " + network.Network );
+        this.networks[ network.name ] = new dNetwork.Network( network, this.model.networks, this.channelList, this.model.prefs.getPrefs( ).pollTime );
       }
     }
   }
@@ -351,21 +353,21 @@ if ( window.runtime && air && util ) {
   }
 
   _ccp.destroy = function () {
-    util.log("destroying controller");
+    util.log("destroying dController");
     delete this.channelList;
   }
 
   //ChannelList Class
 
-  controller.ChannelList = function () {
+  dController.ChannelList = function () {
     this.connections = {};
   }
 
-  _cclp = controller.ChannelList.prototype;
+  _cclp = dController.ChannelList.prototype;
 
   _cclp.createNewConnection = function ( server, port, defaultChannels, nick, userName, realName ) {
     if ( !( server in this.connections ) ) {
-      this.connections[server] = new connection.Connection( server, port, defaultChannels, nick, userName, realName );
+      this.connections[server] = new dConnection.Connection( server, port, defaultChannels, nick, userName, realName );
       this.connections[server].connect( );
       return true;
     } else {

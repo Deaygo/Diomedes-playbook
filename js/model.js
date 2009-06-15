@@ -2,16 +2,16 @@
   Copyright (c) 2009 Apphacker apphacker@gmail.com
 */
 
-var model;
+var dModel;
 
-if(!model) {
-  model = {};
+if(!dModel) {
+  dModel = {};
 }
 
 if ( window.runtime && air && util ) {
   //requires AIR and util
 
-  model.Model = function ( ) {
+  dModel.Model = function ( ) {
     this.SQL_TYPES = {
       "INTEGER" : "INTEGER",
       "TEXT" : "TEXT",
@@ -21,14 +21,14 @@ if ( window.runtime && air && util ) {
     };
     this.statement = null;
     this.DATABASE_NAME = "diomedesModel.db";
-    this.prefs = new model.PrefModel( this );
-    this.aliases = new model.AliasModel( this );
-    this.networks = new model.NetworksModel( this );
+    this.prefs = new dModel.PrefModel( this );
+    this.aliases = new dModel.AliasModel( this );
+    this.networks = new dModel.NetworksModel( this );
     this.conn = null;
     this.connLocked = false;
   }
 
-  var _mmp = model.Model.prototype;
+  var _mmp = dModel.Model.prototype;
 
   _mmp._openSQLConn = function ( type, openHandler, errorHandler ) {
     this.log( "Opening SQL connection..." );
@@ -142,7 +142,7 @@ if ( window.runtime && air && util ) {
     this.conn = null;
   }
 
-  model.NetworksModel = function ( model ) {
+  dModel.NetworksModel = function ( model ) {
     util.log("NetworksModel");
     this.model = model;
     this.createTablesList = [];
@@ -150,7 +150,7 @@ if ( window.runtime && air && util ) {
     this.createTables( );
   }
 
-  var _mnp = model.NetworksModel.prototype;
+  var _mnp = dModel.NetworksModel.prototype;
 
   _mnp.createTables = function ( ) {
     util.log("createTables");
@@ -381,12 +381,12 @@ if ( window.runtime && air && util ) {
     util.log( "Database changed." );
   }
 
-  model.AliasModel = function ( model ) {
+  dModel.AliasModel = function ( model ) {
     this.model = model;
     this.createTables( );
   }
 
-  var _map = model.AliasModel.prototype;
+  var _map = dModel.AliasModel.prototype;
 
   _map.createTables = function ( ) {
     util.log("createtables begn");
@@ -450,7 +450,7 @@ if ( window.runtime && air && util ) {
     util.log( "Database changed." );
   }
 
-  model.PrefModel = function ( model ) {
+  dModel.PrefModel = function ( model ) {
     this.model = model;
     this.fileName = "preferences.xml";
     this.preferences = {};
@@ -460,7 +460,7 @@ if ( window.runtime && air && util ) {
     this.getPrefs( );
   }
 
-  var _mpp = model.PrefModel.prototype;
+  var _mpp = dModel.PrefModel.prototype;
 
   _mpp.checkPrefs = function ( ) {
   }
