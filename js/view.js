@@ -21,6 +21,9 @@ if ( window.runtime && air && util ) {
     this.nickList = util.get( "nickList" );
     this.activityWindows = {};
     this.activeWin = null;
+    var u = new air.ApplicationUpdater( );
+    this.appVersion = u.currentVersion;
+    delete u;
     util.connect( this.channelList, "onclick", this, "handleChannelListClick" );
     util.connect( this.activityWindow, "onclick", this, "handleActivityWindowClick" );
     util.connect( this.titleBar, "onclick", this, "handleTitleBarClick" );
@@ -273,6 +276,19 @@ if ( window.runtime && air && util ) {
 
   _vvp.handlePerformBtnClick = function ( e ) {
     this.model.networks.getNetworks( util.hitch( this, "openPerformsWindow" ) );
+  }
+
+  _vvp.handleAboutBtnClick = function ( e ) {
+    var s ="Diomedes IRC Version: " + this.appVersion; 
+    s += "\n\nTwitter: @apphacker";
+    s += "\nEmail: apphacker@gmail.com";
+    s += "\nWebsite: http://www.apphackers.com";
+    s += "\nBlog: http://apphacker.wordpress.com";
+    alert( s );
+  }
+
+  _vvp.handleHelpBtnClick = function ( e ) {
+    this.displayHelp( );
   }
   
   _vvp.openChannelsWindow = function ( networks ) {
