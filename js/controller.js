@@ -162,6 +162,13 @@ if ( window.runtime && air && util ) {
         } else {
           util.log( "not enough args given to connect to server" );
         }
+      } else if ( cmd == "connect" ) {
+        if ( argsR.length > 0 ) {
+          var networkName = argsR.shift( );
+          if ( networkName in this.networks ) {
+            this.networks[ networkName ].connect( );
+          }
+        }
       } else if ( cmd == "exit" ) {
         if ( this.view.getConfirmation( "exit the application" ) ) {
           window.close( );
