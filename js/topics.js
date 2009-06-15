@@ -41,6 +41,7 @@ if(!topics) {
     ALIAS_ADD: "/alias/add/",
     ALIAS_EDIT: "/alias/edit/",
     ALIAS_DELETE: "/alias/delete",
+    ALIAS_CHANGE: "/alias/change/",
 
   };
 }

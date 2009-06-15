@@ -11,6 +11,13 @@
   <div id="aliasesList" onclick="handleListClick( event );"></div>
   <a href="#" onclick="showAddForm( event );">Add an Alias</a>
   <form class="hidden" id="form" onsubmit="saveAliases( event );">
+    <p>You can use variables such as $nick (for your nick), $channel and $server in the command.</p>
+    <p>
+      You can also use variables such as $1 for any arguments to your alias. If
+      your alias has any argument is has to use these types of variables.<br/> 
+      For example an alias named "j" with the command "/join $1" when used as 
+      "/j #myFavChannel " will turn into "/join #myFavChannel".
+    </p>
     <input type="hidden" id="id" value="0"/>
     <div class="formItem">
       <label for="name">Name: </label> <input type="text" id="name" />

@@ -24,8 +24,11 @@ if ( window.runtime && air && util ) {
     this.channelsWithActivity = {};
     this.channelsHighlighted  = {};
 
-    this.getNetworks( );
+    this.aliases = {};
+    this.getAliases( );
+
     this.networks = {};
+    this.getNetworks( );
 
     util.subscribe( topics.USER_INPUT, this, "handleInput", [] );
     util.subscribe( topics.CHANNELS_CHANGED, this, "handleChannelChange", [] );
@@ -45,10 +48,26 @@ if ( window.runtime && air && util ) {
     util.subscribe( topics.PERFORM_DELETE, this, "handlePerformDelete", [] );
     util.subscribe( topics.ALIAS_ADD, this, "handleAliasAdd", [] );
     util.subscribe( topics.ALIAS_DELETE, this, "handleAliasDelete", [] );
+    util.subscribe( topics.ALIAS_CHANGE, this, "getAliases", [] );
     util.subscribe( topics.CONNECTION_CLOSE, this, "closeConnection", [] );
   }
 
   _ccp = dController.Controller.prototype;
+
+  _ccp.getAliases = function ( ) {
+    this.model.aliases.getAliases( util.hitch( this, "handleAliases" ) );
+  }
+
+  _ccp.handleAliases = function ( aliases ) {
+    if ( !aliases ) {
+      this.aliases = {};
+      return;
+    }
+    for ( var i = 0; i < aliases.length; i++ ) {
+      var alias = aliases[ i ];
+      this.aliases[ alias.name ] = alias;
+    }
+  }
 
   _ccp.getNetworks = function ( ) {
     this.model.networks.getNetworks( util.hitch( this, "handleGetNetworks" ) );
@@ -183,12 +202,13 @@ if ( window.runtime && air && util ) {
           }
         }
       } else if ( cmd == "help" ) {
-      } else if ( cmd == "help" ) {
         this.view.displayHelp( );
       } else if ( cmd == "clear" ) {
         this.currentChannel.clearActivity( );
         this.view.clearActivityView( );
         this.queryCurrentChannel( );
+      } else if ( cmd in this.aliases ) {
+        util.publish( topics.USER_INPUT, [ this.createInputFromAlias( this.aliases[ cmd ], argsR ), server ] );
       } else {
         //hand command over to currentConnection
         if ( this.currentConnection ) {
@@ -207,6 +227,19 @@ if ( window.runtime && air && util ) {
         this.currentConnection.sendMessage( this.getCurrentChannelName( ), input );
       }
     }
+  }
+
+  _ccp.createInputFromAlias = function ( alias, args ) {
+    if ( !this.currentConnection ) return;
+    var cmd = alias.command;
+    args = this.replaceTokens( args, this.currentConnection );
+    cmd = this.replaceTokens( cmd.split( " " ), this.currentConnection ).join( " " );
+    for ( var i = 0; i < args.length; i++ ) {
+      var arg = args[ i ];
+      var token = "$" + ( i + 1 );
+      cmd = cmd.split(token).join(arg);
+    }
+    return cmd;
   }
 
   _ccp.replaceTokens = function ( args, connection ) {
@@ -262,8 +295,8 @@ if ( window.runtime && air && util ) {
         this.setCurrentChannel( this.currentConnection.getChannel( arg ) );
       } else if ( type && type == "connect" ) {
         this.handleChannelSelect( serverName, "SERVER",  null );
-        this.currentConnection = this.channelList.getConnection( server );
-        this.setCurrentChannel( this.channelList.getServerChannel( server ) );
+        this.currentConnection = this.channelList.getConnection( serverName );
+        this.setCurrentChannel( this.channelList.getServerChannel( serverName ) );
       } else if ( type && type == "join" ) {
         this.setCurrentChannel( this.currentConnection.getChannel( channelName ) );
       }

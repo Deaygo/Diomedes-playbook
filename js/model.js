@@ -450,6 +450,7 @@ if ( window.runtime && air && util ) {
 
   _map._handleChange = function ( e ) {
     util.log( "Database changed." );
+    util.publish( topics.ALIAS_CHANGE, [ null ] );
   }
 
   dModel.PrefModel = function ( model ) {
