@@ -108,7 +108,7 @@
     function getServerHTML( server ) {
       return [
         '<div><span class="servername">', server.name, '</span> ',
-        '<a href="#" id="delete.', server.id, '">Delete</a> ',
+        '<a href="#" id="delete.', server.id, '.', server.networkId, '">Delete</a> ',
         '</div>'].join( "" );
     }
 
@@ -186,15 +186,16 @@
         if ( parts.length ) {
           var cmd = parts[ 0 ];
           var id = parts [ 1 ];
+          var networkId = parts[ 2 ];
           if ( cmd == "delete" ) {
-            deleteServer( id );
+            deleteServer( id, networkId );
           }
         }
       }
     }
 
-    function deleteServer ( id ) {
-      util.publish( topics.SERVER_DELETE, [ id ] );
+    function deleteServer ( id, networkId ) {
+      util.publish( topics.SERVER_DELETE, [ id, networkId ] );
       deselectServer( );
     }
 

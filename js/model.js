@@ -299,7 +299,7 @@ if ( window.runtime && air && util ) {
     util.publish( topics.NETWORK_CHANGE, [ networkId ] );
   }
 
-  _mnp.remServer = function ( id ) {
+  _mnp.remServer = function ( id, networkId ) {
     var sql = "DELETE FROM servers WHERE id = :id";
     var p = { id : id };
     this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
@@ -320,7 +320,7 @@ if ( window.runtime && air && util ) {
     util.publish( topics.NETWORK_CHANGE, [ networkId ] );
   }
 
-  _mnp.remChannel = function ( id ) {
+  _mnp.remChannel = function ( id, networkId ) {
     var sql = "DELETE FROM channels WHERE id = :id";
     p = { id : id };
     this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
@@ -362,7 +362,7 @@ if ( window.runtime && air && util ) {
     util.publish( topics.NETWORK_CHANGE, [ networkId ] );
   }
 
-  _mnp.remPerform = function ( id ) {
+  _mnp.remPerform = function ( id, networkId ) {
     var sql = "DELETE FROM performs WHERE id = :id";
     var p = { id : id };
     this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 

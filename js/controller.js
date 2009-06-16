@@ -104,24 +104,24 @@ if ( window.runtime && air && util ) {
     this.model.aliases.addAlias( data.name, data.command, data.active, 0 );
   }
 
-  _ccp.handlePerformDelete = function ( id ) {
-    this.model.networks.remPerform( id );
+  _ccp.handlePerformDelete = function ( id, networkId ) {
+    this.model.networks.remPerform( id, networkId );
   }
 
   _ccp.handlePerformAdd = function ( data ) {
     this.model.networks.addPerform( data.networkId, data.name, data.command, data.active );
   }
 
-  _ccp.handleChannelDelete = function ( id ) {
-    this.model.networks.remChannel( id );
+  _ccp.handleChannelDelete = function ( id, networkId ) {
+    this.model.networks.remChannel( id, networkId );
   }
 
   _ccp.handleChannelAdd = function ( data ) {
     this.model.networks.addChannel( data.networkId, data.name, data.autoJoin );
   }
 
-  _ccp.handleServerDelete = function ( id ) {
-    this.model.networks.remServer( id );
+  _ccp.handleServerDelete = function ( id, networkId ) {
+    this.model.networks.remServer( id, networkId );
   }
 
   _ccp.handleServerAdd = function ( data ) {

@@ -113,7 +113,7 @@
       return [
         '<div><span class="performname">', perform.name, '</span> ',
         '<span class="command">', perform.command, '</span> ',
-        '<a href="#" id="delete.', perform.id, '">Delete</a> ',
+        '<a href="#" id="delete.', perform.id, '.', perform.networkId, '">Delete</a> ',
         '</div>'].join( "" );
     }
 
@@ -193,15 +193,16 @@
         if ( parts.length ) {
           var cmd = parts[ 0 ];
           var id = parts [ 1 ];
+          var networkId = parts[ 2 ];
           if ( cmd == "delete" ) {
-            deletePerform( id );
+            deletePerform( id, networkId );
           }
         }
       }
     }
 
-    function deletePerform ( id ) {
-      util.publish( topics.PERFORM_DELETE, [ id ] );
+    function deletePerform ( id, networkId ) {
+      util.publish( topics.PERFORM_DELETE, [ id, networkId ] );
       deselectPerform( );
     }
 

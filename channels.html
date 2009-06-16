@@ -108,7 +108,7 @@
     function getChannelHTML( channel ) {
       return [
         '<div><span class="channelname">', channel.name, '</span> ',
-        '<a href="#" id="delete.', channel.id, '">Delete</a> ',
+        '<a href="#" id="delete.', channel.id, '.', channel.networkId, '">Delete</a> ',
         '</div>'].join( "" );
     }
 
@@ -186,15 +186,16 @@
         if ( parts.length ) {
           var cmd = parts[ 0 ];
           var id = parts [ 1 ];
+          var networkId = parts[ 2 ];
           if ( cmd == "delete" ) {
-            deleteChannel( id );
+            deleteChannel( id, networkId );
           }
         }
       }
     }
 
-    function deleteChannel ( id ) {
-      util.publish( topics.CHANNEL_DELETE, [ id ] );
+    function deleteChannel ( id, networkId ) {
+      util.publish( topics.CHANNEL_DELETE, [ id, networkId ] );
       deselectChannel( );
     }
 
