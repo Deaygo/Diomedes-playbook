@@ -45,27 +45,24 @@ if ( window.runtime && air && util ) {
     this.conn.openAsync( dbFile ); 
   }
 
-  _mmp._executeSQL = function ( sql, type, resultsHandler, parameters, errorHandler ) {
+  _mmp._executeSQL = function ( sql, type, resultsHandler, parameters, errorHandler, isRexecution ) {
     this.log( "Executing SQL statement..." );
     if ( !sql || !type || !resultsHandler ) {
       this.log( "Required params missing for _executeSQL" );
       return;
     }
+    if ( !isRexecution && this.connLocked ) {
+      this.log( "Connection locked.");
+      window.setTimeout( util.hitch( this, "_executeSQL", [ sql, type, resultsHandler, parameters, errorHandler ] ), 1 );
+      return;
+    } 
+    this.connLocked = true;
     if ( !errorHandler ) errorHandler = util.hitch( this, "_handleError", [ "SQL: " + sql ] );
     if ( !this.conn || !this.conn.connected ) { 
       this.log( "Connection not open when calling _executeSQL, opening it");
       this._openSQLConn( type, util.hitch( this, "_reExecuteSQL", [ sql, type, resultsHandler, parameters, errorHandler ] ), errorHandler );
       return;
     }
-    if ( this.connLocked ) {
-      this.log( "Connection locked.");
-      window.setTimeout( util.hitch( this, "_executeSQL", [ sql, type, resultsHandler, parameters, errorHandler ] ), 1 );
-      return;
-    } 
-    this.log("executing begins");
-    this.log("connection locked? " + this.connLocked);
-    this.connLocked = true;
-    this.log("connection locked now? " + this.connLocked);
     var s = new air.SQLStatement( ); 
     s.sqlConnection = this.conn; 
     this.log( "executing sql: " + sql );
@@ -85,7 +82,7 @@ if ( window.runtime && air && util ) {
 
   _mmp._reExecuteSQL = function ( e, sql, type, resultsHandler, parameters, errorHandler ) {
     this.log( "Re-excuting sql." );
-    this._executeSQL( sql, type, resultsHandler, parameters, errorHandler );
+    this._executeSQL( sql, type, resultsHandler, parameters, errorHandler, true );
   }
 
   _mmp._statementResultHandler = function ( e, resultsHandler ) {

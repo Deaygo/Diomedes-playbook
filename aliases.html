@@ -53,11 +53,11 @@
       n.innerHTML = r.join( "" );
     }
 
-    function getAliasHTML( alisas ) {
+    function getAliasHTML( alias ) {
       return [
-        '<div><span class="alisasName">', alisas.name, '</span> ',
+        '<div><span class="aliasName">', alias.name, '</span> ',
         '<span class="command">', alias.command, '</span> ',
-        '<a href="#" id="delete.', alisas.id, '">Delete</a> ',
+        '<a href="#" id="delete.', alias.id, '">Delete</a> ',
         '</div>'].join( "" );
     }
 
@@ -70,24 +70,24 @@
     function saveAliases ( event ) {
       util.stopEvent( event );
       util.log( "Saving Aliases." );
-      var alisasData = {};
+      var aliasData = {};
       var id = parseInt( get( "id" ).value, 10 );
-      if ( !this.getItem( "name", "Alias name", alisasData ) ) return;
-      if ( !this.getItem( "command", "Command", alisasData ) ) return;
-      if ( !this.getItem( "active", "Active", alisasData, true ) ) return;
+      if ( !this.getItem( "name", "Alias name", aliasData ) ) return;
+      if ( !this.getItem( "command", "Command", aliasData ) ) return;
+      if ( !this.getItem( "active", "Active", aliasData, true ) ) return;
       if ( id === 0 ) {
-        util.publish( topics.ALIAS_ADD, [ alisasData ] );
+        util.publish( topics.ALIAS_ADD, [ aliasData ] );
         closeWindow( event );
         return;
       } 
       closeForm( event );
     }
 
-    function updateAliases ( alisas ) {
+    function updateAliases ( alias ) {
       for ( var i = 0; i < aliases.length; i++ ) {
         var temp = aliases[ i ];
-        if ( temp.id == alisas.id ) {
-          aliases[ i ] = alisas;
+        if ( temp.id == alias.id ) {
+          aliases[ i ] = alias;
           displayAliases( aliases );
           return;
         }
@@ -143,9 +143,9 @@
       util.publish( topics.ALIAS_DELETE, [ id ] );
       var newAliases = [];
       for ( var i = 0; i < aliases.length; i++ ) {
-        var alisas = aliases[ i ];
-        if ( alisas.id != id ) {
-          newAliases.push( alisas );
+        var alias = aliases[ i ];
+        if ( alias.id != id ) {
+          newAliases.push( alias );
         }
       }
       aliases = newAliases;
