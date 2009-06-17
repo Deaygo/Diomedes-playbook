@@ -60,12 +60,7 @@ if ( window.runtime && air && util ) {
   }
 
   _vvp.changeView = function ( serverName, channelName ) {
-    if ( !( serverName in this.activityWindows ) ) {
-      this.activityWindows[ serverName ] = {};
-    }
-    if ( !( channelName in this.activityWindows[ serverName ] ) ) {
-      this.activityWindows[ serverName ][ channelName ] = new dView.ActivityWindow( serverName, channelName, this.model.prefs.getPrefs().historyLength );
-    }
+    this.createActivityViewIfNeeded( channelName, serverName );
     this.activeWin = this.activityWindows[ serverName ][ channelName ];
     if ( this.activityWindow.childNodes.length ) {
       this.activityWindow.replaceChild( this.activeWin.getNode( ), this.activityWindow.firstChild );
@@ -233,8 +228,18 @@ if ( window.runtime && air && util ) {
     this.input.focus( );
   }
 
-  _vvp.updateActivityView = function ( messages, ops, voiced, userNick ) {
-    this.activeWin.update( messages, ops, voiced, userNick )
+  _vvp.createActivityViewIfNeeded = function ( channelName, serverName ) {
+    if ( !( serverName in this.activityWindows ) ) {
+      this.activityWindows[ serverName ] = {};
+    }
+    if ( !( channelName in this.activityWindows[ serverName ] ) ) {
+      this.activityWindows[ serverName ][ channelName ] = new dView.ActivityWindow( serverName, channelName, this.model.prefs.getPrefs().historyLength );
+    }
+  }
+
+  _vvp.updateActivityView = function ( messages, ops, voiced, userNick, channelName, serverName ) {
+    this.createActivityViewIfNeeded( channelName, serverName );
+    this.activityWindows[ serverName ][ channelName ].update( messages, ops, voiced, userNick );
   }
 
   _vvp.highlight = function ( ) {

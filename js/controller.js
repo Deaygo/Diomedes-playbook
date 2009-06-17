@@ -20,7 +20,7 @@ if ( window.runtime && air && util ) {
     this.currentChannel = null;
     this.currentConnection = null;
     this.defaultNick = "diomedesuser"; //TODO: need model & preferences
-    this.queryTimer = null;
+    this.queryTimer = {};
     this.channelsWithActivity = {};
     this.channelsHighlighted  = {};
 
@@ -206,7 +206,6 @@ if ( window.runtime && air && util ) {
       } else if ( cmd == "clear" ) {
         this.currentChannel.clearActivity( );
         this.view.clearActivityView( );
-        this.queryCurrentChannel( );
       } else if ( cmd in this.aliases ) {
         util.publish( topics.USER_INPUT, [ this.createInputFromAlias( this.aliases[ cmd ], argsR ), server ] );
       } else {
@@ -317,6 +316,8 @@ if ( window.runtime && air && util ) {
       var serverName = this.currentConnection.server;
       var channelName = this.currentConnection.getChannelName( channel.name );
       util.log ( "serverName: " + serverName + " channelName: " + channelName );
+      util.log("this.view: " + this.view );
+      util.log("this.view.changeView: " + this.view.changeView );
       this.view.changeView( serverName, channelName );
       if ( serverName in this.channelsWithActivity  && channelName in this.channelsWithActivity[ serverName ] ) { 
         delete this.channelsWithActivity[ serverName ][ channelName ];
@@ -325,7 +326,6 @@ if ( window.runtime && air && util ) {
         delete this.channelsHighlighted[ serverName ][ channelName ];
       }
       this.currentChannel = channel;
-      this.queryCurrentChannel( );
       this.nickListSubscription = util.subscribe( topics.USER_ACTIVITY + channel.name, this, "queryNickList", [] );
       this.currentChannel.publishUserActivity();
       this.view.finishChannelChange( );
@@ -334,15 +334,20 @@ if ( window.runtime && air && util ) {
   }
 
   _ccp.handleChannelActivity = function ( channelName, serverName, isPM ) {
-    if ( this.currentConnection ) {
-      if ( this.currentConnection.server == serverName && channelName == this.currentConnection.getChannelName( this.currentChannel.name ) ) {
-        if ( this.queryTimer ) {
-          window.clearTimeout( this.queryTimer );
-          this.queryTimer = null;
-        }
-        this.queryTimer = window.setTimeout( util.hitch( this, "queryCurrentChannelFromTimer" ), 100 );
-      } else if ( isPM ) {
-        this.updateChannelObject( this.channelsWithActivity, channelName, serverName );
+    if ( !( serverName in this.queryTimer ) ) {
+      this.queryTimer[ serverName ] = {};
+    }
+    if ( !( channelName in this.queryTimer[ serverName ] ) ) {
+      this.queryTimer[ serverName ][ channelName ] = null;
+    }
+    if ( this.queryTimer[ serverName ][ channelName ] ) {
+      window.clearTimeout( this.queryTimer[ serverName ][ channelName ] );
+      this.queryTimer[ serverName][ channelName ] = null;
+    }
+    this.queryTimer[ serverName ][ channelName ] = window.setTimeout( util.hitch( this, "updateChannelFromTimer", [ channelName, serverName ] ), 100 );
+    if ( this.currentConnection && isPM ) {
+      if ( !( this.currentConnection.server == serverName && channelName == this.currentConnection.getChannelName( this.currentChannel.name ) ) ) {
+        this.updateUnreadActivity( this.channelsWithActivity, channelName, serverName );
       }
     }
   }
@@ -350,12 +355,12 @@ if ( window.runtime && air && util ) {
   _ccp.handleHighlight = function ( channelName, serverName, nick ) {
     if ( this.currentConnection ) {
       if ( !( this.currentConnection.server == serverName && channelName == this.currentConnection.getChannelName( this.currentChannel.name ) ) ) {
-        this.updateChannelObject( this.channelsHighlighted, channelName, serverName );
+        this.updateUnreadActivity( this.channelsHighlighted, channelName, serverName );
       }
     }
   }
 
-  _ccp.updateChannelObject = function ( o, channelName, serverName ) {
+  _ccp.updateUnreadActivity = function ( o, channelName, serverName ) {
       if ( !( serverName in o ) ) {
         o[ serverName ] = {};
       }
@@ -367,10 +372,10 @@ if ( window.runtime && air && util ) {
       this.handleChannelChange( "update", channelName, serverName ); //activity added to non current window;
   }
 
-  _ccp.queryCurrentChannelFromTimer = function ( ) {
-    window.clearTimeout( this.queryTimer );
-    this.queryTimer = null;
-    this.queryCurrentChannel( );
+  _ccp.updateChannelFromTimer = function ( channelName, serverName ) {
+    window.clearTimeout( this.queryTimer[ serverName ][ channelName ] );
+    this.queryTimer[ serverName ][ channelName ] = null;
+    this.updateChannel( channelName, serverName );
   }
 
   _ccp.getCurrentChannelName = function ( ) {
@@ -394,11 +399,18 @@ if ( window.runtime && air && util ) {
     this.view.updateNickView( users, ops, voiced ); 
   }
 
-  _ccp.queryCurrentChannel = function ( ) {
-    if ( this.currentConnection && this.currentChannel ) {
-      var ops = this.currentChannel.getOps( );
-      var voiced = this.currentChannel.getVoiced( );
-      this.view.updateActivityView( this.currentChannel.getActivity( ), ops, voiced, this.currentConnection.getNick( ) );
+  _ccp.updateChannel = function ( channelName, serverName ) {
+    util.log("updateChannel channelName: " + channelName + " serverName: " + serverName );
+    var connection = this.channelList.getConnection( serverName );
+    if ( connection ) { 
+      var channel = this.channelList.getChannel( channelName, serverName );
+      if ( !channel ) { 
+        channel = connection.getServerChannel( );
+      }
+      var ops = channel.getOps( );
+      var voiced = channel.getVoiced( );
+      var nick = connection.getNick( );
+      this.view.updateActivityView( channel.getActivity( ), ops, voiced, nick, channelName, serverName );
     }
   }
 
@@ -430,7 +442,10 @@ if ( window.runtime && air && util ) {
   }
 
   _cclp.getChannel = function ( channelName, host ) {
-    return this.connections[host].getChannel( channelName );
+    if ( host in this.connections ) {
+      return this.connections[host].getChannel( channelName );
+    } 
+    return null;
   }
 
   _cclp.destroyConnection = function ( host ) {
