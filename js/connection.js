@@ -92,9 +92,17 @@ if ( window.runtime && air && util ) {
   }
 
   _cnp.connect = function () {
-    this.client.connect();
-    this.serverChannel = new dConnection.Channel(this.server, dConnection.CHANNEL_TYPES.SERVER, this.server);
-    util.publish(topics.CHANNELS_CHANGED, []);
+    this.client.connect( );
+    this.serverChannel = new dConnection.Channel( this.server, dConnection.CHANNEL_TYPES.SERVER, this.server );
+    util.publish( topics.CHANNELS_CHANGED, [] );
+  }
+
+  _cnp.isConnected = function ( ) {
+    return this.client.isConnected( );
+  }
+
+  _cnp.close = function () {
+    this.client.closeConnection( "Closed connection." );
   }
 
   _cnp.handleConnection = function ( msg, connected, nickInUse ) {
@@ -643,7 +651,6 @@ if ( window.runtime && air && util ) {
   }
 
   _clp.publishUserActivity = function ( ) {
-    util.log("publishuseractivity");
     util.publish( topics.USER_ACTIVITY + this.name );
   }
 

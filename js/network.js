@@ -26,6 +26,7 @@ if ( window.runtime && air && util ) {
     this.connection = null;
     this.currentHostIndex = null;
     this.currentHost = null;
+    this.TEST_CONNECTION_TIME = 5000;
     var id = data.id;
     model.getServers( id, util.hitch( this, "handleServerInfo" ) ); 
     model.getChannels( id, util.hitch( this, "handleChannelInfo" ) );
@@ -98,20 +99,21 @@ if ( window.runtime && air && util ) {
   _nn.handleDisconnect = function ( host ) {
     var pollTime = parseInt( this.prefs.getPrefs( ).pollTime, 10 );
     if ( pollTime && pollTime !== 0 && host == this.currentHost ) {
-      return;
       window.setTimeout( util.hitch( this, "resetConnection", [ host ] ), pollTime );
     }
   }
 
   _nn.resetConnection = function ( host ) {
-    if ( this.currentHost ) {
-      util.publish( topics.CONNECTION_CLOSE, [ this.currentHost ] );
-    }
     this.connect( );
   }
 
   _nn.connect = function ( ) {
     if ( !this.servers.length ) return;
+    if ( this.currentHost ) {
+      util.publish( topics.CONNECTION_CLOSE, [ this.currentHost ] );
+      this.connection = null;
+      this.currentHost = null;
+    }
     var parts = this.getNextServer( ).split( ":" );
     this.currentHost = util.fromIndex( parts, 0 );
     var port = util.fromIndex( parts, 1 );

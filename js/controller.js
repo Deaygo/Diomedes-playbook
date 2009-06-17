@@ -262,6 +262,7 @@ if ( window.runtime && air && util ) {
   }
 
   _ccp.closeConnection = function ( host ) {
+    if ( !host ) return;
     var currentHost = null;
     if ( this.currentConnection ) {
       currentHost = this.currentConnection.server;
@@ -334,8 +335,6 @@ if ( window.runtime && air && util ) {
 
   _ccp.handleChannelActivity = function ( channelName, serverName, isPM ) {
     if ( this.currentConnection ) {
-      util.log("this.currentChannel: " + this.currentChannel);
-      util.log("this.currentChannel.name: " + this.currentChannel.name);
       if ( this.currentConnection.server == serverName && channelName == this.currentConnection.getChannelName( this.currentChannel.name ) ) {
         if ( this.queryTimer ) {
           window.clearTimeout( this.queryTimer );

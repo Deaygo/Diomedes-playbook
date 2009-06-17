@@ -25,10 +25,12 @@ if ( window.runtime && air && util ) {
     this.socket = null;
     this.socketMonitor = null;
     this.stayConnected = false;
-    this.isConnected = false;
+    this._isConnected = false;
     this.connectionEstablished = false;
     this.connectionAccepted = false;
     this.createConnection( );
+
+    this.pollTime = 0;
 
     //User Info
     this.defaultChannels = defaultChannels;
@@ -142,7 +144,12 @@ if ( window.runtime && air && util ) {
     this._connect( );
   }
 
+  _icp.isConnected = function ( ) {
+    return this._isConnected;
+  }
+
   _icp._connect = function ( ) {
+    util.log("attempting connection: ");
     if( this.socketMonitor.available ) {
       this.socket.connect( this.server, this.port );
     }
@@ -150,28 +157,31 @@ if ( window.runtime && air && util ) {
 
   _icp.onStatus = function ( e ) {
     var status_ = this.socketMonitor.available;
-    if ( this.stayConnected && !this.isConnected ) {
+    if ( status_ && this.stayConnected && !this._isConnected ) {
       this._connect( );
       if ( this.connectionDelegate ) {
         this.connectionDelegate( "Connecting to server.", false, false );
-      }
-    } else if ( !status_ && this.stayConnected && this.isConnected ) {
+      }  
+    } else if ( !status_ && this.stayConnected && this._isConnected ) {
       this.connectionEstablished = false;
       this.connectionAccepted = false;
-      this.isConnected = false;
+      this._isConnected = false;
+      this.connectionFails = 0;
       if ( this.connectionDelegate ) {
         this.connectionDelegate( "Disconnected from server.", false, false );
       }
+    } else if ( !status && this.stayConnected ) {
+      this.connectionDelegate( "Can't connect to server.", false, false );
     }
   }
 
   _icp.onConnect = function ( e ) {
     this.log( "Found server, connecting..." );
-    this.isConnected = true;
+    this._isConnected = true;
   }
 
   _icp.onSocketData = function ( e ) {
-    if ( !this.isConnected ) return; //not sure why this happens but it does
+    if ( !this._isConnected ) return; //not sure why this happens but it does
     var data = this.socket.readUTFBytes( this.socket.bytesAvailable );
     this.log( "RAW rec:" + data );
     if ( !this.connectionEstablished ) {
@@ -682,7 +692,7 @@ if ( window.runtime && air && util ) {
 
   _icp.closeConnection = function ( msg ) {
     this.stayConnected = false;
-    this.isConnected = false;
+    this._isConnected = false;
     this.connectionEstablished = false;
     this.connectionAccepted = false;
     if ( this.socket && this.socket.connected ) {
