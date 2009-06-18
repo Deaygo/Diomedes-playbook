@@ -119,6 +119,7 @@ if ( window.runtime && air && util ) {
     var port = util.fromIndex( parts, 1 );
     this.channelList.createNewConnection( this.currentHost, port, this.prefs.getPrefs( ) );
     this.connection = this.channelList.getConnection( this.currentHost );
+    util.publish( topics.CHANNELS_CHANGED, [ "connect", this.currentHost, this.currentHost ] );
   }
 
   _nn.getNextServer = function ( ) {

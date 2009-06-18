@@ -298,21 +298,19 @@ if ( window.runtime && air && util ) {
     //XXX: this sucks, this special magical flag shit, how does handleChannelsChange have
     //any guarantee that these types wont change, etc
     this.view.updateChannelView( this.channelList.getChannels( ), this.channelsWithActivity, this.channelsHighlighted );
-    if ( this.currentConnection ) {
-      if ( type && type == "part" ) {
-        var currentChannelName = this.currentConnection.getChannelName( this.currentChannel.name );
-        if ( this.currentConnection.server == serverName && currentChannelName == channelName ) {
-          this.setCurrentChannel( this.currentConnection.getServerChannel ( ) );
-        }
-      } else if ( type && type == "nick"  && arg ) {
-        this.setCurrentChannel( this.currentConnection.getChannel( arg ) );
-      } else if ( type && type == "connect" ) {
-        this.handleChannelSelect( serverName, "SERVER",  null );
-        this.currentConnection = this.channelList.getConnection( serverName );
-        this.setCurrentChannel( this.channelList.getServerChannel( serverName ) );
-      } else if ( type && type == "join" ) {
-        this.setCurrentChannel( this.currentConnection.getChannel( channelName ) );
+    if ( this.currentConnection && type && type == "part" ) {
+      var currentChannelName = this.currentConnection.getChannelName( this.currentChannel.name );
+      if ( this.currentConnection.server == serverName && currentChannelName == channelName ) {
+        this.setCurrentChannel( this.currentConnection.getServerChannel ( ) );
       }
+    } else if ( this.currentConnection && type && type == "nick"  && arg ) {
+      this.setCurrentChannel( this.currentConnection.getChannel( arg ) );
+    } else if ( type && type == "connect" ) {
+      this.handleChannelSelect( serverName, "SERVER",  null );
+      this.currentConnection = this.channelList.getConnection( serverName );
+      this.setCurrentChannel( this.channelList.getServerChannel( serverName ) );
+    } else if ( this.currentConnection && type && type == "join" ) {
+      this.setCurrentChannel( this.currentConnection.getChannel( channelName ) );
     }
   }
 
