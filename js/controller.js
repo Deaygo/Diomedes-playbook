@@ -232,7 +232,9 @@ if ( window.runtime && air && util ) {
           var networkName = argsR.shift( );
           var network = this.getNetwork( networkName );
           if ( network ) {
+            console.warn("connecting to network starting");
             network.connect( );
+            console.warn("connecting to network finished");
             this.currentConnection = network.getConnection( host );
             this.setCurrentChannel( this.currentConnection.getServerChannel( ) );
           }
@@ -307,23 +309,41 @@ if ( window.runtime && air && util ) {
   }
 
   _ccp.closeConnection = function ( host ) {
+    console.info("closeCOnnection0000000000000000");
     if ( !host ) return;
+    console.info("closeCOnnection0000000000000001");
     var currentHost = null;
+    console.info("closeCOnnection0000000000000002");
     if ( this.currentConnection ) {
+    console.info("closeCOnnection0000000000000003");
       currentHost = this.currentConnection.server;
+    console.info("closeCOnnection0000000000000004");
     } 
+    console.info("closeCOnnection0000000000000005");
     var connection = this.channelList.getConnection( host );
+    console.info("closeCOnnection0000000000000006");
     connection.sendCommand( "quit", ["Leaving."], this.getCurrentChannelName( ) );
+    console.info("closeCOnnection0000000000000007");
     this.channelList.destroyConnection( host );
+    console.info("closeCOnnection0000000000000008");
     this.handleChannelChange( "destroy", null , host );
+    console.info("closeCOnnection0000000000000009");
     if ( currentHost == host ) {
+    console.info("closeCOnnection000000000000000a");
       this.view.clearActivityView( );
+    console.info("closeCOnnection000000000000000b");
       this.view.clearNickView( );
+    console.info("closeCOnnection000000000000000c");
       delete this.currentConnection;
+    console.info("closeCOnnection000000000000000d");
       delete this.currentChannel;
+    console.info("closeCOnnection000000000000000e");
       this.currentConnection = null;
+    console.info("closeCOnnection000000000000000f");
       this.currentChannel = null;
+    console.info("closeCOnnection0000000000000010");
     }
+    console.info("closeCOnnection0000000000000020");
   }
 
   _ccp.handleChannelChange = function ( type, channelName, serverName, arg ) {
