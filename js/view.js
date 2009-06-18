@@ -380,7 +380,12 @@ if ( window.runtime && air && util ) {
   }
 
   _vip.setValue = function ( value ) {
-    this.input.value = value;
+    var input = this.input;
+    input.value = value;
+    window.setTimeout( function ( ) {
+      var length = input.value.length;
+      input.setSelectionRange(length, length);
+    }, 0 );
   }
 
   _vip.focus = function ( ) {
@@ -430,21 +435,22 @@ if ( window.runtime && air && util ) {
   }
 
   _vip.handleHistoryUp = function ( ) {
-    var value = this.history[ this.historyIndex ];
-    if ( value ) {
-      this.setValue( this.history[ this.historyIndex ] );
-    }
     this.historyIndex++;
+    var value = this.history[ this.historyIndex - 1 ];
+    if ( value ) {
+      this.setValue( value );
+    }
     if (this.history.length < this.historyIndex || this.historyIndex > this.MAX_HISTORY_LENGTH ) {
       this.historyIndex = 0;
+      this.setValue( "" );
     }
     this.needsResetting = true;
   }
 
   _vip.handleHistoryDown = function ( ) {
     if ( this.historyIndex ) {
-      var value = this.history[ this.historyIndex ];
       this.historyIndex--;
+      var value = this.history[ this.historyIndex - 1 ];
       if ( value ) {
         this.setValue( value );
         this.needsResetting = true;
