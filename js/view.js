@@ -494,6 +494,7 @@ if ( window.runtime && air && util ) {
         this.savedValue = value;
       }
       word = word.split("|").join("\\|").split("^").join("\\^").split("-").join("\\-");
+      word = word.split("[").join("\\[").split("]").join("\\]");
       for ( var i = startIndex; i < this.nicks.length; i++ ) {
         var nick = this.nicks[i];
         var nickLC = nick.toLowerCase( );
