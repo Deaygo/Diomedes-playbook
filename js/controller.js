@@ -75,7 +75,7 @@ if ( window.runtime && air && util ) {
   }
 
   _ccp.getNetwork = function ( networkName ) {
-    networkName = networkName.toLowerCase( );
+    networkName = this.formatNetworkName( networkName );
     if ( networkName in this.networks ) {
       return this.networks[ networkName ];
     } else {
@@ -84,14 +84,18 @@ if ( window.runtime && air && util ) {
   }
 
   _ccp.setNetwork = function ( networkName, network ) {
-    networkName = networkName.toLowerCase( );
+    networkName = this.formatNetworkName( networkName );
     this.networks[ networkName ] = network;
   }
 
   _ccp.removeNetwork = function ( networkName ) {
-    networkName = networkName.toLowerCase( );
+    networkName = this.formatNetworkName( networkName );
     this.networks[ networkName ].destroy( );
     delete this.networks[ networkName ] ;
+  }
+
+  _ccp.formatNetworkName = function ( networkName ) {
+    return networkName.toLowerCase( );
   }
 
   _ccp.handleGetNetworks = function ( networks ) {
@@ -121,11 +125,12 @@ if ( window.runtime && air && util ) {
     if ( networks ) {
       for ( var i = 0; i< networks.length; i++ ) {
         var network = networks[ i ];
+        networkName = this.formatNetworkName( networkName );
         var storedNetwork = this.getNetwork( network.name );
         if ( !( storedNetwork ) ) {
           this.setNetwork( network.name, new dNetwork.Network( network, this.model.networks, this.channelList, this.model.prefs ) );
         } else {
-          delete networksFound[ network.name ];
+          delete networksFound[ this.formatNetworkName( network.name ) ];
         }
       }
     }
