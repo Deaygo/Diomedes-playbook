@@ -105,17 +105,6 @@ if ( window.runtime && air && util ) {
     }
   }
 
-  _vvp.nickCompare = function ( nick1, nick2 ) {
-    nick1 = nick1.toLowerCase( );
-    nick2 = nick2.toLowerCase( );
-    if ( nick1 < nick2 ) {
-      return -1;
-    }
-    if ( nick1 > nick2 ) {
-      return 1;
-    }
-    return 0;
-  }
 
   _vvp.updateNickView = function ( users, ops, voiced, serverName, channelName ) {
     this.createActivityViewIfNeeded( channelName, serverName );
@@ -950,5 +939,17 @@ if ( window.runtime && air && util ) {
         '</span> '
       ].join("");
   }
+
+  _vnw.nickCompare = function ( nick1, nick2 ) {
+    nick1 = nick1.toLowerCase( );
+    nick2 = nick2.toLowerCase( );
+    if ( nick1 < nick2 ) {
+      return -1;
+    }
+    if ( nick1 > nick2 ) {
+      return 1;
+    }
+    return 0;
+  } 
 
 }
