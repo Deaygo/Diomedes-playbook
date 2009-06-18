@@ -169,5 +169,11 @@ if ( window.runtime && air && util ) {
     window.setTimeout( util.hitch( this, "perform" ), 1000 );
   }
 
+  _nn.destroy = function ( ) {
+    if ( this.currentHost ) {
+      util.publish( topics.CONNECTION_CLOSE, [ this.currentHost ] );
+    }
+  }
+
 }
 

@@ -87,12 +87,24 @@ if ( window.runtime && air && util ) {
   }
 
   _ccp.handleUpdateNetworks = function ( networks ) {
-    for ( var i = 0; i< networks.length; i++ ) {
-      var network = networks[ i ];
-      if ( !( network.name in this.networks ) ) {
-        util.log("network.Network: " + network.Network );
-        this.networks[ network.name ] = new dNetwork.Network( network, this.model.networks, this.channelList, this.model.prefs );
+    var networksFound = {};
+    for ( var networkName in this.networks ) {
+      networksFound[ networkName ] = 0;
+    }
+    if ( networks ) {
+      for ( var i = 0; i< networks.length; i++ ) {
+        var network = networks[ i ];
+        if ( !( network.name in this.networks ) ) {
+          util.log("network.Network: " + network.Network );
+          this.networks[ network.name ] = new dNetwork.Network( network, this.model.networks, this.channelList, this.model.prefs );
+        } else {
+          delete networksFound[ network.name ];
+        }
       }
+    }
+    for ( var networkName in networksFound ) {
+      this.networks[ networkName ].destroy( );
+      delete this.networks[ networkName ];
     }
   }
 

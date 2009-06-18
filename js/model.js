@@ -46,13 +46,13 @@ if ( window.runtime && air && util ) {
   }
 
   _mmp._executeSQL = function ( sql, type, resultsHandler, parameters, errorHandler, isRexecution ) {
-    this.log( "Executing SQL statement..." );
+    this.log( "Executing SQL statement... sql: " + sql );
     if ( !sql || !type || !resultsHandler ) {
       this.log( "Required params missing for _executeSQL" );
       return;
     }
     if ( !isRexecution && this.connLocked ) {
-      this.log( "Connection locked.");
+      this.log( "Connection locked. sql: " + sql);
       window.setTimeout( util.hitch( this, "_executeSQL", [ sql, type, resultsHandler, parameters, errorHandler ] ), 1 );
       return;
     } 
