@@ -170,10 +170,17 @@ if ( window.runtime && air && util ) {
     window.setTimeout( util.hitch( this, "perform" ), 1000 );
   }
 
-  _nn.destroy = function ( ) {
+  _nn.close = function ( ) {
+    console.info("closing : " + this.currentHost);
     if ( this.currentHost ) {
       util.publish( topics.CONNECTION_CLOSE, [ this.currentHost ] );
+      this.connection = null;
+      this.currentHost = null;
     }
+  }
+
+  _nn.destroy = function ( ) {
+    this.close( );
   }
 
 }

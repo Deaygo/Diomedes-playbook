@@ -245,8 +245,15 @@ if ( window.runtime && air && util ) {
         }
       } else if ( cmd == "close" ) {
         if ( this.view.getConfirmation( "close a connection" ) ) {
+          console.info("closing ");
           if ( this.currentConnection ) {
-            this.closeConnection( this.currentConnection.server );
+            var network = this.getNetwork( this.currentConnection.server );
+            console.info("network: " + network + " this.currentConnection.server: " + this.currentConnection.server);
+            if ( network ) {
+              network.close( );
+            } else if ( this.currentConnection ) {
+              this.closeConnection( this.currentConnection.server );
+            }
           }
         }
       } else if ( cmd == "help" ) {
