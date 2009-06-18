@@ -19,6 +19,8 @@ if(!topics) {
     USER_INPUT: "/user/input/",
     USER_HIGHLIGHT: "/user/highlight/",
 
+    NICK_CHANGE: "/nick/change/",
+
     PREFS_SAVE: "/prefs/save/",
     PREFS_CHANGE_HISTORY_LENGTH: "/prefs/change/history/length/",
 

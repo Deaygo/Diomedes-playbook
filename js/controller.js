@@ -50,6 +50,7 @@ if ( window.runtime && air && util ) {
     util.subscribe( topics.ALIAS_DELETE, this, "handleAliasDelete", [] );
     util.subscribe( topics.ALIAS_CHANGE, this, "getAliases", [] );
     util.subscribe( topics.CONNECTION_CLOSE, this, "closeConnection", [] );
+    util.subscribe( topics.USER_ACTIVITY, this, "handleUserActivity", [] );
   }
 
   _ccp = dController.Controller.prototype;
@@ -335,7 +336,6 @@ if ( window.runtime && air && util ) {
         delete this.channelsHighlighted[ serverName ][ channelName ];
       }
       this.currentChannel = channel;
-      this.nickListSubscription = util.subscribe( topics.USER_ACTIVITY + channel.name, this, "queryNickList", [] );
       this.currentChannel.publishUserActivity();
       this.view.finishChannelChange( );
       this.handleChannelChange( "set", channelName, serverName );
@@ -355,6 +355,11 @@ if ( window.runtime && air && util ) {
     }
     this.queryTimer[ serverName ][ channelName ] = window.setTimeout( util.hitch( this, "updateChannelFromTimer", [ channelName, serverName ] ), 100 );
     if ( this.currentConnection && isPM ) {
+    util.log('this.currentConnection: ' + this.currentConnection );
+    util.log('this.currentConnection.server: ' + this.currentConnection.server );
+    util.log('this.currentConnection.getChannelName: ' + this.currentConnection.getChannelName );
+    util.log("this.currentChannel: " + this.currentChannel );
+    util.log("this.currentChannel.name: " + this.currentChannel.name );
       if ( !( this.currentConnection.server == serverName && channelName == this.currentConnection.getChannelName( this.currentChannel.name ) ) ) {
         this.updateUnreadActivity( this.channelsWithActivity, channelName, serverName );
       }
@@ -401,11 +406,20 @@ if ( window.runtime && air && util ) {
   _ccp.handleChannelListSelection = function ( channel, server ) {
   }
 
-  _ccp.queryNickList = function ( ) {
-    var users = this.currentChannel.getUsers( );
-    var ops = this.currentChannel.getOps( );
-    var voiced = this.currentChannel.getVoiced( );
-    this.view.updateNickView( users, ops, voiced ); 
+  _ccp.handleUserActivity = function ( serverName, channelName ) {
+    var connection = this.channelList.getConnection( serverName );
+    if ( connection ) {
+      var channel = this.channelList.getChannel( channelName, serverName );
+      if ( !channel ) {
+        channel = connection.getServerChannel( );
+      }
+      if ( channel ) {
+        var users = channel.getUsers( );
+        var ops = channel.getOps( );
+        var voiced = channel.getVoiced( );
+        this.view.updateNickView( users, ops, voiced, serverName, channelName ); 
+      }
+    }
   }
 
   _ccp.updateChannel = function ( channelName, serverName ) {

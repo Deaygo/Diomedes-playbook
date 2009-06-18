@@ -366,7 +366,7 @@ if ( window.runtime && air && util ) {
 
   _cnp.getChannel = function ( name ) {
     var channelName = this.getChannelName( name );
-    if (name in this.channels) {
+    if ( channelName in this.channels) {
       var channel = this.channels[channelName];
       return channel;
     } else {
@@ -651,7 +651,7 @@ if ( window.runtime && air && util ) {
   }
 
   _clp.publishUserActivity = function ( ) {
-    util.publish( topics.USER_ACTIVITY + this.name );
+    util.publish( topics.USER_ACTIVITY, [ this.server, this.name ] );
   }
 
   _clp.getActivity = function ( msg ) {

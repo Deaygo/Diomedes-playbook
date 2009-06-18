@@ -134,8 +134,12 @@ if ( window.runtime && air ) {
   util._subs = {};
 
   util.subscribe = function ( type, scope, handler, args ) {
-    if ( !this._subs[type] ) this._subs[type] = [];
-    var length = this._subs[type].push( {scope:scope, handler:handler, args:args} ) ;
+    if ( !this._subs[ type ] ) this._subs[ type ] = [];
+    var length = this._subs[ type ].push( {
+        scope : scope, 
+        handler : handler, 
+        args : ( args ? args : [] )
+    } ) ;
     var id = type + ";" + length; //length is the new index + 1
     return id;
   }

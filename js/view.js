@@ -52,7 +52,7 @@ if ( window.runtime && air && util ) {
   }
 
   _vvp.clearNickView = function ( ) {
-    this.nickList.innerHTML = "";
+    this.activeWin.nickWindow.clear( );
   }
 
   _vvp.displayHelp = function ( ) {
@@ -61,13 +61,19 @@ if ( window.runtime && air && util ) {
 
   _vvp.changeView = function ( serverName, channelName ) {
     this.createActivityViewIfNeeded( channelName, serverName );
-    this.activeWin = this.activityWindows[ serverName ][ channelName ];
+    this.activeWin = this.getActivityWindow( channelName, serverName )
     if ( this.activityWindow.childNodes.length ) {
       this.activityWindow.replaceChild( this.activeWin.getNode( ), this.activityWindow.firstChild );
     } else {
       this.activityWindow.appendChild( this.activeWin.getNode( ) );
     }
+    if ( this.nickList.childNodes.length ) {
+      this.nickList.replaceChild( this.activeWin.nickWindow.getNode( ), this.nickList.firstChild );
+    } else {
+      this.nickList.appendChild( this.activeWin.nickWindow.getNode( ) );
+    }
     this.activeWin.changeView( );
+    this.input.changeChannel( this.activeWin.nickWindow.getNicks( ), serverName, channelName );
   }
 
   _vvp.handleActivityWindowClick = function ( e ) {
@@ -99,15 +105,6 @@ if ( window.runtime && air && util ) {
     }
   }
 
-  _vvp.getSortedNicks = function ( users ) {
-    var r = [];
-    for ( var nick in users ) {
-      r.push( nick );
-    }
-    r.sort( this.nickCompare );
-    return r;
-  }
-
   _vvp.nickCompare = function ( nick1, nick2 ) {
     nick1 = nick1.toLowerCase( );
     nick2 = nick2.toLowerCase( );
@@ -120,52 +117,9 @@ if ( window.runtime && air && util ) {
     return 0;
   }
 
-  _vvp.updateNickView = function ( users, ops, voiced ) {
-    if ( !users ) return;
-    var mode;
-    var r = [];
-    var usersR = [];
-    var opsR = [];
-    var voicedR = [];
-    var begTime = new Date().getTime();
-    var nicks = this.getSortedNicks( users );
-    for ( var i = 0; i < nicks.length; i++ ) {
-      var nick = nicks[i];
-      if ( nick in ops ) {
-        mode = "@";
-        opsR.push( this.getNickButton( users[nick], mode ) );
-      } else if ( nick in voiced ) {
-        mode = "+";
-        voicedR.push( this.getNickButton( users[nick], mode ) );
-      } else {
-        mode = "";
-        usersR.push( this.getNickButton( users[nick], mode ) );
-      }
-    }
-    r = r.concat(opsR);
-    r = r.concat(voicedR);
-    r = r.concat(usersR);
-    this.setContents( this.nickList, r.join( "" ), false );
-    var endTime = new Date().getTime();
-    this.input.setNicks( nicks ); //for tab completion
-  }
-
-  _vvp.getNickButton = function ( user, mode ) {
-    return [
-        ' <span class="nickButton',
-        ( mode == "@" ? " op" : "" ),
-        ( mode == "+" ? " voiced" : "" ),
-        '" mode="',
-        mode,
-        '" nick="',
-        user.nick,
-        '" host="',
-        user.host,
-        '">',
-          mode,
-          user.nick,
-        '</span> '
-      ].join("");
+  _vvp.updateNickView = function ( users, ops, voiced, serverName, channelName ) {
+    this.createActivityViewIfNeeded( channelName, serverName );
+    this.getActivityWindow( channelName, serverName ).nickWindow.update( users, ops, voiced );
   }
 
   _vvp.updateChannelView = function ( channels, channelsWithActivity, channelsWithHighlight ) {
@@ -229,6 +183,8 @@ if ( window.runtime && air && util ) {
   }
 
   _vvp.createActivityViewIfNeeded = function ( channelName, serverName ) {
+    channelName = channelName.toLowerCase( );
+    serverName = serverName.toLowerCase( );
     if ( !( serverName in this.activityWindows ) ) {
       this.activityWindows[ serverName ] = {};
     }
@@ -237,9 +193,20 @@ if ( window.runtime && air && util ) {
     }
   }
 
+  _vvp.getActivityWindow = function ( channelName, serverName ) {
+    channelName = channelName.toLowerCase( );
+    serverName = serverName.toLowerCase( );
+    if ( serverName in this.activityWindows ) {
+      if ( channelName in this.activityWindows[ serverName ] ) {
+        return this.activityWindows[ serverName ][ channelName ];
+      }
+    }
+    return null;
+  }
+
   _vvp.updateActivityView = function ( messages, ops, voiced, userNick, channelName, serverName ) {
     this.createActivityViewIfNeeded( channelName, serverName );
-    this.activityWindows[ serverName ][ channelName ].update( messages, ops, voiced, userNick );
+    this.getActivityWindow( channelName, serverName ).update( messages, ops, voiced, userNick );
   }
 
   _vvp.highlight = function ( ) {
@@ -408,6 +375,9 @@ if ( window.runtime && air && util ) {
     this.history = [];
     this.historyIndex = 0;
     this.reset( );
+    this.channelName = null;
+    this.serverName = null;
+    util.subscribe( topics.NICK_CHANGE, this, "handleNickChange", [] );
   }
 
   _vip = dView.FormInput.prototype;
@@ -442,8 +412,16 @@ if ( window.runtime && air && util ) {
     }
   }
 
-  _vip.setNicks = function ( nicks ) {
+  _vip.changeChannel = function ( nicks, serverName, channelName ) {
+    this.serverName = serverName;
+    this.channelName = channelName;
     this.nicks = nicks;
+  }
+
+  _vip.handleNickChange = function ( nicks, serverName, channelName ) {
+    if ( serverName == this.serverName && channelName == this.channelName ) {
+      this.nicks = nicks;
+    }
   }
 
   _vip.handleInputChange = function ( e ) {
@@ -579,7 +557,8 @@ if ( window.runtime && air && util ) {
       "#BC8F8F", //pink
       "#C0C0C0", //grey
       "#A8A8A8", //lightgrey
-    ]
+    ];
+    this.nickWindow = new dView.NickWindow( serverName, channelName );
     this.win = document.createElement( "div" );
     this.win.setAttribute( "class", "activityWin" );
     this.serverName = serverName; 
@@ -889,6 +868,87 @@ if ( window.runtime && air && util ) {
       } else {
         return "";
       }
+  }
+
+  dView.NickWindow = function ( serverName, channelName ) {
+    this.serverName = serverName;
+    this.channelName = channelName;
+    this.win = document.createElement( "div" );
+    this.win.setAttribute( "class", "nickWin" );
+    this.win.setAttribute( "server", this.serverName );
+    this.win.setAttribute( "channel", this.channelName );
+  }
+
+  _vnw = dView.NickWindow.prototype;
+
+  _vnw.setContents = _vvp.setContents;
+
+  _vnw.clear = function ( ) {
+    this.win.innerHTML = "";
+  }
+
+  _vnw.getNode = function ( ) {
+    return this.win;
+  }
+
+  _vnw.getNicks = function ( ) {
+    return this.nicks;
+  }
+
+  _vnw.update = function ( users, ops, voiced ) {
+    if ( !users ) return;
+    var mode;
+    var r = [];
+    var usersR = [];
+    var opsR = [];
+    var voicedR = [];
+    var nicks = this.sort( users );
+    for ( var i = 0; i < nicks.length; i++ ) {
+      var nick = nicks[i];
+      if ( nick in ops ) {
+        mode = "@";
+        opsR.push( this.getNickButton( users[nick], mode ) );
+      } else if ( nick in voiced ) {
+        mode = "+";
+        voicedR.push( this.getNickButton( users[nick], mode ) );
+      } else {
+        mode = "";
+        usersR.push( this.getNickButton( users[nick], mode ) );
+      }
+    }
+    r = r.concat(opsR);
+    r = r.concat(voicedR);
+    r = r.concat(usersR);
+    this.setContents( this.win, r.join( "" ), false );
+    this.nicks = nicks;
+    util.publish( topics.NICK_CHANGE, [ nicks, this.serverName, this.channelName ] );
+  }
+
+  _vnw.sort = function ( users ) {
+    var r = [];
+    for ( var nick in users ) {
+      r.push( nick );
+    }
+    r.sort( this.nickCompare );
+    return r;
+  }
+
+  _vnw.getNickButton = function ( user, mode ) {
+    return [
+        ' <span class="nickButton',
+        ( mode == "@" ? " op" : "" ),
+        ( mode == "+" ? " voiced" : "" ),
+        '" mode="',
+        mode,
+        '" nick="',
+        user.nick,
+        '" host="',
+        user.host,
+        '">',
+          mode,
+          user.nick,
+        '</span> '
+      ].join("");
   }
 
 }
