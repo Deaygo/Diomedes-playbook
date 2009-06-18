@@ -57,13 +57,17 @@ if ( window.runtime && air && util ) {
     return null;
   }
 
-  _cnp.addActivityToChannel = function( target, msg ) {
+  _cnp.addActivityToChannel = function( target, msg, from ) {
+    //from is optional and is explicit about who the message is from
+    //only applicable to private messages
     var isPM = false;
     var _nick = this.getNick( );
     //determine if channel or PM first
     if ( target[0] != "#" && target[0] != "&" ) {
       isPM = true;
-      if ( msg.nick != _nick ) {
+      if ( from ) {
+        var channelName = this.getChannelName( from );
+      } else if ( msg.nick != _nick ) {
         var channelName = this.getChannelName( msg.nick );
       } else {
         var channelName = this.getChannelName( target );
@@ -154,8 +158,9 @@ if ( window.runtime && air && util ) {
   _cnp.handleNotice = function ( nick, host, target, msg ) {
     var msg = new dConnection.ActivityItem( "notice", nick, target, msg );
     for ( var channel in this.channels ) {
-      this.addActivityToChannel( channel, msg );
+      this.addActivityToChannel( channel, msg, channel );
     }
+    this.serverChannel.addActivity( msg );
   }
 
   _cnp.handleQuit = function ( nick, host, msg ) {
