@@ -74,11 +74,31 @@ if ( window.runtime && air && util ) {
     this.model.networks.getNetworks( util.hitch( this, "handleGetNetworks" ) );
   }
 
+  _ccp.getNetwork = function ( networkName ) {
+    networkName = networkName.toLowerCase( );
+    if ( networkName in this.networks ) {
+      return this.networks[ networkName ];
+    } else {
+      return null;
+    }
+  }
+
+  _ccp.setNetwork = function ( networkName, network ) {
+    networkName = networkName.toLowerCase( );
+    this.networks[ networkName ] = network;
+  }
+
+  _ccp.removeNetwork = function ( networkName ) {
+    networkName = networkName.toLowerCase( );
+    this.networks[ networkName ].destroy( );
+    delete this.networks[ networkName ] ;
+  }
+
   _ccp.handleGetNetworks = function ( networks ) {
     if ( !networks ) return;
     for ( var i = 0; i < networks.length; i++ ) {
       var network = networks[ i ];
-      this.networks[ network.name ] = new dNetwork.Network( network, this.model.networks, this.channelList, this.model.prefs );
+      this.setNetwork( network.name, new dNetwork.Network( network, this.model.networks, this.channelList, this.model.prefs ) );
     }
   }
 
@@ -95,17 +115,16 @@ if ( window.runtime && air && util ) {
     if ( networks ) {
       for ( var i = 0; i< networks.length; i++ ) {
         var network = networks[ i ];
-        if ( !( network.name in this.networks ) ) {
-          util.log("network.Network: " + network.Network );
-          this.networks[ network.name ] = new dNetwork.Network( network, this.model.networks, this.channelList, this.model.prefs );
+        var storedNetwork = this.getNetwork( network.name );
+        if ( !( storedNetwork ) ) {
+          this.setNetwork( network.name, new dNetwork.Network( network, this.model.networks, this.channelList, this.model.prefs ) );
         } else {
           delete networksFound[ network.name ];
         }
       }
     }
     for ( var networkName in networksFound ) {
-      this.networks[ networkName ].destroy( );
-      delete this.networks[ networkName ];
+      this.removeNetwork( networkName );
     }
   }
 
@@ -200,8 +219,9 @@ if ( window.runtime && air && util ) {
       } else if ( cmd == "connect" ) {
         if ( argsR.length > 0 ) {
           var networkName = argsR.shift( );
-          if ( networkName in this.networks ) {
-            this.networks[ networkName ].connect( );
+          var network = this.getNetwork( networkName );
+          if ( network ) {
+            network.connect( );
           }
         }
       } else if ( cmd == "exit" ) {
