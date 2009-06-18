@@ -95,10 +95,16 @@ if ( window.runtime && air && util ) {
   }
 
   _ccp.handleGetNetworks = function ( networks ) {
+    util.log("handleGetNetworks");
     if ( !networks ) return;
     for ( var i = 0; i < networks.length; i++ ) {
       var network = networks[ i ];
       this.setNetwork( network.name, new dNetwork.Network( network, this.model.networks, this.channelList, this.model.prefs ) );
+      var connection = this.getNetwork( network.name ).getConnection( );
+      if ( connection ) {
+        this.currentConnection = connection;
+        this.setCurrentChannel( this.currentConnection.getServerChannel( ) );
+      }
     }
   }
 
@@ -188,7 +194,7 @@ if ( window.runtime && air && util ) {
   }
 
   _ccp.handleInput = function ( input, server ) {
-    util.log( "input: " + input );
+    util.log( "input: " + input + " server: " + server );
     if ( input.search( "/" ) == 0 ) {
       //it's a command
       var argsR = input.substr( 1 ).split( " " );
@@ -222,6 +228,8 @@ if ( window.runtime && air && util ) {
           var network = this.getNetwork( networkName );
           if ( network ) {
             network.connect( );
+            this.currentConnection = network.getConnection( host );
+            this.setCurrentChannel( this.currentConnection.getServerChannel( ) );
           }
         }
       } else if ( cmd == "exit" ) {
@@ -243,14 +251,14 @@ if ( window.runtime && air && util ) {
         util.publish( topics.USER_INPUT, [ this.createInputFromAlias( this.aliases[ cmd ], argsR ), server ] );
       } else {
         //hand command over to currentConnection
-        if ( this.currentConnection ) {
-          util.log("cascading cmd down to connection");
-          this.currentConnection.sendCommand( cmd, this.replaceTokens( argsR, this.currentConnection ), this.getCurrentChannelName( ) );
-        } else if ( server ) {
+        if ( server ) {
           var connection = this.channelList.getConnection( server );
           if ( connection ) {
             connection.sendCommand( cmd, this.replaceTokens( argsR, connection ), server );
           }
+        } else if ( this.currentConnection ) {
+          util.log("cascading cmd down to connection");
+          this.currentConnection.sendCommand( cmd, this.replaceTokens( argsR, this.currentConnection ), this.getCurrentChannelName( ) );
         }
       }
     } else {

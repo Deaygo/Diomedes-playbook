@@ -77,7 +77,9 @@ if ( window.runtime && air ) {
 
   util.log = function ( msg ) {
     var d = new Date( );
-    air.trace( "[" + d.toString() + "] UTIL LOG: " + msg + "\n" );
+    msg = "[" + d.toString() + "] UTIL LOG: " + msg + "\n";
+    air.trace( msg );
+    //console.log(msg);
     delete d;
   }
 
