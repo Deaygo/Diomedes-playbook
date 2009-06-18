@@ -12,7 +12,6 @@ if ( window.runtime && air && util ) {
   //requires AIR and util
 
   dModel.Model = function ( ) {
-    this.connLocked = false;
     this.SQL_TYPES = {
       "INTEGER" : "INTEGER",
       "TEXT" : "TEXT",
@@ -30,19 +29,21 @@ if ( window.runtime && air && util ) {
 
   var _mmp = dModel.Model.prototype;
 
-  _mmp._openSQLConn = function ( type, openHandler, errorHandler ) {
+  _mmp._openSQLConn = function ( type, errorHandler ) {
     this.log( "Opening SQL connection..." );
-    if ( !openHandler || !type ) {
+    if ( !type ) {
       this.log( "Required params missing for _openSQLConn" );
       return;
     }
     if ( !errorHandler ) errorHandler = util.hitch( this, "_handleError", [ "openSQLConnection" ] );
     if ( this.conn ) this.closeConnection( );
     this.conn = new air.SQLConnection( ); 
-    this.conn.addEventListener( air.SQLEvent.OPEN, openHandler ); 
-    this.conn.addEventListener( air.SQLErrorEvent.ERROR, errorHandler ); 
     var dbFile = air.File.applicationStorageDirectory.resolvePath( this.DATABASE_NAME ); 
-    this.conn.openAsync( dbFile ); 
+    try {
+      this.conn.open( dbFile, type ); 
+    } catch ( error ) {
+      errorHandler( error );
+    }
   }
 
   _mmp._executeSQL = function ( sql, type, resultsHandler, parameters, errorHandler, isRexecution ) {
@@ -51,20 +52,14 @@ if ( window.runtime && air && util ) {
       this.log( "Required params missing for _executeSQL" );
       return;
     }
-    if ( !isRexecution && this.connLocked ) {
-      this.log( "Connection locked. sql: " + sql);
-      window.setTimeout( util.hitch( this, "_executeSQL", [ sql, type, resultsHandler, parameters, errorHandler ] ), 1 );
-      return;
-    } 
-    this.connLocked = true;
     if ( !errorHandler ) errorHandler = util.hitch( this, "_handleError", [ "SQL: " + sql ] );
     if ( !this.conn || !this.conn.connected ) { 
       this.log( "Connection not open when calling _executeSQL, opening it");
-      this._openSQLConn( type, util.hitch( this, "_reExecuteSQL", [ sql, type, resultsHandler, parameters, errorHandler ] ), errorHandler );
-      return;
+      this._openSQLConn( type, errorHandler );
     }
     var s = new air.SQLStatement( ); 
     s.sqlConnection = this.conn; 
+    this.statement = s;
     this.log( "executing sql: " + sql );
     s.text = sql; 
     if ( parameters ) {
@@ -74,15 +69,12 @@ if ( window.runtime && air && util ) {
         }
       }
     }
-    s.addEventListener( air.SQLEvent.RESULT, util.hitch( this, "_statementResultHandler", [ resultsHandler ] ) ); 
-    s.addEventListener( air.SQLErrorEvent.ERROR, util.hitch( this, "_statementResultHandler", [ errorHandler ] ) ); 
-    s.execute( ); 
-    this.statement = s ;
-  }
-
-  _mmp._reExecuteSQL = function ( e, sql, type, resultsHandler, parameters, errorHandler ) {
-    this.log( "Re-excuting sql." );
-    this._executeSQL( sql, type, resultsHandler, parameters, errorHandler, true );
+    try {
+      s.execute( ); 
+      this._statementResultHandler( null, resultsHandler );
+    } catch ( error ) {
+      this._statementResultHandler( error, errorHandler );
+    }
   }
 
   _mmp._statementResultHandler = function ( e, resultsHandler ) {
@@ -92,7 +84,6 @@ if ( window.runtime && air && util ) {
     delete this.statement;
     this.statement = null;
     this.closeConnection( );
-    this.connLocked = false;
     resultsHandler( e, result );
   }
 
