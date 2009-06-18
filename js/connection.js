@@ -279,8 +279,12 @@ if ( window.runtime && air && util ) {
         if ( this.channels[target].hasUser( user ) ) {
           var channel = this.channels[target];
           util.log( "changing " + user.nick + " to " + newUser.nick + " in " + target );
+          var hasOps = channel.userHasOps( user.nick );
+          var hasVoice = channel.userHasVoice( user.nick );
           channel.remUser( user );
           channel.addUser( newUser );
+          if ( hasOps ) channel.opUser( newUser.nick );
+          if ( hasVoice ) channel.voiceUser( newUser.nick );
           channel.publishUserActivity( );
           this.addActivityToChannel( target, msg );
         }
@@ -581,6 +585,14 @@ if ( window.runtime && air && util ) {
   _clp.setName = function ( name ) {
     //if it's actually a pm window user can change nicks
     this.name = name;
+  }
+
+  _clp.userHasOps = function ( nick ) {
+    return ( nick in this.ops );
+  }
+
+  _clp.userHasVoice = function ( nick ) {
+    return ( nick in this.voiced );
   }
 
   _clp.opUser = function ( nick ) {
