@@ -463,6 +463,13 @@ if ( window.runtime && air && util ) {
         } 
         this.client.sendQuit( msg );
         break;
+      case "ctcp":
+        if ( args && args.length > 1 ) {
+          var target = args.shift( );
+          var msg = args.join( " " );
+          this.client.sendCTCP( target, msg );
+        }
+        break;
       case "me":
         var msg = args.join( " " );
         this.client.sendAction( target, msg );

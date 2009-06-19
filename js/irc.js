@@ -597,6 +597,18 @@ if ( window.runtime && air && util ) {
     }
   }
 
+  _icp.sendCTCP = function ( target, msg ) {
+    var token = String.fromCharCode( 001 );
+    if ( msg ) {
+      var parts = msg.split( " " );
+      if ( parts && parts.length ) {
+        var cmd = parts.shift( );
+        var msg = parts.join( " " );
+        this.sendPM( target, token + cmd.toUpperCase( ) + " " + msg + token );
+      }
+    }
+  }
+
   _icp.sendMOTD = function ( ) {
     this._send( "MOTD" );
   }
@@ -614,8 +626,7 @@ if ( window.runtime && air && util ) {
   }
 
   _icp.sendAction = function ( target, msg ) {
-    var token = String.fromCharCode( 001 );
-    this.sendPM( target, token + "ACTION " + msg + token );
+    this.sendCTCP( target, "ACTION " + msg );
   }
 
   _icp.sendNotice = function ( target, msg ) {
