@@ -26,6 +26,8 @@ if ( window.runtime && air && util ) {
     this.port = port;
     this.altNickTries = 0;
 
+    this.pollTime = parseInt( preferences.pollTime, 10 );
+
     this.client = new irc.Client( server, port, [], nick, preferences.userName, preferences.realName );
 
     //set delegates
@@ -122,6 +124,10 @@ if ( window.runtime && air && util ) {
       this.serverChannel.addActivity( msg_ );
       util.log("PUBLISHING CONNECTION_DISCONNECTED: " + this.server );
       util.publish( topics.CONNECTION_DISCONNECTED, [ this.server ] );
+      var pollTime = this.pollTime;
+      if ( pollTime ) {
+        window.setTimeout( util.hitch( this, "connect" ), pollTime * 1000 );
+      }
     } else {
       var channels = [];
       for ( var channelName in this.channels ) {

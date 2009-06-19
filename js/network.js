@@ -38,7 +38,6 @@ if ( window.runtime && air && util ) {
     model.getPerforms( id, util.hitch( this, "handlePerformInfo" ) );
     this.model = model;
     this.checkInfoProgress( );
-    util.subscribe( topics.CONNECTION_DISCONNECTED, this, "handleDisconnect", [] ) ;
     util.subscribe( topics.NETWORK_CHANGE, this, "handleNetworksChanged", [] );
     util.subscribe( topics.CHANNELS_CHANGED, this, "handleNetworkConnect", [] );
   }
@@ -99,17 +98,6 @@ if ( window.runtime && air && util ) {
     if ( this.data && this.data.autoJoin && this.data.active ) {
       this.connect( );
     }
-  }
-
-  _nn.handleDisconnect = function ( host ) {
-    var pollTime = parseInt( this.prefs.pollTime, 10 );
-    if ( pollTime && pollTime !== 0 && host == this.currentHost ) {
-      window.setTimeout( util.hitch( this, "resetConnection", [ host ] ), pollTime );
-    }
-  }
-
-  _nn.resetConnection = function ( host ) {
-    this.connect( );
   }
 
   _nn.connect = function ( ) {

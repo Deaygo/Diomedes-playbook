@@ -136,6 +136,7 @@ if ( window.runtime && air && util ) {
   }
 
   _icp.connect = function ( ) {
+    if ( this._isConnected) return;
     this.log( "Attempting connection on server: " + this.server + ", on host: " + this.host ); 
     this.stayConnected = true;
     this.socketMonitor = new air.SocketMonitor( this.server, this.port ); 
