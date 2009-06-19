@@ -592,6 +592,10 @@ if ( window.runtime && air && util ) {
     this.name = name;
   }
 
+  _clp.getName = function ( ) {
+    return this.name;
+  }
+
   _clp.userHasOps = function ( nick ) {
     return ( nick in this.ops );
   }

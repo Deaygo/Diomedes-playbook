@@ -115,7 +115,7 @@ if ( window.runtime && air && util ) {
     if ( !channels ) return;
     var r = [];
     for ( var serverName in channels ) {
-      r.push( this.getChannelButton( serverName, serverName, "SERVER" ) );
+      r.push( this.getChannelButton( serverName, serverName, serverName, "SERVER" ) );
       var server = channels[ serverName ];
       if ( serverName in channelsWithActivity ) {
         var activeChannels = channelsWithActivity[ serverName ];
@@ -127,21 +127,24 @@ if ( window.runtime && air && util ) {
       } else {
         var highlightedChannels = null;
       }
-      for ( var channel in server ) {
+      for ( var channelKey in server ) {
+        //channelKey is channelName in lowercase
         var activity = 0;
-        if ( activeChannels && ( channel in activeChannels ) ) {
-          activity = activeChannels[ channel ];
+        if ( activeChannels && ( channelKey in activeChannels ) ) {
+          activity = activeChannels[ channelKey ];
         } 
         var highlight = false;
-        if ( highlightedChannels && ( channel in highlightedChannels ) ) {
+        if ( highlightedChannels && ( channelKey in highlightedChannels ) ) {
           highlight = true;
         }
-        r.push( this.getChannelButton( serverName, channel, "CHANNEL",  activity, highlight) );
+        channelName = server[ channelKey ].getName( ); //channel
+        r.push( this.getChannelButton( serverName, channelKey, channelName, "CHANNEL",  activity, highlight) );
       }
     }
     this.setContents( this.channelList, r.join( "" ), false ); }
 
-  _vvp.getChannelButton = function ( server, name, type, activity, highlight ) {
+  _vvp.getChannelButton = function ( server, channelKey, channelName, type, activity, highlight ) {
+    //channelKey is channelName in lowercase
     var channelActivity = "";
     if ( activity ) {
       channelActivity = [
@@ -159,10 +162,10 @@ if ( window.runtime && air && util ) {
         '" server="',
         server,
         '" name="',
-        name,
+        channelKey,
         '">',
           channelActivity,
-          name,
+          channelName,
         '</a> '
       ].join( "" );
   }
