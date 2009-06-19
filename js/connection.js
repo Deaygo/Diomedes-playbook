@@ -116,6 +116,7 @@ if ( window.runtime && air && util ) {
     if ( nickInUse && this.getNick( ) != this.preferences.altNick && !this.altNickTries ) {
       this.altNickTries = 1;
       this.client.changeNick( this.preferences.altNick );
+      return;
     }
     if ( !connected ) {
       for ( var target in this.channels ) {

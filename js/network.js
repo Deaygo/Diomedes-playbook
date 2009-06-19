@@ -160,7 +160,7 @@ if ( window.runtime && air && util ) {
     }
     util.publish( topics.USER_INPUT, [ util.fromIndex( performs, this.performsProgress ).command, this.currentHost ] );
     this.performsProgress++;
-    window.setTimeout( util.hitch( this, "perform" ), 1000 );
+    window.setTimeout( util.hitch( this, "perform" ), 2500 );
   }
 
   _nn.close = function ( ) {
