@@ -75,6 +75,10 @@ if ( window.runtime && air ) {
     }
   }
 
+  util.rand = function ( min, max ) {
+    return Math.floor( Math.random( ) * ( max - min + 1 ) ) + min;
+  }
+
   util.log = function ( msg ) {
     var d = new Date( );
     msg = "[" + d.toString() + "] UTIL LOG: " + msg + "\n";

@@ -463,6 +463,11 @@ if ( window.runtime && air && util ) {
         } 
         this.client.sendQuit( msg );
         break;
+      case "ping": 
+        if ( args && args.length ) {
+          var target = args.shift( );
+          this.client.sendPing( target );
+        }
       case "ctcp":
         if ( args && args.length > 1 ) {
           var target = args.shift( );

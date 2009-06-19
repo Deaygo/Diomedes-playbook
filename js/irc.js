@@ -44,6 +44,7 @@ if ( window.runtime && air && util ) {
     this.topics = {}; //stores topics by channel name;
     this.lastCTCPReq = new Date( ).getTime( );
     this.CTCP_RESPONSE_WAIT = 5 * 1000; //only one ctcp response 
+    this.pingResponses = {}; //buffer for pings waiting for responses
 
     //Delegates
     this.connectionDelegate = null; //called when for connectivity issues
@@ -58,6 +59,7 @@ if ( window.runtime && air && util ) {
     this.partDelegate = null;
     this.nickDelegate = null;
     this.modeDelegate = null;
+    this.kickDelegate = null;
     this.kickDelegate = null;
 
     //IRC RFC
@@ -311,6 +313,24 @@ if ( window.runtime && air && util ) {
 
   _icp.NOTICE = function ( nick, host, cmd, target, msg ) {
     if ( target && this.noticeDelegate ) {
+      if ( this.isCTCP( msg ) ) {
+        msg = this.getMsgFromCTCP( msg );
+        if ( msg && msg.length > 1 ) {
+          var parts = msg.split( " " );
+          var cmd = parts.shift( );
+          msg = parts.join ( "  " );
+          for ( var i in this.pingResponses ) {
+          }
+          if ( cmd == "PING" && msg in this.pingResponses ) {
+            var then = this.pingResponses[ msg ];
+            var now = new Date( ).getTime( );
+            var diff = ( now - then ) / 1000;
+            msg = "PING response from " + nick + " took " + diff + " seconds.";
+          } else {
+            msg = "CTCP Reply for " + cmd + ": " + msg;
+          }
+        }
+      }
       this.noticeDelegate( nick, host, target, msg );
     }
   }
@@ -476,8 +496,17 @@ if ( window.runtime && air && util ) {
   }
 
   _icp.isCTCP = function ( msg ) {
+    if ( !msg ) return false;
     var token = String.fromCharCode( 001 );
     return (msg[0] == token); 
+  }
+
+  _icp.getMsgFromCTCP = function ( msg ) {
+    if ( msg && msg.length && this.isCTCP( msg ) ) {
+      var token = String.fromCharCode( 001 );
+      return msg.split( token ).join( "" );
+    }
+    return msg;
   }
 
   _icp.getAction = function ( msg ) {
@@ -595,6 +624,12 @@ if ( window.runtime && air && util ) {
     } else {
       this._send( "JOIN " + channels.join( "," ) );
     }
+  }
+
+  _icp.sendPing = function ( target ) {
+    var pingKey = util.rand(0, 99999999).toString( );
+    this.pingResponses[ pingKey ] = new Date( ).getTime( );
+    this.sendCTCP( target, [ "PING", pingKey ].join( " " ) );
   }
 
   _icp.sendCTCP = function ( target, msg ) {
