@@ -130,9 +130,8 @@ if ( window.runtime && air && util ) {
       this.serverChannel.addActivity( msg_ );
       if ( channels.length ) {
         this.client.join( channels );
-      } else {
-        util.publish( topics.CHANNELS_CHANGED, [ "connect", null, this.server ] );
-      }
+      } 
+      util.publish( topics.CHANNELS_CHANGED, [ "connect", null, this.server ] );
     }
   }
 
