@@ -32,6 +32,16 @@ if ( window.runtime && air && util ) {
 
   _vvp = dView.View.prototype;
 
+  _vvp.sanitize = function ( msg ) {
+    if ( msg ) {
+      msg = msg.split( "&" ).join( "&amp;" );
+      msg = msg.split( "<" ).join( "&lt;" );
+      msg = msg.split( ">" ).join( "&gt;" );
+      msg = msg.split( '"' ).join( "&quot;" );
+    }
+    return msg;
+  }
+
   _vvp.getConfirmation = function ( msg ) {
     return window.confirm( "You're about to " + msg + ". Are you sure? " );
   }
@@ -158,14 +168,14 @@ if ( window.runtime && air && util ) {
         ( activity ? " hasActivity " : "" ),
         ( highlight ? " highlight " : "" ),
         '" type="',
-        type,
+        this.sanitize( type ),
         '" server="',
-        server,
+        this.sanitize( server ),
         '" name="',
-        channelKey,
+        this.sanitize( channelKey ),
         '">',
           channelActivity,
-          channelName,
+          this.sanitize( channelName ),
         '</a> '
       ].join( "" );
   }
@@ -570,6 +580,8 @@ if ( window.runtime && air && util ) {
 
   _vap = dView.ActivityWindow.prototype;
 
+  _vap.sanitize = dView.View.prototype.sanitize;
+
   _vap.setContents = _vvp.setContents;
 
   _vap.handleChangeHistoryLength = function ( newLen ) {
@@ -683,7 +695,7 @@ if ( window.runtime && air && util ) {
               '">',
               [
                 ( showBrackets ? '&lt;' : ''  ),
-                nick,
+                this.sanitize( nick ),
                 ( showBrackets ? '&gt;' : ''  ),
               ].join( "" ),
               '</span>',
@@ -695,7 +707,7 @@ if ( window.runtime && air && util ) {
               ( isSelf ? ' isSelf' : '' ),
               ( referencesUser ? ' referencesUser' : '' ),
               '"> ',
-                this.textFormat( m ),
+                this.textFormat( this.sanitize( m ) ),
               '</span> ',
             '</div>'
         ] );
@@ -880,6 +892,8 @@ if ( window.runtime && air && util ) {
 
   _vnw = dView.NickWindow.prototype;
 
+  _vnw.sanitize = dView.View.prototype.sanitize;
+
   _vnw.setContents = _vvp.setContents;
 
   _vnw.clear = function ( ) {
@@ -940,12 +954,12 @@ if ( window.runtime && air && util ) {
         '" mode="',
         mode,
         '" nick="',
-        user.nick,
+        this.sanitize( user.nick ),
         '" host="',
-        user.host,
+        this.sanitize( user.host ),
         '">',
           mode,
-          user.nick,
+          this.sanitize( user.nick ),
         '</span> '
       ].join("");
   }

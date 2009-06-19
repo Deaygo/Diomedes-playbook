@@ -71,14 +71,14 @@ if ( window.runtime && air && util ) {
     }
     try {
       s.execute( ); 
-      this._statementResultHandler( null, resultsHandler );
     } catch ( error ) {
       this._statementResultHandler( error, errorHandler );
     }
+    this._statementResultHandler( null, resultsHandler );
   }
 
   _mmp._statementResultHandler = function ( e, resultsHandler ) {
-    this.log( "Handling statement completion." );
+    this.log( "Handling statement completion: " + this.statement );
     var result = this.statement.getResult( );
     this.log("deleting statement with sql of: " + this.statement.text );
     delete this.statement;

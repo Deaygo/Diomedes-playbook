@@ -693,7 +693,7 @@ if ( window.runtime && air && util ) {
     this.cmd = cmd;
     this.nick = nick;
     this.target = target;
-    this.msg = this.sanitize( msg );
+    this.msg = msg;
     this.datetime = new Date();
     this.displayMsg = null;
     this.altNick;
@@ -738,16 +738,6 @@ if ( window.runtime && air && util ) {
 
   _cai.getDisplay = function ( ) {
     return this.displayMsg;
-  }
-
-  _cai.sanitize = function ( msg ) {
-    if ( msg ) {
-      msg = msg.split( "&" ).join( "&amp;" );
-      msg = msg.split( "<" ).join( "&lt;" );
-      msg = msg.split( ">" ).join( "&gt;" );
-      msg = msg.split( '"' ).join( "&quot;" );
-    }
-    return msg;
   }
 
   _cai.destroy = function ( ) {
