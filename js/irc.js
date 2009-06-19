@@ -59,6 +59,14 @@ if ( window.runtime && air && util ) {
     this.nickDelegate = null;
     this.modeDelegate = null;
     this.kickDelegate = null;
+
+    //IRC RFC
+    this.CHANNEL_MODE_TYPES = {
+      "&":"&",
+      "#":"#",
+      "+":"+",
+      "!":"!",
+    }
   }
 
   var _icp = irc.Client.prototype;
@@ -689,6 +697,14 @@ if ( window.runtime && air && util ) {
 
     this.socket.addEventListener( air.Event.CONNECT, util.hitch( this, "onConnect" ) ); 
     this.socket.addEventListener( air.ProgressEvent.SOCKET_DATA, util.hitch( this, "onSocketData" ) ); 
+  }
+
+  _icp.isChannelName = function ( name ) {
+    //as per RFC 2812
+    //returns if given string could be a channel name
+    //this should be used instead of checking for a # for first character
+    if ( name && name.length && ( name[0] in this.CHANNEL_MODE_TYPES ) ) return true;
+    return false;
   }
 
   _icp.closeConnection = function ( msg ) {

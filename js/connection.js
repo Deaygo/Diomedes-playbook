@@ -65,7 +65,7 @@ if ( window.runtime && air && util ) {
     var isPM = false;
     var _nick = this.getNick( );
     //determine if channel or PM first
-    if ( target[0] != "#" && target[0] != "&" ) {
+    if ( !this.client.isChannelName( target ) ) {
       isPM = true;
       if ( from ) {
         var channelName = this.getChannelName( from );
@@ -447,7 +447,9 @@ if ( window.runtime && air && util ) {
       case "part":
         var msg = "";
         if ( args && args.length ) {
-          target = args.shift( );
+          if ( this.client.isChannelName( args[0] ) ) {
+            target = args.shift( );
+          }
           if ( args.length ) {
             var msg = args.join( " " );
           }
@@ -467,7 +469,7 @@ if ( window.runtime && air && util ) {
         this.handleAction( this.getNick( ), this.host, target, msg );
         break;
       case "names":
-        if ( target[0] == "#" ) {
+        if ( this.client.isChannelName( target ) ) {
           this.client.sendNames( target );
         }
       case "msg":
@@ -488,7 +490,7 @@ if ( window.runtime && air && util ) {
       case "topic":
         if ( args && args.length ) {
           var t = args.shift( );
-          if ( t[0] != "#" ) {
+          if ( !this.client.isChannelName( t ) ) {
             args.unshift( t );
             t = target;
           }
@@ -512,9 +514,10 @@ if ( window.runtime && air && util ) {
   _cnp.partChannel = function (target, msg) {
     var channelName = this.getChannelName(target);
     if (channelName && channelName in this.channels) {
-      util.log("parting " + channelName);
-      this.client.part(target, msg);
-      //get all user from channel and see I still need them for other channels,
+      if ( this.client.isChannelName( channelName ) ) {
+        util.log("parting " + channelName);
+        this.client.part(target, msg);
+      }
       var users = this.channels[channelName].getUsers();
       for (var user in users) {
         var stillExists = false;
