@@ -357,6 +357,9 @@ if ( window.runtime && air && util ) {
       this.handleChannelSelect( serverName, "SERVER",  null );
       this.currentConnection = this.channelList.getConnection( serverName );
       this.setCurrentChannel( this.channelList.getServerChannel( serverName ) );
+    } else if ( serverName && type && type == "join" ) {
+      this.currentConnection = this.channelList.getConnection( serverName );
+      this.setCurrentChannel( this.currentConnection.getChannel( channelName ) );
     } else if ( this.currentConnection && type && type == "join" ) {
       this.setCurrentChannel( this.currentConnection.getChannel( channelName ) );
     }
@@ -401,11 +404,6 @@ if ( window.runtime && air && util ) {
     }
     this.queryTimer[ serverName ][ channelName ] = window.setTimeout( util.hitch( this, "updateChannelFromTimer", [ channelName, serverName ] ), 100 );
     if ( this.currentConnection && isPM ) {
-    util.log('this.currentConnection: ' + this.currentConnection );
-    util.log('this.currentConnection.server: ' + this.currentConnection.server );
-    util.log('this.currentConnection.getChannelName: ' + this.currentConnection.getChannelName );
-    util.log("this.currentChannel: " + this.currentChannel );
-    util.log("this.currentChannel.name: " + this.currentChannel.name );
       if ( !( this.currentConnection.server == serverName && channelName == this.currentConnection.getChannelName( this.currentChannel.name ) ) ) {
         this.updateUnreadActivity( this.channelsWithActivity, channelName, serverName );
       }
