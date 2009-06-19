@@ -78,7 +78,7 @@ if ( window.runtime && air && util ) {
   }
 
   _mmp._statementResultHandler = function ( e, resultsHandler ) {
-    this.log( "Handling statement completion: " + this.statement );
+    this.log( "Handling statement completion" );
     var result = this.statement.getResult( );
     this.log("deleting statement with sql of: " + this.statement.text );
     delete this.statement;
