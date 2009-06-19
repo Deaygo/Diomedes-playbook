@@ -105,7 +105,11 @@ if ( window.runtime && air && util ) {
   }
 
   _ccp.formatNetworkName = function ( networkName ) {
-    return networkName.toLowerCase( );
+    if ( networkName ) {
+      return networkName.toLowerCase( );
+    } else {
+      return null;
+    }
   }
 
   _ccp.handleGetNetworks = function ( networks ) {
