@@ -13,7 +13,12 @@ if ( window.runtime && air && util ) {
   
 
   dNetwork.Network = function ( data, model, channelList, prefs ) {
-    this.prefs = prefs;
+    this.prefs = util.cloneObject( prefs.getPrefs( ) );
+    this.prefs.nick = data.nick;
+    this.prefs.altNick = data.altNick;
+    this.prefs.userName = data.userName;
+    this.prefs.realName = data.realName;
+    this.prefs.finger = data.finger;
     this.data = data;
     this.channelList = channelList;
     this.servers = [];
@@ -97,7 +102,7 @@ if ( window.runtime && air && util ) {
   }
 
   _nn.handleDisconnect = function ( host ) {
-    var pollTime = parseInt( this.prefs.getPrefs( ).pollTime, 10 );
+    var pollTime = parseInt( this.prefs.pollTime, 10 );
     if ( pollTime && pollTime !== 0 && host == this.currentHost ) {
       window.setTimeout( util.hitch( this, "resetConnection", [ host ] ), pollTime );
     }
@@ -117,7 +122,7 @@ if ( window.runtime && air && util ) {
     var parts = this.getNextServer( ).split( ":" );
     this.currentHost = util.fromIndex( parts, 0 );
     var port = util.fromIndex( parts, 1 );
-    this.channelList.createNewConnection( this.currentHost, port, this.prefs.getPrefs( ) );
+    this.channelList.createNewConnection( this.currentHost, port, this.prefs );
     this.connection = this.channelList.getConnection( this.currentHost );
     util.publish( topics.CHANNELS_CHANGED, [ "connect", this.currentHost, this.currentHost ] );
   }
