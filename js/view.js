@@ -618,6 +618,16 @@ if ( window.runtime && air && util ) {
     this.win.innerHTML = "";
   }
 
+  _vap.makeFullID = function ( nick, user ) {
+    if ( user ) {
+      var host = user.getHost( );
+      if ( host ) {
+        nick = [ nick, "!", host ].join( "" );
+      }
+    }
+    return nick;
+  }
+
   _vap.update = function ( messages, userNick, channelName ) {
     var w = this.win;
     var diff = Math.abs( w.scrollTop - ( w.scrollHeight - w.offsetHeight ) );
@@ -651,12 +661,13 @@ if ( window.runtime && air && util ) {
               break;
             case "kick":
               isServer = true;
-              m = msg.nick + " has " + msg.getAltNick( ) + " kicked from " + msg.target + ": " + m;
+              var altUser = msg.getAltUser( );
+              m = msg.nick + " has kicked " + this.makeFullID( altUser.nick, altUser ) + " from " + msg.target + ": " + m;
               break;
             case "part":
               isServer = true;
               //XXX: make a pref here about showing quit messages
-              m = msg.nick + " has parted " + msg.target + ": " + m;
+              m = this.makeFullID( msg.nick, msg.user ) + " has parted " + msg.target + ": " + m;
               break;
             case "topic":
               isServer = true;
@@ -669,14 +680,14 @@ if ( window.runtime && air && util ) {
               break;
             case "join":
               isServer = true;
-              m = msg.nick + " has joined " + msg.target + ".";
+              m = this.makeFullID( msg.nick, msg.user ) + " has joined " + msg.target + ".";
               break;
             case "nick":
               m = msg.nick + " is now known as " + m + ".";
               isServer = true;
               break;
             case "quit":
-              m = msg.nick + " has quit: " + m;
+              m = this.makeFullID( msg.nick, msg.user ) + " has quit: " + m;
               isServer = true;
               break;
             case "server":

@@ -164,7 +164,9 @@ if ( window.runtime && air && util ) {
   }
 
   _cnp.handleNotice = function ( nick, host, target, msg ) {
-    var msg = new dConnection.ActivityItem( "notice", nick, target, msg, this.getUser( nick ) );
+    var user = this.getUser( nick );
+    if ( user ) user.setHost( host );
+    var msg = new dConnection.ActivityItem( "notice", nick, target, msg, user );
     for ( var channel in this.channels ) {
       this.addActivityToChannel( channel, msg, channel );
     }
@@ -175,6 +177,7 @@ if ( window.runtime && air && util ) {
     //remove nick from channels
     var user = this.getUser( nick );
     if ( user ) {
+      user.setHost( host );
       var msg = new dConnection.ActivityItem( "quit", nick, null, msg, user );
       for ( var target in this.channels ) {
         var channel = this.channels[ target ];
@@ -206,8 +209,11 @@ if ( window.runtime && air && util ) {
 
   _cnp.handleKick = function ( nick, kickedNick, host, target, msg ) {
     util.log( "handling kick nick: "  + nick + " kickedNick: " + kickedNick );
-    var msg = new dConnection.ActivityItem( "kick", nick, target, msg, this.getUser( nick ) );
-    msg.setAltNick( kickedNick );
+    var user = this.getUser( nick );
+    if ( user ) user.setHost( host );
+    var msg = new dConnection.ActivityItem( "kick", nick, target, msg, user );
+    var altUser = this.getUser( kickedNick );
+    msg.setAltUser( altUser );
     if ( kickedNick != this.getNick( ) ) {
       this.remUserFromChannel( kickedNick, target );
       this.addActivityToChannel( target, msg );
@@ -222,7 +228,9 @@ if ( window.runtime && air && util ) {
   }
 
   _cnp.handleAction = function ( nick, host, target, msg ) {
-    var msg = new dConnection.ActivityItem( "action", nick, target, msg, this.getUser( nick ) );
+    var user = this.getUser( nick );
+    if ( user ) user.setHost( host );
+    var msg = new dConnection.ActivityItem( "action", nick, target, msg, user );
     if ( this.referencesUser( msg.msg ) ) {
       msg.setReferencesUser( );
     } 
@@ -231,7 +239,9 @@ if ( window.runtime && air && util ) {
 
   _cnp.handleMessage = function ( nick, host, target, msg ) {
     //XXX: if target is this.getNick( ) and nick not a channel, open new channel
-    var msg = new dConnection.ActivityItem( "privmsg", nick, target, msg, this.getUser( nick ) );
+    var user = this.getUser( nick );
+    if ( user ) user.setHost( host );
+    var msg = new dConnection.ActivityItem( "privmsg", nick, target, msg, user );
     if ( this.referencesUser( msg.msg, target, nick ) ) {
       msg.setReferencesUser( );
     } 
@@ -274,16 +284,19 @@ if ( window.runtime && air && util ) {
   }
 
   _cnp.handlePart = function ( nick, host, target, msg ) {
-    this.remUserFromChannel( nick, target );
     if ( !msg ) msg = "";
-    var msg = new dConnection.ActivityItem( "part", nick, target, msg, this.getUser( nick ) );
+    var user = this.getUser( nick );
+    if ( user ) user.setHost( host );
+    var msg = new dConnection.ActivityItem( "part", nick, target, msg, user );
     this.addActivityToChannel( target, msg );
+    this.remUserFromChannel( nick, target );
   }
 
   _cnp.handleNickChange = function ( nick, host, newNick ) {
     util.log( "nick: " + nick + " host: " + host + " newNick: " + newNick );
     var user = this.getUser( nick );
     if ( user ) {
+      user.setHost( host );
       user.rename( newNick );
       delete this.users [ nick ];
       this.users[ newNick ] = user;
@@ -700,7 +713,7 @@ if ( window.runtime && air && util ) {
     this.msg = msg;
     this.datetime = new Date();
     this.displayMsg = null;
-    this.altNick;
+    this.altUser;
     this._referencesUser = false;
   }
 
@@ -710,7 +723,7 @@ if ( window.runtime && air && util ) {
     var ai = new dConnection.ActivityItem( this.cmd, this.nick, this.target, null, this.user );
     ai.msg = this.msg; //avoid resanitizing
     ai.setDateTime( this.datetime );
-    ai.setAltNick( this.altNick );
+    ai.setAltUser( this.altUser );
     ai._referencesUser = this._referencesUser;
     return ai;
   }
@@ -720,8 +733,8 @@ if ( window.runtime && air && util ) {
     this.datetime = datetime;
   }
 
-  _cai.setAltNick = function ( altNick ) {
-    this.altNick = altNick;
+  _cai.setAltUser = function ( altUser ) {
+    this.altUser = altUser;
   }
 
   _cai.setReferencesUser = function ( ) {
@@ -732,8 +745,8 @@ if ( window.runtime && air && util ) {
     return this._referencesUser;
   }
 
-  _cai.getAltNick = function ( ) {
-    return this.altNick;
+  _cai.getAltUser = function ( ) {
+    return this.altUser;
   }
 
   _cai.setDisplay = function ( display ) {
@@ -803,6 +816,14 @@ if ( window.runtime && air && util ) {
 
   _cup.rename = function ( newName ) {
     this.nick = newName;
+  }
+
+  _cup.setHost = function ( host ) {
+    this.host = host;
+  }
+
+  _cup.getHost = function ( ) {
+    return this.host;
   }
 
   _cup.op = function ( channelName ) {
