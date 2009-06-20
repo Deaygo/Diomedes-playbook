@@ -34,15 +34,16 @@
       <label for="pollTime">Reconnect wait (seconds): </label> <input type="text" id="pollTime" />
     </div>
     <div class="formItem">
-      <label for="font">Font: </label> <input type="text" id="font" />
+      <label for="font">Font: </label> <select id="font" ><option value="none">none</option></select>
     </div>
     <div class="formItem">
-      <label for="fontSize">Font size: </label> <input type="text" id="fontSize" />
+      <label for="fontSize">Base Font size (pixels - 8 min, 32 max ): </label> <input type="text" id="fontSize" />
     </div>
     <input type="submit" value="Save" />
     <button onclick="closePrefs( event );">Close</button>
   </form>
   <script type="text/javascript">
+
 
     var bridge = window.opener.prefBridge;
     var util = bridge.util;
@@ -52,9 +53,25 @@
     function prefLoad ( ) {
       //load values to form
       for ( pref in prefs ) {
-        var n = util.get( pref, document );
-        if ( n ) {
-          n.value = prefs[ pref ];
+        if ( pref == "multiOptionPrefs" ) {
+          var fonts = prefs[ pref ].font;
+          var n = util.get( "font", document );
+          var options = [];
+          for ( var i = 0; i < fonts.length; i++ ) {
+            options.push( [
+              "<option value='", i, "' ",
+              ( "selected" in fonts[ i ] ? 'selected="selected" ' : '' ),
+              ">",
+              fonts[ i ].valueName,
+              "</option>"
+            ].join( "" ) );
+          }
+          n.innerHTML = options.join( "\n" );
+        } else {
+          var n = util.get( pref, document );
+          if ( n ) {
+            n.value = prefs[ pref ];
+          }
         }
       }
     }
@@ -64,11 +81,22 @@
       util.log( "Saving preferences." );
       //get prefs
       for ( pref in prefs ) {
-        var n = util.get( pref, document );
-        if ( n ) {
-          var value = n.value;
-          if ( value || value === 0 || value === "" ) {
-            prefs[ pref ] = value;
+        if ( pref == "multiOptionPrefs" ) {
+          var n = util.get( "font", document );
+          var fonts = prefs[ pref ].font;
+          for( var i = 0; i < fonts.length; i++ ) {
+            if ( "selected" in fonts[ i ] ) {
+              delete fonts[ i ].selected;
+            }
+          }
+          fonts[ n.selectedIndex ][ "selected" ] = "true";
+        } else {
+          var n = util.get( pref, document );
+          if ( n ) {
+            var value = n.value;
+            if ( value || value === 0 || value === "" ) {
+              prefs[ pref ] = value;
+            }
           }
         }
       }

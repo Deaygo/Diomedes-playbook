@@ -9,7 +9,7 @@
   <preference name="theme" value="default" />
   <preference name="pollTime" value="0" />
   <preference name="font" value="verdana" />
-  <preference name="fontSize" value="default" />
+  <preference name="fontSize" value="15" />
   <multiOptionPreference name="font">
     <option selected="true" valueName="Arial" value="Arial, 'MS Arial', sans-serif" />
     <option valueName="Verdana" value="Verdana, sans-serif" />

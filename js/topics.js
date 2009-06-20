@@ -25,6 +25,7 @@ if(!topics) {
 
     PREFS_SAVE: "/prefs/save/",
     PREFS_CHANGE_HISTORY_LENGTH: "/prefs/change/history/length/",
+    PREFS_CHANGE_FONT: "/prefs/change/font/",
 
     NETWORK_ADD: "/network/add/",
     NETWORK_EDIT: "/network/edit/",

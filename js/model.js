@@ -536,7 +536,7 @@ if ( window.runtime && air && util ) {
         var option = options[ j ];
         var o = {};
         o[ "valueName" ] = option.getAttribute( "valueName" );
-        o[ "value" ] = option.getAttribute( "valueName" );
+        o[ "value" ] = option.getAttribute( "value" );
         if ( option.hasAttribute( "selected" ) ) {
           o[ "selected" ] = true;
         }
@@ -594,6 +594,7 @@ if ( window.runtime && air && util ) {
     if ( prefs.historyLength != this.preferences.historyLength ) {
       util.publish( topics.PREFS_CHANGE_HISTORY_LENGTH, [ prefs.historyLength ] );
     }
+    util.publish( topics.PREFS_CHANGE_FONT, [ prefs.multiOptionPrefs.font, prefs.fontSize ] );
     this.preferences = prefs;
   }
 

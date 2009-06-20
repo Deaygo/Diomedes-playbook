@@ -19,6 +19,9 @@ if ( window.runtime && air && util ) {
     this.channelList = util.get( "channelList" );
     this.titleBar = util.get( "titleBar" );
     this.nickList = util.get( "nickList" );
+    this.font = null;
+    var prefs = this.model.prefs.getPrefs( );
+    this.changeFont( prefs.multiOptionPrefs.font, prefs.fontSize );
     this.activityWindows = {};
     this.activeWin = null;
     this.appVersion = "";
@@ -26,14 +29,43 @@ if ( window.runtime && air && util ) {
     util.connect( this.channelList, "onclick", this, "handleChannelListClick" );
     util.connect( this.activityWindow, "onclick", this, "handleActivityWindowClick" );
     util.connect( this.titleBar, "onclick", this, "handleTitleBarClick" );
-    util.subscribe(topics.USER_HIGHLIGHT, this, "highlight", []);
-    util.subscribe(topics.NOTIFY, this, "notify", []);
+    util.subscribe( topics.USER_HIGHLIGHT, this, "highlight", [] );
+    util.subscribe( topics.PREFS_CHANGE_FONT, this, "changeFont", [] );
+    util.subscribe( topics.NOTIFY, this, "notify", []);
   }
 
   _vvp = dView.View.prototype;
 
+  _vvp.changeFont = function ( fontPrefs, size ) {
+    for ( var i = 0; i < fontPrefs.length; i++ ) {
+      var font = fontPrefs[ i ];
+      if ( "selected" in font ) {
+        this.setFont( font.value, size );
+        return;
+      }
+    }
+  }
+
+  _vvp.setFont = function ( font, size ) {
+    this.font = font;
+    size = parseInt( size, 10 );
+    if ( size < 8 ) {
+      size = 8;
+    } else if ( size > 32 ) {
+      size = 32;
+    }
+    size = size.toString( );
+    util.get( "body" ).setAttribute( "style", [ 
+      "font-family: ",  
+      font,
+      ";",
+      "font-size: ",
+      size,
+      "px;"
+    ].join( "" ) ); 
+  }
+
   _vvp.notify = function ( msg ) {
-    console.info("notify: " + msg);
     if ( msg ) {
       alert( msg );
     }
@@ -206,7 +238,7 @@ if ( window.runtime && air && util ) {
       this.activityWindows[ serverName ] = {};
     }
     if ( !( channelName in this.activityWindows[ serverName ] ) ) {
-      this.activityWindows[ serverName ][ channelName ] = new dView.ActivityWindow( serverName, channelName, this.model.prefs.getPrefs().historyLength );
+      this.activityWindows[ serverName ][ channelName ] = new dView.ActivityWindow( serverName, channelName, this.model.prefs.getPrefs( ).historyLength );
     }
   }
 
