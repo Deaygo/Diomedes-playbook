@@ -595,6 +595,7 @@ if ( window.runtime && air && util ) {
       util.publish( topics.PREFS_CHANGE_HISTORY_LENGTH, [ prefs.historyLength ] );
     }
     util.publish( topics.PREFS_CHANGE_FONT, [ prefs.multiOptionPrefs.font, prefs.fontSize ] );
+    util.publish( topics.PREFS_CHANGE_TIME_FORMAT, [ prefs.multiOptionPrefs.time ] );
     this.preferences = prefs;
   }
 

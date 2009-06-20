@@ -238,7 +238,11 @@ if ( window.runtime && air && util ) {
       this.activityWindows[ serverName ] = {};
     }
     if ( !( channelName in this.activityWindows[ serverName ] ) ) {
-      this.activityWindows[ serverName ][ channelName ] = new dView.ActivityWindow( serverName, channelName, this.model.prefs.getPrefs( ).historyLength );
+      this.activityWindows[ serverName ][ channelName ] = new dView.ActivityWindow( serverName, 
+          channelName, 
+          this.model.prefs.getPrefs( ).historyLength, 
+          this.model.prefs.getPrefs( ).multiOptionPrefs.time 
+      );
     }
   }
 
@@ -600,13 +604,14 @@ if ( window.runtime && air && util ) {
     delete this.form;
   }
 
-  dView.ActivityWindow = function ( serverName, channelName, maxItems ) {
+  dView.ActivityWindow = function ( serverName, channelName, maxItems, timeFormat ) {
     this.linkRegex = /(https?:\/\/\S+)\s?/g;
     this.colorCode = String.fromCharCode( 003 );
     this.normalCode = String.fromCharCode( 017 );
     this.boldCode = String.fromCharCode( 002 );
     this.underlineCode = String.fromCharCode( 037 );
     this.italicsCode = String.fromCharCode( 026 );
+    this.setTimeFormat( timeFormat );
     this.COLOR_CODES = [
       "#fff", //white
       "#000", //black
@@ -634,6 +639,7 @@ if ( window.runtime && air && util ) {
     this.isInBold = false;
     this.maxItems = maxItems;
     util.subscribe( topics.PREFS_CHANGE_HISTORY_LENGTH, this, "handleChangeHistoryLength", [] );
+    util.subscribe( topics.PREFS_CHANGE_TIME_FORMAT, this, "setTimeFormat", [] );
   }
 
   _vap = dView.ActivityWindow.prototype;
@@ -641,6 +647,16 @@ if ( window.runtime && air && util ) {
   _vap.sanitize = dView.View.prototype.sanitize;
 
   _vap.setContents = _vvp.setContents;
+
+  _vap.setTimeFormat = function ( timePrefs ) {
+    for ( var i = 0; i < timePrefs.length; i++ ) {
+      var time = timePrefs[ i ];
+      if ( "selected" in time ) { 
+        this.timeFormat = parseInt( time.value, 10 );
+        return;
+      }
+    }
+  }
 
   _vap.handleChangeHistoryLength = function ( newLen ) {
     this.maxItems = newLen;
@@ -808,13 +824,31 @@ if ( window.runtime && air && util ) {
     return this.win;
   }
 
+  _vap.formatDateItem = function ( dateItem ) {
+    dateItem = dateItem.toString( );
+    if ( dateItem.length == 1 ) {
+      dateItem = [ "0",  dateItem ].join( "" );
+    }
+    return dateItem;
+  }
+
   _vap.formatDate = function ( date_ ) {
-    var year = date_.getFullYear();
-    var month = (date_.getMonth() + 1);
-    var day = date_.getDate();
-    var hour = date_.getHours();
-    var minute = date_.getMinutes();
-    var second = date_.getSeconds();
+    var year = this.formatDateItem( date_.getFullYear( ) );
+    var month = this.formatDateItem( date_.getMonth( ) + 1 );
+    var day = this.formatDateItem( date_.getDate( ) );
+    var hour = this.formatDateItem( date_.getHours( ) );
+    if ( this.timeFormat < 24 ) {
+      if ( hour > 12 ) {
+        hour = hour - 12;
+        var clock = "pm";
+      } else {
+        var clock = "am";
+      }
+    } else {
+      var clock = "";
+    }
+    var minute = this.formatDateItem( date_.getMinutes( ) );
+    var second = this.formatDateItem( date_.getSeconds( ) );
     return {
       "long" : [
         "[",
@@ -829,6 +863,7 @@ if ( window.runtime && air && util ) {
           minute,
           ":",
           second,
+          clock, 
         "]"
       ].join( "" ),
       "short" : [
@@ -836,18 +871,19 @@ if ( window.runtime && air && util ) {
           hour,
           ":",
           minute,
+          clock,
         "]"
       ].join( "" )
     };
   }
 
   _vap.textFormat = function ( msg ) {
+    msg = msg.split("  ").join(" &nbsp;");
     msg = this.findBold( msg );
     msg = [ msg, this.closeOpenMarkup("isInBold", "</strong>" ) ].join( "" );
     msg = this.findColors( msg );
     msg = [ msg, this.closeOpenMarkup("isInStyle", "</span>" ) ].join( "" );
     msg = this.findLinks( msg );
-    msg = msg.split(" ").join("&nbsp;");
     return msg;
   }
 

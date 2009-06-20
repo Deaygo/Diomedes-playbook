@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?> 
-<preferences version="1.1"> 
+<preferences version="1.2"> 
   <preference name="nick" value="diomedesuser" />
   <preference name="altNick" value="diouser" />
   <preference name="userName" value="diomedesuser" />
@@ -10,6 +10,10 @@
   <preference name="pollTime" value="0" />
   <preference name="font" value="verdana" />
   <preference name="fontSize" value="15" />
+  <multiOptionPreference name="time">
+    <option selected="true" valueName="24-hour" value="24" />
+    <option valueName="12-hour" value="12" />
+  </multiOptionPreference>
   <multiOptionPreference name="font">
     <option selected="true" valueName="Arial" value="Arial, 'MS Arial', sans-serif" />
     <option valueName="Verdana" value="Verdana, sans-serif" />

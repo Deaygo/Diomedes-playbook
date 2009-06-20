@@ -39,34 +39,43 @@
     <div class="formItem">
       <label for="fontSize">Base Font size (pixels - 8 min, 32 max ): </label> <input type="text" id="fontSize" />
     </div>
+    <div class="formItem">
+      <label for="time">Time: </label> <select id="time" ><option value="none">none</option></select>
+    </div>
     <input type="submit" value="Save" />
     <button onclick="closePrefs( event );">Close</button>
   </form>
+  <script type="text/javascript" src="js/AIRIntrospector.js"></script> 
   <script type="text/javascript">
 
+    var console =  air.Introspector.Console;
 
     var bridge = window.opener.prefBridge;
     var util = bridge.util;
     var topics = bridge.topics;
     var prefs = bridge.preferences;
 
+    function loadOptions( prefs ) {
+      var options = [];
+      for ( var i = 0; i < prefs.length; i++ ) {
+        options.push( [
+          "<option value='", i, "' ",
+          ( "selected" in prefs[ i ] ? 'selected="selected" ' : '' ),
+          ">",
+          prefs[ i ].valueName,
+          "</option>"
+        ].join( "" ) );
+      }
+      return options.join( "\n" );
+    }
+
     function prefLoad ( ) {
       //load values to form
       for ( pref in prefs ) {
         if ( pref == "multiOptionPrefs" ) {
-          var fonts = prefs[ pref ].font;
-          var n = util.get( "font", document );
-          var options = [];
-          for ( var i = 0; i < fonts.length; i++ ) {
-            options.push( [
-              "<option value='", i, "' ",
-              ( "selected" in fonts[ i ] ? 'selected="selected" ' : '' ),
-              ">",
-              fonts[ i ].valueName,
-              "</option>"
-            ].join( "" ) );
-          }
-          n.innerHTML = options.join( "\n" );
+          var p = prefs[ pref ];
+          util.get( "font", document ).innerHTML = loadOptions( p.font );
+          util.get( "time", document ).innerHTML = loadOptions( p.time );
         } else {
           var n = util.get( pref, document );
           if ( n ) {
@@ -76,20 +85,24 @@
       }
     }
 
+    function setSelectedOption ( pref, select ) {
+      for( var i = 0; i < pref.length; i++ ) {
+        if ( "selected" in pref[ i ] ) {
+          delete pref[ i ].selected;
+        }
+      }
+      pref[ select.selectedIndex ][ "selected" ] = "true";
+    }
+
     function savePrefs ( event ) {
       util.stopEvent( event );
       util.log( "Saving preferences." );
       //get prefs
       for ( pref in prefs ) {
         if ( pref == "multiOptionPrefs" ) {
-          var n = util.get( "font", document );
-          var fonts = prefs[ pref ].font;
-          for( var i = 0; i < fonts.length; i++ ) {
-            if ( "selected" in fonts[ i ] ) {
-              delete fonts[ i ].selected;
-            }
-          }
-          fonts[ n.selectedIndex ][ "selected" ] = "true";
+          var p = prefs[ pref ];
+          setSelectedOption( p.font, util.get( "font", document ) );
+          setSelectedOption( p.time, util.get( "time", document ) );
         } else {
           var n = util.get( pref, document );
           if ( n ) {
