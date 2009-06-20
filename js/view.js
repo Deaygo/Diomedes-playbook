@@ -22,7 +22,7 @@ if ( window.runtime && air && util ) {
     this.activityWindows = {};
     this.activeWin = null;
     this.appVersion = "";
-    delete u;
+
     util.connect( this.channelList, "onclick", this, "handleChannelListClick" );
     util.connect( this.activityWindow, "onclick", this, "handleActivityWindowClick" );
     util.connect( this.titleBar, "onclick", this, "handleTitleBarClick" );
@@ -127,6 +127,7 @@ if ( window.runtime && air && util ) {
   _vvp.updateChannelView = function ( channels, channelsWithActivity, channelsWithHighlight ) {
     if ( !channels ) return;
     var r = [];
+    var channelsR = [];
     for ( var serverName in channels ) {
       r.push( this.getChannelButton( serverName, serverName, serverName, "SERVER" ) );
       var server = channels[ serverName ];
@@ -142,6 +143,7 @@ if ( window.runtime && air && util ) {
       }
       for ( var channelKey in server ) {
         //channelKey is channelName in lowercase
+        channelsR.push( channelKey );
         var activity = 0;
         if ( activeChannels && ( channelKey in activeChannels ) ) {
           activity = activeChannels[ channelKey ];
@@ -154,7 +156,9 @@ if ( window.runtime && air && util ) {
         r.push( this.getChannelButton( serverName, channelKey, channelName, "CHANNEL",  activity, highlight) );
       }
     }
-    this.setContents( this.channelList, r.join( "" ), false ); }
+    this.setContents( this.channelList, r.join( "" ), false ); 
+    this.input.setChannels( channelsR );
+  }
 
   _vvp.getChannelButton = function ( server, channelKey, channelName, type, activity, highlight ) {
     //channelKey is channelName in lowercase
@@ -374,14 +378,16 @@ if ( window.runtime && air && util ) {
     util.connect(this.form, "onsubmit", this, "handleInput");
     util.connect(this.input, "onkeydown", this, "handleInputChange");
     this.nicks = [];
-    this.nickIndex = 0;
+    this.listItemIndex = 0;
     this.input.focus( );
     this.needsResetting = true;
+    this.tabFragment = null;
     this.history = [];
     this.historyIndex = 0;
     this.reset( );
     this.channelName = null;
     this.serverName = null;
+    this.channels = [];
     util.subscribe( topics.NICK_CHANGE, this, "handleNickChange", [] );
   }
 
@@ -428,6 +434,10 @@ if ( window.runtime && air && util ) {
     this.nicks = nicks;
   }
 
+  _vip.setChannels = function ( channels ) {
+    this.channels = channels;
+  }
+
   _vip.handleNickChange = function ( nicks, serverName, channelName ) {
     if ( serverName == this.serverName && channelName == this.channelName ) {
       this.nicks = nicks;
@@ -438,7 +448,7 @@ if ( window.runtime && air && util ) {
     // window.runtime.flash.display
     var key = e.keyCode;
     if ( key == 9 ) {
-      this.nickTabCompletion( e );
+      this.tabCompletion( e );
     } else if ( key == 13 ) {
       this.handleInput ( e );
     } else if ( key == 38 ) {
@@ -480,27 +490,27 @@ if ( window.runtime && air && util ) {
     //reset whatever tracking code used by fancy
     //key stuff
     if ( this.needsResetting ) {
-      this.nickIndex = 0;
-      this.nickFragment = null;
+      this.listItemIndex = 0;
+      this.tabFragment = null;
       this.savedValue = null;
-      this.nickStart = 0;
-      this.nickFragEnd = 0;
+      this.tabStart = 0;
+      this.tabFragEnd = 0;
       this.needsResetting = false;
       this.historyIndex = 0;
     }
   }
 
-  _vip.nickTabCompletion = function ( e ) {
+  _vip.tabCompletion = function ( e ) {
     util.stopEvent( e );
     var n = e.srcElement;
     this.needsResetting = true;
-    if ( this.nicks.length ) {
-      if ( this.nickFragment ) {
-        var startIndex = this.nickIndex;
-        var word = this.nickFragment;
+    if ( this.nicks.length || this.channels.length ) {
+      if ( this.tabFragment ) {
+        var startIndex = this.listItemIndex;
+        var word = this.tabFragment;
         var value = this.savedValue;
-        var c = this.nickStart;
-        var lc = this.nickFragEnd;
+        var c = this.tabStart;
+        var lc = this.tabFragEnd;
       } else {
         var c = 0;
         var value = n.value;
@@ -508,32 +518,37 @@ if ( window.runtime && air && util ) {
         for ( c = ( lc - 1 ); c > 0; c-- ) {
           if ( value[c] == " " ) break;
         }
-        this.nickStart = c;
-        this.nickFragEnd = lc;
+        this.tabStart = c;
+        this.tabFragEnd = lc;
         var startIndex = 0;
         var word = util.trim( value.substring( c, lc ) ).toLowerCase( );
-        this.nickFragment = word;
+        this.tabFragment = word;
         this.savedValue = value;
       }
-      word = word.split("|").join("\\|").split("^").join("\\^").split("-").join("\\-");
-      word = word.split("[").join("\\[").split("]").join("\\]");
-      for ( var i = startIndex; i < this.nicks.length; i++ ) {
-        var nick = this.nicks[i];
-        var nickLC = nick.toLowerCase( );
-        if ( nickLC.search( word ) == 0 ) {
-          //add nick
-          this.nickIndex = i + 1;
+      word = word.split( "|" ).join( "\\|" ).split( "^" ).join( "\\^" ).split( "-" ).join( "\\-" );
+      word = word.split( "[" ).join( "\\[" ).split( "]" ).join( "\\]" );
+      if ( word && word.length && word[ 0 ] == "#" ) {
+        var list = this.channels;
+      } else {
+        var list = this.nicks;
+      }
+      for ( var i = startIndex; i < list.length; i++ ) {
+        var listItem = list[ i ];
+        var listItemLC = listItem.toLowerCase( );
+        if ( listItemLC.search( word ) == 0 ) {
+          //add 
+          this.listItemIndex = i + 1;
           //if c is 0 replace at beginning, if not, one char after c (that is after space)
           var beg = value.slice( 0, ( c ? c + 1 : c ) );
           var end = value.slice( lc, 0 );
           //if c is 0 add : and space, else add just a space
-          this.setValue( [ beg, nick, ( c ? " " : ": " ), end ].join( "" ) );
+          this.setValue( [ beg, listItem, ( c ? " " : ": " ), end ].join( "" ) );
           //place cursor?
           return;
         }
       }
       //didn't find a match
-      this.nickIndex = 0;
+      this.listItemIndex = 0;
       return;
     }
   }
