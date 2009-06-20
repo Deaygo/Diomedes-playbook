@@ -777,6 +777,7 @@ if ( window.runtime && air && util ) {
     msg = this.findColors( msg );
     msg = [ msg, this.closeOpenMarkup("isInStyle", "</span>" ) ].join( "" );
     msg = this.findLinks( msg );
+    msg = msg.split(" ").join("&nbsp;");
     return msg;
   }
 
