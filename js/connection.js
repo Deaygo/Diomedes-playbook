@@ -30,6 +30,7 @@ if ( window.runtime && air && util ) {
 
     this.client = new irc.Client( server, port, [], nick, preferences.userName, preferences.realName );
     this.client.setClientInfo( appVersion );
+    this.client.setFinger( preferences.finger );
 
     //set delegates
     this.client.setConnectionDelegate(util.hitch(this,"handleConnection"));

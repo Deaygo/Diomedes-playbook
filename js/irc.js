@@ -14,7 +14,6 @@ if ( window.runtime && air && util ) {
   //irc.Client Class
   irc.Client = function ( server, port, defaultChannels, nick, userName, realName ){
 
-    this.clientInfo = "";
 
     //Connection info
     this.host = null;
@@ -45,6 +44,8 @@ if ( window.runtime && air && util ) {
     this.lastCTCPReq = new Date( ).getTime( );
     this.CTCP_RESPONSE_WAIT = 5 * 1000; //only one ctcp response 
     this.pingResponses = {}; //buffer for pings waiting for responses
+    this.clientInfo = "";
+    this.finger = "";
 
     //Delegates
     this.connectionDelegate = null; //called when for connectivity issues
@@ -72,6 +73,10 @@ if ( window.runtime && air && util ) {
   }
 
   var _icp = irc.Client.prototype;
+
+  _icp.setFinger = function ( info ) {
+    this.finger = info;
+  }
 
   _icp.setClientInfo = function ( info ) {
     this.clientInfo = info;
@@ -492,6 +497,9 @@ if ( window.runtime && air && util ) {
             break;
           case "TIME":
             this.sendNotice( nick, this.makeCTCP( [ cmd, nowDate.toString( ) ].join( " " ) ) );
+            break;
+          case "FINGER":
+            this.sendNotice( nick, this.makeCTCP( [ cmd, this.finger ].join( " " ) ) );
             break;
         }
       }
