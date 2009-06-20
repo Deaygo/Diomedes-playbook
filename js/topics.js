@@ -8,6 +8,8 @@ if(!topics) {
 
   topics = {
 
+    NOTIFY: "/notify/",
+
     CHANNELS_CHANGED: "/channels/changed/",
     CHANNEL_SELECTED: "/channel/selected/",
     CHANNEL_ACTIVITY: "/channel/activity/",

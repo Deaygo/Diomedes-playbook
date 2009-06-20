@@ -27,9 +27,17 @@ if ( window.runtime && air && util ) {
     util.connect( this.activityWindow, "onclick", this, "handleActivityWindowClick" );
     util.connect( this.titleBar, "onclick", this, "handleTitleBarClick" );
     util.subscribe(topics.USER_HIGHLIGHT, this, "highlight", []);
+    util.subscribe(topics.NOTIFY, this, "notify", []);
   }
 
   _vvp = dView.View.prototype;
+
+  _vvp.notify = function ( msg ) {
+    console.info("notify: " + msg);
+    if ( msg ) {
+      alert( msg );
+    }
+  }
 
   _vvp.setAppVersion = function ( info ) {
     this.appVersion = info;
@@ -955,7 +963,6 @@ if ( window.runtime && air && util ) {
     for ( var i = 0; i < nicks.length; i++ ) {
       var nick = nicks[ i ];
       var user = users[ nick ];
-      util.log("user: " + user );
       if ( user.isCreator( channelName ) ) {
         mode = "!";
         creatorsR.push( this.getNickButton( user, mode ) );

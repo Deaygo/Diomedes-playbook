@@ -449,25 +449,67 @@ if ( window.runtime && air && util ) {
     this.prefVersion = 0;
     this.updated = true;
     this.getPrefs( );
+    this.checkPrefs( );
   }
 
   var _mpp = dModel.PrefModel.prototype;
 
   _mpp.checkPrefs = function ( ) {
+    util.log( "Checking prefs." );
+    var defaultPrefsFile = air.File.applicationDirectory.resolvePath( this.fileName );
+    var fileStream = new air.FileStream( ); 
+    fileStream.open( defaultPrefsFile, air.FileMode.READ ); 
+    var xml = fileStream.readUTFBytes( fileStream.bytesAvailable );
+    fileStream.close( );
+    delete fileStream;
+    var domParser = new DOMParser( );
+    var d = domParser.parseFromString( xml , "text/xml" );
+    delete domParser;
+    var version = d.firstChild.getAttribute("version");
+    //XXX: maybe make sure new version is a higher value here.
+    if ( version != this.version ) {
+      util.log( "Preferences have been updated, replacing." );
+      this.version = version;
+      this.updatePreferences( d );
+      //view not created yet, need to notify user anyhow:
+      alert( "Preferenes have been updated in this version. Some preferences may have been reset." );
+      return;
+    }
+    delete d;
+  }
+
+  _mpp.updatePreferences = function( doc ) {
+    var prefs = this.getSingleValuePrefs( doc );
+    for ( var name in this.preferences ) {
+      if ( name in prefs ) {
+        if ( this.preferences.hasOwnProperty( name ) && name != "prototype" ) {
+          prefs[ name ] = this.preferences[ name ];
+        }
+      }
+    }
+    //XXX: multi option preferences are getting reset
+    prefs[ "multiOptionPrefs" ] = this.getMultiValuePrefs( doc );
+    this.preferences = prefs;
+    this.savePrefs( );
+    delete doc;
   }
 
   _mpp.getFile = function ( ) {
     return air.File.applicationStorageDirectory.resolvePath( this.fileName );
   }
 
-  _mpp.createFile = function ( ) {
-    var defaultPrefsFile = air.File.applicationDirectory.resolvePath( this.fileName );
-    var fileStream = new air.FileStream( ); 
-    fileStream.open( defaultPrefsFile, air.FileMode.READ ); 
+  _mpp.createFile = function ( fileStream ) {
+    if ( !fileStream ) {
+      var defaultPrefsFile = air.File.applicationDirectory.resolvePath( this.fileName );
+      var fileStream = new air.FileStream( ); 
+      fileStream.open( defaultPrefsFile, air.FileMode.READ ); 
+    }
     var xml = fileStream.readUTFBytes( fileStream.bytesAvailable );
+    fileStream.close( );
+    delete fileStream;
     this.preferences = this.getPrefsFromXML( xml );
     this.savePrefs( );
-    return this.preferences
+    return this.preferences;
   }
 
   _mpp.getPref = function ( key ) {
@@ -482,13 +524,31 @@ if ( window.runtime && air && util ) {
     this.preferences[ key ] = value;
   }
 
-  _mpp.getPrefsFromXML = function ( xml ) {
-    var domParser = new DOMParser( );
-    var d = domParser.parseFromString( xml , "text/xml" );
+  _mpp.getMultiValuePrefs = function ( doc ) {
     var prefs = {};
-    //get prefs
-    this.version = d.firstChild.getAttribute("version");
-    var pNodes = d.getElementsByTagName( "preference" );
+    var mNodes = doc.getElementsByTagName( "multiOptionPreference" );
+    for ( var i = 0; i < mNodes.length; i++ ) {
+      var pref = mNodes[ i ]; 
+      var name = pref.getAttribute( "name" );
+      prefs[ name ] = [];
+      var options = pref.getElementsByTagName( "option" );
+      for ( var j = 0; j < options.length; j++ ) {
+        var option = options[ j ];
+        var o = {};
+        o[ "valueName" ] = option.getAttribute( "valueName" );
+        o[ "value" ] = option.getAttribute( "valueName" );
+        if ( option.hasAttribute( "selected" ) ) {
+          o[ "selected" ] = true;
+        }
+        prefs[ name ].push( o );
+      }
+    }
+    return prefs;
+  }
+
+  _mpp.getSingleValuePrefs = function ( doc ) {
+    var prefs = {};
+    var pNodes = doc.getElementsByTagName( "preference" );
     for ( var i = 0; i < pNodes.length; i++ ) {
       var pNode = pNodes[ i ];
       var name = pNode.getAttribute( "name" );
@@ -498,6 +558,16 @@ if ( window.runtime && air && util ) {
         prefs[ name ] = value;
       }
     }
+    return prefs;
+  }
+
+  _mpp.getPrefsFromXML = function ( xml ) {
+    var domParser = new DOMParser( );
+    var d = domParser.parseFromString( xml , "text/xml" );
+    //get prefs
+    this.version = d.firstChild.getAttribute("version");
+    var prefs = this.getSingleValuePrefs( d );
+    prefs[ "multiOptionPrefs" ] = this.getMultiValuePrefs( d );
     delete domParser
     return prefs;
   }
@@ -535,17 +605,37 @@ if ( window.runtime && air && util ) {
     //add prefs
     for ( var name in this.preferences ) {
       if ( this.preferences.hasOwnProperty( name ) ) {
-        var value = this.preferences[ name ];
-        var p = d.createElement("preference"); 
-        //0's and empty strings are valid values
-        if ( name && ( value || value === 0 || value === "" ) ) {
-          p.setAttribute( "name", name );
-          p.setAttribute( "value", value );
-        } 
-        d.firstChild.appendChild( p );
-        d.firstChild.setAttribute( "version", this.version );
+        if ( name == "multiOptionPrefs" ) {
+          var multiOptionPrefs = this.preferences[ name ];
+          for ( var prefName in multiOptionPrefs ) {
+            var multiOptionPref = multiOptionPrefs[ prefName ];
+            var m = d.createElement( "multiOptionPreference" );
+            m.setAttribute( "name", prefName );
+            for ( var i = 0; i < multiOptionPref.length; i++ ) {
+              var option = multiOptionPref[ i ];
+              var o = d.createElement( "option" );
+              if ( "selected" in option ) {
+                o.setAttribute( "selected", "true" );
+              }
+              o.setAttribute( "valueName", option.valueName );
+              o.setAttribute( "value", option.value );
+              m.appendChild( o );
+            }
+            d.firstChild.appendChild( m );
+          }
+        } else { 
+          var value = this.preferences[ name ];
+          var p = d.createElement( "preference" ); 
+          //0's and empty strings are valid values
+          if ( name && ( value || value === 0 || value === "" ) ) {
+            p.setAttribute( "name", name );
+            p.setAttribute( "value", value );
+          } 
+          d.firstChild.appendChild( p );
+        }
       }
     }
+    d.firstChild.setAttribute( "version", this.version );
     //write prefs to file
     var x = new XMLSerializer( );
     var s = x.serializeToString( d );
