@@ -119,9 +119,9 @@ if ( window.runtime && air && util ) {
   }
 
 
-  _vvp.updateNickView = function ( users, ops, voiced, serverName, channelName ) {
+  _vvp.updateNickView = function ( users, serverName, channelName ) {
     this.createActivityViewIfNeeded( channelName, serverName );
-    this.getActivityWindow( channelName, serverName ).nickWindow.update( users, ops, voiced );
+    this.getActivityWindow( channelName, serverName ).nickWindow.update( users, channelName );
   }
 
   _vvp.updateChannelView = function ( channels, channelsWithActivity, channelsWithHighlight ) {
@@ -209,9 +209,9 @@ if ( window.runtime && air && util ) {
     return null;
   }
 
-  _vvp.updateActivityView = function ( messages, ops, voiced, userNick, channelName, serverName ) {
+  _vvp.updateActivityView = function ( messages, userNick, channelName, serverName ) {
     this.createActivityViewIfNeeded( channelName, serverName );
-    this.getActivityWindow( channelName, serverName ).update( messages, ops, voiced, userNick );
+    this.getActivityWindow( channelName, serverName ).update( messages, userNick, channelName );
   }
 
   _vvp.highlight = function ( ) {
@@ -603,7 +603,7 @@ if ( window.runtime && air && util ) {
     this.win.innerHTML = "";
   }
 
-  _vap.update = function ( messages, ops, voiced, userNick ) {
+  _vap.update = function ( messages, userNick, channelName ) {
     var w = this.win;
     var diff = Math.abs( w.scrollTop - ( w.scrollHeight - w.offsetHeight ) );
     var variance = 5;
@@ -672,9 +672,13 @@ if ( window.runtime && air && util ) {
         if ( msg.isAction ) showBrackets = false;
         if ( isServer ) {
           var nick = "Server";
-        } else if ( msg.nick in ops ) {
+        } else if ( msg.user && msg.user.isCreator( channelName ) ) {
+          var nick = "!" + msg.nick;
+        } else if ( msg.user && msg.user.isOp( channelName ) ) {
           var nick = "@" + msg.nick;
-        } else if ( msg.nick in voiced ) {
+        } else if ( msg.user && msg.user.isHalfOp( channelName ) ) {
+          var nick = "%" + msg.nick;
+        } else if ( msg.user && msg.user.isVoice( channelName ) ) {
           var nick = "+" + msg.nick;
         } else {
           var nick = msg.nick;
@@ -912,30 +916,42 @@ if ( window.runtime && air && util ) {
     return this.nicks;
   }
 
-  _vnw.update = function ( users, ops, voiced ) {
+  _vnw.update = function ( users, channelName ) {
     if ( !users ) return;
     var mode;
     var r = [];
     var usersR = [];
+    var creatorsR = [];
     var opsR = [];
+    var halfOpsR = [];
     var voicedR = [];
     var nicks = this.sort( users );
     for ( var i = 0; i < nicks.length; i++ ) {
-      var nick = nicks[i];
-      if ( nick in ops ) {
+      var nick = nicks[ i ];
+      var user = users[ nick ];
+      util.log("user: " + user );
+      if ( user.isCreator( channelName ) ) {
+        mode = "!";
+        creatorsR.push( this.getNickButton( user, mode ) );
+      } else if ( user.isOp( channelName ) ) {
         mode = "@";
-        opsR.push( this.getNickButton( users[nick], mode ) );
-      } else if ( nick in voiced ) {
+        opsR.push( this.getNickButton( user, mode ) );
+      } else if ( user.isHalfOp( channelName ) ) {
+        mode = "%";
+        halfOpsR.push( this.getNickButton( user, mode ) );
+      } else if ( user.isVoice( channelName ) ) {
         mode = "+";
-        voicedR.push( this.getNickButton( users[nick], mode ) );
+        voicedR.push( this.getNickButton( user, mode ) );
       } else {
         mode = "";
-        usersR.push( this.getNickButton( users[nick], mode ) );
+        usersR.push( this.getNickButton( user, mode ) );
       }
     }
-    r = r.concat(opsR);
-    r = r.concat(voicedR);
-    r = r.concat(usersR);
+    r = r.concat( creatorsR );
+    r = r.concat( opsR );
+    r = r.concat( halfOpsR );
+    r = r.concat( voicedR );
+    r = r.concat( usersR );
     this.setContents( this.win, r.join( "" ), false );
     this.nicks = nicks;
     util.publish( topics.NICK_CHANGE, [ nicks, this.serverName, this.channelName ] );
@@ -954,6 +970,7 @@ if ( window.runtime && air && util ) {
     return [
         ' <span class="nickButton',
         ( mode == "@" ? " op" : "" ),
+        ( mode == "%" ? " halfOp" : "" ),
         ( mode == "+" ? " voiced" : "" ),
         '" mode="',
         mode,

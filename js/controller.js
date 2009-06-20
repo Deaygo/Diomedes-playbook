@@ -466,9 +466,7 @@ if ( window.runtime && air && util ) {
       }
       if ( channel ) {
         var users = channel.getUsers( );
-        var ops = channel.getOps( );
-        var voiced = channel.getVoiced( );
-        this.view.updateNickView( users, ops, voiced, serverName, channelName ); 
+        this.view.updateNickView( users, serverName, channelName ); 
       }
     }
   }
@@ -481,10 +479,8 @@ if ( window.runtime && air && util ) {
       if ( !channel ) { 
         channel = connection.getServerChannel( );
       }
-      var ops = channel.getOps( );
-      var voiced = channel.getVoiced( );
       var nick = connection.getNick( );
-      this.view.updateActivityView( channel.getActivity( ), ops, voiced, nick, channelName, serverName );
+      this.view.updateActivityView( channel.getActivity( ), nick, channelName, serverName );
     }
   }
 

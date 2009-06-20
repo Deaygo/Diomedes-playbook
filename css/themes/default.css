@@ -39,6 +39,9 @@ a {
 #nickList .op {
   color: #FF0000;
 }
+#nickList .halfOp {
+  color: #FFF000;
+}
 #nickList .voiced {
   color: #00AC6B; 
 }

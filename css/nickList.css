@@ -16,7 +16,8 @@
   font-size: 12px;
 }
 
-#nickList .op {
+#nickList .op,
+#nickList .halfOp {
   font-weight: bold;
 }
 

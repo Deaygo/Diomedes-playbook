@@ -54,9 +54,9 @@ if ( window.runtime && air && util ) {
     return this.client.getNick( );
   }
 
-  _cnp.getUser = function (nick) {
-    if (nick in this.users) {
-      return this.users[nick];
+  _cnp.getUser = function ( nick ) {
+    if ( nick in this.users ) {
+      return this.users[ nick ];
     }
     return null;
   }
@@ -114,7 +114,7 @@ if ( window.runtime && air && util ) {
   }
 
   _cnp.handleConnection = function ( msg, connected, nickInUse ) {
-    var msg_ = new dConnection.ActivityItem("server", null, null, msg);
+    var msg_ = new dConnection.ActivityItem( "server", null, null, msg );
     if ( nickInUse && this.getNick( ) != this.preferences.altNick && !this.altNickTries ) {
       this.altNickTries = 1;
       this.client.changeNick( this.preferences.altNick );
@@ -159,12 +159,12 @@ if ( window.runtime && air && util ) {
       channel.addUser(user);
       channel.publishUserActivity( );
     }
-    var msg = new dConnection.ActivityItem( "join", nick, target, null );
+    var msg = new dConnection.ActivityItem( "join", nick, target, null, user );
     this.addActivityToChannel( target, msg );
   }
 
   _cnp.handleNotice = function ( nick, host, target, msg ) {
-    var msg = new dConnection.ActivityItem( "notice", nick, target, msg );
+    var msg = new dConnection.ActivityItem( "notice", nick, target, msg, this.getUser( nick ) );
     for ( var channel in this.channels ) {
       this.addActivityToChannel( channel, msg, channel );
     }
@@ -175,10 +175,10 @@ if ( window.runtime && air && util ) {
     //remove nick from channels
     var user = this.getUser( nick );
     if ( user ) {
-      var msg = new dConnection.ActivityItem( "quit", nick, null, msg );
+      var msg = new dConnection.ActivityItem( "quit", nick, null, msg, user );
       for ( var target in this.channels ) {
-        var channel = this.channels[target];
-        if ( channel.hasUser( user ) ) {
+        var channel = this.channels[ target ];
+        if ( channel.hasUser( user.nick ) ) {
           //check channels nick is in
           channel.addActivity( msg );
           channel.remUser( user );
@@ -194,18 +194,19 @@ if ( window.runtime && air && util ) {
     if ( msg ) {
       var channelName = this.getChannelName( target );
       if ( channelName in this.channels ) {
-        var channel = this.channels[channelName];
+        var channel = this.channels[ channelName ];
         channel.addModes( modes );
         channel.publishUserActivity( );
       }
-      var msg = new dConnection.ActivityItem("mode", nick, target, msg);
-      this.addActivityToChannel(target, msg);
+      user = this.getUser( nick );
+      var msg = new dConnection.ActivityItem("mode", nick, target, msg, user );
+      this.addActivityToChannel( target, msg );
     }
   }
 
   _cnp.handleKick = function ( nick, kickedNick, host, target, msg ) {
     util.log( "handling kick nick: "  + nick + " kickedNick: " + kickedNick );
-    var msg = new dConnection.ActivityItem( "kick", nick, target, msg );
+    var msg = new dConnection.ActivityItem( "kick", nick, target, msg, this.getUser( nick ) );
     msg.setAltNick( kickedNick );
     if ( kickedNick != this.getNick( ) ) {
       this.remUserFromChannel( kickedNick, target );
@@ -221,7 +222,7 @@ if ( window.runtime && air && util ) {
   }
 
   _cnp.handleAction = function ( nick, host, target, msg ) {
-    var msg = new dConnection.ActivityItem( "action", nick, target, msg );
+    var msg = new dConnection.ActivityItem( "action", nick, target, msg, this.getUser( nick ) );
     if ( this.referencesUser( msg.msg ) ) {
       msg.setReferencesUser( );
     } 
@@ -230,7 +231,7 @@ if ( window.runtime && air && util ) {
 
   _cnp.handleMessage = function ( nick, host, target, msg ) {
     //XXX: if target is this.getNick( ) and nick not a channel, open new channel
-    var msg = new dConnection.ActivityItem( "privmsg", nick, target, msg );
+    var msg = new dConnection.ActivityItem( "privmsg", nick, target, msg, this.getUser( nick ) );
     if ( this.referencesUser( msg.msg, target, nick ) ) {
       msg.setReferencesUser( );
     } 
@@ -250,32 +251,32 @@ if ( window.runtime && air && util ) {
   }
 
   _cnp.remUserFromChannel = function ( nick, target ) {
-    var user = this.getUser(nick);
-    if (user) {
-      var channelName = this.getChannelName(target);
-      if (channelName in this.channels) {
-        var channel = this.channels[channelName];
-        channel.remUser(user);
+    var user = this.getUser( nick );
+    if ( user ) {
+      var channelName = this.getChannelName( target );
+      if ( channelName in this.channels ) {
+        var channel = this.channels[ channelName ];
+        channel.remUser( user );
         channel.publishUserActivity( );
       }
       userExists = false;
       //possibly remove nick from connection users
-      for (var channelName in this.channels) {
-        if (this.channels[channelName].hasUser(user)) {
+      for ( var channelName in this.channels ) {
+        if ( this.channels[ channelName ].hasUser( user.nick ) ) {
           userExists = true;
           break;
         }
       }
       if ( !userExists ) {
-        delete this.users[nick];
+        delete this.users[ nick ];
       }
     }
   }
 
-  _cnp.handlePart = function (nick, host, target, msg) {
+  _cnp.handlePart = function ( nick, host, target, msg ) {
     this.remUserFromChannel( nick, target );
     if ( !msg ) msg = "";
-    var msg = new dConnection.ActivityItem( "part", nick, target, msg );
+    var msg = new dConnection.ActivityItem( "part", nick, target, msg, this.getUser( nick ) );
     this.addActivityToChannel( target, msg );
   }
 
@@ -283,21 +284,16 @@ if ( window.runtime && air && util ) {
     util.log( "nick: " + nick + " host: " + host + " newNick: " + newNick );
     var user = this.getUser( nick );
     if ( user ) {
-      var newUser = new dConnection.User( newNick, host ); 
-      delete this.users[nick];
-      this.users[newNick] = newUser;
-      var msg = new dConnection.ActivityItem( "nick", nick, null, newNick );
+      user.rename( newNick );
+      delete this.users [ nick ];
+      this.users[ newNick ] = user;
+      var msg = new dConnection.ActivityItem( "nick", nick, null, newNick, this.getUser( newNick ) );
       //check channels nick is in
       for ( var target in this.channels ) {
-        if ( this.channels[target].hasUser( user ) ) {
+        if ( this.channels[ target ].hasUser( nick ) ) {
           var channel = this.channels[target];
-          util.log( "changing " + user.nick + " to " + newUser.nick + " in " + target );
-          var hasOps = channel.userHasOps( user.nick );
-          var hasVoice = channel.userHasVoice( user.nick );
-          channel.remUser( user );
-          channel.addUser( newUser );
-          if ( hasOps ) channel.opUser( newUser.nick );
-          if ( hasVoice ) channel.voiceUser( newUser.nick );
+          util.log( "changing " + nick + " to " + user.nick + " in " + target );
+          channel.renameUser( nick, newNick );
           channel.publishUserActivity( );
           this.addActivityToChannel( target, msg );
         }
@@ -351,7 +347,7 @@ if ( window.runtime && air && util ) {
       var nick = nicks[i];
       var mode = nick[0];
       var host = "";
-      if (mode == "@" || mode == "+") {
+      if (mode == "@" || mode == "+" || mode == "%" || mode == "!" ) {
         nick = nick.substr( 1 );
       } else {
         mode = null;
@@ -359,21 +355,25 @@ if ( window.runtime && air && util ) {
       var user = this.getUser( nick );
       if (!user) {
         user = new dConnection.User( nick, host, mode ); 
-        this.users[nick] = user;
+        this.users[ nick ] = user;
       } 
       channel.addUser( user );
       if ( mode == "@" ) {
-        channel.opUser( user.nick );
+        user.op( channelName );
+      } else if ( mode == "!" ) {
+        user.creator( channelName );
       } else if ( mode == "+" ) { 
-        channel.voiceUser( user.nick );
+        user.voice( channelName );
+      } else if ( mode == "%" ) { 
+        user.halfOp( channelName );
       }
     }
     channel.publishUserActivity( );
   }
 
-  _cnp.handleTopic = function (host, target, topic, topicSetter, datetime) {
-    var msg = new dConnection.ActivityItem("topic", topicSetter, target, topic);
-    this.addActivityToChannel(target, msg);
+  _cnp.handleTopic = function ( host, target, topic, topicSetter, datetime ) {
+    var msg = new dConnection.ActivityItem( "topic", topicSetter, target, topic );
+    this.addActivityToChannel( target, msg );
     delete msg;
   }
 
@@ -383,16 +383,16 @@ if ( window.runtime && air && util ) {
 
   _cnp.getChannel = function ( name ) {
     var channelName = this.getChannelName( name );
-    if ( channelName in this.channels) {
-      var channel = this.channels[channelName];
+    if ( channelName in this.channels ) {
+      var channel = this.channels[ channelName ];
       return channel;
     } else {
       return null;
     }
   }
 
-  _cnp.addNewChannel = function (name, type) {
-    this.channels[name] = new dConnection.Channel(name, type, this.server);
+  _cnp.addNewChannel = function ( name, type ) {
+    this.channels[ name ] = new dConnection.Channel( name, type, this.server );
   }
 
   _cnp.getChannels = function ( ) {
@@ -575,36 +575,52 @@ if ( window.runtime && air && util ) {
     this.type = type;
     this.server = server;
     this.users = {};
-    this.voiced = {};
-    this.ops = {};
     this.activityList = new dConnection.ActivityList( );
   }
 
   _clp = dConnection.Channel.prototype;
 
-  _clp.getVoiced = function ( ) {
-    return this.voiced;
-  }
+  _clp.getChannelName = dConnection.Connection.prototype.getChannelName;
 
-  _clp.getOps = function ( ) {
-    return this.ops;
+  _clp.renameUser = function ( oldNick, newNick ) {
+    if ( oldNick in this.users ) {
+      var user = this.users[ oldNick ];
+      delete this.users[ oldNick ];
+      this.users[ newNick ] = user;
+    }
   }
 
   _clp.addModes = function ( modes ) {
     for ( var i = 0; i < modes.length; i++ ) {
       var mode = modes[i];
       var nick = mode.arg;
-      if ( mode.type == "o" && ( nick in this.users ) ) {
-        if ( mode.toggle == "+" ) {
-          this.opUser( nick );
-        } else {
-          this.deOpUser( nick );
-        }
-      } else if ( mode.type == "v" && ( nick in this.users ) ) {
-        if ( mode.toggle == "+" ) {
-          this.voiceUser( nick );
-        } else {
-          this.deVoiceUser( nick );
+      if ( nick in this.users ) {
+        var user = this.users[ nick ];
+        var channelName = this.getChannelName( this.name );
+        if ( mode.type == "O" ) {
+          if ( mode.toggle == "+" ) {
+            user.creator( channelName );
+          } else {
+            user.deCreator( channelName );
+          }
+        } else if ( mode.type == "o" ) {
+          if ( mode.toggle == "+" ) {
+            user.op( channelName );
+          } else {
+            user.deOp( channelName );
+          }
+        } else if ( mode.type == "v" ) {
+          if ( mode.toggle == "+" ) {
+            user.voice( channelName );
+          } else {
+            user.deVoice( channelName );
+          }
+        } else if ( mode.type == "h" ) {
+          if ( mode.toggle == "+" ) {
+            user.halfOp( channelName );
+          } else {
+            user.deHalfOp( channelName );
+          }
         }
       }
     }
@@ -619,34 +635,6 @@ if ( window.runtime && air && util ) {
     return this.name;
   }
 
-  _clp.userHasOps = function ( nick ) {
-    return ( nick in this.ops );
-  }
-
-  _clp.userHasVoice = function ( nick ) {
-    return ( nick in this.voiced );
-  }
-
-  _clp.opUser = function ( nick ) {
-    this.ops[nick] = this.users[nick];
-  }
-
-  _clp.deOpUser = function ( nick ) {
-    if ( nick in this.ops ) {
-      delete this.ops[nick];
-    }
-  }
-
-  _clp.voiceUser = function ( nick ) {
-    this.voiced[nick] = this.users[nick];
-  }
-
-  _clp.deVoiceUser = function ( nick ) {
-    if ( nick in this.voiced ) {
-      delete this.voiced[nick];
-    }
-  }
-
   _clp.remUsers = function ( ) {
     for ( var nick in this.users ) {
       delete this.users[nick];
@@ -658,20 +646,14 @@ if ( window.runtime && air && util ) {
     this.users[ user.nick ] = user;
   }
 
-  _clp.hasUser = function ( user ) {
-    return ( user.nick in this.users );
+  _clp.hasUser = function ( nick ) {
+    return ( nick in this.users );
   }
 
   _clp.remUser = function ( user ) {
     var nick = user.nick;
     if ( nick in this.users ) {
       delete this.users[ user.nick ];
-    }
-    if ( nick in this.voiced ) {
-      delete this.voiced[ nick ];
-    }
-    if ( nick in this.ops ) {
-      delete this.ops[ nick ];
     }
   }
 
@@ -707,14 +689,13 @@ if ( window.runtime && air && util ) {
     this.activityList.destroy( );
     delete this.activityList;
     delete this.users;
-    delete this.ops;
-    delete this.voiced;
   }
 
   //Activity Item Class
-  dConnection.ActivityItem = function ( cmd, nick, target, msg ) {
+  dConnection.ActivityItem = function ( cmd, nick, target, msg, user ) {
     this.cmd = cmd;
     this.nick = nick;
+    this.user = ( user ? user : null );
     this.target = target;
     this.msg = msg;
     this.datetime = new Date();
@@ -726,7 +707,7 @@ if ( window.runtime && air && util ) {
   _cai = dConnection.ActivityItem.prototype;
 
   _cai.clone = function ( ) {
-    var ai = new dConnection.ActivityItem( this.cmd, this.nick, this.target, null );
+    var ai = new dConnection.ActivityItem( this.cmd, this.nick, this.target, null, this.user );
     ai.msg = this.msg; //avoid resanitizing
     ai.setDateTime( this.datetime );
     ai.setAltNick( this.altNick );
@@ -810,10 +791,67 @@ if ( window.runtime && air && util ) {
   //User Class
   dConnection.User = function ( nick, host ) {
     this.update( nick, host );
+    this.nick = nick;
+    this.host = host;
+    this._op = {};
+    this._voice = {};
+    this._halfOp = {};
+    this._creator = {};
   }
 
   _cup = dConnection.User.prototype;
 
+  _cup.rename = function ( newName ) {
+    this.nick = newName;
+  }
+
+  _cup.op = function ( channelName ) {
+    this._op[ channelName ] = true;
+  }
+
+  _cup.deOp = function ( channelName ) {
+    if ( channelName in this._op ) delete this._op[ channelName ];
+  }
+
+  _cup.isOp = function ( channelName ) {
+    return ( channelName in this._op );
+  }
+
+  _cup.voice = function ( channelName ) {
+    this._voice[ channelName ] = true;
+  }
+
+  _cup.deVoice = function ( channelName ) {
+    if ( channelName in this._voice ) delete this._voice[ channelName ];
+  }
+
+  _cup.isVoice = function ( channelName ) {
+    return ( channelName in this._voice );
+  }
+
+  _cup.halfOp = function ( channelName ) {
+    this._halfOp[ channelName ] = true;
+  }
+
+  _cup.deHalfOp = function ( channelName ) {
+    if (channelName in this._halfOp ) delete this._halfOp[ channelName ];
+  }
+
+  _cup.isHalfOp = function ( channelName ) {
+    return ( channelName in this._halfOp );
+  }
+
+  _cup.creator = function ( channelName ) {
+    this._creator[ channelName ] = true;
+  }
+
+  _cup.deCreator = function ( channelName ) {
+    if ( channelName in this._creator ) delete this._creator[ channelName ];
+  }
+
+  _cup.isCreator = function ( channelName ) {
+    return ( channelName in this._creator );
+  }
 
   _cup.update = function ( nick, host ) {
     this.nick = nick;

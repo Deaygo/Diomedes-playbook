@@ -420,6 +420,7 @@ if ( window.runtime && air && util ) {
     var setTypes = {
       O : 'give "channel creator" status;',
       o : 'give/take channel operator privilege;',
+      h : 'give/take halfop operator privilege;',
       v : 'give/take the voice privilege;',
       k : 'set/remove the channel key (password);',
       l : 'set/remove the user limit to channel;',
