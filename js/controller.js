@@ -15,6 +15,9 @@ if ( window.runtime && air && util ) {
 
     this.model = model;
     this.view = view;
+    var u = new air.ApplicationUpdater( );
+    this.appVersion = "Diomedes IRC Version: " + u.currentVersion;
+    this.view.setAppVersion( this.appVersion );
     this.channelSubscription = null;
     this.channelList = new dController.ChannelList( );
     this.currentChannel = null;
@@ -117,7 +120,7 @@ if ( window.runtime && air && util ) {
     if ( !networks ) return;
     for ( var i = 0; i < networks.length; i++ ) {
       var network = networks[ i ];
-      this.setNetwork( network.name, new dNetwork.Network( network, this.model.networks, this.channelList, this.model.prefs ) );
+      this.setNetwork( network.name, new dNetwork.Network( network, this.model.networks, this.channelList, this.model.prefs, this.appVersion ) );
       var connection = this.getNetwork( network.name ).getConnection( );
       if ( connection ) {
         this.currentConnection = connection;
@@ -232,7 +235,7 @@ if ( window.runtime && air && util ) {
             connection.connect( );
             this.handleChannelSelect( host, "SERVER",  null );
           } else {
-            this.channelList.createNewConnection( host, port, this.model.prefs.getPrefs( ) );
+            this.channelList.createConnection( host, port, this.model.prefs.getPrefs( ), this.appVersion );
             if ( !this.currentConnection ) {
               this.currentConnection = this.channelList.getConnection( host );
               this.setCurrentChannel( this.currentConnection.getServerChannel( ) );
@@ -498,9 +501,9 @@ if ( window.runtime && air && util ) {
 
   _cclp = dController.ChannelList.prototype;
 
-  _cclp.createNewConnection = function ( server, port, defaultChannels, nick, userName, realName ) {
+  _cclp.createConnection = function ( server, port, preferences, appVersion ) {
     if ( !( server in this.connections ) ) {
-      this.connections[server] = new dConnection.Connection( server, port, defaultChannels, nick, userName, realName );
+      this.connections[server] = new dConnection.Connection( server, port, preferences, appVersion );
       this.connections[server].connect( );
       return true;
     } else {

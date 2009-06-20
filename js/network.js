@@ -12,13 +12,14 @@ if ( window.runtime && air && util ) {
   //requires AIR and util
   
 
-  dNetwork.Network = function ( data, model, channelList, prefs ) {
+  dNetwork.Network = function ( data, model, channelList, prefs, appVersion ) {
     this.prefs = util.cloneObject( prefs.getPrefs( ) );
     this.prefs.nick = data.nick;
     this.prefs.altNick = data.altNick;
     this.prefs.userName = data.userName;
     this.prefs.realName = data.realName;
     this.prefs.finger = data.finger;
+    this.appVersion = appVersion;
     this.data = data;
     this.channelList = channelList;
     this.servers = [];
@@ -110,7 +111,7 @@ if ( window.runtime && air && util ) {
     var parts = this.getNextServer( ).split( ":" );
     this.currentHost = util.fromIndex( parts, 0 );
     var port = util.fromIndex( parts, 1 );
-    this.channelList.createNewConnection( this.currentHost, port, this.prefs );
+    this.channelList.createConnection( this.currentHost, port, this.prefs, this.appVersion );
     this.connection = this.channelList.getConnection( this.currentHost );
     util.publish( topics.CHANNELS_CHANGED, [ "connect", this.currentHost, this.currentHost ] );
   }

@@ -13,7 +13,7 @@ if ( window.runtime && air && util ) {
   
   dConnection.CHANNEL_TYPES = { "SERVER":"server", "PM":"pm", "CHANNEL":"channel" }
   
-  dConnection.Connection = function ( server, port, preferences ) {
+  dConnection.Connection = function ( server, port, preferences, appVersion ) {
 
     var nick = preferences.nick;
     this.channels = {};
@@ -29,6 +29,7 @@ if ( window.runtime && air && util ) {
     this.pollTime = parseInt( preferences.pollTime, 10 );
 
     this.client = new irc.Client( server, port, [], nick, preferences.userName, preferences.realName );
+    this.client.setClientInfo( appVersion );
 
     //set delegates
     this.client.setConnectionDelegate(util.hitch(this,"handleConnection"));

@@ -14,7 +14,7 @@ if ( window.runtime && air && util ) {
   //irc.Client Class
   irc.Client = function ( server, port, defaultChannels, nick, userName, realName ){
 
-    this.clientInfo = "Diomedes alpha 0.1"
+    this.clientInfo = "";
 
     //Connection info
     this.host = null;
@@ -72,6 +72,10 @@ if ( window.runtime && air && util ) {
   }
 
   var _icp = irc.Client.prototype;
+
+  _icp.setClientInfo = function ( info ) {
+    this.clientInfo = info;
+  }
 
   _icp.getNick = function ( ) {
     return this.nick;

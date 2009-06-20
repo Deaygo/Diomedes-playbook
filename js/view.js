@@ -21,8 +21,7 @@ if ( window.runtime && air && util ) {
     this.nickList = util.get( "nickList" );
     this.activityWindows = {};
     this.activeWin = null;
-    var u = new air.ApplicationUpdater( );
-    this.appVersion = u.currentVersion;
+    this.appVersion = "";
     delete u;
     util.connect( this.channelList, "onclick", this, "handleChannelListClick" );
     util.connect( this.activityWindow, "onclick", this, "handleActivityWindowClick" );
@@ -31,6 +30,10 @@ if ( window.runtime && air && util ) {
   }
 
   _vvp = dView.View.prototype;
+
+  _vvp.setAppVersion = function ( info ) {
+    this.appVersion = info;
+  }
 
   _vvp.sanitize = function ( msg ) {
     if ( msg ) {
@@ -253,7 +256,7 @@ if ( window.runtime && air && util ) {
   }
 
   _vvp.handleAboutBtnClick = function ( e ) {
-    var s ="Diomedes IRC Version: " + this.appVersion; 
+    var s = this.appVersion; 
     s += "\n\nTwitter: @apphacker";
     s += "\nEmail: apphacker@gmail.com";
     s += "\nWebsite: http://www.apphackers.com";
