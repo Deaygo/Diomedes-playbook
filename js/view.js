@@ -147,10 +147,8 @@ if ( window.runtime && air && util ) {
     util.stopEvent( e );
     var n = e.target;
     if ( !n ) return;
-    if ( n.hasAttribute( "class" ) && ( n.getAttribute( "class" ) == "channelActivity" ) ) {
-      n = n.parentNode;
-    }
-    if ( n.hasAttribute( "class" ) && ( n.getAttribute( "class" ).search( "channelButton" ) != -1 ) ) {
+    n = util.findUp( n, "channelBtn" );
+    if ( n ) {
       var server = n.getAttribute( "server" );
       var type = n.getAttribute( "type" );
       var name = n.getAttribute( "name" );
@@ -213,7 +211,7 @@ if ( window.runtime && air && util ) {
       ].join( "" );
     } 
     return [
-        ' <a href="#" class="channelButton',
+        ' <a href="#" class="channelBtn',
         ( activity ? " hasActivity " : "" ),
         ( highlight ? " highlight " : "" ),
         ( channelKey == this.currentChannel ? " currentChannel " : "" ),
@@ -224,8 +222,12 @@ if ( window.runtime && air && util ) {
         '" name="',
         this.sanitize( channelKey ),
         '">',
+          ' <span class="channelBtnWrapper"> ',
           channelActivity,
-          this.sanitize( channelName ),
+          ' <span class="channelBtnName" >',
+            this.sanitize( channelName ),
+          ' </span>',
+          '</span> ',
         '</a> '
       ].join( "" );
   }

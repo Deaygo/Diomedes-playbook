@@ -87,23 +87,42 @@ if ( window.runtime && air ) {
     delete d;
   }
 
-  util.addClass = function ( node, className ) {
-    var classes = node.getAttribute( "class" ).split( " " );
-    var hasClass = false;
+  util.findUp = function ( node, className ) {
+    if ( !node || !className ) return null;
+    if ( util.hasClass( node, className ) ) {
+      return node;
+    } else if ( node.parentNode ) {
+      return util.findUp( node.parentNode, className );
+    }
+    return null;
+  }
+
+  util.hasClass = function ( node, className ) {
+    if ( !node || !className ) return false;
+    if ( !node.hasAttribute( "class" ) ) return false;
+    var classes = util.trim( node.getAttribute( "class" ) );
+    if ( !classes || !classes.length ) return false;
+    var classes = classes.split( " " );
     for ( var i = 0; i < classes.length; i++ ) {
       var name = classes[ i ];
       if ( name == className ) {
-        hasClass = true;
-        break;
+        return true;
       }
     }
-    if ( !hasClass ) {
+    return false;
+  }
+
+  util.addClass = function ( node, className ) {
+    if ( !node || !className ) return;
+    var classes = node.getAttribute( "class" ).split( " " );
+    if ( !util.hasClass( node, className ) ) {
       classes.push( className );
     }
     node.setAttribute( "class", classes.join( " " ) );
   }
 
   util.remClass = function ( node, className ) {
+    if ( !node || !className ) return;
     var classes = node.getAttribute( "class" ).split( " " );
     var keep = [];
     for ( var i = 0; i < classes.length; i++ ) {

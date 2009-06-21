@@ -45,3 +45,8 @@ a {
 #nickList .voiced {
   color: #00AC6B; 
 }
+
+.channelBtn {
+  border-color: #000;
+  color: #000;
+}
