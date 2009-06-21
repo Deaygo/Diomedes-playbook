@@ -451,12 +451,6 @@ if ( window.runtime && air && util ) {
     }
   }
 
-  _ccp.handleNickListSelection = function ( nick ) {
-  }
-
-  _ccp.handleChannelListSelection = function ( channel, server ) {
-  }
-
   _ccp.handleUserActivity = function ( serverName, channelName ) {
     var connection = this.channelList.getConnection( serverName );
     if ( connection ) {

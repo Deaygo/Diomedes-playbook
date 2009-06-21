@@ -7,6 +7,9 @@
 .channelActivity {
   text-align: center;
 }
+.currentChannel {
+  font-weight: bold;
+}
 .channelButton {
   display: block;
   margin: 3px;

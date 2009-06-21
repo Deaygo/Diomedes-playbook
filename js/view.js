@@ -25,6 +25,7 @@ if ( window.runtime && air && util ) {
     this.activityWindows = {};
     this.activeWin = null;
     this.appVersion = "";
+    this.currentChannel = null;
 
     util.connect( this.channelList, "onclick", this, "handleChannelListClick" );
     util.connect( this.activityWindow, "onclick", this, "handleActivityWindowClick" );
@@ -113,6 +114,7 @@ if ( window.runtime && air && util ) {
   }
 
   _vvp.changeView = function ( serverName, channelName ) {
+    this.currentChannel = channelName;
     this.createActivityViewIfNeeded( channelName, serverName );
     this.activeWin = this.getActivityWindow( channelName, serverName )
     if ( this.activityWindow.childNodes.length ) {
@@ -214,6 +216,7 @@ if ( window.runtime && air && util ) {
         ' <a href="#" class="channelButton',
         ( activity ? " hasActivity " : "" ),
         ( highlight ? " highlight " : "" ),
+        ( channelKey == this.currentChannel ? " currentChannel " : "" ),
         '" type="',
         this.sanitize( type ),
         '" server="',
