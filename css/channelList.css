@@ -3,6 +3,7 @@
   overflow-x: hidden;
   overflow-y: auto;
   height: 60px;
+  margin-right: 40px;
 }
 .channelActivity {
   text-align: center;

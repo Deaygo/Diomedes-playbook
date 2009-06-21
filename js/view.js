@@ -29,6 +29,8 @@ if ( window.runtime && air && util ) {
     util.connect( this.channelList, "onclick", this, "handleChannelListClick" );
     util.connect( this.activityWindow, "onclick", this, "handleActivityWindowClick" );
     util.connect( this.titleBar, "onclick", this, "handleTitleBarClick" );
+    util.connect( util.get( "prefBtn" ), "onclick", this, "handlePrefsBtnClick" );
+    util.connect( window, "onclick", this, "handleWindowClick" );
     util.subscribe( topics.USER_HIGHLIGHT, this, "highlight", [] );
     util.subscribe( topics.PREFS_CHANGE_FONT, this, "changeFont", [] );
     util.subscribe( topics.NOTIFY, this, "notify", []);
@@ -36,6 +38,15 @@ if ( window.runtime && air && util ) {
   }
 
   _vvp = dView.View.prototype;
+
+  _vvp.handlePrefsBtnClick = function ( e ) {
+    util.stopEvent( e );
+    util.remClass( this.titleBar, "hidden" );
+  }
+
+  _vvp.handleWindowClick = function ( e ) {
+    util.addClass( this.titleBar, "hidden" );
+  }
 
   _vvp.setTopicView = function ( channelName, topic ) {
     var msg = channelName;
@@ -155,6 +166,7 @@ if ( window.runtime && air && util ) {
       }
     }
     this.input.focus( );
+    this.handleWindowClick( e );
   }
 
   _vvp.handleChannelListClick = function ( e ) {
@@ -170,6 +182,7 @@ if ( window.runtime && air && util ) {
         util.publish( topics.CHANNEL_SELECTED, [server, type, name] );
       }, 0);
     }
+    this.handleWindowClick( e );
   }
 
 
@@ -432,6 +445,7 @@ if ( window.runtime && air && util ) {
         this[ funcName ]( e );
       }
     }
+    this.handleWindowClick( e );
   }
 
   //FormInput Class

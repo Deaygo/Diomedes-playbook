@@ -13,7 +13,7 @@
 
 #mainWindow {
   position: absolute;
-  top: 92px;
+  top: 60px;
   left: 0px;
   right: 0px;
   bottom: 36px;
@@ -23,3 +23,39 @@
   display: none !important;
 }
 
+#prefBtn {
+  width: 32px;
+  height: 32px;
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  background: transparent url( /images/preferences.png ) no-repeat;
+  z-index: 2;
+}
+#prefBtn:hover {
+  background-image: url( /images/preferencesOver.png );
+}
+#prefBtn:active {
+  background-image: url( /images/preferencesDown.png );
+}
+#titleBar {
+  width: auto;
+  height: auto;
+  position: absolute;
+  top: 35px;;
+  right: 10px;
+  left: auto;
+  bottom: auto;
+  z-index: 3;
+  border: 1px solid;
+  padding: 5px;
+  text-align: right;
+}
+#titleBar a {
+  display: block;
+  text-decoration: none;
+  line-height: 150%;
+}
+#titleBar a:hover {
+  text-decoration: underline;
+}

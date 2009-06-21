@@ -11,17 +11,19 @@
   <link rel="stylesheet" type="text/css" media="screen" href="css/themes/default.css" />
 </head> 
 <body id="body" onLoad="appLoad( );" onUnload="appUnload( );"> 
-  <div id="titleBar">
-    <a href="#" class="titleBarBtn" id="PrefBtn">Preferences</a>
-    <a href="#" class="titleBarBtn" id="NetworksBtn">Networks</a>
-    <a href="#" class="titleBarBtn" id="ServersBtn">Servers</a>
-    <a href="#" class="titleBarBtn" id="ChannelsBtn">Channels</a>
-    <a href="#" class="titleBarBtn" id="PerformBtn">Performs</a>
-    <a href="#" class="titleBarBtn" id="AliasesBtn">Aliases</a>
-    <a href="#" class="titleBarBtn" id="HelpBtn">Help</a>
-    <a href="#" class="titleBarBtn" id="AboutBtn">About</a>
-  </div>
   <div id="view">
+    <div id="prefBtn">
+    </div>
+    <div id="titleBar" class="hidden">
+      <a href="#" class="titleBarBtn" id="PrefBtn">Preferences</a>
+      <a href="#" class="titleBarBtn" id="NetworksBtn">Networks</a>
+      <a href="#" class="titleBarBtn" id="ServersBtn">Servers</a>
+      <a href="#" class="titleBarBtn" id="ChannelsBtn">Channels</a>
+      <a href="#" class="titleBarBtn" id="PerformBtn">Performs</a>
+      <a href="#" class="titleBarBtn" id="AliasesBtn">Aliases</a>
+      <a href="#" class="titleBarBtn" id="HelpBtn">Help</a>
+      <a href="#" class="titleBarBtn" id="AboutBtn">About</a>
+    </div>
     <div id="channelList"></div>
     <div id="mainWindow">
       <div id="activityWindow">Try /help for more commands.</div>

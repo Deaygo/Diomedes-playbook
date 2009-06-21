@@ -54,3 +54,11 @@ a {
   border-color: #000;
   color: #000;
 }
+
+#titleBar {
+  background: #fff;
+  border-color: #000;
+}
+#titleBar a {
+  color: #000;
+}
