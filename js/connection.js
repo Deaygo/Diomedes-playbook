@@ -398,6 +398,12 @@ if ( window.runtime && air && util ) {
   _cnp.handleTopic = function ( host, target, topic, topicSetter, datetime ) {
     var msg = new dConnection.ActivityItem( "topic", topicSetter, target, topic );
     this.addActivityToChannel( target, msg );
+    var channelName = this.getChannelName( target );
+    if ( channelName in this.channels ) {
+      var channel = this.channels[ channelName ];
+      channel.setTopic( topic );
+    }
+    util.publish( topics.CHANNEL_TOPIC, [ this.server, channelName, topic ] );
     delete msg;
   }
 
@@ -610,12 +616,21 @@ if ( window.runtime && air && util ) {
     this.type = type;
     this.server = server;
     this.users = {};
+    this.topic = null;
     this.activityList = new dConnection.ActivityList( );
   }
 
   _clp = dConnection.Channel.prototype;
 
   _clp.getChannelName = dConnection.Connection.prototype.getChannelName;
+
+  _clp.setTopic = function ( topic ) {
+    this.topic = topic;
+  }
+
+  _clp.getTopic = function ( ) {
+    return this.topic;
+  }
 
   _clp.renameUser = function ( oldNick, newNick ) {
     if ( oldNick in this.users ) {

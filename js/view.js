@@ -25,7 +25,6 @@ if ( window.runtime && air && util ) {
     this.activityWindows = {};
     this.activeWin = null;
     this.appVersion = "";
-    this.currentChannel = null;
 
     util.connect( this.channelList, "onclick", this, "handleChannelListClick" );
     util.connect( this.activityWindow, "onclick", this, "handleActivityWindowClick" );
@@ -33,9 +32,24 @@ if ( window.runtime && air && util ) {
     util.subscribe( topics.USER_HIGHLIGHT, this, "highlight", [] );
     util.subscribe( topics.PREFS_CHANGE_FONT, this, "changeFont", [] );
     util.subscribe( topics.NOTIFY, this, "notify", []);
+    util.subscribe( topics.CHANNEL_TOPIC, this, "handleTopic", [] );
   }
 
   _vvp = dView.View.prototype;
+
+  _vvp.setTopicView = function ( channelName, topic ) {
+    var msg = channelName;
+    if ( topic ) {
+      msg += ": " + topic;
+    }
+    document.title = msg;
+  }
+
+  _vvp.handleTopic = function ( serverName, channelName, topic ) {
+    if ( this.activeWin.serverName == serverName && this.activeWin.channelName == channelName ) {
+      this.setTopicView( channelName, topic );
+    }
+  }
 
   _vvp.changeFont = function ( fontPrefs, size ) {
     for ( var i = 0; i < fontPrefs.length; i++ ) {
@@ -113,10 +127,10 @@ if ( window.runtime && air && util ) {
     window.open("help.html", "helpWindow", "height=600, width=400, top=10, left=10");
   }
 
-  _vvp.changeView = function ( serverName, channelName ) {
-    this.currentChannel = channelName;
+  _vvp.changeView = function ( serverName, channelName, topic ) {
     this.createActivityViewIfNeeded( channelName, serverName );
     this.activeWin = this.getActivityWindow( channelName, serverName )
+    this.setTopicView( channelName, topic );
     if ( this.activityWindow.childNodes.length ) {
       this.activityWindow.replaceChild( this.activeWin.getNode( ), this.activityWindow.firstChild );
     } else {
@@ -210,11 +224,13 @@ if ( window.runtime && air && util ) {
         ' </span> '
       ].join( "" );
     } 
+    var currentChannel = ( channelKey == this.activeWin.channelName 
+        && server == this.activeWin.serverName );
     return [
         ' <a href="#" class="channelBtn',
         ( activity ? " hasActivity " : "" ),
         ( highlight ? " highlight " : "" ),
-        ( channelKey == this.currentChannel ? " currentChannel " : "" ),
+        ( currentChannel  ? " currentChannel " : "" ),
         '" type="',
         this.sanitize( type ),
         '" server="',
@@ -636,6 +652,7 @@ if ( window.runtime && air && util ) {
       "#A8A8A8", //lightgrey
     ];
     this.nickWindow = new dView.NickWindow( serverName, channelName );
+    this.topic = null;
     this.win = document.createElement( "div" );
     this.win.setAttribute( "class", "activityWin" );
     this.serverName = serverName; 
@@ -645,6 +662,7 @@ if ( window.runtime && air && util ) {
     this.maxItems = maxItems;
     util.subscribe( topics.PREFS_CHANGE_HISTORY_LENGTH, this, "handleChangeHistoryLength", [] );
     util.subscribe( topics.PREFS_CHANGE_TIME_FORMAT, this, "setTimeFormat", [] );
+    util.subscribe( topics.CHANNEL_TOPIC, this, "handleTopic", [] );
   }
 
   _vap = dView.ActivityWindow.prototype;
@@ -652,6 +670,16 @@ if ( window.runtime && air && util ) {
   _vap.sanitize = dView.View.prototype.sanitize;
 
   _vap.setContents = _vvp.setContents;
+
+  _vap.getTopic = function ( ) {
+    return this.topic;
+  }
+
+  _vap.handleTopic = function ( serverName, channelName, topic ) {
+    if ( serverName == this.serverName && channelName == this.channelName ) {
+      this.topic = topic;
+    }
+  }
 
   _vap.setTimeFormat = function ( timePrefs ) {
     for ( var i = 0; i < timePrefs.length; i++ ) {

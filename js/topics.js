@@ -39,6 +39,7 @@ if(!topics) {
 
     CHANNEL_ADD: "/channel/add/",
     CHANNEL_DELETE: "/channel/delete/",
+    CHANNLE_TOPIC: "/channel/topic/",
 
     PERFORM_ADD: "/perform/add/",
     PERFORM_EDIT: "/perform/edit/",

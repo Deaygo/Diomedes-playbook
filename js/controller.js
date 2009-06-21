@@ -384,7 +384,7 @@ if ( window.runtime && air && util ) {
       delete this.currentChannel;
       var serverName = this.currentConnection.server;
       var channelName = this.currentConnection.getChannelName( channel.name );
-      this.view.changeView( serverName, channelName );
+      this.view.changeView( serverName, channelName, channel.getTopic( ) );
       if ( serverName in this.channelsWithActivity  && channelName in this.channelsWithActivity[ serverName ] ) { 
         delete this.channelsWithActivity[ serverName ][ channelName ];
       }
