@@ -1,5 +1,9 @@
 * { margin: 0px; padding: 0px; }
 
+body {
+  overflow: hidden;
+}
+
 #view {
   border: 1px solid;
 }

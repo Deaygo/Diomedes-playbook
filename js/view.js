@@ -192,6 +192,7 @@ if ( window.runtime && air && util ) {
   }
 
   _vvp.updateChannelView = function ( channels, channelsWithActivity, channelsWithHighlight ) {
+    util.log("updateChannelView");
     if ( !channels ) return;
     var r = [];
     var channelsR = [];
@@ -228,6 +229,8 @@ if ( window.runtime && air && util ) {
   }
 
   _vvp.getChannelButton = function ( server, channelKey, channelName, type, activity, highlight ) {
+    util.log("getChannelButton");
+    util.log("this.activeWin: " + this.activeWin );
     //channelKey is channelName in lowercase
     var channelActivity = "";
     if ( activity ) {
@@ -237,8 +240,12 @@ if ( window.runtime && air && util ) {
         ' </span> '
       ].join( "" );
     } 
-    var currentChannel = ( channelKey == this.activeWin.channelName 
+    if ( this.activeWin ) {
+      var currentChannel = ( channelKey == this.activeWin.channelName 
         && server == this.activeWin.serverName );
+    } else {
+      var currentChannel = false;
+    }
     return [
         ' <a href="#" class="channelBtn',
         ( activity ? " hasActivity " : "" ),
