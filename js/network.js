@@ -167,6 +167,7 @@ if ( window.runtime && air && util ) {
   _nn.close = function ( ) {
     if ( this.currentHost ) {
       util.publish( topics.CONNECTION_CLOSE, [ this.currentHost ] );
+      this.connection.destroy( );
       this.connection = null;
       this.currentHost = null;
     }

@@ -766,14 +766,21 @@ if ( window.runtime && air && util ) {
     return false;
   }
 
+  _icp.close = function ( ) {
+    if ( this.socket && this.socket.connected ) {
+      this.socket.close( );
+    }
+    if ( this.socketMonitor && this.socketMonitor.running ) {
+      this.socketMonitor.stop( );
+    }
+  }
+
   _icp.closeConnection = function ( msg ) {
     this.stayConnected = false;
     this._isConnected = false;
     this.connectionEstablished = false;
     this.connectionAccepted = false;
-    if ( this.socket && this.socket.connected ) {
-      this.socket.close( );
-    }
+    this.close( );
     if ( this.connectionDelegate ) {
       var quitMsg = "Quit: ";
       if ( msg ) {
@@ -781,16 +788,15 @@ if ( window.runtime && air && util ) {
       }
       this.connectionDelegate( quitMsg, false, false );
     }
-    if ( this.socketMonitor && this.socketMonitor.running ) {
-      this.socketMonitor.stop( );
-    }
   }
 
   _icp.destroy = function ( data ) {
     this.log( "destroying irc client" );
+    this.close( );
     delete this.socket;
     this.socket = null;
-    this.closeConnection( );
+    delete this.socketMonitor;
+    this.socketMonitor = null;
   }
 
 }

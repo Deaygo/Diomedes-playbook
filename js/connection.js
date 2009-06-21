@@ -27,6 +27,8 @@ if ( window.runtime && air && util ) {
     this.altNickTries = 0;
 
     this.pollTime = parseInt( preferences.pollTime, 10 );
+    this.stayConnected = false;
+    this.reconnectId = null;
 
     this.client = new irc.Client( server, port, [], nick, preferences.userName, preferences.realName );
     this.client.setClientInfo( appVersion );
@@ -100,16 +102,25 @@ if ( window.runtime && air && util ) {
   }
 
   _cnp.connect = function () {
+    this.stayConnected = true;
     this.client.connect( );
     this.serverChannel = new dConnection.Channel( this.server, dConnection.CHANNEL_TYPES.SERVER, this.server );
     util.publish( topics.CHANNELS_CHANGED, [] );
+  }
+
+  _cnp.reconnect = function ( ) {
+    if ( this.stayConnected ) {
+      this.connect( );
+    }
   }
 
   _cnp.isConnected = function ( ) {
     return this.client.isConnected( );
   }
 
-  _cnp.close = function () {
+  _cnp.close = function ( ) {
+    this.cancelReconnect( );
+    this.stayConnected = false;
     this.client.closeConnection( "Closed connection." );
   }
 
@@ -128,8 +139,8 @@ if ( window.runtime && air && util ) {
       util.log("PUBLISHING CONNECTION_DISCONNECTED: " + this.server );
       util.publish( topics.CONNECTION_DISCONNECTED, [ this.server ] );
       var pollTime = this.pollTime;
-      if ( pollTime ) {
-        window.setTimeout( util.hitch( this, "connect" ), pollTime * 1000 );
+      if ( pollTime && this.stayConnected ) {
+        this.reconnectId = window.setTimeout( util.hitch( this, "reconnect" ), pollTime * 1000 );
       }
     } else {
       var channels = [];
@@ -568,18 +579,29 @@ if ( window.runtime && air && util ) {
     }
   }
 
+  _cnp.cancelReconnect = function ( ) {
+    if ( this.reconnectId ) {
+      window.clearTimeout( this.reconnectId );
+      this.reconnectId = null;
+    }
+  }
+
   _cnp.destroy = function ( ) {
-    for ( user in this.users ) {
-      this.users[ user ].destroy( );
-      delete this.users[ user ];
+    this.stayConnected = false;
+    if ( this.client ) {
+      this.client.destroy( );
+      delete this.client;
+      for ( user in this.users ) {
+        this.users[ user ].destroy( );
+        delete this.users[ user ];
+      }
+      for ( channel in this.channels ) {
+        this.channels[ channel ].destroy( );
+        delete this.channels[ channel ];
+      }
+      this.serverChannel.destroy( );
+      delete this.serverChannel;
     }
-    for ( channel in this.channels ) {
-      this.channels[ channel ].destroy( );
-      delete this.channels[ channel ];
-    }
-    this.serverChannel.destroy( );
-    delete this.serverChannel;
-    return;
   }
 
   //Channel Class
