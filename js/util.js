@@ -99,6 +99,7 @@ if ( window.runtime && air ) {
 
   util.hasClass = function ( node, className ) {
     if ( !node || !className ) return false;
+    if ( node == document ) return false;
     if ( !node.hasAttribute( "class" ) ) return false;
     var classes = util.trim( node.getAttribute( "class" ) );
     if ( !classes || !classes.length ) return false;

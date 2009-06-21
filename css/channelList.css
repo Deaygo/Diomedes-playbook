@@ -2,7 +2,7 @@
 #channelList {
   overflow-x: hidden;
   overflow-y: auto;
-  height: 75px;
+  height: 60px;
 }
 .channelActivity {
   text-align: center;
@@ -12,7 +12,7 @@
 }
 .channelBtn {
   display: block;
-  margin: 3px;
+  margin: 2px;
   float: left;
   border: 1px solid;
   white-space: nowrap;

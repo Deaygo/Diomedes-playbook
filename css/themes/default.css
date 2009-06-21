@@ -18,6 +18,9 @@ a {
 .messageText {
   border-color: #444;
 }
+#activityWindow {
+  border-color: #444;
+}
 .hasActivity {
   color: #FF0000;
 }
@@ -38,6 +41,7 @@ a {
 }
 #nickList .op {
   color: #FF0000;
+  border-color: #000;
 }
 #nickList .halfOp {
   color: #FFF000;

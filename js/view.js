@@ -480,6 +480,7 @@ if ( window.runtime && air && util ) {
   }
 
   _vip.handleInput = function ( e ) {
+    util.stopEvent( e );
     var input = util.trim( this.getValue( ) );
     this.addToHistory( input );
     util.log("getInput: " + input );
