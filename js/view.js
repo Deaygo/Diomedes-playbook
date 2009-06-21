@@ -836,7 +836,7 @@ if ( window.runtime && air && util ) {
     var year = this.formatDateItem( date_.getFullYear( ) );
     var month = this.formatDateItem( date_.getMonth( ) + 1 );
     var day = this.formatDateItem( date_.getDate( ) );
-    var hour = this.formatDateItem( date_.getHours( ) );
+    var hour =  date_.getHours( );
     if ( this.timeFormat < 24 ) {
       if ( hour > 12 ) {
         hour = hour - 12;
@@ -847,6 +847,7 @@ if ( window.runtime && air && util ) {
     } else {
       var clock = "";
     }
+    hour = this.formatDateItem( hour );
     var minute = this.formatDateItem( date_.getMinutes( ) );
     var second = this.formatDateItem( date_.getSeconds( ) );
     return {
