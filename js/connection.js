@@ -373,8 +373,6 @@ if ( window.runtime && air && util ) {
       var host = "";
       if (mode == "@" || mode == "+" || mode == "%" || mode == "!" ) {
         nick = nick.substr( 1 );
-        console.log("nick with mode: " + nick );
-        console.log("mode: " + mode);
       } else {
         mode = null;
       }
@@ -385,7 +383,6 @@ if ( window.runtime && air && util ) {
       } 
       channel.addUser( user );
       if ( mode == "@" ) {
-        console.log( "opping user " + user.nick + " in channel: " + channelName );
         user.op( channelName );
       } else if ( mode == "!" ) {
         user.creator( channelName );

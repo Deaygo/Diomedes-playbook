@@ -9,6 +9,9 @@ a {
 #activityWindow {
   border-color: #444;
 }
+.messageNick {
+  color: #B22222;
+}
 .isServer {
   color: #00AC6B; 
 }
@@ -62,3 +65,4 @@ a {
 #titleBar a {
   color: #000;
 }
+.highlight {

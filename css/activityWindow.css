@@ -25,23 +25,13 @@
   font-style: italic;
 }
 .message {
-  padding: 2px 0px;
-  clear: both;
+  margin: 4px 5px;
 }
 .messageData {
-  display: block;
-  float: left;
-  width: 195px;
-  position: relative;
-  overflow: hidden;
 }
 .messageText {
-  display: block;
-  margin-left: 200px;
 }
 .messageNick {
-  display: block;
-  float: right;
 }
 .highlight {
   font-weight: bold;

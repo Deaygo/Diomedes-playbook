@@ -751,119 +751,116 @@ if ( window.runtime && air && util ) {
     var r = [], msg;
     while ( messages.length ) {
       msg = messages.shift( );
-      var newMsg = msg.getDisplay( );
-      if ( !newMsg ) {
-        var showBrackets = true;
-        var isServer = false;
-        var isAction = false;
-        var isNotice = false;
-        var referencesUser = msg.referencesUser( );
-        var m = msg.msg;
-        if ( msg.cmd ) {
-          //XXX: need to get rid of this switch statement some how
-          switch ( msg.cmd.toLowerCase( ) ) {
-            case "mode":
-              isServer = true;
-              m = msg.nick + " has changed modes for " + msg.target + " to: " + m;
-              break;
-            case "action":
-              isAction = true;
-              showBrackets = false;
-              break;
-            case "kick":
-              isServer = true;
-              var altUser = msg.getAltUser( );
-              m = msg.nick + " has kicked " + this.makeFullID( altUser.nick, altUser ) + " from " + msg.target + ": " + m;
-              break;
-            case "part":
-              isServer = true;
-              //XXX: make a pref here about showing quit messages
-              m = this.makeFullID( msg.nick, msg.user ) + " has parted " + msg.target + ": " + m;
-              break;
-            case "topic":
-              isServer = true;
-              var d = " On " + msg.datetime.toUTCString( ) + " "; 
-              m = d + msg.nick + " set the topic for " + msg.target + " to: " + m ;
-              break;
-            case "notice":
-              m = msg.target + ": - NOTICE - " + m;
-              isNotice = true;
-              break;
-            case "join":
-              isServer = true;
-              m = this.makeFullID( msg.nick, msg.user ) + " has joined " + msg.target + ".";
-              break;
-            case "nick":
-              m = msg.nick + " is now known as " + m + ".";
-              isServer = true;
-              break;
-            case "quit":
-              m = this.makeFullID( msg.nick, msg.user ) + " has quit: " + m;
-              isServer = true;
-              break;
-            case "server":
-              isServer = true;
-              break;
-          }
+      var newMsg;
+      var showBrackets = true;
+      var isServer = false;
+      var isAction = false;
+      var isNotice = false;
+      var referencesUser = msg.referencesUser( );
+      var m = msg.msg;
+      if ( msg.cmd ) {
+        //XXX: need to get rid of this switch statement some how
+        switch ( msg.cmd.toLowerCase( ) ) {
+          case "mode":
+            isServer = true;
+            m = msg.nick + " has changed modes for " + msg.target + " to: " + m;
+            break;
+          case "action":
+            isAction = true;
+            showBrackets = false;
+            break;
+          case "kick":
+            isServer = true;
+            var altUser = msg.getAltUser( );
+            m = msg.nick + " has kicked " + this.makeFullID( altUser.nick, altUser ) + " from " + msg.target + ": " + m;
+            break;
+          case "part":
+            isServer = true;
+            //XXX: make a pref here about showing quit messages
+            m = this.makeFullID( msg.nick, msg.user ) + " has parted " + msg.target + ": " + m;
+            break;
+          case "topic":
+            isServer = true;
+            var d = " On " + msg.datetime.toUTCString( ) + " "; 
+            m = d + msg.nick + " set the topic for " + msg.target + " to: " + m ;
+            break;
+          case "notice":
+            m = msg.target + ": - NOTICE - " + m;
+            isNotice = true;
+            break;
+          case "join":
+            isServer = true;
+            m = this.makeFullID( msg.nick, msg.user ) + " has joined " + msg.target + ".";
+            break;
+          case "nick":
+            m = msg.nick + " is now known as " + m + ".";
+            isServer = true;
+            break;
+          case "quit":
+            m = this.makeFullID( msg.nick, msg.user ) + " has quit: " + m;
+            isServer = true;
+            break;
+          case "server":
+            isServer = true;
+            break;
         }
-        if ( msg.isAction ) showBrackets = false;
-        if ( isServer ) {
-          var nick = "Server";
-        } else if ( msg.user && msg.user.isCreator( channelName ) ) {
-          var nick = "!" + msg.nick;
-        } else if ( msg.user && msg.user.isOp( channelName ) ) {
-          var nick = "@" + msg.nick;
-        } else if ( msg.user && msg.user.isHalfOp( channelName ) ) {
-          var nick = "%" + msg.nick;
-        } else if ( msg.user && msg.user.isVoice( channelName ) ) {
-          var nick = "+" + msg.nick;
-        } else {
-          var nick = msg.nick;
-        }
-        var isSelf = ( msg.nick == userNick );
-        var dates = this.formatDate( msg.datetime );
-        newMsg = [].concat( [
-            '<div class="message">',
-              '<span class="messageData">',
-              '<span class="messageTime" title="',
-                dates.long,
-              '">',
-                dates.short,
-              '</span> ',
-              '<span class="messageNick',
-              ( isAction ? ' isAction' : '' ),
-              ( isServer ? ' isServer' : '' ),
-              ( isNotice ? ' isNotice' : '' ),
-              ( isSelf ? ' isSelf' : '' ),
-              ( referencesUser ? ' referencesUser' : '' ),
-              '">',
-              [
-                ( showBrackets ? '&lt;' : ''  ),
-                this.sanitize( nick ),
-                ( showBrackets ? '&gt;' : ''  ),
-              ].join( "" ),
-              '</span>',
-              '</span> ',
-              '<span class="messageText',
-              ( isAction ? ' isAction' : '' ),
-              ( isServer ? ' isServer' : '' ),
-              ( isNotice ? ' isNotice' : '' ),
-              ( isSelf ? ' isSelf' : '' ),
-              ( referencesUser ? ' referencesUser' : '' ),
-              '"> ',
-                this.textFormat( this.sanitize( m ) ),
-              '</span> ',
-            '</div>'
-        ] );
-        var childNodes = w.childNodes;
-        if ( childNodes.length > this.maxItems ) {
-          w.removeChild( w.firstChild );
-        }
-        var n = document.createElement("div");
-        n.innerHTML = newMsg.join( "" );
-        w.appendChild( n );
-        msg.setDisplay( newMsg );
       }
+      if ( msg.isAction ) showBrackets = false;
+      if ( isServer ) {
+        var nick = "Server";
+      } else if ( msg.user && msg.user.isCreator( channelName ) ) {
+        var nick = "!" + msg.nick;
+      } else if ( msg.user && msg.user.isOp( channelName ) ) {
+        var nick = "@" + msg.nick;
+      } else if ( msg.user && msg.user.isHalfOp( channelName ) ) {
+        var nick = "%" + msg.nick;
+      } else if ( msg.user && msg.user.isVoice( channelName ) ) {
+        var nick = "+" + msg.nick;
+      } else {
+        var nick = msg.nick;
+      }
+      var isSelf = ( msg.nick == userNick );
+      var dates = this.formatDate( msg.datetime );
+      newMsg = [].concat( [
+          '<div class="message">',
+            '<span class="messageData">',
+            '<span class="messageTime" title="',
+              dates.long,
+            '">',
+              dates.short,
+            '</span> ',
+            '<span class="messageNick',
+            ( isAction ? ' isAction' : '' ),
+            ( isServer ? ' isServer' : '' ),
+            ( isNotice ? ' isNotice' : '' ),
+            ( isSelf ? ' isSelf' : '' ),
+            ( referencesUser ? ' referencesUser' : '' ),
+            '">',
+            [
+              ( showBrackets ? '&lt;' : ''  ),
+              this.sanitize( nick ),
+              ( showBrackets ? '&gt;' : ''  ),
+            ].join( "" ),
+            '</span>',
+            '</span> ',
+            '<span class="messageText',
+            ( isAction ? ' isAction' : '' ),
+            ( isServer ? ' isServer' : '' ),
+            ( isNotice ? ' isNotice' : '' ),
+            ( isSelf ? ' isSelf' : '' ),
+            ( referencesUser ? ' referencesUser' : '' ),
+            '"> ',
+              this.textFormat( this.sanitize( m ) ),
+            '</span> ',
+          '</div>'
+      ] );
+      var childNodes = w.childNodes;
+      if ( childNodes.length > this.maxItems ) {
+        w.removeChild( w.firstChild );
+      }
+      var n = document.createElement("div");
+      n.innerHTML = newMsg.join( "" );
+      w.appendChild( n );
     }
     if ( isAtBottom ) {
       w.scrollTop = w.scrollHeight;
