@@ -373,6 +373,8 @@ if ( window.runtime && air && util ) {
       var host = "";
       if (mode == "@" || mode == "+" || mode == "%" || mode == "!" ) {
         nick = nick.substr( 1 );
+        console.log("nick with mode: " + nick );
+        console.log("mode: " + mode);
       } else {
         mode = null;
       }
@@ -383,6 +385,7 @@ if ( window.runtime && air && util ) {
       } 
       channel.addUser( user );
       if ( mode == "@" ) {
+        console.log( "opping user " + user.nick + " in channel: " + channelName );
         user.op( channelName );
       } else if ( mode == "!" ) {
         user.creator( channelName );
@@ -723,11 +726,11 @@ if ( window.runtime && air && util ) {
   }
 
   _clp.publishActivity = function ( isPM ) {
-    util.publish( topics.CHANNEL_ACTIVITY, [ dConnection.Connection.prototype.getChannelName( this.name ), this.server, isPM ] );
+    util.publish( topics.CHANNEL_ACTIVITY, [ this.getChannelName( this.name ), this.server, isPM ] );
   }
 
   _clp.publishUserActivity = function ( ) {
-    util.publish( topics.USER_ACTIVITY, [ this.server, this.name ] );
+    util.publish( topics.USER_ACTIVITY, [ this.server, this.getChannelName( this.name ) ] );
   }
 
   _clp.getActivity = function ( msg ) {
