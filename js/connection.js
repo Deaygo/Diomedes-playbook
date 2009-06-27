@@ -341,7 +341,7 @@ if ( window.runtime && air && util ) {
 
   _cnp.handleServerMessage = function ( host, msg, target ) {
     var msg = new dConnection.ActivityItem( "server", null, target, msg );
-    if ( target ) {
+    if ( this.client.isChannelName( target ) ) {
       this.addActivityToChannel( target, msg );
     } else {
       this.serverChannel.addActivity( msg );

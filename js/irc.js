@@ -225,9 +225,9 @@ if ( window.runtime && air && util ) {
     var dataR = data.split( "\n" );
     if ( this.connectionEstablished ) {
       for ( var i = 0; i < dataR.length; i++ ) {
-        var d = dataR[i];
+        var d = dataR[ i ];
         if ( d.search( "PING" ) == 0 ) {
-          var pong = data.split(" ")[1];
+          var pong = data.split(" ")[ 1 ];
           this._send( "PONG " + pong );
         } else if ( d.length ) {
           this.handleData( d );
@@ -241,7 +241,7 @@ if ( window.runtime && air && util ) {
 
   _icp.getIndex = function ( arr, index ) {
     if ( arr.length && arr.length > index ) {
-      return arr[index];
+      return arr[ index ];
     } else {
       return null;
     }
@@ -249,7 +249,7 @@ if ( window.runtime && air && util ) {
 
   _icp.handleData = function ( line ) {
     this.log( "Handling line: " + line );
-    if ( line[0] != ":" ) {
+    if ( line[ 0 ] != ":" ) {
       this.log( "lost beginning of line, line length: " + line.length );
       var endFragment = line;
     } else {
@@ -378,7 +378,7 @@ if ( window.runtime && air && util ) {
   }
 
   _icp.KICK = function ( nick, host, cmd, target, msg, cmdParts ) {
-    var kickedNick = cmdParts[3];
+    var kickedNick = cmdParts[ 3 ];
     if ( target && kickedNick ) {
       this.kickDelegate( nick, kickedNick, host, target, msg );
     }
@@ -406,8 +406,8 @@ if ( window.runtime && air && util ) {
     var host = this.getIndex(userParts, 1);
     var cmd = this.getIndex(cmdParts, 1);
     var target = this.getTarget(cmdParts, msg);
-    if ( cmd in this && util.isFunction( this[cmd] ) ) {
-      this[cmd]( nick, host, cmd, target, msg, cmdParts);
+    if ( cmd in this && util.isFunction( this[ cmd ] ) ) {
+      this[ cmd ]( nick, host, cmd, target, msg, cmdParts);
     }
   }
 
@@ -440,12 +440,12 @@ if ( window.runtime && air && util ) {
       t : 'toggle the topic settable by channel operator only flag;',
     }
     for ( var i = 0; i < parts.length; i++ ) {
-      var part = parts[i];
+      var part = parts[ i ];
       if ( part ) {
-        var toggle = part[0];
+        var toggle = part[ 0 ];
         if ( toggle == "+" || toggle == "-" ) {
           for ( var j = 1; j < part.length; j++ ) {
-            var c = part[j];
+            var c = part[ j ];
             var modeObj = {};
             modeObj.toggle = toggle;
             modeObj.target = target;
@@ -468,8 +468,8 @@ if ( window.runtime && air && util ) {
           }
         } else {
           for ( var j = 0; j < modeChanges.length; j++ ){
-            if ( modeChanges[j].arg === undefined ) {
-              modeChanges[j].arg = part;
+            if ( modeChanges[ j ].arg === undefined ) {
+              modeChanges[ j ].arg = part;
               break;
             }
           }
@@ -511,7 +511,7 @@ if ( window.runtime && air && util ) {
   _icp.isCTCP = function ( msg ) {
     if ( !msg ) return false;
     var token = String.fromCharCode( 001 );
-    return (msg[0] == token); 
+    return (msg[ 0 ] == token); 
   }
 
   _icp.getMsgFromCTCP = function ( msg ) {
@@ -534,8 +534,8 @@ if ( window.runtime && air && util ) {
   _icp.getTarget = function ( cmdParts, msg ) {
     var target = null;
     for ( var i = 0; i < cmdParts.length; i++ ) {
-      if ( cmdParts[i][0] == "#" ) {
-        target = cmdParts[i];
+      if ( cmdParts[ i][0 ] == "#" ) {
+        target = cmdParts[ i ];
         break;
       }
     }
@@ -549,63 +549,99 @@ if ( window.runtime && air && util ) {
   }
 
   _icp.COMMAND_NUMBERS = {
-    "NAMES_LIST_ADD": "353",
-    "NAMES_END_LIST": "366",
-    "TOPIC": "332",
-    "CANNOT_SEND_TO_CHANNEL": "404",
-    "TOPIC_INFO": "333",
-    "NICK_IS_ALREADY_IN_USE": "433",
+    "NAMES_LIST_ADD" : 353,
+    "NAMES_END_LIST" : 366,
+    "TOPIC" : 332,
+    "CANNOT_SEND_TO_CHANNEL" : 404,
+    "TOPIC_INFO" : 333,
+    "NICK_IS_ALREADY_IN_USE" : 433,
+    "NICK_AWAY" : 301,
+    "NICK_LOOKS_VERY_HELPFUL" : 310,
+    "NICK_USER_INFO" : 311,
+    "NICK_USER_INFO2" : 314, 
+    "NICK_SERVER_INFO": 312,
+    "NICK_IS_IRCOP" : 313,
+    "END_OF_WHO" : 315,
+    "NICK_SECONDS_SIGNON" : 317,
+    "END_OF_WHOIS" : 318,
+    "NICK_CHANNELS" : 319,
+    "NICK_SIGNED_ON_AS": 320,
+    "END_OF_WHO_WAS" : 369,
   }
 
   _icp.handleServerMessage = function ( cmdParts, msg ) {
+    if ( !this.serverDelegate ) return;
     var host = this.getIndex( cmdParts, 0 );
-    var commandNumber = this.getIndex( cmdParts, 1 );
+    var commandNumber = parseInt( this.getIndex( cmdParts, 1 ), 10 );
     var userNick = this.getIndex( cmdParts, 2 );
+    var aboutArg = this.getIndex( cmdParts, 3 );
     var target = this.getTarget( cmdParts, msg );
 
     switch ( commandNumber ) {
       //with certain server messages it makes go to add channel/target info
       //if this is the case adding it here
-      case this.COMMAND_NUMBERS["CANNOT_SEND_TO_CHANNEL"]:
+      case this.COMMAND_NUMBERS[ "NICK_USER_INFO" ]:
+      case this.COMMAND_NUMBERS[ "NICK_USER_INFO2" ]:
+      case this.COMMAND_NUMBERS[ "NICK_SECONDS_SIGNON" ]:
+        var arg1 = this.getIndex( cmdParts, 4 );
+        var arg2 = this.getIndex( cmdParts, 5 );
+        msg = [ aboutArg, ": ", arg1, " ", arg2, " ", msg ].join( "" );
+        break;
+      case this.COMMAND_NUMBERS[ "NICK_SERVER_INFO" ]:
+        var arg1 = this.getIndex( cmdParts, 4 );
+        msg = [ aboutArg, ": ", arg1, " ", msg ].join( "" );
+        msg = [ aboutArg, ": ", msg ].join( "" );
+        break;
+      case this.COMMAND_NUMBERS[ "END_OF_WHO" ]:
+      case this.COMMAND_NUMBERS[ "END_OF_WHOIS" ]:
+      case this.COMMAND_NUMBERS[ "NICK_CHANNELS" ]:
+      case this.COMMAND_NUMBERS[ "NICK_LOOKS_VERY_HELPFUL" ]:
+      case this.COMMAND_NUMBERS[ "NICK_IS_IRCOP" ]:
+      case this.COMMAND_NUMBERS[ "NICK_SIGNED_ON_AS" ]:
+      case this.COMMAND_NUMBERS[ "END_OF_WHO_WAS" ]:
+      case this.COMMAND_NUMBERS[ "NICK_AWAY" ]:
+        msg = [ aboutArg, ": ", msg ].join( "" );
+        break;
+      case this.COMMAND_NUMBERS[ "CANNOT_SEND_TO_CHANNEL" ]:
         if ( target ) {
           this.serverDelegate( host, msg, target );
         }
         break;
-      case this.COMMAND_NUMBERS["NICK_IS_ALREADY_IN_USE"]:
+      case this.COMMAND_NUMBERS[ "NICK_IS_ALREADY_IN_USE" ]:
         if ( target ) {
           this.serverDelegate( host, msg, target );
         }
         break;
-      case this.COMMAND_NUMBERS["TOPIC"]:
+      case this.COMMAND_NUMBERS[ "TOPIC" ]:
         if ( target ) {
-          this.topics[target] = {};
-          this.topics[target]["topic"] = msg;
+          this.topics[ target ] = {};
+          this.topics[ target ][ "topic" ] = msg;
         }
         break;
-      case this.COMMAND_NUMBERS["TOPIC_INFO"]:
+      case this.COMMAND_NUMBERS[ "TOPIC_INFO" ]:
         if ( target && ( target in this.topics ) ) {
-          this.topics[target]["nick"] = this.getIndex( cmdParts, 4 );
-          this.topics[target]["time"] = new Date( this.getIndex( cmdParts, 5 ) * 1000 );
-          this.topics[target]["host"] = host;
+          this.topics[ target ][ "nick" ] = this.getIndex( cmdParts, 4 );
+          this.topics[ target ][ "time" ] = new Date( this.getIndex( cmdParts, 5 ) * 1000 );
+          this.topics[ target ][ "host" ] = host;
           this.getTopic( target );
         }
-      case this.COMMAND_NUMBERS["NAMES_LIST_ADD"]:
+      case this.COMMAND_NUMBERS[ "NAMES_LIST_ADD" ]:
         if ( target ) {
           if ( !( target in this.namesList ) ) {
-            this.namesList[target] = [];
+            this.namesList[ target ] = [  ];
           }
         }
-        this.namesList[target].push( msg );
+        this.namesList[ target ].push( msg );
         break;
-      case this.COMMAND_NUMBERS["NAMES_END_LIST"]:
+      case this.COMMAND_NUMBERS[ "NAMES_END_LIST" ]:
         if ( target && target in this.namesList ) {
           var nicks = [];
-          var namesList = this.namesList[target];
-          this.namesList[target] = null;
-          delete this.namesList[target];
+          var namesList = this.namesList[ target ];
+          this.namesList[ target ] = null;
+          delete this.namesList[ target ];
           for ( var i = 0; i < namesList.length; i++ ) {
-            if ( namesList[i] ) {
-              var r = namesList[i].split( " " );
+            if ( namesList[ i ] ) {
+              var r = namesList[ i ].split( " " );
               nicks = nicks.concat( r );
             }
           }
@@ -622,7 +658,7 @@ if ( window.runtime && air && util ) {
 
   _icp.getTopic = function ( target ) {
     if (this.topicDelegate && ( target in this.topics )  ) {
-      var topic = this.topics[target];
+      var topic = this.topics[ target ];
       this.topicDelegate( topic.host, target, topic.topic, topic.nick, topic.time );
     }
   }
@@ -762,7 +798,7 @@ if ( window.runtime && air && util ) {
     //as per RFC 2812
     //returns if given string could be a channel name
     //this should be used instead of checking for a # for first character
-    if ( name && name.length && ( name[0] in this.CHANNEL_MODE_TYPES ) ) return true;
+    if ( name && name.length && ( name[ 0 ] in this.CHANNEL_MODE_TYPES ) ) return true;
     return false;
   }
 
