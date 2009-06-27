@@ -35,9 +35,23 @@ if ( window.runtime && air && util ) {
     util.subscribe( topics.PREFS_CHANGE_FONT, this, "changeFont", [] );
     util.subscribe( topics.NOTIFY, this, "notify", []);
     util.subscribe( topics.CHANNEL_TOPIC, this, "handleTopic", [] );
+    util.subscribe( topics.INPUT_PAGE_UP, this, "scrollUp", [] );
+    util.subscribe( topics.INPUT_PAGE_DOWN, this, "scrollDown", [] );
   }
 
   _vvp = dView.View.prototype;
+
+  _vvp.scrollUp = function ( ) {
+    if ( this.activeWin ) {
+      this.activeWin.scrollUp( );
+    }
+  }
+
+  _vvp.scrollDown = function ( ) {
+    if ( this.activeWin ) {
+      this.activeWin.scrollDown( );
+    }
+  }
 
   _vvp.handlePrefsBtnClick = function ( e ) {
     util.stopEvent( e );
@@ -539,17 +553,28 @@ if ( window.runtime && air && util ) {
     // window.runtime.flash.display
     var key = e.keyCode;
     if ( key == 9 ) {
+      //tab
       this.tabCompletion( e );
     } else if ( key == 13 ) {
+      //enter
       this.handleInput ( e );
     } else if ( key == 38 ) {
+      //up arrow
       this.handleHistoryUp( );
     } else if ( key == 40 ) {
+      //down arrow
       this.handleHistoryDown( );
+    } else if ( key == 33 ) {
+      //page up
+      util.publish( topics.INPUT_PAGE_UP );
+    } else if ( key == 34 ) {
+      //page down
+      util.publish( topics.INPUT_PAGE_DOWN );
     } else {
       this.reset( );
     }
   }
+
 
   _vip.handleHistoryUp = function ( ) {
     this.historyIndex++;
@@ -696,6 +721,14 @@ if ( window.runtime && air && util ) {
   _vap.sanitize = dView.View.prototype.sanitize;
 
   _vap.setContents = _vvp.setContents;
+
+  _vap.scrollUp = function ( ) {
+      this.win.scrollTop -= this.win.clientHeight;
+  }
+
+  _vap.scrollDown = function ( ) {
+      this.win.scrollTop += this.win.clientHeight;
+  }
 
   _vap.getTopic = function ( ) {
     return this.topic;

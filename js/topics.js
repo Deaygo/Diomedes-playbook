@@ -21,6 +21,9 @@ if(!topics) {
     USER_INPUT: "/user/input/",
     USER_HIGHLIGHT: "/user/highlight/",
 
+    INPUT_PAGE_UP: "input/page/up",
+    INPUT_PAGE_DOWN: "input/page/down",
+
     NICK_CHANGE: "/nick/change/",
 
     PREFS_SAVE: "/prefs/save/",
