@@ -152,7 +152,7 @@ if ( window.runtime && air && util ) {
   }
 
   _vvp.displayHelp = function ( ) {
-    window.open("help.html", "helpWindow", "height=600, width=400, top=10, left=10");
+    window.open("help.html", "helpWindow", "height=600, scrollbars=yes, width=400, top=10, left=10");
   }
 
   _vvp.changeView = function ( serverName, channelName, topic ) {

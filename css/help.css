@@ -1,9 +1,12 @@
 * { padding: 0px; margin: 0px; }
 
-body {
+html, body {
   font-size: 12px;
   overflow-x: hidden;
   overflow-y: scroll;
+}
+
+#mainHelp {
 }
 
 p {
