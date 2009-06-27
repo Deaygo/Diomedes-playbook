@@ -13,6 +13,10 @@ if(!topics) {
     CHANNELS_CHANGED: "/channels/changed/",
     CHANNEL_SELECTED: "/channel/selected/",
     CHANNEL_ACTIVITY: "/channel/activity/",
+    CHANNEL_ADD: "/channel/add/",
+    CHANNEL_DELETE: "/channel/delete/",
+    CHANNLE_TOPIC: "/channel/topic/",
+    CHANNEL_CLOSE: "/channel/close/",
 
     CONNECTION_DISCONNECTED: "/connection/disconnected",
     CONNECTION_CLOSE: "/connection/close",
@@ -23,6 +27,9 @@ if(!topics) {
 
     INPUT_PAGE_UP: "input/page/up",
     INPUT_PAGE_DOWN: "input/page/down",
+    INPUT_CHANNEL_PART: "/input/channel/part",
+    INPUT_CHANNEL_NEXT: "/input/channel/next",
+    INPUT_CHANNEL_PREV: "/input/channel/prev",
 
     NICK_CHANGE: "/nick/change/",
 
@@ -35,14 +42,11 @@ if(!topics) {
     NETWORK_EDIT: "/network/edit/",
     NETWORK_DELETE: "/network/delete/",
     NETWORK_CHANGE: "/network/change/",
+    NETWORK_CLOSE: "/network/close/",
 
     SERVER_ADD: "/server/add/",
     SERVER_EDIT: "/server/edit/",
     SERVER_DELETE: "/server/delete/",
-
-    CHANNEL_ADD: "/channel/add/",
-    CHANNEL_DELETE: "/channel/delete/",
-    CHANNLE_TOPIC: "/channel/topic/",
 
     PERFORM_ADD: "/perform/add/",
     PERFORM_EDIT: "/perform/edit/",

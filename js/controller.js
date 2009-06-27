@@ -43,6 +43,7 @@ if ( window.runtime && air && util ) {
     util.subscribe( topics.NETWORK_EDIT, this, "handleNetworksEdit", [] );
     util.subscribe( topics.NETWORK_DELETE, this, "handleNetworksDelete", [] );
     util.subscribe( topics.NETWORK_CHANGE, this, "handleNetworksChanged", [] );
+    util.subscribe( topics.NETWORK_CLOSE, this, "closeNetworkOrConnection", [] );
     util.subscribe( topics.SERVER_ADD, this, "handleServerAdd", [] );
     util.subscribe( topics.SERVER_DELETE, this, "handleServerDelete", [] );
     util.subscribe( topics.CHANNEL_ADD, this, "handleChannelAdd", [] );
@@ -259,15 +260,8 @@ if ( window.runtime && air && util ) {
           window.close( );
         }
       } else if ( cmd == "close" ) {
-        if ( this.view.getConfirmation( "close a connection" ) ) {
-          if ( this.currentConnection ) {
-            var network = this.getNetworkByHost( this.currentConnection.server );
-            if ( network ) {
-              network.close( );
-            } else if ( this.currentConnection ) {
-              this.closeConnection( this.currentConnection.server );
-            }
-          }
+        if ( this.currentConnection ) {
+          this.closeNetworkOrConnection( this.currentConnection.server );
         }
       } else if ( cmd == "help" ) {
         this.view.displayHelp( );
@@ -292,6 +286,17 @@ if ( window.runtime && air && util ) {
       //just a message, hand to currentConnection
       if ( this.currentConnection ) {
         this.currentConnection.sendMessage( this.getCurrentChannelName( ), input );
+      }
+    }
+  }
+
+  _ccp.closeNetworkOrConnection = function ( host ) {
+    if ( this.view.getConfirmation( "close a connection" ) ) {
+      var network = this.getNetworkByHost( host );
+      if ( network ) {
+        network.close( );
+      } else {
+        this.closeConnection( host );
       }
     }
   }

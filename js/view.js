@@ -37,6 +37,9 @@ if ( window.runtime && air && util ) {
     util.subscribe( topics.CHANNEL_TOPIC, this, "handleTopic", [] );
     util.subscribe( topics.INPUT_PAGE_UP, this, "scrollUp", [] );
     util.subscribe( topics.INPUT_PAGE_DOWN, this, "scrollDown", [] );
+    util.subscribe( topics.INPUT_CHANNEL_NEXT, this, "selectNextChannel", [] );
+    util.subscribe( topics.INPUT_CHANNEL_PREV, this, "selectPrevChannel", [] );
+    util.subscribe( topics.INPUT_CHANNEL_PART, this, "closeCurrentChannel", [] );
   }
 
   _vvp = dView.View.prototype;
@@ -183,19 +186,40 @@ if ( window.runtime && air && util ) {
     this.handleWindowClick( e );
   }
 
-  _vvp.handleChannelListClick = function ( e ) {
-    util.stopEvent( e );
-    var n = e.target;
-    if ( !n ) return;
-    n = util.findUp( n, "channelBtn" );
+  _vvp.closeTabFromNode = function ( n ) {
+    if ( n ) {
+      var server = n.getAttribute( "server" );
+      var name = n.getAttribute( "name" );
+      if ( name == server ) {
+        window.setTimeout( function() {
+          util.publish( topics.NETWORK_CLOSE, [ server ] );
+        }, 0);
+      } else {
+        window.setTimeout( function() {
+          util.publish( topics.CHANNEL_CLOSE, [ server, name ] );
+        }, 0);
+      }
+    }
+  }
+
+  _vvp.selectChannelFromNode = function ( n ) {
     if ( n ) {
       var server = n.getAttribute( "server" );
       var type = n.getAttribute( "type" );
       var name = n.getAttribute( "name" );
       window.setTimeout( function() {
-        util.publish( topics.CHANNEL_SELECTED, [server, type, name] );
+        util.publish( topics.CHANNEL_SELECTED, [ server, type, name ] );
       }, 0);
     }
+  }
+
+
+  _vvp.handleChannelListClick = function ( e ) {
+    util.stopEvent( e );
+    var n = e.target;
+    if ( !n ) return;
+    n = util.findUp( n, "channelBtn" );
+    this.selectChannelFromNode( n );
     this.handleWindowClick( e );
   }
 
@@ -240,6 +264,58 @@ if ( window.runtime && air && util ) {
     }
     this.setContents( this.channelList, r.join( "" ), false ); 
     this.input.setChannels( channelsR );
+  }
+
+  _vvp.closeCurrentChannel = function ( ) {
+    var cl = this.channelList;
+    var nodes = cl.getElementsByTagName( "a" );
+    if ( !nodes || !nodes.length ) return;
+    var prev = null;
+    for ( var i = 0; i < nodes.length; i++ ) {
+      var n = nodes[ i ];
+      if ( util.hasClass( n, "currentChannel" ) ) {
+        this.closeTabFromNode( n );
+      }
+    }
+  }
+
+  _vvp.selectPrevChannel = function ( ) {
+    var cl = this.channelList;
+    var nodes = cl.getElementsByTagName( "a" );
+    if ( !nodes || !nodes.length ) return;
+    var prev = null;
+    for ( var i = 0; i < nodes.length; i++ ) {
+      var n = nodes[ i ];
+      if ( util.hasClass( n, "currentChannel" ) ) {
+        if ( i === 0 ) { 
+          prev = nodes[ nodes.length - 1 ];
+        } else {
+          prev = nodes[ i - 1 ];
+        }
+        break;
+      }
+    }
+    this.selectChannelFromNode( prev );
+  }
+
+  _vvp.selectNextChannel = function ( ) {
+    var cl = this.channelList;
+    var nodes = cl.getElementsByTagName( "a" );
+    if ( !nodes || !nodes.length ) return;
+    var next = null;
+    for ( var i = 0; i < nodes.length; i++ ) {
+      var n = nodes[ i ];
+      if ( util.hasClass( n, "currentChannel" ) ) {
+        next = n.nextSibling;  
+        if ( i < nodes.length - 1 ) {
+          next = nodes[ ++i ];
+        } else {
+          next = nodes[ 0 ];
+        }
+        break;
+      }
+    }
+    this.selectChannelFromNode( next );
   }
 
   _vvp.getChannelButton = function ( server, channelKey, channelName, type, activity, highlight ) {
@@ -555,6 +631,18 @@ if ( window.runtime && air && util ) {
     if ( key == 9 ) {
       //tab
       this.tabCompletion( e );
+    } else if ( key == 78 && ( e.metaKey || e.ctrlKey ) ) {
+      //cntrl+n or command key+n
+      util.stopEvent( e );
+      util.publish( topics.INPUT_CHANNEL_NEXT );
+    } else if ( key == 80 && ( e.metaKey || e.ctrlKey ) ) {
+      //cntrl+p or command key+p
+      util.stopEvent( e );
+      util.publish( topics.INPUT_CHANNEL_PREV );
+    } else if ( key == 76 && ( e.metaKey || e.ctrlKey ) ) {
+      //cntrl+l or command key+l
+      util.stopEvent( e );
+      util.publish( topics.INPUT_CHANNEL_PART );
     } else if ( key == 13 ) {
       //enter
       this.handleInput ( e );

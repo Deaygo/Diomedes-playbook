@@ -48,6 +48,7 @@ if ( window.runtime && air && util ) {
     this.client.setTopicDelegate(util.hitch(this,"handleTopic"));
     this.client.setModeDelegate(util.hitch(this, "handleMode"));
     this.client.setKickDelegate(util.hitch(this, "handleKick"));
+    util.subscribe( topics.CHANNEL_CLOSE, this, "closeChannel", [] );
   }
 
   _cnp = dConnection.Connection.prototype;
@@ -555,33 +556,39 @@ if ( window.runtime && air && util ) {
     }
   }
 
-  _cnp.partChannel = function (target, msg) {
-    var channelName = this.getChannelName(target);
-    if (channelName && channelName in this.channels) {
+  _cnp.closeChannel = function ( serverName, channelName ) {
+    if ( serverName == this.server ) {
+      this.partChannel( channelName, "Closed channel window." );
+    }
+  }
+
+  _cnp.partChannel = function ( target, msg ) {
+    var channelName = this.getChannelName( target );
+    if ( channelName && channelName in this.channels ) {
       if ( this.client.isChannelName( channelName ) ) {
-        util.log("parting " + channelName);
-        this.client.part(target, msg);
+        util.log( "parting " + channelName );
+        this.client.part( target, msg );
       }
-      var users = this.channels[channelName].getUsers();
-      for (var user in users) {
+      var users = this.channels[ channelName ].getUsers( );
+      for ( var user in users ) {
         var stillExists = false;
-        for (var target in this.channels) {
-          if (target != channelName) {
-            var tempUsers = this.channels[target].getUsers();
-            if (user.nick in tempUsers) {
+        for ( var target in this.channels ) {
+          if ( target != channelName ) {
+            var tempUsers = this.channels[ target ].getUsers( );
+            if ( user.nick in tempUsers ) {
               stillExists = true;
               break;
             }
           }
         }
-        if (!stillExists) {
+        if ( !stillExists ) {
           //if not delete from connection user list
-          delete this.users[user.nick];
+          delete this.users[ user.nick ];
         }
       }
       //delete channel from connection
-      delete this.channels[channelName];
-      util.publish(topics.CHANNELS_CHANGED, [ "part", channelName, this.server ]);
+      delete this.channels[ channelName ];
+      util.publish( topics.CHANNELS_CHANGED, [ "part", channelName, this.server ] );
     }
   }
 
