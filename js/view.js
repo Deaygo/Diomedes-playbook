@@ -218,6 +218,11 @@ if ( window.runtime && air && util ) {
     util.stopEvent( e );
     var n = e.target;
     if ( !n ) return;
+    if ( util.hasClass( n, "closeChannelBtn" ) ) {
+      n = util.findUp( n, "channelBtn" );
+      this.closeTabFromNode( n );
+      return;
+    }
     n = util.findUp( n, "channelBtn" );
     this.selectChannelFromNode( n );
     this.handleWindowClick( e );
@@ -353,6 +358,7 @@ if ( window.runtime && air && util ) {
           ' <span class="channelBtnName" >',
             this.sanitize( channelName ),
           ' </span>',
+          ' <span class="closeChannelBtn">x</span>',
           '</span> ',
         '</a> '
       ].join( "" );
