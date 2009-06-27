@@ -502,10 +502,14 @@ if ( window.runtime && air && util ) {
 
   _vip.handleInput = function ( e ) {
     util.stopEvent( e );
-    var input = util.trim( this.getValue( ) );
-    this.addToHistory( input );
-    util.log("getInput: " + input );
-    util.publish( topics.USER_INPUT, [ input ] );
+    var _input = this.getValue( );
+    var inputs = _input.split( "\n" );
+    for ( var i = 0; i < inputs.length; i++ ) {
+      var input = inputs[ i ];
+      this.addToHistory( input );
+      util.log("getInput: " + input );
+      util.publish( topics.USER_INPUT, [ input ] );
+    }
   }
 
   _vip.addToHistory = function ( input ) {
