@@ -549,12 +549,15 @@ if ( window.runtime && air && util ) {
   }
 
   _icp.COMMAND_NUMBERS = {
+    "SERVER_INFO" : 004,
+    "MAP" : 005,
+    "NUM_OPS" : 252,
+    "NUM_UNKNOWN" : 253,
+    "NUM_CHANNELS" : 254,
     "NAMES_LIST_ADD" : 353,
     "NAMES_END_LIST" : 366,
     "TOPIC" : 332,
-    "CANNOT_SEND_TO_CHANNEL" : 404,
     "TOPIC_INFO" : 333,
-    "NICK_IS_ALREADY_IN_USE" : 433,
     "NICK_AWAY" : 301,
     "NICK_LOOKS_VERY_HELPFUL" : 310,
     "NICK_USER_INFO" : 311,
@@ -567,6 +570,9 @@ if ( window.runtime && air && util ) {
     "NICK_CHANNELS" : 319,
     "NICK_SIGNED_ON_AS": 320,
     "END_OF_WHO_WAS" : 369,
+    "HOST_CHANGE" : 396,
+    "CANNOT_SEND_TO_CHANNEL" : 404,
+    "NICK_IS_ALREADY_IN_USE" : 433,
   }
 
   _icp.handleServerMessage = function ( cmdParts, msg ) {
@@ -580,6 +586,11 @@ if ( window.runtime && air && util ) {
     switch ( commandNumber ) {
       //with certain server messages it makes go to add channel/target info
       //if this is the case adding it here
+      case this.COMMAND_NUMBERS[ "SERVER_INFO" ]:
+        this.host = this.getIndex( cmdParts, 3 );
+      case this.COMMAND_NUMBERS[ "MAP" ]:
+        //what server supports && server info
+        return;
       case this.COMMAND_NUMBERS[ "NICK_USER_INFO" ]:
       case this.COMMAND_NUMBERS[ "NICK_USER_INFO2" ]:
       case this.COMMAND_NUMBERS[ "NICK_SECONDS_SIGNON" ]:
@@ -600,6 +611,10 @@ if ( window.runtime && air && util ) {
       case this.COMMAND_NUMBERS[ "NICK_SIGNED_ON_AS" ]:
       case this.COMMAND_NUMBERS[ "END_OF_WHO_WAS" ]:
       case this.COMMAND_NUMBERS[ "NICK_AWAY" ]:
+      case this.COMMAND_NUMBERS[ "NUM_OPS" ]:
+      case this.COMMAND_NUMBERS[ "NUM_CHANNELS" ]:
+      case this.COMMAND_NUMBERS[ "NUM_UNKNOWN" ]:
+      case this.COMMAND_NUMBERS[ "HOST_CHANGE" ]:
         msg = [ aboutArg, ": ", msg ].join( "" );
         break;
       case this.COMMAND_NUMBERS[ "CANNOT_SEND_TO_CHANNEL" ]:
