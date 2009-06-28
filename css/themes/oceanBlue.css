@@ -50,7 +50,7 @@ a {
   color: #FFF;
 }
 .isSelf {
-  color: #ECCD65;
+  color: #8796FF;
 }
 .highlight {
   background-color: #FFF !important;
@@ -88,5 +88,8 @@ a {
 .currentChannel {
   border-color: #ECCD65;
   color: #ECCD65;
+}
+.messageTime {
+  color: #A4A9AD;
 }
 
