@@ -37,6 +37,7 @@ if(!topics) {
     PREFS_CHANGE_HISTORY_LENGTH: "/prefs/change/history/length/",
     PREFS_CHANGE_FONT: "/prefs/change/font/",
     PREFS_CHANGE_TIME_FORMAT: "/prefs/change/time/format/",
+    PREFS_CHANGE_THEME: "/prefs/change/theme/",
 
     NETWORK_ADD: "/network/add/",
     NETWORK_EDIT: "/network/edit/",

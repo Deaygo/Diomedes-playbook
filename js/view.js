@@ -22,6 +22,7 @@ if ( window.runtime && air && util ) {
     this.font = null;
     var prefs = this.model.prefs.getPrefs( );
     this.changeFont( prefs.multiOptionPrefs.font, prefs.fontSize );
+    this.changeTheme( prefs.multiOptionPrefs.theme );
     this.activityWindows = {};
     this.activeWin = null;
     this.appVersion = "";
@@ -33,6 +34,7 @@ if ( window.runtime && air && util ) {
     util.connect( window, "onclick", this, "handleWindowClick" );
     util.subscribe( topics.USER_HIGHLIGHT, this, "highlight", [] );
     util.subscribe( topics.PREFS_CHANGE_FONT, this, "changeFont", [] );
+    util.subscribe( topics.PREFS_CHANGE_THEME, this, "changeTheme", [] );
     util.subscribe( topics.NOTIFY, this, "notify", []);
     util.subscribe( topics.CHANNEL_TOPIC, this, "handleTopic", [] );
     util.subscribe( topics.INPUT_PAGE_UP, this, "scrollUp", [] );
@@ -79,6 +81,22 @@ if ( window.runtime && air && util ) {
     }
   }
 
+  _vvp.changeTheme = function ( themePrefs ) {
+    for ( var i = 0; i < themePrefs.length; i++ ) {
+      var theme = themePrefs[ i ];
+      if ( "selected" in theme ) {
+        this.setTheme( theme.value );
+        return;
+      }
+    }
+  }
+
+  _vvp.setTheme = function ( themeName ) {
+    var cssPath = "/css/themes/";
+    var n = util.get( "themeLink" );
+    n.setAttribute( "href", [ cssPath, themeName, ".css" ].join( "" ) );
+  }
+  
   _vvp.changeFont = function ( fontPrefs, size ) {
     for ( var i = 0; i < fontPrefs.length; i++ ) {
       var font = fontPrefs[ i ];
@@ -1154,8 +1172,8 @@ if ( window.runtime && air && util ) {
       var styleName = "color:";
     }
     if ( !isNaN( color ) && color in this.COLOR_CODES ) {
-      styleString = [ styleName , this.COLOR_CODES[color], ";" ].join( "" );
-      if ( possibleCode[0] == "0" || color > 9 ) {
+      styleString = [ styleName , this.COLOR_CODES[ color ], ";" ].join( "" );
+      if ( possibleCode[ 0 ] == "0" || color > 9 ) {
         styleLength += 2;
       } else {
         styleLength += 1;
@@ -1167,8 +1185,8 @@ if ( window.runtime && air && util ) {
   }
 
   _vap.closeOpenMarkup = function ( type_, markup) {
-      if ( this[type_] ) {
-        this[type_] = false;
+      if ( this[ type_ ] ) {
+        this[ type_ ] = false;
         return markup;
       } else {
         return "";

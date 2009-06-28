@@ -28,7 +28,7 @@
       <label for="historyLength">History Length: </label> <input type="text" id="historyLength" />
     </div>
     <div class="formItem">
-      <label for="theme">Theme: </label> <input type="text" id="theme" />
+      <label for="theme">Theme: </label> <select id="theme" ><option value="none">none</option></select>
     </div>
     <div class="formItem">
       <label for="pollTime">Reconnect wait (seconds): </label> <input type="text" id="pollTime" />
@@ -76,6 +76,7 @@
           var p = prefs[ pref ];
           util.get( "font", document ).innerHTML = loadOptions( p.font );
           util.get( "time", document ).innerHTML = loadOptions( p.time );
+          util.get( "theme", document ).innerHTML = loadOptions( p.theme );
         } else {
           var n = util.get( pref, document );
           if ( n ) {
@@ -103,6 +104,7 @@
           var p = prefs[ pref ];
           setSelectedOption( p.font, util.get( "font", document ) );
           setSelectedOption( p.time, util.get( "time", document ) );
+          setSelectedOption( p.theme, util.get( "theme", document ) );
         } else {
           var n = util.get( pref, document );
           if ( n ) {

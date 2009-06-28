@@ -1,0 +1,69 @@
+/* colors all go in themes */
+
+a {
+  color: blue;
+}
+#view {
+  border-color: #444;
+}
+#activityWindow {
+  border-color: #444;
+}
+.messageNick {
+  color: #B22222;
+}
+.isServer {
+  color: #00AC6B; 
+}
+.isNotice {
+  color: #FF0000;
+}
+.messageText {
+  border-color: #444;
+}
+#activityWindow {
+  border-color: #444;
+}
+.hasActivity {
+  color: #FF0000;
+}
+.channelActivity {
+  background-color: #FFAA00;
+  color: #FFF;
+}
+.referencesUser {
+  font-weight: bold;
+  color: #FFAA00;
+}
+.isSelf {
+  color: #666;
+}
+.highlight {
+  background-color: #FF0000 !important;
+  color: #FFF !important;
+}
+#nickList .op {
+  color: #FF0000;
+  border-color: #00F;
+}
+#nickList .halfOp {
+  color: #FFF000;
+}
+#nickList .voiced {
+  color: #00AC6B; 
+}
+
+.channelBtn {
+  border-color: #00F;
+  color: #00F;
+}
+
+#titleBar {
+  background: #fff;
+  border-color: #00F;
+}
+#titleBar a {
+  color: #00F;
+}
+.highlight {
+

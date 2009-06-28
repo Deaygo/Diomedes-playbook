@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?> 
-<preferences version="1.2"> 
+<preferences version="1.3"> 
   <preference name="nick" value="diomedesuser" />
   <preference name="altNick" value="diouser" />
   <preference name="userName" value="diomedesuser" />
   <preference name="realName" value="diomedesuser" />
   <preference name="finger" value="Diomedes IRC" />
   <preference name="historyLength" value="500" />
-  <preference name="theme" value="default" />
   <preference name="pollTime" value="0" />
   <preference name="font" value="verdana" />
   <preference name="fontSize" value="15" />
+  <multiOptionPreference name="theme">
+    <option selected="true" valueName="Default" value="default" />
+    <option valueName="Ocean Blue" value="oceanBlue" />
+  </multiOptionPreference>
   <multiOptionPreference name="time">
     <option selected="true" valueName="24-hour" value="24" />
     <option valueName="12-hour" value="12" />
