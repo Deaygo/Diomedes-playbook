@@ -34,6 +34,13 @@ if ( window.runtime && air && util ) {
     this.client.setClientInfo( appVersion );
     this.client.setFinger( preferences.finger );
 
+    //this.names stores names in addition to channels,
+    //because a) you get the names command before you get the JOIN
+    //and b) you can get names without joining channels
+    //this.names[ channelName ]; has names
+    //it's only ever used when joining a channel to populate channel's nicklist
+    this.names = {};
+
     //set delegates
     this.client.setConnectionDelegate(util.hitch(this,"handleConnection"));
     this.client.setJoinDelegate(util.hitch(this,"handleJoin"));
@@ -158,14 +165,26 @@ if ( window.runtime && air && util ) {
 
   _cnp.handleJoin = function ( nick, host, target ) {
     //add nick to connection users
-    if ( !nick ) return;
+    if ( !nick || !target ) return;
+    var channelName = this.getChannelName( target );
+    var _nick = this.getNick( );
+    if ( nick == _nick ) {
+      util.log( "JOINING CHANNEL: " + target );
+      this.channels[ channelName ] = new dConnection.Channel( target, dConnection.CHANNEL_TYPES.CHANNEL, this.server );
+      this.client.getTopic( target );
+      util.publish( topics.CHANNELS_CHANGED, [ "join", channelName, this.server ] );
+      if ( channelName in this.names ) {
+        this.addNamesToChannel( channelName, this.names[ channelName ] );
+      } else {
+        this.client.sendNames( target );
+      }
+    }
     var user = this.getUser( nick );
     if ( !user ) {
       user = new dConnection.User( nick, host ); 
       this.users[nick] = user;
     }
     //add nick to channel
-    var channelName = this.getChannelName( target );
     if (channelName in this.channels) {
       var channel = this.channels[channelName];
       channel.addUser(user);
@@ -354,15 +373,8 @@ if ( window.runtime && air && util ) {
     return target.toLowerCase( );
   }
 
-  _cnp.handleNames = function ( target, nicks ) {
-    var channelName = this.getChannelName( target );
-    if ( !( channelName in this.channels ) ) {
-      util.log( "JOINING CHANNEL: " + target );
-      this.channels[channelName] = new dConnection.Channel( target, dConnection.CHANNEL_TYPES.CHANNEL, this.server );
-      this.client.getTopic( target );
-      util.publish( topics.CHANNELS_CHANGED, [ "join", channelName, this.server ] );
-    }
-    var channel = this.channels[channelName];
+  _cnp.addNamesToChannel = function ( channelName, nicks ) {
+    var channel = this.channels[ channelName ];
     //user = new dConnection.User(nick, host); 
     //update names
     channel.remUsers( ); //if names not in this list then no longer in channel
@@ -394,6 +406,15 @@ if ( window.runtime && air && util ) {
       }
     }
     channel.publishUserActivity( );
+  }
+
+  _cnp.handleNames = function ( target, nicks ) {
+    var channelName = this.getChannelName( target );
+    if ( !( channelName in this.channels ) ) {
+      this.names = [ channelName ] = nicks;
+    } else {
+      this.addNamesToChannel( channelName, nicks );
+    }
   }
 
   _cnp.handleTopic = function ( host, target, topic, topicSetter, datetime ) {
