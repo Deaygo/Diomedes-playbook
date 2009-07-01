@@ -94,17 +94,25 @@ if ( window.runtime && air && util ) {
       channel.addActivity( msg );
     } else if ( isPM ) {
       //open new window for new PM
-      util.log( "JOINING PM: " + target );
-      this.channels[ channelName ] = new dConnection.Channel( channelName, dConnection.CHANNEL_TYPES.PM, this.server );
-      var channel = this.channels[ channelName ];
-      util.publish( topics.CHANNELS_CHANGED, [] );
-      channel.addActivity( msg );
-      if ( !( target in this.users ) ) {
-        this.users[ target ] = new dConnection.User( target, "" );
+      if ( from && _nick == from ) {
+        if ( this.serverChannel ) {
+          util.log( "wtf" );
+          msg.msg = [ "PM to ", target, ": ", msg.msg ].join( "" );
+          this.serverChannel.addActivity( msg );
+        }
+      } else {
+        util.log( "JOINING PM: " + target );
+        this.channels[ channelName ] = new dConnection.Channel( channelName, dConnection.CHANNEL_TYPES.PM, this.server );
+        var channel = this.channels[ channelName ];
+        util.publish( topics.CHANNELS_CHANGED, [] );
+        channel.addActivity( msg );
+        if ( !( target in this.users ) ) {
+          this.users[ target ] = new dConnection.User( target, "" );
+        }
+        channel.addUser( this.users[ target ] );
+        channel.addUser( this.users[ _nick ] );
+        channel.publishUserActivity( );
       }
-      channel.addUser( this.users[ target ] );
-      channel.addUser( this.users[ _nick ] );
-      channel.publishUserActivity( );
     }
     delete msg;
   }
@@ -276,7 +284,7 @@ if ( window.runtime && air && util ) {
     if ( this.referencesUser( msg.msg, target, nick ) ) {
       msg.setReferencesUser( );
     } 
-    this.addActivityToChannel( target, msg );
+    this.addActivityToChannel( target, msg, nick );
   }
 
   _cnp.referencesUser = function ( msg, target, nick ) {
@@ -571,7 +579,8 @@ if ( window.runtime && air && util ) {
   }
 
   _cnp.sendMessage = function ( target, msg ) {
-    if ( msg ) {
+    if ( msg && target ) {
+      if ( target == this.server ) return;
       this.client.sendPM( target, msg ); 
       this.handleMessage( this.getNick( ), this.host, target, msg );
     }
