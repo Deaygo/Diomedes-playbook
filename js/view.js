@@ -659,12 +659,19 @@ if ( window.runtime && air && util ) {
       //cntrl+n or command key+n
       util.stopEvent( e );
       util.publish( topics.INPUT_CHANNEL_NEXT );
+    } else if ( key == 39 && e.shiftKey && ( e.metaKey || e.ctrlKey ) ) {
+      //cntrl+shift+r arrow or command key+shift+r arrow
+      util.stopEvent( e );
+      util.publish( topics.INPUT_CHANNEL_NEXT );
     } else if ( key == 80 && ( e.metaKey || e.ctrlKey ) ) {
       //cntrl+p or command key+p
       util.stopEvent( e );
       util.publish( topics.INPUT_CHANNEL_PREV );
+    } else if ( key == 37 && e.shiftKey && ( e.metaKey || e.ctrlKey ) ) {
+      //cntrl+shift+l arrow or command key+shift+l arrow
+      util.stopEvent( e );
+      util.publish( topics.INPUT_CHANNEL_PREV );
     } else if ( key == 76 && ( e.metaKey || e.ctrlKey ) ) {
-      //cntrl+l or command key+l
       util.stopEvent( e );
       util.publish( topics.INPUT_CHANNEL_PART );
     } else if ( key == 13 ) {
