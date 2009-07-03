@@ -1,10 +1,10 @@
 /* colors all go in themes */
 /* primary colors for ocean blue theme
-  #000734 dark blue	
-  #001180 mid blue
-  #1427A0 light blue
-  #6577EC ligher blue
-  #8796FF bright blue
+  #7F0000 dark red	
+  #7F2626 mid red
+  #CC0000 light red 
+  #FF0000 bright red
+  #FF4C4C pale red
   #EBE2C3 tan
   #ECCD65 yellow tan
   #A4A9AD gray
@@ -12,7 +12,7 @@
  * */
 
 body {
-  background-color: #000737;
+  background-color: #7F0000;
 }
 a {
   color: #EBE2C3;
@@ -21,28 +21,29 @@ a {
   color: #A4A9AD;
 }
 #view {
-  border-color: #1427A0;
+  border-color: #CC0000;
 }
 #activityWindow {
-  border-color: #1427A0;
+  border-color: #CC0000;
 }
 .messageNick {
-  color: #8796FF;
+  color: #FF4C4C;
 }
 .isServer {
-  color: #6577EC; 
+  color: #FF0000; 
 }
 .isNotice {
   color: #ECCD65;
 }
 #activityWindow {
-  border-color: #1427A0;
+  border-color: #CC0000;
+  background-color: #000;
 }
 .hasActivity {
   color: #EBE2C3;
 }
 .channelActivity {
-  background-color: #1427A0;
+  background-color: #CC0000;
   color: #FFF;
 }
 .referencesUser {
@@ -50,14 +51,15 @@ a {
   color: #FFF;
 }
 .isSelf {
-  color: #8796FF;
+  color: #FF4C4C;
 }
 .highlight {
   background-color: #FFF !important;
-  color: #001180 !important;
+  color: #7F2626 !important;
 }
 #nickList {
-  color: #6577EC;
+  border-color: #CC0000;
+  color: #FF0000;
 }
 #nickList .op {
   color: #FFF;
@@ -66,23 +68,24 @@ a {
   color: #A4A9AD;
 }
 #nickList .voiced {
-  color: #8796FF; 
+  color: #FF4C4C; 
 }
 
 .channelBtn {
-  border-color: #6577EC;
-  color: #6577EC;
+  border-color: #FF0000;
+  color: #FF0000;
 }
 
 #titleBar {
-  background: #001180;
+  background: #7F2626;
   border-color: #EBE2C3;
 }
 #titleBar a {
   color: #EBE2C3;
 }
 #textInput {
-  background-color: #001180;
+  background-color: #7F2626;
+  border-color: #CC0000;
   color: #FFF;
 }
 .currentChannel {

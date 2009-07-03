@@ -57,6 +57,7 @@ a {
   color: #001180 !important;
 }
 #nickList {
+  border-color: #1427A0;
   color: #6577EC;
 }
 #nickList .op {

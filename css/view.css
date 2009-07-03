@@ -63,3 +63,6 @@ body {
 #titleBar a:hover {
   text-decoration: underline;
 }
+#textInput {
+  outline-style: none;
+}
