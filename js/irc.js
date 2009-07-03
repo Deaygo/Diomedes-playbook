@@ -62,6 +62,7 @@ if ( window.runtime && air && util ) {
     this.modeDelegate = null;
     this.kickDelegate = null;
     this.kickDelegate = null;
+    this.inviteDelegate = null;
 
     //IRC RFC
     this.CHANNEL_MODE_TYPES = {
@@ -90,6 +91,11 @@ if ( window.runtime && air && util ) {
     //delegate signature must be
       //joinDelegate(nick, host, target)
       this.joinDelegate = del;
+  }
+  _icp.setInviteDelegate = function ( del ) {
+    //delegate signature must be
+      //inviteDelegate(nick, target)
+      this.inviteDelegate = del;
   }
   _icp.setNoticeDelegate = function ( del ) {
     //delegate signature must be
@@ -311,6 +317,12 @@ if ( window.runtime && air && util ) {
       this.handleServerMessage( cmdParts, msg );
     } else {
       this.handleUserMessage( cmdParts, msg );
+    }
+  }
+
+  _icp.INVITE = function ( nick, host, cmd, target, msg ) {
+    if ( target && this.inviteDelegate && this.isChannelName( msg ) ) {
+      this.inviteDelegate( nick, msg );
     }
   }
 
@@ -876,7 +888,7 @@ if ( window.runtime && air && util ) {
   }
 
   _icp.sendInvite = function ( nick, channel ) {
-    if ( cmd && channel ) {
+    if ( nick && channel ) {
       this._send( [ "INVITE", nick, channel ].join( " " ) );
     }
   }

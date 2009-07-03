@@ -594,6 +594,9 @@ if ( window.runtime && air && util ) {
     if ( prefs.historyLength != this.preferences.historyLength ) {
       util.publish( topics.PREFS_CHANGE_HISTORY_LENGTH, [ prefs.historyLength ] );
     }
+    if ( prefs.autoJoin != this.preferences.autoJoin ) {
+      util.publish( topics.PREFS_CHANGE_AUTOJOIN, [ prefs.autoJoin ] );
+    }
     util.publish( topics.PREFS_CHANGE_FONT, [ prefs.multiOptionPrefs.font, prefs.fontSize ] );
     util.publish( topics.PREFS_CHANGE_TIME_FORMAT, [ prefs.multiOptionPrefs.time ] );
     util.publish( topics.PREFS_CHANGE_THEME, [ prefs.multiOptionPrefs.theme ] );

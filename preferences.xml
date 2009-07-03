@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?> 
-<preferences version="1.3"> 
+<preferences version="1.4"> 
   <preference name="nick" value="diomedesuser" />
   <preference name="altNick" value="diouser" />
   <preference name="userName" value="diomedesuser" />
@@ -9,9 +9,12 @@
   <preference name="pollTime" value="0" />
   <preference name="font" value="verdana" />
   <preference name="fontSize" value="15" />
+  <preference name="autoJoin" value="true" />
   <multiOptionPreference name="theme">
     <option selected="true" valueName="Default" value="default" />
+    <option valueName="Contrast" value="contrast" />
     <option valueName="Ocean Blue" value="oceanBlue" />
+    <option valueName="Volcano Red" value="volcanoRed" />
   </multiOptionPreference>
   <multiOptionPreference name="time">
     <option selected="true" valueName="24-hour" value="24" />

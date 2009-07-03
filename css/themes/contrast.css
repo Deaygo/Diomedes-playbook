@@ -1,0 +1,96 @@
+/* colors all go in themes */
+/* primary colors for ocean blue theme
+  #000734 dark blue	
+  #001180 mid blue
+  #1427A0 light blue
+  #6577EC ligher blue
+  #8796FF bright blue
+  #EBE2C3 tan
+  #ECCD65 yellow tan
+  #A4A9AD gray
+ * 
+ * */
+
+body {
+  background-color: #000737;
+}
+a {
+  color: #EBE2C3;
+}
+.messageText {
+  color: #A4A9AD;
+}
+#view {
+  border-color: #1427A0;
+}
+#activityWindow {
+  border-color: #1427A0;
+}
+.messageNick {
+  color: #8796FF;
+}
+.isServer {
+  color: #6577EC; 
+}
+.isNotice {
+  color: #ECCD65;
+}
+#activityWindow {
+  border-color: #1427A0;
+}
+.hasActivity {
+  color: #EBE2C3;
+}
+.channelActivity {
+  background-color: #1427A0;
+  color: #FFF;
+}
+.referencesUser {
+  font-weight: bold;
+  color: #FFF;
+}
+.isSelf {
+  color: #8796FF;
+}
+.highlight {
+  background-color: #FFF !important;
+  color: #001180 !important;
+}
+#nickList {
+  color: #6577EC;
+}
+#nickList .op {
+  color: #FFF;
+}
+#nickList .halfOp {
+  color: #A4A9AD;
+}
+#nickList .voiced {
+  color: #8796FF; 
+}
+
+.channelBtn {
+  border-color: #6577EC;
+  color: #6577EC;
+}
+
+#titleBar {
+  background: #001180;
+  border-color: #EBE2C3;
+}
+#titleBar a {
+  color: #EBE2C3;
+}
+#textInput {
+  background-color: #001180;
+  color: #FFF;
+}
+.currentChannel {
+  border-color: #ECCD65;
+  color: #ECCD65;
+}
+.messageTime {
+  color: #A4A9AD;
+}
+
+

@@ -39,6 +39,7 @@ if(!topics) {
     PREFS_CHANGE_FONT: "/prefs/change/font/",
     PREFS_CHANGE_TIME_FORMAT: "/prefs/change/time/format/",
     PREFS_CHANGE_THEME: "/prefs/change/theme/",
+    PREFS_CHANGE_AUTOJOIN: "/prefs/change/autojoin/",
 
     NETWORK_ADD: "/network/add/",
     NETWORK_EDIT: "/network/edit/",

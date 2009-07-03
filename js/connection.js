@@ -29,6 +29,8 @@ if ( window.runtime && air && util ) {
     this.pollTime = parseInt( preferences.pollTime, 10 );
     this.stayConnected = false;
     this.reconnectId = null;
+    this.autoJoin = null;
+    this.setAutoJoin( preferences.autoJoin );
 
     this.client = new irc.Client( server, port, [], nick, preferences.userName, preferences.realName );
     this.client.setClientInfo( appVersion );
@@ -43,6 +45,7 @@ if ( window.runtime && air && util ) {
 
     //set delegates
     this.client.setConnectionDelegate(util.hitch(this,"handleConnection"));
+    this.client.setInviteDelegate(util.hitch(this,"handleInvite"));
     this.client.setJoinDelegate(util.hitch(this,"handleJoin"));
     this.client.setNoticeDelegate(util.hitch(this,"handleNotice"));
     this.client.setQuitDelegate(util.hitch(this,"handleQuit"));
@@ -56,9 +59,14 @@ if ( window.runtime && air && util ) {
     this.client.setModeDelegate(util.hitch(this, "handleMode"));
     this.client.setKickDelegate(util.hitch(this, "handleKick"));
     util.subscribe( topics.CHANNEL_CLOSE, this, "closeChannel", [] );
+    util.subscribe( topics.PREFS_CHANGE_AUTOJOIN, this, "setAutoJoin", [] );
   }
 
   _cnp = dConnection.Connection.prototype;
+
+  _cnp.setAutoJoin = function ( autoJoin ) {
+    this.autoJoin = ( autoJoin == "true" );
+  }
 
   _cnp.getNick = function ( ) {
     return this.client.getNick( );
@@ -138,6 +146,15 @@ if ( window.runtime && air && util ) {
     this.cancelReconnect( );
     this.stayConnected = false;
     this.client.closeConnection( "Closed connection." );
+  }
+
+  _cnp.handleInvite = function ( nick, target ) {
+    var msg_ = [ "You have been invited to", target, "by", nick ].join( " " ); 
+    var msg = new dConnection.ActivityItem( "server", null, null, msg_ );
+    this.serverChannel.addActivity( msg );
+    if ( this.autoJoin ) {
+      this.client.join( target );
+    }
   }
 
   _cnp.handleConnection = function ( msg, connected, nickInUse ) {

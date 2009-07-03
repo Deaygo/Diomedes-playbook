@@ -564,7 +564,7 @@ if ( window.runtime && air && util ) {
     }
     var x = window.nativeWindow.x + 150;
     var y = window.nativeWindow.y + 100;
-    var win = window.open("prefs.html", "prefsWindow", "height=400, width=500, top=" + y + ", left=" + x);
+    var win = window.open("prefs.html", "prefsWindow", "height=450, width=500, top=" + y + ", left=" + x);
     win = win.nativeWindow;
     this.model.prefs.savePrefs( );
     win.addEventListener( air.Event.CLOSE, util.hitch( this.model.prefs, "savePrefs" )  ); 
