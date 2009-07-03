@@ -30,6 +30,7 @@ if(!topics) {
     INPUT_CHANNEL_PART: "/input/channel/part",
     INPUT_CHANNEL_NEXT: "/input/channel/next",
     INPUT_CHANNEL_PREV: "/input/channel/prev",
+    INPUT_CHANNEL_INDEX: "/input/channel/index",
 
     NICK_CHANGE: "/nick/change/",
 

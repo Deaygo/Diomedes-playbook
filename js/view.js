@@ -42,6 +42,7 @@ if ( window.runtime && air && util ) {
     util.subscribe( topics.INPUT_CHANNEL_NEXT, this, "selectNextChannel", [] );
     util.subscribe( topics.INPUT_CHANNEL_PREV, this, "selectPrevChannel", [] );
     util.subscribe( topics.INPUT_CHANNEL_PART, this, "closeCurrentChannel", [] );
+    util.subscribe( topics.INPUT_CHANNEL_INDEX, this, "selectChannelFromIndex", [] );
   }
 
   _vvp = dView.View.prototype;
@@ -319,6 +320,18 @@ if ( window.runtime && air && util ) {
       }
     }
     this.selectChannelFromNode( prev );
+  }
+
+  _vvp.selectChannelFromIndex = function ( index ) {
+    util.log( "selecting channel from index: " + index );
+    var cl = this.channelList;
+    var nodes = cl.getElementsByTagName( "a" );
+    if ( !nodes || !nodes.length || nodes.length < ( index + 1 ) ) return;
+    util.log( nodes );
+    util.log( nodes.length );
+    util.log( index in nodes );
+    util.log( nodes[ index ] );
+    this.selectChannelFromNode( nodes[ index ] );
   }
 
   _vvp.selectNextChannel = function ( ) {
@@ -655,42 +668,61 @@ if ( window.runtime && air && util ) {
     if ( key == 9 ) {
       //tab
       this.tabCompletion( e );
+      return;
     } else if ( key == 78 && ( e.metaKey || e.ctrlKey ) ) {
       //cntrl+n or command key+n
       util.stopEvent( e );
       util.publish( topics.INPUT_CHANNEL_NEXT );
+      return;
     } else if ( key == 39 && e.shiftKey && ( e.metaKey || e.ctrlKey ) ) {
       //cntrl+shift+r arrow or command key+shift+r arrow
       util.stopEvent( e );
       util.publish( topics.INPUT_CHANNEL_NEXT );
+      return;
     } else if ( key == 80 && ( e.metaKey || e.ctrlKey ) ) {
       //cntrl+p or command key+p
       util.stopEvent( e );
       util.publish( topics.INPUT_CHANNEL_PREV );
+      return;
     } else if ( key == 37 && e.shiftKey && ( e.metaKey || e.ctrlKey ) ) {
       //cntrl+shift+l arrow or command key+shift+l arrow
       util.stopEvent( e );
       util.publish( topics.INPUT_CHANNEL_PREV );
+      return;
     } else if ( key == 76 && ( e.metaKey || e.ctrlKey ) ) {
       util.stopEvent( e );
       util.publish( topics.INPUT_CHANNEL_PART );
+      return;
     } else if ( key == 13 ) {
       //enter
       this.handleInput ( e );
+      return;
     } else if ( key == 38 ) {
       //up arrow
       this.handleHistoryUp( );
+      return;
     } else if ( key == 40 ) {
       //down arrow
       this.handleHistoryDown( );
+      return;
     } else if ( key == 33 ) {
       //page up
       util.publish( topics.INPUT_PAGE_UP );
+      return;
     } else if ( key == 34 ) {
       //page down
       util.publish( topics.INPUT_PAGE_DOWN );
+      return;
     } else {
       this.reset( );
+    }
+    if ( e.metaKey || e.ctrlKey ) {
+      if ( key > 46 && key < 59 ) {
+        util.stopEvent( e );
+        var index = key - 49;
+        if ( index < 0 ) index = 9;
+        util.publish( topics.INPUT_CHANNEL_INDEX, [ index ] );
+      }
     }
   }
 
