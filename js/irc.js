@@ -569,6 +569,8 @@ if ( window.runtime && air && util ) {
     "END_OF_WHOIS" : 318,
     "NICK_CHANNELS" : 319,
     "NICK_SIGNED_ON_AS": 320,
+    "CHANNEL_INFO": 322,
+    "WHO": 352,
     "END_OF_WHO_WAS" : 369,
     "HOST_CHANGE" : 396,
     "CANNOT_SEND_TO_CHANNEL" : 404,
@@ -588,9 +590,29 @@ if ( window.runtime && air && util ) {
       //if this is the case adding it here
       case this.COMMAND_NUMBERS[ "SERVER_INFO" ]:
         this.host = this.getIndex( cmdParts, 3 );
+        break;
       case this.COMMAND_NUMBERS[ "MAP" ]:
         //what server supports && server info
         return;
+      case this.COMMAND_NUMBERS[ "WHO" ]:
+        var channel = this.getIndex( cmdParts, 4 );
+        var username = this.getIndex( cmdParts, 5 );
+        var address = this.getIndex( cmdParts, 6 );
+        var server = this.getIndex( cmdParts, 7 );
+        var nick = this.getIndex( cmdParts, 8 );
+        var flags = this.getIndex( cmdParts, 9 );
+        msg = [
+          channel,
+          username,
+          address,
+          server,
+          nick,
+          flags,
+          ":",
+          msg,
+        ].join( " " );
+        break;
+      case this.COMMAND_NUMBERS[ "CHANNEL_INFO" ]:
       case this.COMMAND_NUMBERS[ "NICK_USER_INFO" ]:
       case this.COMMAND_NUMBERS[ "NICK_USER_INFO2" ]:
       case this.COMMAND_NUMBERS[ "NICK_SECONDS_SIGNON" ]:
@@ -603,6 +625,9 @@ if ( window.runtime && air && util ) {
         msg = [ aboutArg, ": ", arg1, " ", msg ].join( "" );
         msg = [ aboutArg, ": ", msg ].join( "" );
         break;
+      case this.COMMAND_NUMBERS[ "NICK_AWAY" ]:
+        msg = [ aboutArg, " is away: ", msg ].join( "" );
+        break;
       case this.COMMAND_NUMBERS[ "END_OF_WHO" ]:
       case this.COMMAND_NUMBERS[ "END_OF_WHOIS" ]:
       case this.COMMAND_NUMBERS[ "NICK_CHANNELS" ]:
@@ -610,7 +635,6 @@ if ( window.runtime && air && util ) {
       case this.COMMAND_NUMBERS[ "NICK_IS_IRCOP" ]:
       case this.COMMAND_NUMBERS[ "NICK_SIGNED_ON_AS" ]:
       case this.COMMAND_NUMBERS[ "END_OF_WHO_WAS" ]:
-      case this.COMMAND_NUMBERS[ "NICK_AWAY" ]:
       case this.COMMAND_NUMBERS[ "NUM_OPS" ]:
       case this.COMMAND_NUMBERS[ "NUM_CHANNELS" ]:
       case this.COMMAND_NUMBERS[ "NUM_UNKNOWN" ]:
@@ -690,7 +714,7 @@ if ( window.runtime && air && util ) {
     }
   }
 
-  _icp.sendPing = function ( target ) {
+  _icp.sendCTCPPing = function ( target ) {
     var pingKey = util.rand(0, 99999999).toString( );
     this.pingResponses[ pingKey ] = new Date( ).getTime( );
     this.sendCTCP( target, [ "PING", pingKey ].join( " " ) );
@@ -703,7 +727,7 @@ if ( window.runtime && air && util ) {
       if ( parts && parts.length ) {
         var cmd = parts.shift( );
         var msg = parts.join( " " );
-        this.sendPM( target, [ token, cmd.toUpperCase( ), " ", msg, token ] );
+        this.sendPM( target, [ token, cmd.toUpperCase( ), " ", msg, token ].join( "" ) );
       }
     }
   }
@@ -743,7 +767,7 @@ if ( window.runtime && air && util ) {
   }
 
   _icp.sendUsers = function ( target ) {
-    this.sendOptionalParam( "INFO", target );
+    this.sendOptionalParam( "USERS", target );
   }
 
   _icp.sendSummon = function ( params ) {
@@ -763,7 +787,11 @@ if ( window.runtime && air && util ) {
   }
 
   _icp.sendAway = function ( msg ) {
-    this._send( [ "AWAY", ":" + msg ].join( " " ) );
+    if ( msg ) {
+      this._send( [ "AWAY", ":" + msg ].join( " " ) );
+    } else {
+      this._send( "AWAY" );
+    }
   }
 
   _icp.sendPing = function ( params ) {

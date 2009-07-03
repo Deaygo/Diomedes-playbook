@@ -506,6 +506,76 @@ if ( window.runtime && air && util ) {
         } 
         this.client.sendWhoWas( msg );
         break;
+      case "squit":
+        if ( args && args.length > 1 ) {
+          var serverName = args.shift( );
+          var msg = args.join( " " );
+          this.client.sendSQuit( serverName, msg );
+        }
+        break;
+      case "invite":
+        if ( args && args.length > 1 ) {
+          var nick = args.shift( );
+          var channel = args.shift( );
+          this.client.sendInvite( nick, channel );
+        }
+        break;
+      case "die":
+      case "restart":
+      case "rehash":
+        var _cmd = cmd;
+        var funcName = "send" + _cmd; 
+        if ( funcName in this.client ) {
+          this.client[ funcName ]( );
+        }
+        break;
+      case "away":
+      case "pass":
+      case "wallops":
+      case "users":
+      case "info":
+      case "admin":
+      case "trace":
+      case "time":
+      case "version":
+        var param;
+        if ( args && args.length ) {
+          param = args.shift( );
+        } else {
+          param = null;
+        }
+        var _cmd = cmd;
+        _cmd = _cmd[ 0 ].toUpperCase( ) + _cmd.substr( 1 );
+        var funcName = "send" + _cmd; 
+        if ( funcName in this.client ) {
+          this.client[ funcName ]( param );
+        }
+        break;
+      case "ison":
+      case "list":
+      case "userhost":
+      case "summon":
+      case "ping":
+      case "kill":
+      case "who":
+      case "squery":
+      case "connect":
+      case "link":
+      case "stats":
+      case "lusers":
+      case "oper":
+      case "service":
+        var params = "";
+        if ( args && args.length ) {
+          params = args.join( " " );
+        } 
+        var _cmd = cmd;
+        _cmd = _cmd[ 0 ].toUpperCase( ) + _cmd.substr( 1 );
+        var funcName = "send" + _cmd; 
+        if ( funcName in this.client ) {
+          this.client[ funcName ]( params );
+        }
+        break;
       case "part":
         var msg = "";
         if ( args && args.length ) {
@@ -525,16 +595,15 @@ if ( window.runtime && air && util ) {
         } 
         this.client.sendQuit( msg );
         break;
-      case "ping": 
-        if ( args && args.length ) {
-          var target = args.shift( );
-          this.client.sendPing( target );
-        }
       case "ctcp":
         if ( args && args.length > 1 ) {
           var target = args.shift( );
           var msg = args.join( " " );
-          this.client.sendCTCP( target, msg );
+          if ( util.trim( msg ).toLowerCase( ) == "ping" ) {
+            this.client.sendCTCPPing( target );
+          } else { 
+            this.client.sendCTCP( target, msg );
+          }
         }
         break;
       case "me":

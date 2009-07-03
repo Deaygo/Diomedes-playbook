@@ -245,7 +245,7 @@ if ( window.runtime && air && util ) {
         } else {
           util.log( "not enough args given to connect to server" );
         }
-      } else if ( cmd == "connect" ) {
+      } else if ( cmd == "network" ) {
         if ( argsR.length > 0 ) {
           var networkName = argsR.shift( );
           var network = this.getNetwork( networkName );
