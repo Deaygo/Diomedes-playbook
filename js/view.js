@@ -750,6 +750,7 @@ if ( window.runtime && air && util ) {
         this.tabFragEnd = lc;
         var startIndex = 0;
         var word = util.trim( value.substring( c, lc ) ).toLowerCase( );
+        if ( !word ) return;
         this.tabFragment = word;
         this.savedValue = value;
       }
