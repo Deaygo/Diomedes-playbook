@@ -684,9 +684,9 @@ if ( window.runtime && air && util ) {
 
   _icp.join = function ( channels ) {
     if ( util.isString( channels ) ) {
-      this._send( "JOIN " + channels );
+      this._send( [ "JOIN", channels ].join( " " ) );
     } else {
-      this._send( "JOIN " + channels.join( "," ) );
+      this._send( [ "JOIN", channels.join( "," ) ].join( " " ) );
     }
   }
 
@@ -703,7 +703,7 @@ if ( window.runtime && air && util ) {
       if ( parts && parts.length ) {
         var cmd = parts.shift( );
         var msg = parts.join( " " );
-        this.sendPM( target, token + cmd.toUpperCase( ) + " " + msg + token );
+        this.sendPM( target, [ token, cmd.toUpperCase( ), " ", msg, token ] );
       }
     }
   }
@@ -712,72 +712,205 @@ if ( window.runtime && air && util ) {
     this._send( "MOTD" );
   }
 
+  _icp.sendSimpleParam = function ( cmd, params ) {
+    if ( !cmd ) return;
+    if ( !params ) params = "";
+    this._send( [ cmd.toUpperCase( ), params ].join( " " ) );
+  }
+
+  _icp.sendOptionalParam = function ( cmd, param ) {
+    var cmd = [ cmd.toUpperCase( ) ];
+    if ( param ) {
+      cmd.push( param );
+    }
+    this._send( cmd.join( " " ) );
+  }
+
   _icp.changeNick = function ( nick ) {
-    this._send( "NICK " + nick );
+    this.sendSimpleParam( "NICK", nick );
+  }
+
+  _icp.sendIson = function ( params ) {
+    this.sendSimpleParam( "ISON", params );
+  }
+
+  _icp.sendUserhost = function ( params ) {
+    this.sendSimpleParam( "USERHOST", params );
+  }
+
+  _icp.sendWallops = function ( msg ) {
+    this._send( [ "WALLOPS", ":" + msg ].join( " " ) );
+  }
+
+  _icp.sendUsers = function ( target ) {
+    this.sendOptionalParam( "INFO", target );
+  }
+
+  _icp.sendSummon = function ( params ) {
+    this.sendSimpleParam( "SUMMON", params );
+  }
+
+  _icp.sendRestart = function ( ) {
+    this._send( "RESTART" );
+  }
+
+  _icp.sendDie = function ( ) {
+    this._send( "DIE" );
+  }
+
+  _icp.sendRehash = function ( ) {
+    this._send( "REHASH" );
+  }
+
+  _icp.sendAway = function ( msg ) {
+    this._send( [ "AWAY", ":" + msg ].join( " " ) );
+  }
+
+  _icp.sendPing = function ( params ) {
+    this.sendSimpleParam( "PING", params );
+  }
+
+  _icp.sendKill = function ( params ) {
+    this.sendSimpleParam( "KILL", params );
+  }
+
+  _icp.sendWho = function ( params ) {
+    this.sendSimpleParam( "WHO", params );
+  }
+
+  _icp.sendSquery = function ( params ) {
+    this.sendSimpleParam( "SQUERY", params );
+  }
+
+  _icp.sendServlist = function ( params ) {
+    this.sendSimpleParam( "SERVLIST", params );
+  }
+
+  _icp.sendInfo = function ( target ) {
+    this.sendOptionalParam( "INFO", target );
+  }
+
+  _icp.sendAdmin = function ( target ) {
+    this.sendOptionalParam( "ADMIN", target );
+  }
+
+  _icp.sendTrace = function ( target ) {
+    this.sendOptionalParam( "TRACE", target );
+  }
+
+  _icp.sendConnect = function ( params ) {
+    this.sendSimpleParam( "CONNECT", params );
+  }
+
+  _icp.sendLinks = function ( params ) {
+    this.sendSimpleParam( "LINK", params );
+  }
+
+  _icp.sendStats = function ( params ) {
+    this.sendSimpleParam( "STATS", params );
+  }
+
+  _icp.sendTime = function ( target ) {
+    this.sendOptionalParam( "TIME", target );
+  }
+
+  _icp.sendVersion = function ( target ) {
+    this.sendOptionalParam( "VERSION", target );
+  }
+
+  _icp.sendLusers = function ( params ) {
+    this.sendSimpleParam( "LUSERS", params );
+  }
+
+  _icp.sendPass = function ( password ) {
+    this._send( [ "PASS", password ].join( " " ) );
+  }
+
+  _icp.sendOper = function ( params ) {
+    this.sendSimpleParam( "OPER", params );
+  }
+
+  _icp.sendService = function ( params ) {
+    this.sendSimpleParam( "SERVICE", params );
+  }
+
+  _icp.sendSQuit = function ( serverName, msg ) {
+    this._send( [ "SQUIT", serverName, ":" + msg ].join( " " ) );
+  }
+
+  _icp.sendList = function ( channels, target ) {
+    if ( !util.isString( channels ) ) channels = channels.join( "," );
+    var cmd = [ "LIST", channels ];
+    if ( target ) {
+      cmd.push( target );
+    }
+    this._send( cmd.join( " " ) );
+  }
+
+  _icp.sendInvite = function ( nick, channel ) {
+    if ( cmd && channel ) {
+      this._send( [ "INVITE", nick, channel ].join( " " ) );
+    }
   }
  
+  _icp.sendMode = function ( msg ) {
+    if ( msg ) {
+      this._send( [ "MODE", msg ].join( " " ) );
+    }
+  }
+
   _icp.sendPM = function ( target, msg ) {
-    this._send( "PRIVMSG " + target + " :" + msg );
+    this._send( [ "PRIVMSG", target, ":" + msg ].join ( " " ) );
   }
 
   _icp.sendNames = function ( target ) {
-    this._send("NAMES " + target);
+    this._send( [ "NAMES", target ].join( " " ) );
   }
 
   _icp.sendAction = function ( target, msg ) {
-    this.sendCTCP( target, "ACTION " + msg );
+    this.sendCTCP( target, [ "ACTION", msg ].join( " " ) );
   }
 
   _icp.sendNotice = function ( target, msg ) {
-    this._send( "NOTICE " + target + " :" + msg );
+    this._send( [ "NOTICE", target, ":" + msg ].join( " " ) );
   }
 
   _icp.quit = function ( msg ) {
-    this._send( "QUIT :" + msg );
+    this._send( [ "QUIT",  ":" + msg ].join( " " ) );
     this.connectionEstablished = false;
     this.connectionAccepted = false;
   }
 
   _icp.topic = function ( target, topic ) {
-    var cmd = "TOPIC " + target;
+    var cmd = [ "TOPIC", target ];
     if ( topic ) {
-      cmd += " :" + topic;
+      cmd.push( ":" + topic );
     }
-    this._send( cmd );
+    this._send( cmd.join( " " ) );
   }
 
   _icp.part = function ( channel, msg ) {
-    this._send( "PART " + channel + " :" + msg );
+    this._send( [ "PART", channel, ":" + msg ].join( " " ) );
   }
 
   _icp.sendQuit = function ( msg ) {
     if ( !msg ) msg = "";
-    this._send( "QUIT : " + msg );
+    this._send( [ "QUIT :", msg ].join( "" ) );
     this.closeConnection( );
   }
 
   _icp.sendWhoIs = function ( msg ) {
-    if ( msg ) {
-      this._send( "WHOIS " + msg );
-    }
+    this.sendSimpleParam( "WHOIS", msg );
   }
 
   _icp.sendWhoWas = function ( msg ) {
-    if ( msg ) {
-      this._send( "WHOWAS " + msg );
-    }
+    this.sendSimpleParam( "WHOWAS", msg );
   }
 
   _icp.sendKick = function ( channel, target, msg ) {
     if ( !msg ) msg = "";
     if ( target ) {
-      this._send( "KICK " + channel + " " + target + " :" + msg );
-    }
-  }
-
-  _icp.sendMode = function ( msg ) {
-    if ( msg ) {
-      this._send( "MODE " + msg );
+      this._send( [ "KICK", channel, target, ":" + msg ].join( " " ) );
     }
   }
 
@@ -787,7 +920,6 @@ if ( window.runtime && air && util ) {
   }
 
   _icp._send = function ( data ) {
-    //XXX: send data back as delegate? 
     data = data += "\r\n";
     if ( this.socket && this.socket.connected ) {
       this.socket.writeUTFBytes( data );
@@ -804,7 +936,6 @@ if ( window.runtime && air && util ) {
 
   _icp.createConnection = function ( ) {
     this.socket = new air.Socket( );
-
     this.socket.addEventListener( air.Event.CONNECT, util.hitch( this, "onConnect" ) ); 
     this.socket.addEventListener( air.ProgressEvent.SOCKET_DATA, util.hitch( this, "onSocketData" ) ); 
   }
