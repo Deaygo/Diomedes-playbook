@@ -25,6 +25,10 @@ if(!topics) {
     USER_INPUT: "/user/input/",
     USER_HIGHLIGHT: "/user/highlight/",
 
+    UPDATE_CHECK: "/update/check/",
+    UPDATE_DELAY_CHANGE: "/update/delay/change/",
+    UPDATE_URL_CHANGE: "/update/url/change/",
+
     INPUT_PAGE_UP: "input/page/up",
     INPUT_PAGE_DOWN: "input/page/down",
     INPUT_CHANNEL_PART: "/input/channel/part",

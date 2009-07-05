@@ -20,6 +20,7 @@ if ( window.runtime && air && util ) {
     this.view.setAppVersion( this.appVersion );
     this.channelSubscription = null;
     this.channelList = new dController.ChannelList( );
+    this.updater = new  dController.Updater( this.model.prefs.getPrefs( ).updateDelay, this.model.prefs.getPrefs( ).updateURL );
     this.currentChannel = null;
     this.currentConnection = null;
     this.defaultNick = "diomedesuser"; //TODO: need model & preferences
@@ -57,7 +58,7 @@ if ( window.runtime && air && util ) {
     util.subscribe( topics.USER_ACTIVITY, this, "handleUserActivity", [] );
   }
 
-  _ccp = dController.Controller.prototype;
+  var _ccp = dController.Controller.prototype;
 
   _ccp.getAliases = function ( ) {
     this.model.aliases.getAliases( util.hitch( this, "handleAliases" ) );
@@ -494,7 +495,7 @@ if ( window.runtime && air && util ) {
     this.connections = {};
   }
 
-  _cclp = dController.ChannelList.prototype;
+  var _cclp = dController.ChannelList.prototype;
 
   _cclp.createConnection = function ( server, port, preferences, appVersion ) {
     if ( !( server in this.connections ) ) {
@@ -544,5 +545,35 @@ if ( window.runtime && air && util ) {
     //TODO: destroy connections;
   }
 
-}
+  dController.Updater = function ( updateDelay, updateURL ) {
+    this.updateURL = updateURL;
+    this.appUpdater = new runtime.air.update.ApplicationUpdaterUI( ); 
+    this.appUpdater.updateURL = this.updateURL;
+    this.appUpdater.delay = updateDelay;
+    this.appUpdater.initialize();
+    util.subscribe( topics.UPDATE_CHECK, this, "checkNow", [] );
+    util.subscribe( topics.UPDATE_DELAY_CHANGE, this, "changeUpdateDelay", [] );
+    util.subscribe( topics.UPDATE_URL_CHANGE, this, "changeUpdateURL", [] );
+  }
 
+  var _cupr = dController.Updater.prototype;
+
+  _cupr.changeUpdateURL = function ( updateURL ) {
+    this.appUpdater.delay = updateURL;
+    this.appUpdater.initialize( );
+  }
+
+  _cupr.changeUpdateDelay = function ( updateDelay ) {
+    this.appUpdater.delay = updateDelay;
+    this.appUpdater.initialize( );
+  }
+
+  _cupr.checkNow = function ( ) {
+    this.appUpdater.checkNow( );
+  }
+
+  _cupr.destroy = function ( ) {
+    delete this.appUpdater;
+  }
+
+}

@@ -51,7 +51,7 @@ if ( window.runtime && air && util ) {
     util.subscribe( topics.INPUT_CHANNEL_INDEX, this, "selectChannelFromIndex", [] );
   }
 
-  _vvp = dView.View.prototype;
+  var _vvp = dView.View.prototype;
 
   _vvp.scrollUp = function ( ) {
     if ( this.activeWin ) {
@@ -497,6 +497,10 @@ if ( window.runtime && air && util ) {
     alert( s );
   }
 
+  _vvp.handleUpdateBtnClick = function ( e ) {
+    util.publish( topics.UPDATE_CHECK, [] );
+  }
+  
   _vvp.handleHelpBtnClick = function ( e ) {
     this.displayHelp( );
   }
@@ -580,8 +584,8 @@ if ( window.runtime && air && util ) {
       preferences : this.model.prefs.getPrefs( ),
     }
     var x = window.nativeWindow.x + 150;
-    var y = window.nativeWindow.y + 100;
-    var win = window.open("prefs.html", "prefsWindow", "height=450, scrollbars=yes, width=500, top=" + y + ", left=" + x);
+    var y = window.nativeWindow.y + 75;
+    var win = window.open("prefs.html", "prefsWindow", "height=500, scrollbars=yes, width=500, top=" + y + ", left=" + x);
     win = win.nativeWindow;
     this.model.prefs.savePrefs( );
     win.addEventListener( air.Event.CLOSE, util.hitch( this.model.prefs, "savePrefs" )  ); 
@@ -621,7 +625,7 @@ if ( window.runtime && air && util ) {
     util.subscribe( topics.NICK_CHANGE, this, "handleNickChange", [] );
   }
 
-  _vip = dView.FormInput.prototype;
+  var _vip = dView.FormInput.prototype;
 
   _vip.getValue = function ( ) {
     //TODO: add history here and uparrow behavior
@@ -885,7 +889,7 @@ if ( window.runtime && air && util ) {
     util.subscribe( topics.CHANNEL_TOPIC, this, "handleTopic", [] );
   }
 
-  _vap = dView.ActivityWindow.prototype;
+  var _vap = dView.ActivityWindow.prototype;
 
   _vap.sanitize = dView.View.prototype.sanitize;
 
@@ -1277,7 +1281,7 @@ if ( window.runtime && air && util ) {
     this.win.setAttribute( "channel", this.channelName );
   }
 
-  _vnw = dView.NickWindow.prototype;
+  var _vnw = dView.NickWindow.prototype;
 
   _vnw.sanitize = dView.View.prototype.sanitize;
 
@@ -1381,7 +1385,7 @@ if ( window.runtime && air && util ) {
     util.subscribe( topics.LINK_FOUND, this, "handleLink", [] );
   }
 
-  _vlw = dView.LinkView.prototype;
+  var _vlw = dView.LinkView.prototype;
 
   _vlw.handleLink = function ( link, serverName, channelName, nick ) {
     this.links.push( [ '<div class="linkListItem">', serverName, channelName, nick, link, "</div>" ].join( " " ) );

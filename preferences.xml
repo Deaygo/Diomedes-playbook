@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?> 
-<preferences version="1.4"> 
+<preferences version="1.6"> 
   <preference name="nick" value="diomedesuser" />
   <preference name="altNick" value="diouser" />
   <preference name="userName" value="diomedesuser" />
@@ -9,6 +9,8 @@
   <preference name="pollTime" value="0" />
   <preference name="font" value="verdana" />
   <preference name="fontSize" value="15" />
+  <preference name="updateDelay" value="1" />
+  <preference name="updateURL" value="http://www.apphackers.com/diomedesVersionInfo.xml" />
   <preference name="autoJoin" value="true" />
   <multiOptionPreference name="theme">
     <option selected="true" valueName="Default" value="default" />

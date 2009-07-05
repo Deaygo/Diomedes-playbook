@@ -226,7 +226,7 @@ if ( window.runtime && air ) {
     this.endTime = null;
   }
 
-  _utp = util.Timer.prototype;
+  var _utp = util.Timer.prototype;
 
   _utp.start = function () {
     this.endTime = null;

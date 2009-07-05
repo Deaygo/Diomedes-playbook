@@ -62,7 +62,7 @@ if ( window.runtime && air && util ) {
     util.subscribe( topics.PREFS_CHANGE_AUTOJOIN, this, "setAutoJoin", [] );
   }
 
-  _cnp = dConnection.Connection.prototype;
+  var _cnp = dConnection.Connection.prototype;
 
   _cnp.setAutoJoin = function ( autoJoin ) {
     this.autoJoin = ( autoJoin == "true" );
@@ -743,7 +743,7 @@ if ( window.runtime && air && util ) {
     this.activityList = new dConnection.ActivityList( );
   }
 
-  _clp = dConnection.Channel.prototype;
+  var _clp = dConnection.Channel.prototype;
 
   _clp.getChannelName = dConnection.Connection.prototype.getChannelName;
 
@@ -877,7 +877,7 @@ if ( window.runtime && air && util ) {
     this._referencesUser = false;
   }
 
-  _cai = dConnection.ActivityItem.prototype;
+  var _cai = dConnection.ActivityItem.prototype;
 
   _cai.clone = function ( ) {
     var ai = new dConnection.ActivityItem( this.cmd, this.nick, this.target, null, this.user );
@@ -928,7 +928,7 @@ if ( window.runtime && air && util ) {
     util.subscribe( topics.PREFS_CHANGE_HISTORY_LENGTH, this, "handleChangeHistoryLength", [] );
   }
 
-  _cap = dConnection.ActivityList.prototype;
+  var _cap = dConnection.ActivityList.prototype;
 
   _cap.handleChangeHistoryLength = function ( newLen ) {
     this.maxItems = newLen;
@@ -972,7 +972,7 @@ if ( window.runtime && air && util ) {
     this._creator = {};
   }
 
-  _cup = dConnection.User.prototype;
+  var _cup = dConnection.User.prototype;
 
   _cup.rename = function ( newName ) {
     this.nick = newName;
