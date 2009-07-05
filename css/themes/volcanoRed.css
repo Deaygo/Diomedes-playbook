@@ -95,5 +95,9 @@ a {
 .messageTime {
   color: #A4A9AD;
 }
+#popup {
+  background-color: #7F0000;
+  color: #FF0000; 
+}
 
 

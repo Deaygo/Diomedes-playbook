@@ -23,24 +23,33 @@ body {
   bottom: 36px;
 }
 
-.hidden {
-  display: none !important;
-}
-
-#prefBtn {
+#prefBtn,
+#linksBtn {
   width: 32px;
   height: 32px;
   position: absolute;
   top: 3px;
-  right: 3px;
-  background: transparent url( /images/preferences.png ) no-repeat;
   z-index: 2;
+}
+#prefBtn {
+  background: transparent url( /images/preferences.png ) no-repeat;
+  right: 3px;
 }
 #prefBtn:hover {
   background-image: url( /images/preferencesOver.png );
 }
 #prefBtn:active {
   background-image: url( /images/preferencesDown.png );
+}
+#linksBtn {
+  background: transparent url( /images/links.png ) no-repeat;
+  right: 43px;
+}
+#linksBtn:hover {
+  background-image: url( /images/linksOver.png );
+}
+#linksBtn:active {
+  background-image: url( /images/linksDown.png );
 }
 #titleBar {
   width: auto;
@@ -65,4 +74,34 @@ body {
 }
 #textInput {
   outline-style: none;
+}
+#popup {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  z-index: 3;
+  padding: 5px;
+}
+#popupContents {
+  position: absolute;
+  top: 25px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  padding: 5px; 
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+#closePopup {
+  text-decoration: underline;
+  cursor: pointer;
+}
+.linkListItem {
+  margin-bottom: 10px;
+}
+
+.hidden {
+  display: none !important;
 }

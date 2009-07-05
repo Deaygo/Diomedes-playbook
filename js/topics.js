@@ -41,6 +41,8 @@ if(!topics) {
     PREFS_CHANGE_THEME: "/prefs/change/theme/",
     PREFS_CHANGE_AUTOJOIN: "/prefs/change/autojoin/",
 
+    LINK_FOUND: "/link/found",
+
     NETWORK_ADD: "/network/add/",
     NETWORK_EDIT: "/network/edit/",
     NETWORK_DELETE: "/network/delete/",

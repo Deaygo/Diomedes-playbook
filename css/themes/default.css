@@ -1,5 +1,9 @@
 /* colors all go in themes */
 
+body {
+  background-color: #FFF:
+}
+
 a {
   color: blue;
 }
@@ -64,4 +68,8 @@ a {
 }
 #titleBar a {
   color: #000;
+}
+#popup {
+  background-color: #FFF;
+  color: #000; 
 }

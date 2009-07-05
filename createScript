@@ -1,2 +1,2 @@
 #!/bin/bash
-~/air/bin/adt -package -storetype pkcs12 -keystore apphacker.pfx Diomedes.air Diomedes-app.xml index.html networks.html prefs.html preferences.xml performs.html servers.html servicemonitor.swf applicationupdater_ui.swf help.html aliases.html channels.html js/ icons/ css/ images/
+~/air/bin/adt -package -storetype pkcs12 -keystore apphacker.pfx Diomedes.air Diomedes-app.xml index.html networks.html prefs.html preferences.xml performs.html servers.html servicemonitor.swf applicationupdater_ui.swf help.html aliases.html channels.html js/ icons/ css/ images/ LICENSE

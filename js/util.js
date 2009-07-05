@@ -124,15 +124,17 @@ if ( window.runtime && air ) {
 
   util.remClass = function ( node, className ) {
     if ( !node || !className ) return;
-    var classes = node.getAttribute( "class" ).split( " " );
-    var keep = [];
-    for ( var i = 0; i < classes.length; i++ ) {
-      var name = classes[ i ];
-      if ( name != className ) {
-        keep.push( name );
+    if ( node.hasAttribute( "class" ) ) {
+      var classes = node.getAttribute( "class" ).split( " " );
+      var keep = [];
+      for ( var i = 0; i < classes.length; i++ ) {
+        var name = classes[ i ];
+        if ( name != className ) {
+          keep.push( name );
+        }
       }
+      node.setAttribute( "class", keep.join( " " ) );
     }
-    node.setAttribute( "class", keep.join( " " ) );
   }
 
   util.cloneObject = function ( o ) {

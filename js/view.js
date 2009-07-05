@@ -15,6 +15,9 @@ if ( window.runtime && air && util ) {
     this.model = model;
     this.prevWord = null;
     this.input = new dView.FormInput( util.get( "textInput" ), util.get("inputForm") );
+    this.popup = util.get( "popup" );
+    this.popupContents = util.get( "popupContents" );
+    this.linkView = new dView.LinkView( this.popupContents );
     this.activityWindow = util.get( "activityWindow" );
     this.channelList = util.get( "channelList" );
     this.titleBar = util.get( "titleBar" );
@@ -29,8 +32,11 @@ if ( window.runtime && air && util ) {
 
     util.connect( this.channelList, "onclick", this, "handleChannelListClick" );
     util.connect( this.activityWindow, "onclick", this, "handleActivityWindowClick" );
+    util.connect( this.popup, "onclick", this, "handleActivityWindowClick" );
     util.connect( this.titleBar, "onclick", this, "handleTitleBarClick" );
     util.connect( util.get( "prefBtn" ), "onclick", this, "handlePrefsBtnClick" );
+    util.connect( util.get( "linksBtn" ), "onclick", this, "handleLinksBtnClick" );
+    util.connect( util.get( "closePopup" ), "onclick", this, "closePopup" );
     util.connect( window, "onclick", this, "handleWindowClick" );
     util.subscribe( topics.USER_HIGHLIGHT, this, "highlight", [] );
     util.subscribe( topics.PREFS_CHANGE_FONT, this, "changeFont", [] );
@@ -57,6 +63,17 @@ if ( window.runtime && air && util ) {
     if ( this.activeWin ) {
       this.activeWin.scrollDown( );
     }
+  }
+
+  _vvp.closePopup = function ( e ) {
+    util.addClass( this.popup, "hidden" );
+    this.popupContents.innerHTML = "";
+  }
+
+  _vvp.handleLinksBtnClick = function ( e ) {
+    util.stopEvent( e );
+    this.linkView.display( );
+    util.remClass( this.popup, "hidden" );
   }
 
   _vvp.handlePrefsBtnClick = function ( e ) {
@@ -1039,7 +1056,7 @@ if ( window.runtime && air && util ) {
             ( isSelf ? ' isSelf' : '' ),
             ( referencesUser ? ' referencesUser' : '' ),
             '"> ',
-              this.textFormat( this.sanitize( m ) ),
+              this.textFormat( this.sanitize( m ), this.sanitize( nick ) ),
             '</span> ',
           '</div>'
       ] );
@@ -1119,13 +1136,13 @@ if ( window.runtime && air && util ) {
     };
   }
 
-  _vap.textFormat = function ( msg ) {
+  _vap.textFormat = function ( msg, nick ) {
     msg = msg.split("  ").join(" &nbsp;");
     msg = this.findBold( msg );
     msg = [ msg, this.closeOpenMarkup("isInBold", "</strong>" ) ].join( "" );
     msg = this.findColors( msg );
     msg = [ msg, this.closeOpenMarkup("isInStyle", "</span>" ) ].join( "" );
-    msg = this.findLinks( msg );
+    msg = this.findLinks( msg, nick );
     return msg;
   }
 
@@ -1196,8 +1213,26 @@ if ( window.runtime && air && util ) {
     return newMsg;
   }
 
-  _vap.findLinks = function ( msg ) {
+  _vap.logLinks = function ( msg, nick ) {
+    var d = document.createElement( "div" );
+    d.innerHTML = msg;
+    var anchors = d.getElementsByTagName( "a" );
+    if ( anchors && anchors.length ) {
+      for ( var i = 0; i < anchors.length; i++ )  {
+        var a = anchors[ i ];
+        util.publish( topics.LINK_FOUND, [ a.outerHTML, this.serverName, this.channelName, nick ] );
+        delete a;
+      }
+    }
+    delete anchors;
+    delete d;
+  }
+
+  _vap.findLinks = function ( msg, nick ) {
     var newMsg = msg.replace( this.linkRegex, ' <a target="_blank" class="ircLink" href="$1">$1</a> ' );
+    if ( newMsg.split( "ircLink" ).length > 1 ) {
+      this.logLinks( newMsg, nick );
+    }
     return newMsg;
   }
 
@@ -1339,5 +1374,25 @@ if ( window.runtime && air && util ) {
     }
     return 0;
   } 
+
+  dView.LinkView = function ( node ) {
+    this.node = node;
+    this.links = [];
+    util.subscribe( topics.LINK_FOUND, this, "handleLink", [] );
+  }
+
+  _vlw = dView.LinkView.prototype;
+
+  _vlw.handleLink = function ( link, serverName, channelName, nick ) {
+    this.links.push( [ '<div class="linkListItem">', serverName, channelName, nick, link, "</div>" ].join( " " ) );
+  }
+
+  _vlw.display = function ( ) {
+    if ( this.links.length ) {
+      this.node.innerHTML = [ "<div><h1>Link Log</h1>", this.links.reverse( ).join( " " ), "</div>" ].join( " " );
+    } else {
+      this.node.innerHTML = "No links found yet in IRC conversations. :/";
+    }
+  }
 
 }
