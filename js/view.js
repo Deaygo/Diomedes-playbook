@@ -1389,7 +1389,9 @@ if ( window.runtime && air && util ) {
 
   _vlw.display = function ( ) {
     if ( this.links.length ) {
-      this.node.innerHTML = [ "<div><h1>Link Log</h1>", this.links.reverse( ).join( " " ), "</div>" ].join( " " );
+      var links = this.links.slice( );
+      this.node.innerHTML = [ "<div><h1>Link Log</h1>", links.reverse( ).join( " " ), "</div>" ].join( " " );
+      delete links;
     } else {
       this.node.innerHTML = "No links found yet in IRC conversations. :/";
     }
