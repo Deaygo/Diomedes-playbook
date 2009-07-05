@@ -87,7 +87,7 @@ if ( window.runtime && air && util ) {
     //determine if channel or PM first
     if ( !this.client.isChannelName( target ) ) {
       isPM = true;
-      if ( from ) {
+      if ( from & from != _nick ) {
         var channelName = this.getChannelName( from );
       } else if ( msg.nick != _nick ) {
         var channelName = this.getChannelName( msg.nick );
