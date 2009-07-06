@@ -614,12 +614,7 @@ if ( window.runtime && air && util ) {
     }
     this.headers = null;
     this.httpStatus = null;
-    this.htmlInfo = {};
     this.request = new air.URLRequest( this.url );
-    this.loader = new air.URLLoader( );
-    this.htmlLoader = new air.HTMLLoader( );
-    this.htmlLoader.addEventListener( air.Event.COMPLETE, util.hitch( this, "htmlCompleteHandler" ) ); 
-    this.loader.addEventListener( air.Event.COMPLETE, util.hitch( this, "completeHandler" ) ); 
     this.stream = new air.URLStream( );
     this.stream.addEventListener( air.HTTPStatusEvent.HTTP_RESPONSE_STATUS, util.hitch( this, "onStatus" ) ); 
     this.stream.addEventListener( air.IOErrorEvent.IO_ERROR, util.hitch( this, "onError" ) ); 
@@ -635,45 +630,7 @@ if ( window.runtime && air && util ) {
     this.headers = e.responseHeaders;
     this.responseURL = e.responseURL;
     this.httpStatus = e.status;
-    var isHTML = false;
-    if ( this.httpStatus == 200 ) {
-      for ( var i = 0; i < this.headers.length; i++ ) {
-        var header = this.headers[ i ];
-        if ( header.name == "Content-Type" && header.value.search( "html" ) != -1 ) {
-          isHTML = true;
-          break;
-        }
-      }
-    }
-    if ( isHTML ) {
-      this.fetchHTMLInfo( );
-    } else {
-      this.publishData( );
-    }
-  }
-
-  _clfp.htmlCompleteHandler = function ( e ) {
-    util.log( "WTF" );
-    var doc = this.htmlLoader.window.document;
-    var nodes = doc.getElementsByTagName( "meta" );
-    var metaTags = [ ];
-    for ( var i = 0; i < nodes.length; i++ ) {
-      var node = nodes[ i ];
-      metaTags.push( { name: node.getAttribute( "name" ), content: node.getAttribute( "content" ) } ); 
-    }
-    this.htmlInfo[ "title" ] = doc.title;
-    this.htmlInfo[ "meta" ] = metaTags;
     this.publishData( );
-  }
-
-  _clfp.completeHandler = function ( e ) {
-    util.log("complete");
-    this.htmlLoader.loadString( e.target.data );
-  }
-
-  _clfp.fetchHTMLInfo = function ( ) {
-    util.log("fetch");
-    this.loader.load( this.request );
   }
 
   _clfp.publishData = function( ) {
@@ -692,7 +649,6 @@ if ( window.runtime && air && util ) {
           "path": this.path,
           "headers": this.headers,
           "httpStatus": this.httpStatus,
-          "htmlInfo": this.htmlInfo
         }
     ] );
   }
@@ -703,11 +659,8 @@ if ( window.runtime && air && util ) {
 
   _clfp.destroy = function ( ) {
     util.log("destroy");
-    delete this.loader;
     delete this.stream;
     delete this.request;
-    this.htmlLoader.cancelLoad( );
-    delete this.htmlLoader;
   }
 
 }

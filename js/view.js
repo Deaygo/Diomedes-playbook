@@ -1406,7 +1406,6 @@ if ( window.runtime && air && util ) {
           "path": this.path,
           "headers": this.headers,
           "httpStatus": this.httpStatus,
-          "htmlInfo": this.htmlInfo
         }
     */
     r.push( '<div class="linkLogItem">' );
@@ -1414,21 +1413,10 @@ if ( window.runtime && air && util ) {
       r.push( [ '<div> <strong>IRC Info:</strong>', p.serverName, "-", p.channelName, "-", p.nick, "</div>" ].join( " " ) );
       r.push( [ '<div> <strong>Date:</strong>', p["date"], '</div>' ].join( " " ) );
       r.push( [ '<div><strong>Given URL:</strong><a href="', p.url, '">', p.url, "</a></div>" ].join( " " ) );
-      r.push( [ '<div><strong>Response URL:</strong><a href="', p.responseURL, '">', p.responseURL, "</a></div>" ].join( " " ) );
-      if ( "title" in p.htmlInfo ) {
-        util.log("title");
-        r.push( [ '<div><strong>Document title:</strong><em>', p.htmlInfo.title, '</em></div>' ].join( " " ) );
+      if ( p.url != p.responseURL ) {
+        r.push( [ '<div><strong>Response URL:</strong><a href="', p.responseURL, '">', p.responseURL, "</a></div>" ].join( " " ) );
       }
       r.push( '<div class="extraLinkInfoCon"><div class="extraLinkInfoConTitle">Show Additional Info</div><div class="extraLinkInfo">' );
-        if ( "meta" in p.htmlInfo ) {
-          r.push( '<div class="meta"><h3>Meta Tag for document:</h3>' );
-          var metaTags = p.htmlInfo.meta;
-          for ( var i = 0; i < metaTags.length; i++ ) {
-            var m = metaTags[ i ];
-            r.push( [ '<div><strong>Name:</strong>', ( m.name ? m.name : '' ), '<strong>Content:</strong>', ( m.content ? m.content : '' ), '</div>' ].join( " " ) );
-          }
-          r.push( '</div>' );
-        }
         r.push( [ '<div><strong>HTTP Status:</strong>', p.httpStatus, '</div>' ].join( " " ) );
         r.push( '<div class="headers"><h3>Header Information for URL:</h3>' );
         for ( var i = 0; i < p.headers.length; i++ ) {
