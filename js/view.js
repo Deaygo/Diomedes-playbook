@@ -850,7 +850,7 @@ if ( window.runtime && air && util ) {
   }
 
   dView.ActivityWindow = function ( serverName, channelName, maxItems, timeFormat ) {
-    this.linkRegex = /(https?:\/\/\S+)\s?/g;
+    this.linkRegex = /(https?:\/\/(\w+\.)*\w+\.\w+(\/\S*)?)\s?/g;
     this.colorCode = String.fromCharCode( 003 );
     this.normalCode = String.fromCharCode( 017 );
     this.boldCode = String.fromCharCode( 002 );
@@ -1224,7 +1224,7 @@ if ( window.runtime && air && util ) {
     if ( anchors && anchors.length ) {
       for ( var i = 0; i < anchors.length; i++ )  {
         var a = anchors[ i ];
-        util.publish( topics.LINK_FOUND, [ a.outerHTML, this.serverName, this.channelName, nick ] );
+        util.publish( topics.LINK_FOUND, [ a.getAttribute( "href" ), this.serverName, this.channelName, nick ] );
         delete a;
       }
     }
@@ -1382,19 +1382,69 @@ if ( window.runtime && air && util ) {
   dView.LinkView = function ( node ) {
     this.node = node;
     this.links = [];
-    util.subscribe( topics.LINK_FOUND, this, "handleLink", [] );
+    util.subscribe( topics.LINK_DATA, this, "addLink", [] );
   }
 
   var _vlw = dView.LinkView.prototype;
 
-  _vlw.handleLink = function ( link, serverName, channelName, nick ) {
-    this.links.push( [ '<div class="linkListItem">', serverName, channelName, nick, link, "</div>" ].join( " " ) );
+  _vlw.addLink = function ( link, properties ) {
+    util.log( "addLink" );
+    this.links.push( this.createHTML( properties ) );
+  }
+
+  _vlw.createHTML = function ( p ) {
+    util.log( "createHTML" );
+    var r = [];
+    /*
+        {
+          "url": this.url,
+          "serverName": this.serverName,
+          "channelName": this.channelName,
+          "date": d,
+          "nick": this.nick,
+          "host": this.host,
+          "path": this.path,
+          "headers": this.headers,
+          "httpStatus": this.httpStatus,
+          "htmlInfo": this.htmlInfo
+        }
+    */
+    r.push( '<div class="linkLogItem">' );
+      r.push( '<h2>Link</h2>' );
+      r.push( [ '<div> <strong>IRC Info:</strong>', p.serverName, "-", p.channelName, "-", p.nick, "</div>" ].join( " " ) );
+      r.push( [ '<div> <strong>Date:</strong>', p["date"], '</div>' ].join( " " ) );
+      r.push( [ '<div><strong>Given URL:</strong><a href="', p.url, '">', p.url, "</a></div>" ].join( " " ) );
+      r.push( [ '<div><strong>Response URL:</strong><a href="', p.responseURL, '">', p.responseURL, "</a></div>" ].join( " " ) );
+      if ( "title" in p.htmlInfo ) {
+        util.log("title");
+        r.push( [ '<div><strong>Document title:</strong><em>', p.htmlInfo.title, '</em></div>' ].join( " " ) );
+      }
+      r.push( '<div class="extraLinkInfoCon"><div class="extraLinkInfoConTitle">Show Additional Info</div><div class="extraLinkInfo">' );
+        if ( "meta" in p.htmlInfo ) {
+          r.push( '<div class="meta"><h3>Meta Tag for document:</h3>' );
+          var metaTags = p.htmlInfo.meta;
+          for ( var i = 0; i < metaTags.length; i++ ) {
+            var m = metaTags[ i ];
+            r.push( [ '<div><strong>Name:</strong>', ( m.name ? m.name : '' ), '<strong>Content:</strong>', ( m.content ? m.content : '' ), '</div>' ].join( " " ) );
+          }
+          r.push( '</div>' );
+        }
+        r.push( [ '<div><strong>HTTP Status:</strong>', p.httpStatus, '</div>' ].join( " " ) );
+        r.push( '<div class="headers"><h3>Header Information for URL:</h3>' );
+        for ( var i = 0; i < p.headers.length; i++ ) {
+          var h = p.headers[ i ];
+          r.push( [ '<div><strong>Name:</strong>', h.name, '<strong>Value:</strong>', ( h.value ? h.value : '' ), '</div>' ].join( " " ) );
+        }
+        r.push( '</div>' );
+      r.push( "</div></div>" );
+    r.push( "</div>" );
+    return r.join( "" );
   }
 
   _vlw.display = function ( ) {
     if ( this.links.length ) {
       var links = this.links.slice( );
-      this.node.innerHTML = [ "<div><h1>Link Log</h1>", links.reverse( ).join( " " ), "</div>" ].join( " " );
+      this.node.innerHTML = [ '<div id="linkLog"><h1>Link Log</h1>', links.reverse( ).join( " " ), "</div>" ].join( " " );
       delete links;
     } else {
       this.node.innerHTML = "No links found yet in IRC conversations. :/";

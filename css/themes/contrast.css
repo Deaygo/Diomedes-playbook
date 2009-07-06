@@ -96,5 +96,9 @@ a {
   background-color: #000;
   color: #BBB;
 }
+.linkLogItem,
+.extraInfo {
+  border-color: #EEE;
+}
 
 

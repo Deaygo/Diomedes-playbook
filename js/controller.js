@@ -21,6 +21,7 @@ if ( window.runtime && air && util ) {
     this.channelSubscription = null;
     this.channelList = new dController.ChannelList( );
     this.updater = new  dController.Updater( this.model.prefs.getPrefs( ).updateDelay, this.model.prefs.getPrefs( ).updateURL );
+    this.linkLog = new dController.LinkLog( );
     this.currentChannel = null;
     this.currentConnection = null;
     this.defaultNick = "diomedesuser"; //TODO: need model & preferences
@@ -574,6 +575,139 @@ if ( window.runtime && air && util ) {
 
   _cupr.destroy = function ( ) {
     delete this.appUpdater;
+  }
+
+  dController.LinkLog = function ( ) {
+    util.subscribe( topics.LINK_FOUND, this, "handleLink", [] );
+    this.fetchers = {};
+    util.subscribe( topics.LINK_DATA, this, "handleLinkData", [] );
+  }
+
+  var _cllp = dController.LinkLog.prototype;
+
+  _cllp.handleLink = function ( link, serverName, channelName, nick ) {
+    if ( !( link in this.fetchers ) ) {
+      this.fetchers[ link ] = new dController.LinkInfoFetcher( link, serverName, channelName,nick );
+    }
+  }
+
+  _cllp.handleLinkData = function ( link ) {
+    //explicitly deleting fetchers to reduce memory leaks
+    if ( link in this.fetchers ) {
+      this.fetchers[ link ].destroy( );
+      delete this.fetchers[ link ];
+    }
+  }
+
+  dController.LinkInfoFetcher = function ( link, serverName, channelName, nick ) {
+    if ( !link ) return;
+    this.url = link;
+    link = link.substr( 7 );
+    this.serverName = serverName;
+    this.channelName = channelName;
+    this.nick = nick;
+    var linkParts = link.split( "/" );
+    this.host = linkParts.shift( );
+    this.path = "/";
+    if ( linkParts.length ) {
+      this.path +=  linkParts.join( "/" );
+    }
+    this.headers = null;
+    this.httpStatus = null;
+    this.htmlInfo = {};
+    this.request = new air.URLRequest( this.url );
+    this.loader = new air.URLLoader( );
+    this.htmlLoader = new air.HTMLLoader( );
+    this.htmlLoader.addEventListener( air.Event.COMPLETE, util.hitch( this, "htmlCompleteHandler" ) ); 
+    this.loader.addEventListener( air.Event.COMPLETE, util.hitch( this, "completeHandler" ) ); 
+    this.stream = new air.URLStream( );
+    this.stream.addEventListener( air.HTTPStatusEvent.HTTP_RESPONSE_STATUS, util.hitch( this, "onStatus" ) ); 
+    this.stream.addEventListener( air.IOErrorEvent.IO_ERROR, util.hitch( this, "onError" ) ); 
+    this.stream.load( this.request );
+
+  }
+
+  var _clfp = dController.LinkInfoFetcher.prototype;
+
+  _clfp.onStatus = function ( e ) {
+    util.log( "onstatus" );
+    this.stream.close( );
+    this.headers = e.responseHeaders;
+    this.responseURL = e.responseURL;
+    this.httpStatus = e.status;
+    var isHTML = false;
+    if ( this.httpStatus == 200 ) {
+      for ( var i = 0; i < this.headers.length; i++ ) {
+        var header = this.headers[ i ];
+        if ( header.name == "Content-Type" && header.value.search( "html" ) != -1 ) {
+          isHTML = true;
+          break;
+        }
+      }
+    }
+    if ( isHTML ) {
+      this.fetchHTMLInfo( );
+    } else {
+      this.publishData( );
+    }
+  }
+
+  _clfp.htmlCompleteHandler = function ( e ) {
+    util.log( "WTF" );
+    var doc = this.htmlLoader.window.document;
+    var nodes = doc.getElementsByTagName( "meta" );
+    var metaTags = [ ];
+    for ( var i = 0; i < nodes.length; i++ ) {
+      var node = nodes[ i ];
+      metaTags.push( { name: node.getAttribute( "name" ), content: node.getAttribute( "content" ) } ); 
+    }
+    this.htmlInfo[ "title" ] = doc.title;
+    this.htmlInfo[ "meta" ] = metaTags;
+    this.publishData( );
+  }
+
+  _clfp.completeHandler = function ( e ) {
+    util.log("complete");
+    this.htmlLoader.loadString( e.target.data );
+  }
+
+  _clfp.fetchHTMLInfo = function ( ) {
+    util.log("fetch");
+    this.loader.load( this.request );
+  }
+
+  _clfp.publishData = function( ) {
+    util.log("publish");
+    var d = new Date( ).toString( );
+    util.publish( topics.LINK_DATA, [
+        this.url,
+        {
+          "url": this.url,
+          "serverName": this.serverName,
+          "channelName": this.channelName,
+          "responseURL": this.responseURL,
+          "date": d,
+          "nick": this.nick,
+          "host": this.host,
+          "path": this.path,
+          "headers": this.headers,
+          "httpStatus": this.httpStatus,
+          "htmlInfo": this.htmlInfo
+        }
+    ] );
+  }
+
+  _clfp.onError = function ( e ) {
+    util.log( " link info fetcher error" );
+  }
+
+  _clfp.destroy = function ( ) {
+    util.log("destroy");
+    delete this.loader;
+    delete this.stream;
+    delete this.request;
+    this.htmlLoader.cancelLoad( );
+    delete this.htmlLoader;
   }
 
 }

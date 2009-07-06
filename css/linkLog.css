@@ -1,0 +1,32 @@
+#linkLog {
+  font-size: 13px;
+}
+#linkLog h1 {
+  font-size: 16px;
+}
+#linkLog h2 {
+  font-size: 15px;
+}
+#linkLog h3 {
+  font-size: 14px;
+}
+.linkLogItem {
+  margin-bottom: 30px;
+  border: solid 1px;
+  padding: 5px;
+}
+.linkLogItem .meta, 
+.linkLogItem .headers {
+  margin-bottom: 15px;
+}
+.extraLinkInfoCon .extraLinkInfoConTitle {
+  text-decoration: underline;
+}
+.extraLinkInfo {
+  display: none;
+  border: solid 1px;
+  padding: 5px;
+}
+.extraLinkInfoCon:hover .extraLinkInfo {
+  display: block;
+}

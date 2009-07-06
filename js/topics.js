@@ -46,6 +46,7 @@ if(!topics) {
     PREFS_CHANGE_AUTOJOIN: "/prefs/change/autojoin/",
 
     LINK_FOUND: "/link/found",
+    LINK_DATA: "/link/data/",
 
     NETWORK_ADD: "/network/add/",
     NETWORK_EDIT: "/network/edit/",

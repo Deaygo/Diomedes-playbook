@@ -98,9 +98,6 @@ body {
   text-decoration: underline;
   cursor: pointer;
 }
-.linkListItem {
-  margin-bottom: 10px;
-}
 
 .hidden {
   display: none !important;

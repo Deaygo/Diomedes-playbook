@@ -73,3 +73,7 @@ a {
   background-color: #FFF;
   color: #000; 
 }
+.linkLogItem,
+.extraInfo {
+  border-color: #000;
+}
