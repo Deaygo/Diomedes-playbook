@@ -694,7 +694,7 @@ if ( window.runtime && air && util ) {
           "httpStatus": this.httpStatus,
           "htmlInfo": this.htmlInfo,
           "responseURL": this.responseURL,
-          "title": this.title
+          "title": util.trim( this.title )
         }
     ] );
   }

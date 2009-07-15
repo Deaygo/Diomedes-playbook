@@ -31,8 +31,7 @@ if ( window.runtime && air && util ) {
     this.appVersion = "";
 
     util.connect( this.channelList, "onclick", this, "handleChannelListClick" );
-    util.connect( this.activityWindow, "onclick", this, "handleActivityWindowClick" );
-    util.connect( this.popup, "onclick", this, "handleActivityWindowClick" );
+    util.connect( window, "onclick", this, "handleActivityWindowClick" );
     util.connect( this.titleBar, "onclick", this, "handleTitleBarClick" );
     util.connect( util.get( "prefBtn" ), "onclick", this, "handlePrefsBtnClick" );
     util.connect( util.get( "linksBtn" ), "onclick", this, "handleLinksBtnClick" );
@@ -214,7 +213,7 @@ if ( window.runtime && air && util ) {
     if ( e.target.nodeName == "A" ) {
       var url = e.target.getAttribute("href");
       if ( url ) {
-        var urlReq = new air.URLRequest( url ); 
+        var urlReq = new air.URLRequest( util.trim( url ) ); 
         air.navigateToURL(urlReq);
       }
     }

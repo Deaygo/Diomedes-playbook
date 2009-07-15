@@ -97,6 +97,7 @@ body {
 #closePopup {
   text-decoration: underline;
   cursor: pointer;
+  text-align: right;
 }
 
 .hidden {
