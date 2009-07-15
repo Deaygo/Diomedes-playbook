@@ -612,11 +612,19 @@ if ( window.runtime && air && util ) {
     if ( linkParts.length ) {
       this.path +=  linkParts.join( "/" );
     }
+    this.titleRegex = /<\s*title\s?.*>(.*)<\/\s*title\s*>/g;
+    this.bytesRead = 0;
     this.headers = null;
     this.httpStatus = null;
+    this.htmlInfo = {};
     this.request = new air.URLRequest( this.url );
+    this.data = "";
+    this.title = "";
+    this.responseURL = "";
     this.stream = new air.URLStream( );
     this.stream.addEventListener( air.HTTPStatusEvent.HTTP_RESPONSE_STATUS, util.hitch( this, "onStatus" ) ); 
+    this.stream.addEventListener( air.ProgressEvent.PROGRESS, util.hitch( this, "onProgress" ) ); 
+    this.stream.addEventListener( air.Event.COMPLETE, util.hitch( this, "onComplete" ) ); 
     this.stream.addEventListener( air.IOErrorEvent.IO_ERROR, util.hitch( this, "onError" ) ); 
     this.stream.load( this.request );
 
@@ -624,14 +632,50 @@ if ( window.runtime && air && util ) {
 
   var _clfp = dController.LinkInfoFetcher.prototype;
 
+  _clfp.onComplete = function ( e ) {
+    this.stream.close( );
+  }
+
+  _clfp.onProgress = function ( e ) {
+    this.data = [ this.data, this.stream.readUTFBytes( this.stream.bytesAvailable ) ].join( "" );
+    this.checkForTitle( );
+  }
+
+  _clfp.checkForTitle = function ( ) {
+    var res = this.titleRegex.exec( this.data );
+    if ( res && res.length > 1 ) {
+      this.stream.close( );
+      this.title = res[ 1 ];
+      this.publishData( );
+    }
+  }
+
   _clfp.onStatus = function ( e ) {
     util.log( "onstatus" );
-    this.stream.close( );
     this.headers = e.responseHeaders;
-    this.responseURL = e.responseURL;
     this.httpStatus = e.status;
-    this.publishData( );
+    this.responseURL = e.responseURL;
+    var isHTML = false;
+    if ( this.httpStatus == 200 ) {
+      for ( var i = 0; i < this.headers.length; i++ ) {
+        var header = this.headers[ i ];
+        if ( header.name == "Content-Type" && header.value.search( "html" ) != -1 ) {
+          isHTML = true;
+          break;
+        }
+      }
+    }
+    if ( !isHTML ) {
+      this.stream.close( );
+      this.publishData( );
+    }
   }
+
+
+  _clfp.completeHandler = function ( e ) {
+    util.log("complete");
+  }
+
 
   _clfp.publishData = function( ) {
     util.log("publish");
@@ -642,13 +686,15 @@ if ( window.runtime && air && util ) {
           "url": this.url,
           "serverName": this.serverName,
           "channelName": this.channelName,
-          "responseURL": this.responseURL,
           "date": d,
           "nick": this.nick,
           "host": this.host,
           "path": this.path,
           "headers": this.headers,
           "httpStatus": this.httpStatus,
+          "htmlInfo": this.htmlInfo,
+          "responseURL": this.responseURL,
+          "title": this.title
         }
     ] );
   }

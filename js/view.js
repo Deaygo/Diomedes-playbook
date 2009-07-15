@@ -1406,6 +1406,7 @@ if ( window.runtime && air && util ) {
           "path": this.path,
           "headers": this.headers,
           "httpStatus": this.httpStatus,
+          "title": this.title
         }
     */
     r.push( '<div class="linkLogItem">' );
@@ -1415,6 +1416,9 @@ if ( window.runtime && air && util ) {
       r.push( [ '<div><strong>Given URL:</strong><a href="', p.url, '">', p.url, "</a></div>" ].join( " " ) );
       if ( p.url != p.responseURL ) {
         r.push( [ '<div><strong>Response URL:</strong><a href="', p.responseURL, '">', p.responseURL, "</a></div>" ].join( " " ) );
+      }
+      if ( p.title ) {
+        r.push( [ '<div><strong>Title:</strong>', p.title, "</div>" ].join( " " ) );
       }
       r.push( '<div class="extraLinkInfoCon"><div class="extraLinkInfoConTitle">Show Additional Info</div><div class="extraLinkInfo">' );
         r.push( [ '<div><strong>HTTP Status:</strong>', p.httpStatus, '</div>' ].join( " " ) );
