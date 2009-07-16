@@ -67,6 +67,8 @@ if(!topics) {
     ALIAS_DELETE: "/alias/delete",
     ALIAS_CHANGE: "/alias/change/",
 
+    IGNORES_CHANGE: "/ignores/change/",
+    
   };
 }
 

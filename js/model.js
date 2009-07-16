@@ -24,6 +24,7 @@ if ( window.runtime && air && util ) {
     this.prefs = new dModel.PrefModel( this );
     this.aliases = new dModel.AliasModel( this );
     this.networks = new dModel.NetworksModel( this );
+    this.ignores = new dModel.IgnoresModel( this );
     this.conn = null;
   }
 
@@ -101,7 +102,7 @@ if ( window.runtime && air && util ) {
   }
 
   _mmp._createTable = function ( name, types, resultsHandler, parameters, errorHandler ) {
-    this.log("createTable mmp");
+    this.log("Creating Table.");
     var sql = [];
     sql = sql.concat( [ "CREATE TABLE IF NOT EXISTS ", name, " (" ] );  
     for ( var name in types ) {
@@ -371,6 +372,59 @@ if ( window.runtime && air && util ) {
     util.log( "Database changed." );
   }
 
+  dModel.IgnoresModel = function ( model ) {
+    this.model = model;
+    this.createTables( );
+  }
+
+  var _mip = dModel.IgnoresModel.prototype;
+
+  _mip.createTables = function ( ) {
+    var st = this.model.SQL_TYPES;
+    var types; 
+    types = {
+      id : [ st.INTEGER, st.PRIMARY_KEY, st.AUTOINCREMENT ].join( " " ),
+      regex : st.TEXT,
+      active : st.BOOL,
+    }
+    var tableName = "ignores";
+    this.model._createTable( tableName, types, util.hitch( this, "_handleCreateTable", [ tableName ], null ) );
+  }
+
+  _mip.addAlias = function ( regex, active ) {
+    var sql = "INSERT INTO ignores ( regex, active ) VALUES ( :regex, :active )";
+    var p = {
+      regex : regex,
+      active : active
+    }
+    this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
+  }
+
+  _mip.editAlias = function ( id, regex, active ) {
+    var sql = "UPDATE ignores SET regex = :regex, active = :active WHERE id = :id";
+    var p = {
+      id : id,
+      regex : regex,
+      active : active
+    }
+    this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
+  }
+
+  _mip.remAlias = function ( id ) {
+    var sql = "DELETE FROM ignores WHERE id = :id ";
+    var p = { id : id };
+    this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
+  }
+
+  _mip._handleCreateTable = function ( e, tableName ) {
+    this.model.log( "Created NetworksModel table: "  + tableName );
+  }
+
+  _mip._handleChange = function ( e ) {
+    util.log( "Database changed." );
+    util.publish( topics.IGNORES_CHANGE, [ null ] );
+  }
+
   dModel.AliasModel = function ( model ) {
     this.model = model;
     this.createTables( );
@@ -379,9 +433,7 @@ if ( window.runtime && air && util ) {
   var _map = dModel.AliasModel.prototype;
 
   _map.createTables = function ( ) {
-    util.log("createtables begn");
     var st = this.model.SQL_TYPES;
-    this.model.log("moo");  
     var types; 
     types = {
       id : [ st.INTEGER, st.PRIMARY_KEY, st.AUTOINCREMENT ].join( " " ),
@@ -392,7 +444,6 @@ if ( window.runtime && air && util ) {
     }
     var tableName = "aliases";
     this.model._createTable( tableName, types, util.hitch( this, "_handleCreateTable", [ tableName ], null ) );
-    util.log("createtables end");
   }
 
   _map.getAliases = function ( resultsHandler ) {
