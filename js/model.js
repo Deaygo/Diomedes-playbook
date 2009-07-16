@@ -487,8 +487,51 @@ if ( window.runtime && air && util ) {
         }
       }
     }
-    //XXX: multi option preferences are getting reset
-    prefs[ "multiOptionPrefs" ] = this.getMultiValuePrefs( doc );
+    var newMVPrefs = this.getMultiValuePrefs( doc );
+    var oldMVPrefs = this.preferences[ "multiOptionPrefs" ];
+    for ( var key in oldMVPrefs ) {
+      var pref = oldMVPrefs[ key ];
+      if ( pref.length && key in newMVPrefs ) {
+        var selectedName = null;
+        var selectedValue = null;
+        for ( var i = 0; i < pref.length; i++ ) {
+          var option = pref[ i ];
+          if ( "selected" in option ) {
+            selectedName = option.valueName;
+            selectedValue = option.value;
+            break;
+          }
+        }
+        if ( selectedName ) {
+          //check to see if new preferences even have this value
+          var hasValue = false;
+          pref = newMVPrefs[ key ];
+          for ( var i = 0; i < pref.length; i++ ) {
+            var option = pref[ i ];
+            if ( option.valueName == selectedName ) {
+              //don't bother relooping if users pref is already set as default:
+              //also don't bother saving users value if value for option name is now different
+              if ( !( "selected" in option && option.selected === true ) && option.value == selectedValue ) {
+                //reloop
+                hasValue = true;
+              }
+              break;
+            }
+          }
+          if ( hasValue ) {
+            for ( var i = 0; i < pref.length; i++ ) {
+              var option = pref[ i ];
+              if ( option.valueName == selectedName ) {
+                option.selected = true;
+              } else {
+                delete option.selected;
+              }
+            }
+          }
+        }
+      }
+    }
+    prefs[ "multiOptionPrefs" ] = newMVPrefs;
     this.preferences = prefs;
     this.savePrefs( );
     delete doc;
