@@ -71,6 +71,7 @@ if(!topics) {
     IGNORE_EDIT: "/ignore/edit/",
     IGNORE_DELETE: "/ignore/delete",
     IGNORES_CHANGE: "/ignores/change/",
+    IGNORES_UPDATE: "/ignores/update/",
     
   };
 }

@@ -13,7 +13,7 @@ if ( window.runtime && air && util ) {
   
   dConnection.CHANNEL_TYPES = { "SERVER":"server", "PM":"pm", "CHANNEL":"channel" }
   
-  dConnection.Connection = function ( server, port, preferences, appVersion ) {
+  dConnection.Connection = function ( server, port, preferences, appVersion, ignores ) {
 
     var nick = preferences.nick;
     this.channels = {};
@@ -25,6 +25,7 @@ if ( window.runtime && air && util ) {
     this.serverChannel = null;
     this.port = port;
     this.altNickTries = 0;
+    this.ignores = ignores;
 
     this.pollTime = parseInt( preferences.pollTime, 10 );
     this.stayConnected = false;
@@ -37,10 +38,10 @@ if ( window.runtime && air && util ) {
     this.client.setFinger( preferences.finger );
 
     //this.names stores names in addition to channels,
-    //because a) you get the names command before you get the JOIN
+    //because a) you can get the names command before you get the JOIN
     //and b) you can get names without joining channels
     //this.names[ channelName ]; has names
-    //it's only ever used when joining a channel to populate channel's nicklist
+    //it's only ever used when joining a channel to a populate channel's nicklist
     this.names = {};
 
     //set delegates
@@ -60,9 +61,14 @@ if ( window.runtime && air && util ) {
     this.client.setKickDelegate(util.hitch(this, "handleKick"));
     util.subscribe( topics.CHANNEL_CLOSE, this, "closeChannel", [] );
     util.subscribe( topics.PREFS_CHANGE_AUTOJOIN, this, "setAutoJoin", [] );
+    util.subscribe( topics.IGNORES_UPDATE, this, "handleIgnoresUpdate", [] );
   }
 
   var _cnp = dConnection.Connection.prototype;
+
+  _cnp.handleIgnoresUpdate = function ( ignores ) {
+    this.ignores = ignores;
+  }
 
   _cnp.setAutoJoin = function ( autoJoin ) {
     this.autoJoin = ( autoJoin == "true" );
@@ -79,7 +85,32 @@ if ( window.runtime && air && util ) {
     return null;
   }
 
+  _cnp.isIgnored = function ( msg ) {
+    util.log("isIgnored000000000");
+    if ( !msg.host ) return false;
+    if ( !this.ignores ) return false;
+    util.log("isIgnored000000001");
+    var from = [ msg.nick, msg.host ].join( "!" );
+    util.log("isIgnored000000002");
+    console.dump( this.ignores );
+    for ( var i = 0; i < this.ignores.length; i++ ) {
+    util.log("isIgnored000000003");
+      var ignore = this.ignores[ i ];
+    util.log("isIgnored000000004");
+      if ( form.search( ignore ) != -1 ) {
+    util.log("isIgnored000000005");
+        return true;
+    util.log("isIgnored000000006");
+      }
+    util.log("isIgnored000000007");
+    }
+    util.log("isIgnored000000008");
+    return false;
+  }
+
   _cnp.addActivityToChannel = function( target, msg, from ) {
+    //check to see if ignored first:
+    if ( this.isIgnored( msg ) ) return;
     //from is optional and is explicit about who the message is from
     //only applicable to private messages
     var isPM = false;
@@ -150,7 +181,7 @@ if ( window.runtime && air && util ) {
 
   _cnp.handleInvite = function ( nick, target ) {
     var msg_ = [ "You have been invited to", target, "by", nick ].join( " " ); 
-    var msg = new dConnection.ActivityItem( "server", null, null, msg_ );
+    var msg = new dConnection.ActivityItem( "server", null, null, msg_, null, null );
     this.serverChannel.addActivity( msg );
     if ( this.autoJoin ) {
       this.client.join( target );
@@ -158,7 +189,7 @@ if ( window.runtime && air && util ) {
   }
 
   _cnp.handleConnection = function ( msg, connected, nickInUse ) {
-    var msg_ = new dConnection.ActivityItem( "server", null, null, msg );
+    var msg_ = new dConnection.ActivityItem( "server", null, null, msg, null, null );
     if ( nickInUse && this.getNick( ) != this.preferences.altNick && !this.altNickTries ) {
       this.altNickTries = 1;
       this.client.changeNick( this.preferences.altNick );
@@ -215,14 +246,14 @@ if ( window.runtime && air && util ) {
       channel.addUser(user);
       channel.publishUserActivity( );
     }
-    var msg = new dConnection.ActivityItem( "join", nick, target, null, user );
+    var msg = new dConnection.ActivityItem( "join", nick, target, null, user, host );
     this.addActivityToChannel( target, msg );
   }
 
   _cnp.handleNotice = function ( nick, host, target, msg ) {
     var user = this.getUser( nick );
     if ( user ) user.setHost( host );
-    var msg = new dConnection.ActivityItem( "notice", nick, target, msg, user );
+    var msg = new dConnection.ActivityItem( "notice", nick, target, msg, user, host );
     for ( var channel in this.channels ) {
       this.addActivityToChannel( channel, msg, channel );
     }
@@ -234,7 +265,7 @@ if ( window.runtime && air && util ) {
     var user = this.getUser( nick );
     if ( user ) {
       user.setHost( host );
-      var msg = new dConnection.ActivityItem( "quit", nick, null, msg, user );
+      var msg = new dConnection.ActivityItem( "quit", nick, null, msg, user, host );
       for ( var target in this.channels ) {
         var channel = this.channels[ target ];
         if ( channel.hasUser( user.nick ) ) {
@@ -258,7 +289,7 @@ if ( window.runtime && air && util ) {
         channel.publishUserActivity( );
       }
       user = this.getUser( nick );
-      var msg = new dConnection.ActivityItem("mode", nick, target, msg, user );
+      var msg = new dConnection.ActivityItem("mode", nick, target, msg, user, host );
       this.addActivityToChannel( target, msg );
     }
   }
@@ -267,7 +298,7 @@ if ( window.runtime && air && util ) {
     util.log( "handling kick nick: "  + nick + " kickedNick: " + kickedNick );
     var user = this.getUser( nick );
     if ( user ) user.setHost( host );
-    var msg = new dConnection.ActivityItem( "kick", nick, target, msg, user );
+    var msg = new dConnection.ActivityItem( "kick", nick, target, msg, user, host );
     var altUser = this.getUser( kickedNick );
     msg.setAltUser( altUser );
     if ( kickedNick != this.getNick( ) ) {
@@ -286,7 +317,7 @@ if ( window.runtime && air && util ) {
   _cnp.handleAction = function ( nick, host, target, msg ) {
     var user = this.getUser( nick );
     if ( user ) user.setHost( host );
-    var msg = new dConnection.ActivityItem( "action", nick, target, msg, user );
+    var msg = new dConnection.ActivityItem( "action", nick, target, msg, user, host );
     if ( this.referencesUser( msg.msg ) ) {
       msg.setReferencesUser( );
     } 
@@ -297,7 +328,7 @@ if ( window.runtime && air && util ) {
     //XXX: if target is this.getNick( ) and nick not a channel, open new channel
     var user = this.getUser( nick );
     if ( user ) user.setHost( host );
-    var msg = new dConnection.ActivityItem( "privmsg", nick, target, msg, user );
+    var msg = new dConnection.ActivityItem( "privmsg", nick, target, msg, user, host );
     if ( this.referencesUser( msg.msg, target, nick ) ) {
       msg.setReferencesUser( );
     } 
@@ -343,7 +374,7 @@ if ( window.runtime && air && util ) {
     if ( !msg ) msg = "";
     var user = this.getUser( nick );
     if ( user ) user.setHost( host );
-    var msg = new dConnection.ActivityItem( "part", nick, target, msg, user );
+    var msg = new dConnection.ActivityItem( "part", nick, target, msg, user, host );
     this.addActivityToChannel( target, msg );
     this.remUserFromChannel( nick, target );
   }
@@ -356,7 +387,7 @@ if ( window.runtime && air && util ) {
       user.rename( newNick );
       delete this.users [ nick ];
       this.users[ newNick ] = user;
-      var msg = new dConnection.ActivityItem( "nick", nick, null, newNick, this.getUser( newNick ) );
+      var msg = new dConnection.ActivityItem( "nick", nick, null, newNick, this.getUser( newNick ), host );
       //check channels nick is in
       for ( var target in this.channels ) {
         if ( this.channels[ target ].hasUser( nick ) ) {
@@ -385,7 +416,7 @@ if ( window.runtime && air && util ) {
   }
 
   _cnp.handleServerMessage = function ( host, msg, target ) {
-    var msg = new dConnection.ActivityItem( "server", null, target, msg );
+    var msg = new dConnection.ActivityItem( "server", null, target, msg, host );
     if ( this.client.isChannelName( target ) ) {
       this.addActivityToChannel( target, msg );
     } else {
@@ -443,7 +474,7 @@ if ( window.runtime && air && util ) {
   }
 
   _cnp.handleTopic = function ( host, target, topic, topicSetter, datetime ) {
-    var msg = new dConnection.ActivityItem( "topic", topicSetter, target, topic );
+    var msg = new dConnection.ActivityItem( "topic", topicSetter, target, topic, host );
     this.addActivityToChannel( target, msg );
     var channelName = this.getChannelName( target );
     if ( channelName in this.channels ) {
@@ -865,10 +896,11 @@ if ( window.runtime && air && util ) {
   }
 
   //Activity Item Class
-  dConnection.ActivityItem = function ( cmd, nick, target, msg, user ) {
+  dConnection.ActivityItem = function ( cmd, nick, target, msg, user, host ) {
     this.cmd = cmd;
     this.nick = nick;
     this.user = ( user ? user : null );
+    this.host = host;
     this.target = target;
     this.msg = msg;
     this.datetime = new Date();
@@ -880,7 +912,7 @@ if ( window.runtime && air && util ) {
   var _cai = dConnection.ActivityItem.prototype;
 
   _cai.clone = function ( ) {
-    var ai = new dConnection.ActivityItem( this.cmd, this.nick, this.target, null, this.user );
+    var ai = new dConnection.ActivityItem( this.cmd, this.nick, this.target, null, this.user, this.host );
     ai.msg = this.msg; //avoid resanitizing
     ai.setDateTime( this.datetime );
     ai.setAltUser( this.altUser );

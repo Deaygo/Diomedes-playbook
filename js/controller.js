@@ -29,6 +29,9 @@ if ( window.runtime && air && util ) {
     this.channelsWithActivity = {};
     this.channelsHighlighted  = {};
 
+    this.ignores = [];
+    this.getIgnores( );
+
     this.aliases = {};
     this.getAliases( );
 
@@ -65,6 +68,19 @@ if ( window.runtime && air && util ) {
   var _ccp = dController.Controller.prototype;
 
   _ccp.getIgnores= function ( ) {
+    this.model.ignores.getIgnores( util.hitch( this, "handleIgnores" ) );
+  }
+
+  _ccp.handleIgnores = function ( ignores ) {
+    if ( !ignores ) {
+      this.ignores = [];
+    } else {
+      for ( var i = 0; i < ignores.length; i++ ) {
+        var ignore = ignores[ i ];
+        this.ignores.push( ignore );
+      }
+    }
+    util.publish( topics.IGNORES_UPDATE, [ this.ignores ] );
   }
 
   _ccp.getAliases = function ( ) {
@@ -252,7 +268,7 @@ if ( window.runtime && air && util ) {
             connection.connect( );
             this.handleChannelSelect( host, "SERVER",  null );
           } else {
-            this.channelList.createConnection( host, port, this.model.prefs.getPrefs( ), this.appVersion );
+            this.channelList.createConnection( host, port, this.model.prefs.getPrefs( ), this.appVersion, this.ignores );
             if ( !this.currentConnection ) {
               this.currentConnection = this.channelList.getConnection( host );
               this.setCurrentChannel( this.currentConnection.getServerChannel( ) );
