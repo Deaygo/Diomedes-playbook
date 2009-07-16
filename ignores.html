@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html> 
+<head> 
+  <title>Diomedes - Ignores</title> 
+  <link rel="stylesheet" type="text/css" media="screen" href="css/view.css" />
+  <link rel="stylesheet" type="text/css" media="screen" href="css/forms.css" />
+</head> 
+<body class="ignoreWindow popUpWindow" onLoad="load( )"> 
+  <h1>Ignores</h1>
+  <div id="ignoresList" onclick="handleListClick( event );"></div>
+  <a href="#" onclick="showAddForm( event );">Add an Ignore</a>
+  <form class="hidden" id="form" onsubmit="saveIgnores( event );">
+    <p>
+    Create Ignores. Ignores are regular expresions. To ignore only by nick use ^joe! to ignore 'joe' for example.
+    </p>
+    <p>
+    Otherwise if you only put a nick such as 'joe', without the ^ and ! you'll ignore people who might have parts of this 
+    nick in their host or nick:<br/>
+      Dave!joe@blah.com would get ignored<br/>
+    </p>
+    <input type="hidden" id="id" value="0"/>
+    <div class="formItem">
+      <label for="regex">Regex: </label> <input type="text" id="regex" />
+    </div>
+    <div class="formItem">
+      <label for="active">Active: </label> <input type="checkbox" id="active"  checked="true"/>
+    </div>
+    <input type="submit" value="Save" />
+    <button onclick="closeForm( event );">Cancel</button>
+  </form>
+  <button onclick="closeWindow( event );">Close Window</button>
+  <script type="text/javascript">
+
+    var bridge = window.opener.ignoresBridge;
+    var util = bridge.util;
+    var topics = bridge.topics;
+    var ignores = bridge.ignores;
+
+    function load ( ) {
+      displayIgnores ( ignores );
+    }
+
+    function displayIgnores ( ignores ) {
+      var n = get( "ignoresList" );
+      n.innerHTML = "";
+      var r = [];
+      for ( var i = 0; i < ignores.length; i++ ) {
+        r.push( getIgnoreHTML( ignores[ i ] ) ); 
+      }
+      n.innerHTML = r.join( "" );
+    }
+
+    function getIgnoreHTML( ignore ) {
+      return [
+        '<span class="regex">', ignore.regex, '</span> ',
+        '<a href="#" id="delete.', ignore.id, '">Delete</a> ',
+        '</div>'].join( "" );
+    }
+
+    function clearForm ( ) {
+      get( "regex" ).value = "";
+      get( "id" ).value = "0";
+    }
+
+    function saveIgnores ( event ) {
+      util.stopEvent( event );
+      util.log( "Saving Ignores." );
+      var ignoreData = {};
+      var id = parseInt( get( "id" ).value, 10 );
+      if ( !this.getItem( "regex", "Command", ignoreData ) ) return;
+      if ( !this.getItem( "active", "Active", ignoreData, true ) ) return;
+      if ( id === 0 ) {
+        util.publish( topics.IGNORE_ADD, [ ignoreData ] );
+        closeWindow( event );
+        return;
+      } 
+      closeForm( event );
+    }
+
+    function updateIgnores ( ignore ) {
+      for ( var i = 0; i < ignores.length; i++ ) {
+        var temp = ignores[ i ];
+        if ( temp.id == ignore.id ) {
+          ignores[ i ] = ignore;
+          displayIgnores( ignores );
+          return;
+        }
+      }
+    }
+
+    function closeForm ( event ) {
+      util.stopEvent( event );
+      util.addClass( get( "form" ), "hidden" );
+    }
+
+    function showForm ( ) {
+      util.remClass( get( "form" ), "hidden" );
+    }
+
+    function getItem( id, name, o, isCheckbox ) {
+      if ( isCheckbox ) {
+        var value = get( id ).checked;
+        if ( value === true || value === false ) {
+          o[ id ] = value;
+          return true;
+        }
+      }
+      var value =  get( id ).value;
+      value = util.trim( value );
+      if ( !value ) {
+        alert( name + " required." );
+        return false;
+      }
+      o[ id ] = value;
+      return true;
+    }
+
+    function get ( name ) {
+      return util.get( name, document );
+    }
+
+    function handleListClick ( event ) {
+      var id = event.target.id;
+      if ( id ) {
+        var parts = id.split( "." );
+        if ( parts.length ) {
+          var cmd = parts[ 0 ];
+          var id = parts [ 1 ];
+          if ( cmd == "delete" ) {
+            deleteIgnore( id );
+          }
+        }
+      }
+    }
+
+    function deleteIgnore ( id ) {
+      util.publish( topics.IGNORE_DELETE, [ id ] );
+      var newIgnores = [];
+      for ( var i = 0; i < ignores.length; i++ ) {
+        var ignore = ignores[ i ];
+        if ( ignore.id != id ) {
+          newIgnores.push( ignore );
+        }
+      }
+      ignores = newIgnores;
+      displayIgnores( ignores );
+    }
+
+    function showAddForm ( event ) {
+      util.stopEvent( event );
+      clearForm( );
+      showForm( );
+    }
+
+    function closeWindow ( event ) {
+      util.stopEvent( event );
+      window.close( );
+    }
+
+  </script>
+</body>
+</html>
+
+
+
+
+

@@ -540,6 +540,27 @@ if ( window.runtime && air && util ) {
     this.model.networks.getNetworks( util.hitch( this, "openServersWindow" ) );
   }
 
+  _vvp.handleIgnoresBtnClick = function ( e ) {
+    this.model.ignores.getIgnores( util.hitch( this, "openIgnoresWindow" ) );
+  }
+
+  _vvp.openIgnoresWindow = function ( ignores ) {
+    if ( !ignores ) ignores = [];
+    window.ignoresBridge = {
+      util : util,
+      topics : topics,
+      ignores : ignores,
+    }
+    var x = window.nativeWindow.x + 150;
+    var y = window.nativeWindow.y + 100;
+    var win = window.open("ignores.html", "ignoresWindow", "height=400, scrollbars=yes, width=600, top=" + y + ", left=" + x);
+    win = win.nativeWindow;
+  }
+
+  _vvp.handleNetworksBtnClick = function ( e ) {
+    this.model.networks.getNetworks( util.hitch( this, "openNetworksWindow" ) );
+  }
+
   _vvp.handleAliasesBtnClick = function ( e ) {
     this.model.aliases.getAliases( util.hitch( this, "openAliasesWindow" ) );
   }

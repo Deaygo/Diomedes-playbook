@@ -55,11 +55,17 @@ if ( window.runtime && air && util ) {
     util.subscribe( topics.ALIAS_ADD, this, "handleAliasAdd", [] );
     util.subscribe( topics.ALIAS_DELETE, this, "handleAliasDelete", [] );
     util.subscribe( topics.ALIAS_CHANGE, this, "getAliases", [] );
+    util.subscribe( topics.IGNORE_ADD, this, "handleIgnoreAdd", [] );
+    util.subscribe( topics.IGNORE_DELETE, this, "handleIgnoreDelete", [] );
+    util.subscribe( topics.IGNORE_CHANGE, this, "getIgnores", [] );
     util.subscribe( topics.CONNECTION_CLOSE, this, "closeConnection", [] );
     util.subscribe( topics.USER_ACTIVITY, this, "handleUserActivity", [] );
   }
 
   var _ccp = dController.Controller.prototype;
+
+  _ccp.getIgnores= function ( ) {
+  }
 
   _ccp.getAliases = function ( ) {
     this.model.aliases.getAliases( util.hitch( this, "handleAliases" ) );
@@ -157,6 +163,14 @@ if ( window.runtime && air && util ) {
     for ( var networkName in networksFound ) {
       this.removeNetwork( networkName );
     }
+  }
+
+  _ccp.handleIgnoreDelete = function ( id ) {
+    this.model.ignores.remIgnore( id );
+  }
+
+  _ccp.handleIgnoreAdd = function ( data ) {
+    this.model.ignores.addIgnore( data.regex, data.active );
   }
 
   _ccp.handleAliasDelete = function ( id ) {

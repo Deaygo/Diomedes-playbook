@@ -391,7 +391,13 @@ if ( window.runtime && air && util ) {
     this.model._createTable( tableName, types, util.hitch( this, "_handleCreateTable", [ tableName ], null ) );
   }
 
-  _mip.addAlias = function ( regex, active ) {
+  _mip.getIgnores = function ( resultsHandler ) {
+    var sql = "SELECT * FROM ignores";
+    var p = {};
+    this.model._executeSQL( sql, air.SQLMode.READ, this.model._getResultHandler( resultsHandler ), p ); 
+  }
+
+  _mip.addIgnore = function ( regex, active ) {
     var sql = "INSERT INTO ignores ( regex, active ) VALUES ( :regex, :active )";
     var p = {
       regex : regex,
@@ -400,7 +406,7 @@ if ( window.runtime && air && util ) {
     this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
   }
 
-  _mip.editAlias = function ( id, regex, active ) {
+  _mip.editIgnore = function ( id, regex, active ) {
     var sql = "UPDATE ignores SET regex = :regex, active = :active WHERE id = :id";
     var p = {
       id : id,
@@ -410,7 +416,7 @@ if ( window.runtime && air && util ) {
     this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
   }
 
-  _mip.remAlias = function ( id ) {
+  _mip.remIgnore = function ( id ) {
     var sql = "DELETE FROM ignores WHERE id = :id ";
     var p = { id : id };
     this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
