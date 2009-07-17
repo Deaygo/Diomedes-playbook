@@ -677,6 +677,7 @@ if ( window.runtime && air && util ) {
           this.getTopic( target );
         }
       case this.COMMAND_NUMBERS[ "NAMES_LIST_ADD" ]:
+        target = target.toLowerCase( );
         if ( target ) {
           if ( !( target in this.namesList ) ) {
             this.namesList[ target ] = [  ];
@@ -685,6 +686,7 @@ if ( window.runtime && air && util ) {
         this.namesList[ target ].push( msg );
         break;
       case this.COMMAND_NUMBERS[ "NAMES_END_LIST" ]:
+        target = target.toLowerCase( );
         if ( target && target in this.namesList ) {
           var nicks = [];
           var namesList = this.namesList[ target ];
