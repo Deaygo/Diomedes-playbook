@@ -60,7 +60,7 @@ if ( window.runtime && air && util ) {
     util.subscribe( topics.ALIAS_CHANGE, this, "getAliases", [] );
     util.subscribe( topics.IGNORE_ADD, this, "handleIgnoreAdd", [] );
     util.subscribe( topics.IGNORE_DELETE, this, "handleIgnoreDelete", [] );
-    util.subscribe( topics.IGNORE_CHANGE, this, "getIgnores", [] );
+    util.subscribe( topics.IGNORES_CHANGE, this, "getIgnores", [] );
     util.subscribe( topics.CONNECTION_CLOSE, this, "closeConnection", [] );
     util.subscribe( topics.USER_ACTIVITY, this, "handleUserActivity", [] );
   }
@@ -75,9 +75,15 @@ if ( window.runtime && air && util ) {
     if ( !ignores ) {
       this.ignores = [];
     } else {
+      currentIgnores = {};
+      for ( var i = 0; i < this.ignores.length; i++ ) {
+        currentIgnores[ this.ignores[ i ] ] = 1;
+      }
       for ( var i = 0; i < ignores.length; i++ ) {
-        var ignore = ignores[ i ];
-        this.ignores.push( ignore );
+        var ignore = ignores[ i ].regex;
+        if ( !( ignore in currentIgnores ) ) {
+          this.ignores.push( ignore );
+        }
       }
     }
     util.publish( topics.IGNORES_UPDATE, [ this.ignores ] );
@@ -145,7 +151,7 @@ if ( window.runtime && air && util ) {
     if ( !networks ) return;
     for ( var i = 0; i < networks.length; i++ ) {
       var network = networks[ i ];
-      this.setNetwork( network.name, new dNetwork.Network( network, this.model.networks, this.channelList, this.model.prefs, this.appVersion ) );
+      this.setNetwork( network.name, new dNetwork.Network( network, this.model.networks, this.channelList, this.model.prefs, this.appVersion, this.ignores ) );
       var connection = this.getNetwork( network.name ).getConnection( );
       if ( connection ) {
         this.currentConnection = connection;
@@ -528,9 +534,9 @@ if ( window.runtime && air && util ) {
 
   var _cclp = dController.ChannelList.prototype;
 
-  _cclp.createConnection = function ( server, port, preferences, appVersion ) {
+  _cclp.createConnection = function ( server, port, preferences, appVersion, ignores ) {
     if ( !( server in this.connections ) ) {
-      this.connections[server] = new dConnection.Connection( server, port, preferences, appVersion );
+      this.connections[server] = new dConnection.Connection( server, port, preferences, appVersion, ignores );
       this.connections[server].connect( );
       return true;
     } else {

@@ -12,8 +12,9 @@ if ( window.runtime && air && util ) {
   //requires AIR and util
   
 
-  dNetwork.Network = function ( data, model, channelList, prefs, appVersion ) {
+  dNetwork.Network = function ( data, model, channelList, prefs, appVersion, ignores ) {
     this.prefs = util.cloneObject( prefs.getPrefs( ) );
+    this.ignores = ignores;
     this.prefs.nick = data.nick;
     this.prefs.altNick = data.altNick;
     this.prefs.userName = data.userName;
@@ -40,10 +41,15 @@ if ( window.runtime && air && util ) {
     this.model = model;
     this.checkInfoProgress( );
     util.subscribe( topics.NETWORK_CHANGE, this, "handleNetworksChanged", [] );
+    util.subscribe( topics.IGNORES_UPDATE, this, "handleIgnoresUpdate", [] );
     util.subscribe( topics.CHANNELS_CHANGED, this, "handleNetworkConnect", [] );
   }
 
   var _nn = dNetwork.Network.prototype;
+
+  _nn.handleIgnoresUpdate = function ( ignores ) {
+    this.ignores = ignores;
+  }
 
   _nn.handleNetworkConnect = function ( type, channelName, host ) {
     if ( type == "connect" && host == this.currentHost ) {
@@ -111,7 +117,7 @@ if ( window.runtime && air && util ) {
     var parts = this.getNextServer( ).split( ":" );
     this.currentHost = util.fromIndex( parts, 0 );
     var port = util.fromIndex( parts, 1 );
-    this.channelList.createConnection( this.currentHost, port, this.prefs, this.appVersion );
+    this.channelList.createConnection( this.currentHost, port, this.prefs, this.appVersion, this.ignores );
     this.connection = this.channelList.getConnection( this.currentHost );
     util.publish( topics.CHANNELS_CHANGED, [ "connect", this.currentHost, this.currentHost ] );
   }

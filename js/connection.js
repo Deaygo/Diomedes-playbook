@@ -19,13 +19,13 @@ if ( window.runtime && air && util ) {
     this.channels = {};
     this.users = {};
     this.preferences = preferences;
+    this.ignores = ignores;
     this.host = "";
     this.users[ nick ] = new dConnection.User( nick, "" ); 
     this.server = server;
     this.serverChannel = null;
     this.port = port;
     this.altNickTries = 0;
-    this.ignores = ignores;
 
     this.pollTime = parseInt( preferences.pollTime, 10 );
     this.stayConnected = false;
@@ -67,6 +67,7 @@ if ( window.runtime && air && util ) {
   var _cnp = dConnection.Connection.prototype;
 
   _cnp.handleIgnoresUpdate = function ( ignores ) {
+    util.log( "handle connection ignores update " );
     this.ignores = ignores;
   }
 
@@ -86,25 +87,16 @@ if ( window.runtime && air && util ) {
   }
 
   _cnp.isIgnored = function ( msg ) {
-    util.log("isIgnored000000000");
     if ( !msg.host ) return false;
     if ( !this.ignores ) return false;
-    util.log("isIgnored000000001");
+    if ( !msg.nick == this.getNick( ) ) return false;
     var from = [ msg.nick, msg.host ].join( "!" );
-    util.log("isIgnored000000002");
-    console.dump( this.ignores );
     for ( var i = 0; i < this.ignores.length; i++ ) {
-    util.log("isIgnored000000003");
       var ignore = this.ignores[ i ];
-    util.log("isIgnored000000004");
-      if ( form.search( ignore ) != -1 ) {
-    util.log("isIgnored000000005");
+      if ( from.search( ignore ) != -1 ) {
         return true;
-    util.log("isIgnored000000006");
       }
-    util.log("isIgnored000000007");
     }
-    util.log("isIgnored000000008");
     return false;
   }
 
