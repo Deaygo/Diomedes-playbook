@@ -467,6 +467,7 @@ if ( window.runtime && air && util ) {
 
   _cnp.handleTopic = function ( host, target, topic, topicSetter, datetime ) {
     var msg = new dConnection.ActivityItem( "topic", topicSetter, target, topic, host );
+    msg.setDateTime( datetime );
     this.addActivityToChannel( target, msg );
     var channelName = this.getChannelName( target );
     if ( channelName in this.channels ) {
