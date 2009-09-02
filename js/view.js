@@ -870,7 +870,7 @@ if ( window.runtime && air && util ) {
   }
 
   dView.ActivityWindow = function ( serverName, channelName, maxItems, timeFormat ) {
-    this.linkRegex = /(https?:\/\/(\w+\.)*\w+\.\w+(\/\S*)?)\s?/g;
+    this.linkRegex = /(https?:\/\/([\w\-]+\.)*[\w\-]+\.[\w\-]+(\/\S*)?)\s?/g;
     this.colorCode = String.fromCharCode( 003 );
     this.normalCode = String.fromCharCode( 017 );
     this.boldCode = String.fromCharCode( 002 );
