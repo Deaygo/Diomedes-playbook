@@ -1011,7 +1011,7 @@ if ( window.runtime && air && util ) {
             break;
           case "topic":
             isServer = true;
-            var d = " On " + msg.datetime.toUTCString( ) + " "; 
+            var d = " On " + msg.getAltDatetime( ).toUTCString( ) + " "; 
             m = d + msg.nick + " set the topic for " + msg.target + " to: " + m ;
             break;
           case "notice":

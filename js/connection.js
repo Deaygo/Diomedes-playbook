@@ -467,7 +467,7 @@ if ( window.runtime && air && util ) {
 
   _cnp.handleTopic = function ( host, target, topic, topicSetter, datetime ) {
     var msg = new dConnection.ActivityItem( "topic", topicSetter, target, topic, host );
-    msg.setDateTime( datetime );
+    msg.setAltDatetime( datetime );
     this.addActivityToChannel( target, msg );
     var channelName = this.getChannelName( target );
     if ( channelName in this.channels ) {
@@ -897,6 +897,7 @@ if ( window.runtime && air && util ) {
     this.target = target;
     this.msg = msg;
     this.datetime = new Date();
+    this.altDatetime = null;
     this.displayMsg = null;
     this.altUser;
     this._referencesUser = false;
@@ -909,6 +910,7 @@ if ( window.runtime && air && util ) {
     ai.msg = this.msg; //avoid resanitizing
     ai.setDateTime( this.datetime );
     ai.setAltUser( this.altUser );
+    ai.setAltDatetime( this.altDatetime );
     ai._referencesUser = this._referencesUser;
     return ai;
   }
@@ -916,6 +918,19 @@ if ( window.runtime && air && util ) {
   _cai.setDateTime = function ( datetime ) {
     delete this.datetime;
     this.datetime = datetime;
+  }
+
+  _cai.setAltDatetime = function ( datetime ) {
+    if ( this.altDatetime ) delete this.altDatetime;
+    this.altDatetime = datetime;
+  }
+
+  _cai.getAltDatetime = function ( ) {
+    if ( this.altDatetime ) {
+      return this.altDatetime;
+    } else {
+      return this.datetime;
+    } 
   }
 
   _cai.setAltUser = function ( altUser ) {
