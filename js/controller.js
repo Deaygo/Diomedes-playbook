@@ -585,6 +585,9 @@ if ( window.runtime && air && util ) {
   dController.Updater = function ( updateDelay, updateURL ) {
     this.updateURL = updateURL;
     this.appUpdater = new runtime.air.update.ApplicationUpdaterUI( ); 
+    var file = new air.File( "app:/updateConfig.xml" );
+    console.log( "file: " + file );
+    this.appUpdater.configurationFile = file;
     this.appUpdater.updateURL = this.updateURL;
     this.appUpdater.delay = updateDelay;
     this.appUpdater.initialize();
