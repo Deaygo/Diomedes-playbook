@@ -189,21 +189,52 @@ if ( window.runtime && air && util ) {
         this.connectionDelegate( "Connecting to server.", false, false );
       }  
     } else if ( !status_ && this.stayConnected && this._isConnected ) {
-      this.connectionEstablished = false;
-      this.connectionAccepted = false;
-      this._isConnected = false;
-      this.connectionFails = 0;
-      if ( this.connectionDelegate ) {
-        this.connectionDelegate( "Disconnected from server.", false, false );
-      }
+      this.setDisconnectedStatus( );
     } else if ( !status && this.stayConnected ) {
       this.connectionDelegate( "Can't connect to server.", false, false );
+    }
+  }
+
+  _icp.setDisconnectedStatus = function( ) {
+    this.stopPingService( );
+    this.connectionEstablished = false;
+    this.connectionAccepted = false;
+    this._isConnected = false;
+    if ( this.connectionDelegate ) {
+      this.connectionDelegate( "Disconnected from server.", false, false );
     }
   }
 
   _icp.onConnect = function ( e ) {
     this.log( "Found server, connecting..." );
     this._isConnected = true;
+  }
+
+  _icp.startPingService = function ( ) {
+    this.log( "\n\n\n\n\nstartingPingService\n\n\n\n\n" );
+    if ( this.connectionEstablished ) {
+      this._send( "PING DiomedesIRC" );
+      this.pingTimeoutID = window.setTimeout( util.hitch( this, "pingTimeout" ), 60000 );
+    }
+  }
+
+  _icp.pingTimeout = function ( ) {
+    this.log( "\n\n\n\n\nping timedout\n\n\n\n\n" );
+    this.setDisconnectedStatus( );
+  }
+
+  _icp.stopPingService = function ( ) {
+    this.log( "\n\n\n\n\nstopping ping service\n\n\n\n\n" );
+    if ( this.pingTimeoutID ) {
+      window.clearTimeout( this.pingTimeoutID );
+      this.pingTmeoutId = null;
+    }
+  }
+
+  _icp.handlePingReply = function ( ) {
+    this.log( "\n\n\n\n\nhandling ping reply\n\n\n\n\n" );
+    this.stopPingService( );
+    window.setTimeout( util.hitch( this, "startPingService" ), 60000 );
   }
 
   _icp.onSocketData = function ( e ) {
@@ -306,6 +337,7 @@ if ( window.runtime && air && util ) {
       this.log( "nick: " + this.nick );
       this.log( "host: " + this.host );
       this.connectionAccepted = true;
+      this.startPingService( );
       if ( this.connectionDelegate ) {
         this.connectionDelegate( "Connected to server.", true, false );
       }
@@ -592,6 +624,10 @@ if ( window.runtime && air && util ) {
   _icp.handleServerMessage = function ( cmdParts, msg ) {
     if ( !this.serverDelegate ) return;
     var host = this.getIndex( cmdParts, 0 );
+    if ( this.getIndex( cmdParts, 1 ).toLowerCase( ) == "pong" && msg == "DiomedesIRC" ) {
+      this.handlePingReply( );
+      return;
+    }
     var commandNumber = parseInt( this.getIndex( cmdParts, 1 ), 10 );
     var userNick = this.getIndex( cmdParts, 2 );
     var aboutArg = this.getIndex( cmdParts, 3 );
