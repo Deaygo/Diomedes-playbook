@@ -649,6 +649,9 @@ if ( window.runtime && air && util ) {
 
   dController.LinkInfoFetcher = function ( link, serverName, channelName, nick ) {
     if ( !link ) return;
+    //don't publish secure sites to link log to avoid annoying 
+    //bad cecurity certificate popups
+    if ( "https" == link.substr( 0, 5 ) ) return;
     this.url = link;
     link = link.substr( 7 );
     this.serverName = serverName;
