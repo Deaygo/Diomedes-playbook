@@ -666,6 +666,9 @@ if ( window.runtime && air && util ) {
     this.httpStatus = null;
     this.htmlInfo = {};
     this.request = new air.URLRequest( this.url );
+    //do not attempt to authenticate
+    //this creates an annoying popup box
+    this.request.authenticate = false; 
     this.data = "";
     this.title = "";
     this.responseURL = "";
