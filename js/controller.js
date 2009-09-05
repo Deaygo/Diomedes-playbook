@@ -585,11 +585,12 @@ if ( window.runtime && air && util ) {
   dController.Updater = function ( updateDelay, updateURL ) {
     this.updateURL = updateURL;
     this.appUpdater = new runtime.air.update.ApplicationUpdaterUI( ); 
+    this.didCheckNow = false;
     var file = new air.File( "app:/updateConfig.xml" );
-    console.log( "file: " + file );
     this.appUpdater.configurationFile = file;
     this.appUpdater.updateURL = this.updateURL;
     this.appUpdater.delay = updateDelay;
+    this.appUpdater.addEventListener( air.StatusUpdateEvent.UPDATE_STATUS, util.hitch( this, "onStatus" ) ); 
     this.appUpdater.initialize();
     util.subscribe( topics.UPDATE_CHECK, this, "checkNow", [] );
     util.subscribe( topics.UPDATE_DELAY_CHANGE, this, "changeUpdateDelay", [] );
@@ -597,6 +598,13 @@ if ( window.runtime && air && util ) {
   }
 
   var _cupr = dController.Updater.prototype;
+
+  _cupr.onStatus = function ( event ) {
+    if ( this.didCheckNow && !event.available ) {
+      this.didCheckNow = false;
+      util.publish( topics.UPDATE_NO_NEW_UPDATES );
+    }
+  }
 
   _cupr.changeUpdateURL = function ( updateURL ) {
     this.appUpdater.delay = updateURL;
@@ -609,6 +617,7 @@ if ( window.runtime && air && util ) {
   }
 
   _cupr.checkNow = function ( ) {
+    this.didCheckNow = true;
     this.appUpdater.checkNow( );
   }
 

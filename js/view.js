@@ -48,9 +48,14 @@ if ( window.runtime && air && util ) {
     util.subscribe( topics.INPUT_CHANNEL_PREV, this, "selectPrevChannel", [] );
     util.subscribe( topics.INPUT_CHANNEL_PART, this, "closeCurrentChannel", [] );
     util.subscribe( topics.INPUT_CHANNEL_INDEX, this, "selectChannelFromIndex", [] );
+    util.subscribe( topics.UPDATE_NO_NEW_UPDATES, this, "showNoUpdatesDialog", [] );
   }
 
   var _vvp = dView.View.prototype;
+
+  _vvp.showNoUpdatesDialog = function( ) {
+    this.notify( "No new updates." );
+  }
 
   _vvp.scrollUp = function ( ) {
     if ( this.activeWin ) {

@@ -28,6 +28,7 @@ if(!topics) {
     UPDATE_CHECK: "/update/check/",
     UPDATE_DELAY_CHANGE: "/update/delay/change/",
     UPDATE_URL_CHANGE: "/update/url/change/",
+    UPDATE_NO_NEW_UPDATES: "/update/no/new/updates/",
 
     INPUT_PAGE_UP: "input/page/up",
     INPUT_PAGE_DOWN: "input/page/down",
