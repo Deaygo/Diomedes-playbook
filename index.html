@@ -9,8 +9,20 @@
   <link rel="stylesheet" type="text/css" media="screen" href="css/inputForm.css" />
   <link rel="stylesheet" type="text/css" media="screen" href="css/linkLog.css" />
   <link id="themeLink" rel="stylesheet" type="text/css" media="screen" href="css/themes/default.css" />
+  <link id="channelBar" rel="stylesheet" type="text/css" media="screen" href="css/left.css" />
 </head> 
 <body id="body" onLoad="appLoad( );" onUnload="appUnload( );"> 
+    <script type="text/javascript">
+    function user_details(elem) {
+		elem = 'user_details_'+elem;
+		e=document.getElementById(elem);
+		if(e.style.display=="none") {
+			e.style.display="";
+		} else {
+			e.style.display="none";
+		}
+	}
+  </script>
   <div id="view">
     <div id="linksBtn">
     </div>
@@ -59,7 +71,7 @@
   <script type="text/javascript" src="js/network.js"></script> 
   <script type="text/javascript" src="js/view.js"></script> 
   <script type="text/javascript" src="js/model.js"></script> 
-  <script type="text/javascript" src="js/controller.js"></script> 
+  <script type="text/javascript" src="js/controller.js"></script>
   <script type="text/javascript"> 
 
     var m, v, c;

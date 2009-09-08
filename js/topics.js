@@ -45,6 +45,7 @@ if(!topics) {
     PREFS_CHANGE_TIME_FORMAT: "/prefs/change/time/format/",
     PREFS_CHANGE_THEME: "/prefs/change/theme/",
     PREFS_CHANGE_AUTOJOIN: "/prefs/change/autojoin/",
+    PREFS_CHANGE_CHANNELBAR: "/prefs/change/channelbar/",
 
     LINK_FOUND: "/link/found",
     LINK_DATA: "/link/data/",
