@@ -1,0 +1,26 @@
+
+
+#mainWindow {
+  position: absolute;
+  top: 60px;
+  left: 130px;
+  right: 0px;
+  bottom: 36px;
+}
+.channelBtn {
+  display: block;
+  margin: 2px;
+  float: left;
+  white-space: nowrap;
+  text-decoration: none;
+  padding: 3px;
+  border: none;
+}
+#channelList {
+  float: left;
+  width: 130px;
+  top: 60px;
+  position: absolute;
+  left: 0;
+  height: 100%;
+}
