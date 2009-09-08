@@ -52,9 +52,6 @@
     <div class="formItem">
       <label for="time">Time: </label> <select id="time" ><option value="none">none</option></select>
     </div>
-    <div class="formItem">
-      <label for="channelbar">Channel List Location: </label> <select id="channelbar" ><option value="none">none</option></select>
-    </div>
     <input type="submit" value="Save" />
     <button onclick="closePrefs( event );">Close</button>
   </form>
@@ -87,7 +84,6 @@
           util.get( "font", document ).innerHTML = loadOptions( p.font );
           util.get( "time", document ).innerHTML = loadOptions( p.time );
           util.get( "theme", document ).innerHTML = loadOptions( p.theme );
-          util.get( "channelbar", document ).innerHTML = loadOptions( p.channelbar );
         } else if ( pref == "autoJoin" ) {
           var n = util.get( "autoJoin", document );
           var p = prefs[ pref ];
@@ -120,7 +116,6 @@
           setSelectedOption( p.font, util.get( "font", document ) );
           setSelectedOption( p.time, util.get( "time", document ) );
           setSelectedOption( p.theme, util.get( "theme", document ) );
-          setSelectedOption( p.channelbar, util.get( "channelbar", document ) );
         } else if ( pref == "autoJoin" ) {
           var n = util.get( pref, document );
           prefs[ pref ] = n.checked.toString( );

@@ -23,11 +23,9 @@ if ( window.runtime && air && util ) {
     this.titleBar = util.get( "titleBar" );
     this.nickList = util.get( "nickList" );
     this.font = null;
-    this.channelbar = null;
     var prefs = this.model.prefs.getPrefs( );
     this.changeFont( prefs.multiOptionPrefs.font, prefs.fontSize );
     this.changeTheme( prefs.multiOptionPrefs.theme );
-    this.changeChannelBar( prefs.multiOptionPrefs.channelbar );
     this.activityWindows = {};
     this.activeWin = null;
     this.appVersion = "";
@@ -42,7 +40,6 @@ if ( window.runtime && air && util ) {
     util.subscribe( topics.USER_HIGHLIGHT, this, "highlight", [] );
     util.subscribe( topics.PREFS_CHANGE_FONT, this, "changeFont", [] );
     util.subscribe( topics.PREFS_CHANGE_THEME, this, "changeTheme", [] );
-    util.subscribe( topics.PREFS_CHANGE_CHANNELBAR, this, "changeChannelBar", [] );
     util.subscribe( topics.NOTIFY, this, "notify", []);
     util.subscribe( topics.CHANNEL_TOPIC, this, "handleTopic", [] );
     util.subscribe( topics.INPUT_PAGE_UP, this, "scrollUp", [] );
@@ -120,22 +117,6 @@ if ( window.runtime && air && util ) {
     var cssPath = "/css/themes/";
     var n = util.get( "themeLink" );
     n.setAttribute( "href", [ cssPath, themeName, ".css" ].join( "" ) );
-  }
-
-   _vvp.changeChannelBar = function ( channelbarPrefs ) {
-    for ( var i = 0; i < channelbarPrefs.length; i++ ) {
-      var channelbar = channelbarPrefs[ i ];
-      if ( "selected" in channelbar ) {
-        this.setChannelBar( channelbar.value );
-        return;
-      }
-    }
-  }
-
-  _vvp.setChannelBar = function ( channelbarName ) {
-    var cssPath = "/css/";
-    var n = util.get( "channelBar" );
-    n.setAttribute( "href", [ cssPath, channelbarName, ".css" ].join( "" ) );
   }
   
   _vvp.changeFont = function ( fontPrefs, size ) {
@@ -299,7 +280,7 @@ if ( window.runtime && air && util ) {
     var r = [];
     var channelsR = [];
     for ( var serverName in channels ) {
-      r.push( this.getServerButton( serverName, serverName, serverName, "SERVER" ) );
+      r.push( this.getChannelButton( serverName, serverName, serverName, "SERVER" ) );
       var server = channels[ serverName ];
       if ( serverName in channelsWithActivity ) {
         var activeChannels = channelsWithActivity[ serverName ];
@@ -325,7 +306,6 @@ if ( window.runtime && air && util ) {
         channelName = server[ channelKey ].getName( ); //channel
         r.push( this.getChannelButton( serverName, channelKey, channelName, "CHANNEL",  activity, highlight) );
       }
-      r.push( this.getServerButtonClose( serverName, serverName, serverName, "SERVER" ) );
     }
     this.setContents( this.channelList, r.join( "" ), false ); 
     this.input.setChannels( channelsR );
@@ -414,9 +394,7 @@ if ( window.runtime && air && util ) {
       var currentChannel = false;
     }
     return [
-        ' <div class="dojo-TreeNode" title="',
-		this.sanitize( channelName ),
-		' "><a href="#" class="channelBtn',
+        ' <a href="#" class="channelBtn',
         ( activity ? " hasActivity " : "" ),
         ( highlight ? " highlight " : "" ),
         ( currentChannel  ? " currentChannel " : "" ),
@@ -433,57 +411,9 @@ if ( window.runtime && air && util ) {
             this.sanitize( channelName ),
           ' </span>',
           ' <span class="closeChannelBtn">x</span>',
-          ' </span> ',
-        ' </a></div> '
+          '</span> ',
+        '</a> '
       ].join( "" );
-  }
-
-   _vvp.getServerButton = function ( server, channelKey, channelName, type, activity, highlight ) {
-    util.log("getChannelButton");
-    util.log("this.activeWin: " + this.activeWin );
-    //channelKey is channelName in lowercase
-    var channelActivity = "";
-    if ( activity ) {
-      channelActivity = [
-        ' <span class="channelActivity">&nbsp;',
-        activity,
-        ' </span> '
-      ].join( "" );
-    } 
-    if ( this.activeWin ) {
-      var currentChannel = ( channelKey == this.activeWin.channelName 
-        && server == this.activeWin.serverName );
-    } else {
-      var currentChannel = false;
-    }
-    return [
-        ' <div class="dojo-TreeNode" id="myTreeWidget" title="',
-		this.sanitize( channelName ),
-		' "><a href="#" class="channelBtn',
-        ( activity ? " hasActivity " : "" ),
-        ( highlight ? " highlight " : "" ),
-        ( currentChannel  ? " currentChannel " : "" ),
-        '" type="',
-        this.sanitize( type ),
-        '" server="',
-        this.sanitize( server ),
-        '" name="',
-        this.sanitize( channelKey ),
-        '">',
-          ' <span class="channelBtnWrapper"> ',
-          channelActivity,
-          ' <span class="channelBtnName" >',
-            this.sanitize( channelName ),
-          ' </span>',
-          ' <span class="closeChannelBtn">x</span>',
-          ' </span> ',
-        ' </a> '
-      ].join( "" );
-  }
-  _vvp.getServerButtonClose = function ( server, channelKey, channelName, type, activity, highlight ) {
-	return [
-		' </div> '
-	].join( "" );
   }
 
   _vvp.finishChannelChange = function ( ) {
@@ -1142,7 +1072,9 @@ if ( window.runtime && air && util ) {
             ( referencesUser ? ' referencesUser' : '' ),
             '">',
             [
+              ( showBrackets ? '&lt;' : ''  ),
               this.sanitize( nick ),
+              ( showBrackets ? '&gt;' : ''  ),
             ].join( "" ),
             '</span>',
             '</span> ',
@@ -1223,12 +1155,12 @@ if ( window.runtime && air && util ) {
         "]"
       ].join( "" ),
       "short" : [
-        "",
+        "[",
           hour,
           ":",
           minute,
           clock,
-        ""
+        "]"
       ].join( "" )
     };
   }
@@ -1443,7 +1375,7 @@ if ( window.runtime && air && util ) {
 
   _vnw.getNickButton = function ( user, mode ) {
     return [
-        ' <span onclick="alert()" class="nickButton',
+        ' <span class="nickButton',
         ( mode == "@" ? " op" : "" ),
         ( mode == "%" ? " halfOp" : "" ),
         ( mode == "+" ? " voiced" : "" ),
@@ -1456,10 +1388,7 @@ if ( window.runtime && air && util ) {
         '">',
           mode,
           this.sanitize( user.nick ),
-        '</span><div style="display:none;" class="',
-		' user_details_',
-		this.sanitize( user.nick ),
-		'">SHOW</div> '
+        '</span> '
       ].join("");
   }
 

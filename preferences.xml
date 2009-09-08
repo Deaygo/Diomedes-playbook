@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?> 
-<preferences version="2.2"> 
+<preferences version="1.6"> 
   <preference name="nick" value="diomedesuser" />
   <preference name="altNick" value="diouser" />
   <preference name="userName" value="diomedesuser" />
@@ -17,7 +17,6 @@
     <option valueName="Contrast" value="contrast" />
     <option valueName="Ocean Blue" value="oceanBlue" />
     <option valueName="Volcano Red" value="volcanoRed" />
-    <option valueName="mountainDark" value="mountainDark" />
   </multiOptionPreference>
   <multiOptionPreference name="time">
     <option selected="true" valueName="24-hour" value="24" />
@@ -39,10 +38,6 @@
     <option valueName="Georgia" value="Georgia, 'MS Georgia', serif" />
     <option valueName="Minion Web" value="'Minion Web', serif" />
     <option valueName="Bodoni" value="Bodoni, serif" />
-  </multiOptionPreference>
-  <multiOptionPreference name="channelbar">
-    <option selected="true" valueName="left" value="left" />
-    <option valueName="top" value="top" />
   </multiOptionPreference>
 </preferences>
 

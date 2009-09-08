@@ -452,12 +452,6 @@ if ( window.runtime && air && util ) {
     this.model._createTable( tableName, types, util.hitch( this, "_handleCreateTable", [ tableName ], null ) );
   }
 
-  _map.defaultAliases = function ( ) {
-    var sql = "INSERT INTO aliases ( name, command, active, lastUsed ) VALUES ( 'j', '/join #$1', '1', '' )";
-    var p = {};
-	this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
-  }
-
   _map.getAliases = function ( resultsHandler ) {
     var sql = "SELECT * FROM aliases";
     var p = {};
@@ -712,7 +706,6 @@ if ( window.runtime && air && util ) {
     util.publish( topics.PREFS_CHANGE_FONT, [ prefs.multiOptionPrefs.font, prefs.fontSize ] );
     util.publish( topics.PREFS_CHANGE_TIME_FORMAT, [ prefs.multiOptionPrefs.time ] );
     util.publish( topics.PREFS_CHANGE_THEME, [ prefs.multiOptionPrefs.theme ] );
-    util.publish( topics.PREFS_CHANGE_CHANNELBAR, [ prefs.multiOptionPrefs.channelbar ] );
     this.preferences = prefs;
   }
 
