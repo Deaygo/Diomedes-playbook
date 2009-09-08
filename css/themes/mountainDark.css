@@ -1,11 +1,5 @@
 /* colors all go in themes */
 
-body {
-  background-color: #242424:
-  color: #c3c3c3;
-  font-weight: bold;
-}
-
 a {
   color: #ac5353;
   text-decoration: none;
@@ -30,9 +24,6 @@ a {
 	padding: 2px;
   display: block;
   float: left;
-  word-wrap: break-word; 
-  -webkit-nbsp-mode: space; 
-  -webkit-line-break: after-white-space;
 }
 .isServer {
   color: #10ac6b; 
