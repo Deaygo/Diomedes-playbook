@@ -1,11 +1,11 @@
 #!/bin/bash
 
-echo $*
-if java org.mozilla.javascript.tools.shell.Main js/test.js
-then 
-  echo "success"
-else
-  echo "failure"
-fi
+#do jslint
 
-#~/air/bin/adt -package -storetype pkcs12 -keystore apphacker.pfx Diomedes.air Diomedes-app.xml updateConfig.xml index.html networks.html prefs.html preferences.xml performs.html servers.html servicemonitor.swf applicationupdater_ui.swf help.html aliases.html channels.html js/ icons/ css/ images/ LICENSE
+#run tests
+
+#build dojo
+
+#if ok build:
+
+~/air/bin/adt -package -storetype pkcs12 -keystore apphacker.pfx Diomedes.air Diomedes-app.xml updateConfig.xml index.html networks.html prefs.html preferences.xml performs.html servers.html servicemonitor.swf applicationupdater_ui.swf help.html aliases.html channels.html js/ icons/ css/ images/ LICENSE
