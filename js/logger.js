@@ -30,7 +30,7 @@ if ( !dojo.isObject( logger ) ) {
 */
 
 dojo.declare( "logger.Logger", null, {
-  constructor: function ( channelName, serverName ) {
+  constructor: function ( serverName, channelName ) {
     this.channelName = channelName;
     this.serverName = serverName;
     this.fileName = this._getFileName( );
@@ -39,7 +39,7 @@ dojo.declare( "logger.Logger", null, {
     return this.channelName;
   },
   _getServerName: function ( ) {
-    return this.servername;
+    return this.serverName;
   },
   _getFileName: function ( ) {
     return "unimplemented";
@@ -60,6 +60,9 @@ dojo.declare( "logger.Logger", null, {
     return "unimplemented";
   },
   addLine: function ( nick, message, mode, time ) {
+    return "unimplemented";
+  },
+  _clearLines: function ( ) {
     return "unimplemented";
   },
   _formatLine: function ( nick, message, mode, time ) {
