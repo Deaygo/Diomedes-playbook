@@ -2,7 +2,7 @@
 /*jslint nomen: false */
 /*jslint plusplus: false */
 /*jslint passfail: true */
-/*global window, Achaean, dojo, runNextTest */
+/*global window, dojo, */
 
 var logger;
 if ( !dojo.isObject( logger ) ) {
@@ -35,42 +35,43 @@ dojo.declare( "logger.Logger", null, {
     this.serverName = serverName;
     this.fileName = this._getFileName( );
   },
-  _getChannelName: ( ) {
+  _getChannelName: function ( ) {
     return this.channelName;
   },
-  _getServerName: ( ) {
+  _getServerName: function ( ) {
     return this.servername;
   },
-  _getFileName: ( ) {
+  _getFileName: function ( ) {
     return "unimplemented";
   },
-  openLog: ( ) {
+  openLog: function ( ) {
     //not tested
     return "unimplemented";
   },
-  closeLog: ( ) {
+  closeLog: function ( ) {
     //not tested
     return "unimplemented";
   },
-  _getLines: ( ) {
+  _getLines: function ( ) {
     return "unimplemented";
   },
-  write: ( ) {
+  write: function ( ) {
     //not tested
     return "unimplemented";
   },
-  addLine: ( nick, message, mode, time ) {
+  addLine: function ( nick, message, mode, time ) {
     return "unimplemented";
   },
-  _formatLine: ( nick, message, mode, time ) {
+  _formatLine: function ( nick, message, mode, time ) {
     return "unimplemented";
   },
-  addServerLine: ( message, time ) {
+  addServerLine: function ( message, time ) {
     return "unimplemented";
   },
-  _formatServerLine: ( nick, message, mode, time ) {
+  _formatServerLine: function ( nick, message, mode, time ) {
     return "unimplemented";
   },
-
+  destroy: function ( ) {
+  }
 } );
 

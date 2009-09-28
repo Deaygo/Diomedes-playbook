@@ -1,6 +1,12 @@
 #!/bin/bash
 
-checkFiles=("logger" "include")
+checkFiles=(
+  "logger" 
+  "include"
+
+  "tests/loggerTest"
+
+)
 numFiles=${#checkFiles[@]}
 
 quitIfFail ( ) 
@@ -19,6 +25,20 @@ do
 done
 
 #unit testing:
+
+tests=(
+  "logger"
+)
+numTests=${#tests[@]}
+
+for (( i=0; i<${numTests}; i++ ));
+do
+  echo Running test for ${tests[$i]}.js
+  java -jar js/util/shrinksafe/js.jar ./js/tests/${tests[$i]}Test.js
+  quitIfFail
+done
+
+
 #echo Running rhinoTest.js
 #java -jar js/util/shrinksafe/js.jar rhinoTest.js 
 
