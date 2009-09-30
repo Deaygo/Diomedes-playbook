@@ -19,7 +19,7 @@ load( 'js/tests/achaean.js' );
 var log, logTest,
     serverName = "serverName",
     channelName = "#channelName",
-    time = new Date( 2009, 9, 27, 12, 50, 49 ),
+    time = new Date( 2009, 8, 27, 12, 50, 49 ),
     nick = "Alanna",
     message = "Saying that Java is nice because it works on all OS's is like saying that anal sex is nice because it works on all genders",
     hostmask = "!n=Zhijin@115.171.38.30",
@@ -32,8 +32,8 @@ var log, logTest,
 
 fileName = serverName + "_" + channelName;
 serverMessage = nick + hostmask + " has joined " + channelName + "."; 
-serverLineFormat = "[2009-09-27 12:50:49] <Server> " + serverMessage;
-lineFormat = "[2009-09-27 12:50:49] <" + mode + nick + "> " + message;
+serverLineFormat = "[2009-09-27 12:50:49] <Server> " + serverMessage + "\n";
+lineFormat = "[2009-09-27 12:50:49] <" + mode + nick + "> " + message + "\n";
 
 logTest = new Achaean( "loggingTest" );
 log = new logger.Logger( serverName, channelName );
@@ -77,6 +77,7 @@ logTest.run( function ( ) {
     print( " - Type: " + error.assertType );
     print( " - Required: " + error.required.toString( ) );
   }
+  print( "Found " + results.errorCount + " errors." );
   if ( results.testFailed ) {
     throw "Test failed.";
   } else {

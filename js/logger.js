@@ -34,6 +34,7 @@ dojo.declare( "logger.Logger", null, {
     this.channelName = channelName;
     this.serverName = serverName;
     this.fileName = this._getFileName( );
+    this.lines = [ ];
   },
   _getChannelName: function ( ) {
     return this.channelName;
@@ -42,7 +43,7 @@ dojo.declare( "logger.Logger", null, {
     return this.serverName;
   },
   _getFileName: function ( ) {
-    return "unimplemented";
+    return [ this.serverName, "_", this.channelName ].join( "" ); 
   },
   openLog: function ( ) {
     //not tested
@@ -53,26 +54,58 @@ dojo.declare( "logger.Logger", null, {
     return "unimplemented";
   },
   _getLines: function ( ) {
-    return "unimplemented";
+    return this.lines;
   },
   write: function ( ) {
     //not tested
     return "unimplemented";
   },
   addLine: function ( nick, message, mode, time ) {
-    return "unimplemented";
+    this.lines.push( this._formatLine( nick, message, mode, time ) );
   },
   _clearLines: function ( ) {
-    return "unimplemented";
+    while ( this.lines.length ) {
+      this.lines.pop( );
+    }
   },
   _formatLine: function ( nick, message, mode, time ) {
-    return "unimplemented";
+    return [
+      this._getFormattedDate( time ),
+      " <", mode, nick, "> ",
+      message, "\n"
+    ].join( "" );
+  },
+  _getFormattedDate: function ( time ) {
+    return [ "[",
+      time.getFullYear( ),
+      "-",
+      this._getTwoDigitStringFromNum( time.getMonth( ) + 1 ),
+      "-",
+      this._getTwoDigitStringFromNum( time.getDate( ) ),
+      " ",
+      this._getTwoDigitStringFromNum( time.getHours( ) ),
+      ":",
+      this._getTwoDigitStringFromNum( time.getMinutes( ) ),
+      ":", 
+      this._getTwoDigitStringFromNum( time.getSeconds( ) ),
+      "]" 
+    ].join( "" );
+  },
+  _getTwoDigitStringFromNum: function ( num ) {
+    if ( num < 10 ) {
+      return "0" + num;
+    } else {
+      return num.toString( );
+    }
   },
   addServerLine: function ( message, time ) {
-    return "unimplemented";
+    this.lines.push( this._formatServerLine( message, time ) );
   },
-  _formatServerLine: function ( nick, message, mode, time ) {
-    return "unimplemented";
+  _formatServerLine: function ( message, time ) {
+    return [
+      this._getFormattedDate( time ),
+      " <Server> ", message, "\n"
+    ].join( "" );
   },
   destroy: function ( ) {
   }
