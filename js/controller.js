@@ -15,11 +15,6 @@ if ( window.runtime && air && util ) {
 
     this.model = model;
     this.view = view;
-    /*
-    alert( logger );
-    this.logger = new logger.Logger( "fuck yeah!" );
-    alert( this.logger.getTest( ) );
-    */
     var u = new air.ApplicationUpdater( );
     this.appVersion = "Diomedes IRC Version: " + u.currentVersion;
     this.view.setAppVersion( this.appVersion );

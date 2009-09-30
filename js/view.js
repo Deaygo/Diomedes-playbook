@@ -964,17 +964,8 @@ if ( window.runtime && air && util ) {
     this.win.innerHTML = "";
   }
 
-  _vap.makeFullID = function ( nick, user ) {
-    if ( user ) {
-      var host = user.getHost( );
-      if ( host ) {
-        nick = [ nick, "!", host ].join( "" );
-      }
-    }
-    return nick;
-  }
-
   _vap.update = function ( messages, userNick, channelName ) {
+    //XXX: need to switch from using msg properties to using msg getters and setters
     var w = this.win;
     var diff = Math.abs( w.scrollTop - ( w.scrollHeight - w.offsetHeight ) );
     var variance = 5;
@@ -987,60 +978,13 @@ if ( window.runtime && air && util ) {
     while ( messages.length ) {
       msg = messages.shift( );
       var newMsg;
-      var showBrackets = true;
-      var isServer = false;
-      var isAction = false;
-      var isNotice = false;
+      var showBrackets = msg.showBrackets( );
+      var isServer = msg.isServer( );
+      var isAction = msg.isAction( );
+      var isNotice = msg.isNotice( );
       var referencesUser = msg.referencesUser( );
-      var m = msg.msg;
-      if ( msg.cmd ) {
-        //XXX: need to get rid of this switch statement some how
-        switch ( msg.cmd.toLowerCase( ) ) {
-          case "mode":
-            isServer = true;
-            m = msg.nick + " has changed modes for " + msg.target + " to: " + m;
-            break;
-          case "action":
-            isAction = true;
-            showBrackets = false;
-            break;
-          case "kick":
-            isServer = true;
-            var altUser = msg.getAltUser( );
-            m = msg.nick + " has kicked " + this.makeFullID( altUser.nick, altUser ) + " from " + msg.target + ": " + m;
-            break;
-          case "part":
-            isServer = true;
-            //XXX: make a pref here about showing quit messages
-            m = this.makeFullID( msg.nick, msg.user ) + " has parted " + msg.target + ": " + m;
-            break;
-          case "topic":
-            isServer = true;
-            var d = " On " + msg.getAltDatetime( ).toUTCString( ) + " "; 
-            m = d + msg.nick + " set the topic for " + msg.target + " to: " + m ;
-            break;
-          case "notice":
-            m = msg.target + ": - NOTICE - " + m;
-            isNotice = true;
-            break;
-          case "join":
-            isServer = true;
-            m = this.makeFullID( msg.nick, msg.user ) + " has joined " + msg.target + ".";
-            break;
-          case "nick":
-            m = msg.nick + " is now known as " + m + ".";
-            isServer = true;
-            break;
-          case "quit":
-            m = this.makeFullID( msg.nick, msg.user ) + " has quit: " + m;
-            isServer = true;
-            break;
-          case "server":
-            isServer = true;
-            break;
-        }
-      }
-      if ( msg.isAction ) showBrackets = false;
+      var m = msg.getMsg( );
+      if ( msg.isAction( ) ) showBrackets = false;
       if ( isServer ) {
         var nick = "Server";
       } else if ( msg.user && msg.user.isCreator( channelName ) ) {

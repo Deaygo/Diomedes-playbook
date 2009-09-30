@@ -2,12 +2,15 @@
 /*jslint nomen: false */
 /*jslint plusplus: false */
 /*jslint passfail: true */
-/*global window, dojo, */
+/*global window, dojo */
 
 var logger;
 if ( !dojo.isObject( logger ) ) {
   logger = {};
 } 
+
+var air;
+
 /*
  * 
  * Logger will take a channel name (or nick ) and server name *testable
@@ -31,9 +34,19 @@ if ( !dojo.isObject( logger ) ) {
 
 dojo.declare( "logger.Logger", null, {
   constructor: function ( serverName, channelName ) {
+    var tmpDir;
     this.channelName = channelName;
     this.serverName = serverName;
-    this.fileName = this._getFileName( );
+    this.fileName = this._getFileName( new Date( ) );
+    if ( air ) {
+      tmpDir = air.File.documentsDirectory.resolvePath( "Diomedes" );
+      tmpDir.createDirectory( );
+      this.dir = tmpDir.resolvePath( "Logs" );
+      this.dir.createDirectory( );
+      this.file = this.dir.resolvePath( this.fileName );
+      tmpDir = null;
+    }
+    this.fileStream = null;
     this.lines = [ ];
   },
   _getChannelName: function ( ) {
@@ -42,23 +55,37 @@ dojo.declare( "logger.Logger", null, {
   _getServerName: function ( ) {
     return this.serverName;
   },
-  _getFileName: function ( ) {
-    return [ this.serverName, "_", this.channelName ].join( "" ); 
+  _getFileName: function ( time ) {
+    return [ 
+      this.serverName, "_", this.channelName, 
+      this._getFormattedDate( time, true ),
+      ".txt"
+    ].join( "" ); 
   },
-  openLog: function ( ) {
+  open: function ( ) {
     //not tested
-    return "unimplemented";
+    if ( this.fileStream ) { return; }
+    this.fileStream = new air.FileStream(); 
+    this.fileStream.open( this.file, air.FileMode.WRITE ); 
   },
-  closeLog: function ( ) {
+  close: function ( ) {
     //not tested
-    return "unimplemented";
+    if ( !this.fileStream ) { return; }
+    this.fileStream.close( );
+    delete this.fileStream;
+    this.fileStream = null;
   },
   _getLines: function ( ) {
     return this.lines;
   },
   write: function ( ) {
-    //not tested
-    return "unimplemented";
+    var lines = this._getLines( ), i;
+    for( i = 0; i < lines.length; i++ ) {
+      util.log( "\n\nWRITING LINES\n\n" );
+      util.log( lines[ i ] );
+      this.fileStream.writeUTFBytes( lines[ i ] );
+    }
+    this._clearLines( );
   },
   addLine: function ( nick, message, mode, time ) {
     this.lines.push( this._formatLine( nick, message, mode, time ) );
@@ -70,25 +97,26 @@ dojo.declare( "logger.Logger", null, {
   },
   _formatLine: function ( nick, message, mode, time ) {
     return [
-      this._getFormattedDate( time ),
+      this._getFormattedDate( time, false ),
       " <", mode, nick, "> ",
       message, "\n"
     ].join( "" );
   },
-  _getFormattedDate: function ( time ) {
-    return [ "[",
+  _getFormattedDate: function ( time, isFileName ) {
+    return [ 
+      ( isFileName ? "_" : "[" ),
       time.getFullYear( ),
-      "-",
+      ( isFileName ? "_" : "-" ),
       this._getTwoDigitStringFromNum( time.getMonth( ) + 1 ),
-      "-",
+      ( isFileName ? "_" : "-" ),
       this._getTwoDigitStringFromNum( time.getDate( ) ),
-      " ",
+      ( isFileName ? "_" : " " ),
       this._getTwoDigitStringFromNum( time.getHours( ) ),
-      ":",
+      ( isFileName ? "_" : ":" ),
       this._getTwoDigitStringFromNum( time.getMinutes( ) ),
-      ":", 
+      ( isFileName ? "_" : ":" ),
       this._getTwoDigitStringFromNum( time.getSeconds( ) ),
-      "]" 
+      ( isFileName ? "" : "]" )
     ].join( "" );
   },
   _getTwoDigitStringFromNum: function ( num ) {
@@ -103,11 +131,14 @@ dojo.declare( "logger.Logger", null, {
   },
   _formatServerLine: function ( message, time ) {
     return [
-      this._getFormattedDate( time ),
+      this._getFormattedDate( time, false ),
       " <Server> ", message, "\n"
     ].join( "" );
   },
   destroy: function ( ) {
+    this.close( );
+    delete this.dir;
+    delete this.file;
   }
 } );
 

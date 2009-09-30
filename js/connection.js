@@ -765,6 +765,11 @@ if ( window.runtime && air && util ) {
     this.users = {};
     this.topic = null;
     this.activityList = new dConnection.ActivityList( );
+    util.log( "channel000000000000" );
+    this.logger = new logger.Logger( server, name );
+    util.log( "channel000000000001" );
+    this.logger.open( );
+    util.log( "channel000000000002" );
   }
 
   var _clp = dConnection.Channel.prototype;
@@ -860,8 +865,34 @@ if ( window.runtime && air && util ) {
 
   _clp.addActivity = function ( msg ) {
     this.activityList.addMessage( msg.clone( ) );
-    var activityTypes = {"privmsg":1,"action":1};
-    this.publishActivity( ( msg.cmd in activityTypes ) );
+    util.log( "addActivity0000000000000000" );
+    util.log( this.logger );
+    util.log( "addActivity0000000000000001" );
+    //console.dump( this.logger );
+    util.log( "addActivity0000000000000002" );
+    util.log( msg );
+    util.log( "addActivity0000000000000003" );
+    util.log( msg.user );
+    util.log( "addActivity0000000000000004" );
+    util.log( this.name );
+    util.log( "addActivity0000000000000005" );
+    if ( msg.user && msg.user.isOp ) {
+      util.log( "addActivity0000000000000005A" );
+      util.log( msg.user.isOp( this.name ) );
+    }
+    util.log( "addActivity0000000000000005B" );
+    util.log( msg.isServer( ) );
+    util.log( "addActivity0000000000000005C" );
+    util.log( msg.cmd );
+    util.log( "addActivity0000000000000006" );
+    util.log( msg.msg );
+    util.log( "wtf?" );
+    util.log( "addActivity0000000000000007: " + ( msg.isServer() &&  msg.user ) );
+    this.logger.addLine( msg.nick, msg.msg, ( msg.isServer( ) || !msg.user ? "" : msg.user.isOp( this.name ) ), msg.datetime ); 
+    util.log( "addActivity0000000000000008" );
+    this.logger.write( );
+    util.log( "addActivity0000000000000009" );
+    this.publishActivity( ( msg.cmd in { "privmsg" : 1, "action" : 1 } ) );
     delete msg;
   }
 
@@ -884,6 +915,9 @@ if ( window.runtime && air && util ) {
 
   _clp.destroy = function ( ) {
     this.activityList.destroy( );
+    this.logger.close( );
+    this.logger.destroy( );
+    delete this.logger;
     delete this.activityList;
     delete this.users;
   }
@@ -901,6 +935,14 @@ if ( window.runtime && air && util ) {
     this.displayMsg = null;
     this.altUser;
     this._referencesUser = false;
+
+    this._isServer = false; 
+    this._isAction = false;
+    this._showBrackets = true;
+    this._isNotice = false;
+    this._useAltUser = null;
+    this._altMsg = null;
+    this._setProperties( );
   }
 
   var _cai = dConnection.ActivityItem.prototype;
@@ -912,7 +954,107 @@ if ( window.runtime && air && util ) {
     ai.setAltUser( this.altUser );
     ai.setAltDatetime( this.altDatetime );
     ai._referencesUser = this._referencesUser;
+
+    ai._isServer = this._isServer;
+    ai._isAction = this._isAction;
+    ai._showBrackets = this._showBrackets;
+    ai._isNotice = this._isNotice;
+    ai._useAltUser = false;
+    ai._altMsg = this._altMsg;
+
     return ai;
+  }
+
+  _cai.isServer = function ( ) {
+    return this._isServer;
+  }
+
+  _cai.isAction = function ( ) {
+    return this._isAction;
+  }
+
+  _cai.showBrackets = function ( ) {
+    return this._showBrackets;
+  }
+
+  _cai.isNotice = function ( ) {
+    return this._isNotice;
+  }
+
+  _cai.getUser = function ( ) {
+    if ( this._useAltUser ) {
+      return this.getAltUser( );
+    } else {
+      return this.user;
+    }
+  }
+
+  _cai.getMsg = function ( ) {
+    if ( this._altMsg ) {
+      return this._altMsg;
+    } else {
+      return this.msg;
+    }
+  }
+
+  _cai._setProperties = function ( ) {
+    if ( this.cmd ) {
+      //XXX: need to get rid of this switch statement some how
+      switch ( this.cmd.toLowerCase( ) ) {
+        case "mode":
+          this._isServer = true;
+          this._altMsg = this.nick + " has changed modes for " + this.target + " to: " + this.msg;
+          break;
+        case "action":
+          this._isAction = true;
+          this._showBrackets = false;
+          break;
+        case "kick":
+          this._isServer = true;
+          this._useAltUser = true;
+          this._altMsg = this.nick + " has kicked " + this.makeFullID( altUser.nick, altUser ) + " from " + this.target + ": " + this.msg;
+          break;
+        case "part":
+          this._isServer = true;
+          //XXX: make a pref here about showing quit messages
+          this._altMsg = this.makeFullID( this.nick, this.user ) + " has parted " + this.target + ": " + this.msg;
+          break;
+        case "topic":
+          this._isServer = true;
+          var d = " On " + this.getAltDatetime( ).toUTCString( ) + " "; 
+          this._altMsg = d + this.nick + " set the topic for " + this.target + " to: " + this.msg;
+          break;
+        case "notice":
+          this._altMsg = this.target + ": - NOTICE - " + this.msg;
+          this._isNotice = true;
+          break;
+        case "join":
+          this._isServer = true;
+          this._altMsg = this.makeFullID( this.nick, this.user ) + " has joined " + this.target + ".";
+          break;
+        case "nick":
+          this._altMsg = this.nick + " is now known as " + this.msg + ".";
+          this._isServer = true;
+          break;
+        case "quit":
+          this._altMsg = this.makeFullID( this.nick, this.user ) + " has quit: " + this.msg;
+          this._isServer = true;
+          break;
+        case "server":
+          this._isServer = true;
+          break;
+      }
+    }
+  }
+
+  _cai.makeFullID = function ( nick, user ) {
+    if ( user ) {
+      var host = user.getHost( );
+      if ( host ) {
+        nick = [ nick, "!", host ].join( "" );
+      }
+    }
+    return nick;
   }
 
   _cai.setDateTime = function ( datetime ) {
