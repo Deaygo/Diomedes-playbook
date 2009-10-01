@@ -17,7 +17,7 @@ load( 'js/logger.js' );
 load( 'js/tests/achaean.js' );
 
 var log, logTest,
-    serverName = "serverName",
+    serverName = "server.Name",
     channelName = "#channelName",
     time = new Date( 2009, 8, 27, 12, 50, 49 ),
     nick = "Alanna",
@@ -28,7 +28,7 @@ var log, logTest,
     lineFormat,
     lines;
 
-fileName = serverName + "_" + channelName + "_2009_09_27_12_50_49.txt";
+fileName = serverName.split( "." ).join( "_" ) + "_" + channelName + "_2009_09_27_12_50_49.txt";
 serverMessage = nick + hostmask + " has joined " + channelName + "."; 
 lineFormat = "[2009-09-27 12:50:49] <" + nick + "> " + message + "\n";
 

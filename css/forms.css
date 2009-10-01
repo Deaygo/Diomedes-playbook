@@ -27,3 +27,8 @@ input, button {
   clear: both;
   margin: 3px;
 }
+.formItemNote {
+  font-size: 12px;
+  clear: both;
+  text-align: center;
+}

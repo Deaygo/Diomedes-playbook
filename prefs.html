@@ -50,6 +50,10 @@
       <label for="autoJoin">Auto join on invite: </label> <input type="checkbox" id="autoJoin" />
     </div>
     <div class="formItem">
+      <label for="logging">Enable logging: </label> <input type="checkbox" id="logging" />
+      <p class="formItemNote">Logs are in your documents directory</p>
+    </div>
+    <div class="formItem">
       <label for="time">Time: </label> <select id="time" ><option value="none">none</option></select>
     </div>
     <input type="submit" value="Save" />
@@ -88,6 +92,10 @@
           var n = util.get( "autoJoin", document );
           var p = prefs[ pref ];
           n.checked = ( p == "true" );
+        } else if ( pref == "logging" ) {
+          var n = util.get( "logging", document );
+          var p = prefs[ pref ];
+          n.checked = ( p == "true" );
         } else {
           var n = util.get( pref, document );
           if ( n ) {
@@ -117,6 +125,9 @@
           setSelectedOption( p.time, util.get( "time", document ) );
           setSelectedOption( p.theme, util.get( "theme", document ) );
         } else if ( pref == "autoJoin" ) {
+          var n = util.get( pref, document );
+          prefs[ pref ] = n.checked.toString( );
+        } else if ( pref == "logging" ) {
           var n = util.get( pref, document );
           prefs[ pref ] = n.checked.toString( );
         } else {

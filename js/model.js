@@ -697,6 +697,9 @@ if ( window.runtime && air && util ) {
     if ( prefs.autoJoin != this.preferences.autoJoin ) {
       util.publish( topics.PREFS_CHANGE_AUTOJOIN, [ prefs.autoJoin ] );
     }
+    if ( prefs.logging != this.preferences.logging ) {
+      util.publish( topics.PREFS_CHANGE_LOGGING, [ prefs.logging === "true" ] );
+    }
     if ( prefs.updateDelay != this.preferences.updateDelay ) {
       util.publish( topics.UPDATE_DELAY_CHANGE, [ prefs.updateDelay ] );
     }

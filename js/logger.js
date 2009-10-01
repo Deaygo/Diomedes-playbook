@@ -56,17 +56,19 @@ dojo.declare( "logger.Logger", null, {
     return this.serverName;
   },
   _getFileName: function ( time ) {
-    return [ 
+    var fileName = [ 
       this.serverName, "_", this.channelName, 
-      this._getFormattedDate( time, true ),
-      ".txt"
+      this._getFormattedDate( time, true )
     ].join( "" ); 
+    fileName = fileName.split( "." ).join( "_" );
+    fileName = [ fileName, ".txt" ].join( "" );
+    return fileName;
   },
   open: function ( ) {
     //not tested
     if ( this.fileStream ) { return; }
     this.fileStream = new air.FileStream(); 
-    this.fileStream.open( this.file, air.FileMode.WRITE ); 
+    this.fileStream.open( this.file, air.FileMode.APPEND ); 
   },
   close: function ( ) {
     //not tested

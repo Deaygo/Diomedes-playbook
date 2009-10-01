@@ -19,6 +19,8 @@ if ( window.runtime && air && util ) {
     this.channels = {};
     this.users = {};
     this.preferences = preferences;
+    //XXX: really need to fix the preferences thing - a nice global preferences custom object needed:
+    this.logPref = preferences.logging === true || preferences.logging === "true";
     this.ignores = ignores;
     this.host = "";
     this.users[ nick ] = new dConnection.User( nick, "" ); 
@@ -62,9 +64,14 @@ if ( window.runtime && air && util ) {
     util.subscribe( topics.CHANNEL_CLOSE, this, "closeChannel", [] );
     util.subscribe( topics.PREFS_CHANGE_AUTOJOIN, this, "setAutoJoin", [] );
     util.subscribe( topics.IGNORES_UPDATE, this, "handleIgnoresUpdate", [] );
+    util.subscribe( topics.PREFS_CHANGE_LOGGING, this, "handleChangeLoggingPref", [] );
   }
 
   var _cnp = dConnection.Connection.prototype;
+
+  _cnp.handleChangeLoggingPref = function ( newValue ) {
+    this.logPref = newValue;
+  }
 
   _cnp.handleIgnoresUpdate = function ( ignores ) {
     util.log( "handle connection ignores update " );
@@ -132,7 +139,7 @@ if ( window.runtime && air && util ) {
         }
       } else {
         util.log( "JOINING PM: " + target );
-        this.channels[ channelName ] = new dConnection.Channel( channelName, dConnection.CHANNEL_TYPES.PM, this.server );
+        this.channels[ channelName ] = new dConnection.Channel( channelName, dConnection.CHANNEL_TYPES.PM, this.server, this.logPref );
         var channel = this.channels[ channelName ];
         util.publish( topics.CHANNELS_CHANGED, [] );
         channel.addActivity( msg );
@@ -150,7 +157,7 @@ if ( window.runtime && air && util ) {
   _cnp.connect = function () {
     this.stayConnected = true;
     this.client.connect( );
-    this.serverChannel = new dConnection.Channel( this.server, dConnection.CHANNEL_TYPES.SERVER, this.server );
+    this.serverChannel = new dConnection.Channel( this.server, dConnection.CHANNEL_TYPES.SERVER, this.server, this.logPref );
     util.publish( topics.CHANNELS_CHANGED, [] );
   }
 
@@ -217,7 +224,7 @@ if ( window.runtime && air && util ) {
     var _nick = this.getNick( );
     if ( nick == _nick ) {
       util.log( "JOINING CHANNEL: " + target );
-      this.channels[ channelName ] = new dConnection.Channel( target, dConnection.CHANNEL_TYPES.CHANNEL, this.server );
+      this.channels[ channelName ] = new dConnection.Channel( target, dConnection.CHANNEL_TYPES.CHANNEL, this.server, this.logPref );
       this.client.getTopic( target );
       util.publish( topics.CHANNELS_CHANGED, [ "join", channelName, this.server ] );
       if ( channelName in this.names ) {
@@ -491,7 +498,7 @@ if ( window.runtime && air && util ) {
   }
 
   _cnp.addNewChannel = function ( name, type ) {
-    this.channels[ name ] = new dConnection.Channel( name, type, this.server );
+    this.channels[ name ] = new dConnection.Channel( name, type, this.server, this.logPref );
   }
 
   _cnp.getChannels = function ( ) {
@@ -760,18 +767,35 @@ if ( window.runtime && air && util ) {
   }
 
   //Channel Class
-  dConnection.Channel = function ( name, type, server ) {
+  dConnection.Channel = function ( name, type, server, logPref ) {
     this.name = name;
     this.type = type;
     this.server = server;
     this.users = {};
     this.topic = null;
     this.activityList = new dConnection.ActivityList( );
+    this.logPref = logPref;
     this.logger = new logger.Logger( server, name );
-    this.logger.open( );
+    this.isLogOpen = false;
+    if ( logPref ) {
+      this.logger.open( );
+      this.isLogOpen = true;
+    }
+    util.subscribe( topics.PREFS_CHANGE_LOGGING, this, "handleChangeLoggingPref", [] );
   }
 
   var _clp = dConnection.Channel.prototype;
+
+  _clp.handleChangeLoggingPref = function ( newValue ) {
+    this.logPref = newValue;
+    if ( newValue && !this.isLogOpen ) {
+      this.logger.open( );
+      this.isLogOpen = true;
+    } else if ( !newValue && this.isLogOpen ) {
+      this.logger.close( );
+      this.isLogOpen = false;
+    }
+  }
 
   _clp.getChannelName = dConnection.Connection.prototype.getChannelName;
 
@@ -864,8 +888,10 @@ if ( window.runtime && air && util ) {
 
   _clp.addActivity = function ( msg ) {
     this.activityList.addMessage( msg.clone( ) );
-    this.logger.addLine( msg.getNickWithStatus( this.name ), msg.getMsg( ), msg.datetime ); 
-    this.logger.write( );
+    if ( this.logPref ) {
+      this.logger.addLine( msg.getNickWithStatus( this.name ), msg.getMsg( ), msg.datetime ); 
+      this.logger.write( );
+    }
     this.publishActivity( ( msg.cmd in { "privmsg" : 1, "action" : 1 } ) );
     delete msg;
   }
@@ -890,6 +916,7 @@ if ( window.runtime && air && util ) {
   _clp.destroy = function ( ) {
     this.activityList.destroy( );
     this.logger.close( );
+    this.isLogOpen = false;
     this.logger.destroy( );
     delete this.logger;
     delete this.activityList;
