@@ -2,7 +2,7 @@
 /*jslint nomen: false */
 /*jslint plusplus: false */
 /*jslint passfail: true */
-/*global window, dojo */
+/*global window, dojo, util */
 
 var logger;
 if ( !dojo.isObject( logger ) ) {
@@ -87,18 +87,18 @@ dojo.declare( "logger.Logger", null, {
     }
     this._clearLines( );
   },
-  addLine: function ( nick, message, mode, time ) {
-    this.lines.push( this._formatLine( nick, message, mode, time ) );
+  addLine: function ( nick, message, time ) {
+    this.lines.push( this._formatLine( nick, message, time ) );
   },
   _clearLines: function ( ) {
     while ( this.lines.length ) {
       this.lines.pop( );
     }
   },
-  _formatLine: function ( nick, message, mode, time ) {
+  _formatLine: function ( nick, message, time ) {
     return [
       this._getFormattedDate( time, false ),
-      " <", mode, nick, "> ",
+      " <", nick, "> ",
       message, "\n"
     ].join( "" );
   },

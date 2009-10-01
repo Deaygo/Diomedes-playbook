@@ -985,19 +985,7 @@ if ( window.runtime && air && util ) {
       var referencesUser = msg.referencesUser( );
       var m = msg.getMsg( );
       if ( msg.isAction( ) ) showBrackets = false;
-      if ( isServer ) {
-        var nick = "Server";
-      } else if ( msg.user && msg.user.isCreator( channelName ) ) {
-        var nick = "!" + msg.nick;
-      } else if ( msg.user && msg.user.isOp( channelName ) ) {
-        var nick = "@" + msg.nick;
-      } else if ( msg.user && msg.user.isHalfOp( channelName ) ) {
-        var nick = "%" + msg.nick;
-      } else if ( msg.user && msg.user.isVoice( channelName ) ) {
-        var nick = "+" + msg.nick;
-      } else {
-        var nick = msg.nick;
-      }
+      nick = msg.getNickWithStatus( channelName );
       var isSelf = ( msg.nick == userNick );
       var dates = this.formatDate( msg.datetime );
       newMsg = [].concat( [

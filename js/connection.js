@@ -127,7 +127,6 @@ if ( window.runtime && air && util ) {
       //open new window for new PM
       if ( from && _nick == from ) {
         if ( this.serverChannel ) {
-          util.log( "wtf" );
           msg.msg = [ "PM to ", target, ": ", msg.msg ].join( "" );
           this.serverChannel.addActivity( msg );
         }
@@ -765,11 +764,8 @@ if ( window.runtime && air && util ) {
     this.users = {};
     this.topic = null;
     this.activityList = new dConnection.ActivityList( );
-    util.log( "channel000000000000" );
     this.logger = new logger.Logger( server, name );
-    util.log( "channel000000000001" );
     this.logger.open( );
-    util.log( "channel000000000002" );
   }
 
   var _clp = dConnection.Channel.prototype;
@@ -865,33 +861,8 @@ if ( window.runtime && air && util ) {
 
   _clp.addActivity = function ( msg ) {
     this.activityList.addMessage( msg.clone( ) );
-    util.log( "addActivity0000000000000000" );
-    util.log( this.logger );
-    util.log( "addActivity0000000000000001" );
-    //console.dump( this.logger );
-    util.log( "addActivity0000000000000002" );
-    util.log( msg );
-    util.log( "addActivity0000000000000003" );
-    util.log( msg.user );
-    util.log( "addActivity0000000000000004" );
-    util.log( this.name );
-    util.log( "addActivity0000000000000005" );
-    if ( msg.user && msg.user.isOp ) {
-      util.log( "addActivity0000000000000005A" );
-      util.log( msg.user.isOp( this.name ) );
-    }
-    util.log( "addActivity0000000000000005B" );
-    util.log( msg.isServer( ) );
-    util.log( "addActivity0000000000000005C" );
-    util.log( msg.cmd );
-    util.log( "addActivity0000000000000006" );
-    util.log( msg.msg );
-    util.log( "wtf?" );
-    util.log( "addActivity0000000000000007: " + ( msg.isServer() &&  msg.user ) );
-    this.logger.addLine( msg.nick, msg.msg, ( msg.isServer( ) || !msg.user ? "" : msg.user.isOp( this.name ) ), msg.datetime ); 
-    util.log( "addActivity0000000000000008" );
+    this.logger.addLine( msg.getNickWithStatus( this.name ), msg.msg, msg.datetime ); 
     this.logger.write( );
-    util.log( "addActivity0000000000000009" );
     this.publishActivity( ( msg.cmd in { "privmsg" : 1, "action" : 1 } ) );
     delete msg;
   }
@@ -997,6 +968,25 @@ if ( window.runtime && air && util ) {
     }
   }
 
+  _cai.getNickWithStatus = function ( channelName ) {
+    if ( !channelName ) { 
+      return null; 
+    }
+    var user = this.getUser( );
+    if ( this.isServer( ) ) {
+      return  "Server";
+    } else if ( user && user.isCreator( channelName ) ) {
+      return "!" + this.nick;
+    } else if ( user && user.isOp( channelName ) ) {
+      return this.nick;
+    } else if ( user && user.isHalfOp( channelName ) ) {
+      return "%" + this.nick;
+    } else if ( user && user.isVoice( channelName ) ) {
+      return "+" + this.nick;
+    } 
+    return this.nick;
+  }
+
   _cai._setProperties = function ( ) {
     if ( this.cmd ) {
       //XXX: need to get rid of this switch statement some how
@@ -1012,7 +1002,7 @@ if ( window.runtime && air && util ) {
         case "kick":
           this._isServer = true;
           this._useAltUser = true;
-          this._altMsg = this.nick + " has kicked " + this.makeFullID( altUser.nick, altUser ) + " from " + this.target + ": " + this.msg;
+          this._altMsg = this.nick + " has kicked " + this.makeFullID( this.getAltUser( ).nick, this.getAltUser( ) ) + " from " + this.target + ": " + this.msg;
           break;
         case "part":
           this._isServer = true;

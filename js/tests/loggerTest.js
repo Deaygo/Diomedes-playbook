@@ -24,7 +24,6 @@ var log, logTest,
     message = "Saying that Java is nice because it works on all OS's is like saying that anal sex is nice because it works on all genders",
     hostmask = "!n=Zhijin@115.171.38.30",
     fileName,
-    mode = "@",
     serverMessage,
     serverLineFormat,
     lineFormat,
@@ -33,7 +32,7 @@ var log, logTest,
 fileName = serverName + "_" + channelName + "_2009_09_27_12_50_49.txt";
 serverMessage = nick + hostmask + " has joined " + channelName + "."; 
 serverLineFormat = "[2009-09-27 12:50:49] <Server> " + serverMessage + "\n";
-lineFormat = "[2009-09-27 12:50:49] <" + mode + nick + "> " + message + "\n";
+lineFormat = "[2009-09-27 12:50:49] <" + nick + "> " + message + "\n";
 
 logTest = new Achaean( "loggingTest" );
 log = new logger.Logger( serverName, channelName );
@@ -46,9 +45,9 @@ logTest.assertTrue( dojo.isObject( log ), "Log not created" );
 logTest.assertEquals( channelName, log._getChannelName( ), "Channel name wrong" );
 logTest.assertEquals( serverName, log._getServerName( ), "Server name wrong" );
 logTest.assertEquals( fileName, log._getFileName( time ), "Filename wrong" );
-logTest.assertEquals( log._formatLine( nick, message, mode, time ), lineFormat, "line format incorrect" );
+logTest.assertEquals( log._formatLine( nick, message, time ), lineFormat, "line format incorrect" );
 
-log.addLine( nick, message, mode, time );
+log.addLine( nick, message, time );
 
 lines = log._getLines( );
 
