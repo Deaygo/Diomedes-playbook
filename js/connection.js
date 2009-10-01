@@ -289,9 +289,8 @@ if ( window.runtime && air && util ) {
     util.log( "handling kick nick: "  + nick + " kickedNick: " + kickedNick );
     var user = this.getUser( nick );
     if ( user ) user.setHost( host );
-    var msg = new dConnection.ActivityItem( "kick", nick, target, msg, user, host );
     var altUser = this.getUser( kickedNick );
-    msg.setAltUser( altUser );
+    var msg = new dConnection.ActivityItem( "kick", nick, target, msg, user, host, altUser );
     if ( kickedNick != this.getNick( ) ) {
       this.remUserFromChannel( kickedNick, target );
       this.addActivityToChannel( target, msg );
@@ -522,12 +521,16 @@ if ( window.runtime && air && util ) {
         var msg = "";
         if ( args && args.length > 1 ) {
           var channel = args.shift( );
-          target = args.shift( );
+          var nick = args.shift( );
+          if ( !nick ) {
+            nick = channel;
+            channel = target;
+          }
           if ( args.length ) {
             var msg = args.join( " " );
           }
         }
-        this.client.sendKick( channel, target, msg );
+        this.client.sendKick( channel, nick, msg );
         break;
       case "motd":
         this.client.sendMOTD( );
@@ -894,7 +897,7 @@ if ( window.runtime && air && util ) {
   }
 
   //Activity Item Class
-  dConnection.ActivityItem = function ( cmd, nick, target, msg, user, host ) {
+  dConnection.ActivityItem = function ( cmd, nick, target, msg, user, host, altUser ) {
     this.cmd = cmd;
     this.nick = nick;
     this.user = ( user ? user : null );
@@ -904,7 +907,7 @@ if ( window.runtime && air && util ) {
     this.datetime = new Date();
     this.altDatetime = null;
     this.displayMsg = null;
-    this.altUser;
+    this.altUser = altUser;
     this._referencesUser = false;
 
     this._isServer = false; 
@@ -919,7 +922,7 @@ if ( window.runtime && air && util ) {
   var _cai = dConnection.ActivityItem.prototype;
 
   _cai.clone = function ( ) {
-    var ai = new dConnection.ActivityItem( this.cmd, this.nick, this.target, null, this.user, this.host );
+    var ai = new dConnection.ActivityItem( this.cmd, this.nick, this.target, null, this.user, this.host, this.altUser );
     ai.msg = this.msg; //avoid resanitizing
     ai.setDateTime( this.datetime );
     ai.setAltUser( this.altUser );
@@ -1002,7 +1005,9 @@ if ( window.runtime && air && util ) {
         case "kick":
           this._isServer = true;
           this._useAltUser = true;
+          util.log( "bef getAltUser" );
           this._altMsg = this.nick + " has kicked " + this.makeFullID( this.getAltUser( ).nick, this.getAltUser( ) ) + " from " + this.target + ": " + this.msg;
+          util.log( "after getAltUser" );
           break;
         case "part":
           this._isServer = true;

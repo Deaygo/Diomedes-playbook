@@ -986,10 +986,15 @@ if ( window.runtime && air && util ) {
   }
 
   _icp.sendKick = function ( channel, target, msg ) {
+    this.log( "sendKick00000000000000000" );
     if ( !msg ) msg = "";
+    this.log( "sendKick00000000000000001" );
     if ( target ) {
+    this.log( "sendKick00000000000000002" );
       this._send( [ "KICK", channel, target, ":" + msg ].join( " " ) );
+    this.log( "sendKick00000000000000003" );
     }
+    this.log( "sendKick00000000000000004" );
   }
 
   _icp.makeCTCP = function ( data ) {
