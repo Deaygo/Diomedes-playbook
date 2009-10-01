@@ -864,7 +864,7 @@ if ( window.runtime && air && util ) {
 
   _clp.addActivity = function ( msg ) {
     this.activityList.addMessage( msg.clone( ) );
-    this.logger.addLine( msg.getNickWithStatus( this.name ), msg.msg, msg.datetime ); 
+    this.logger.addLine( msg.getNickWithStatus( this.name ), msg.getMsg( ), msg.datetime ); 
     this.logger.write( );
     this.publishActivity( ( msg.cmd in { "privmsg" : 1, "action" : 1 } ) );
     delete msg;

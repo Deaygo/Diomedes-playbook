@@ -126,15 +126,6 @@ dojo.declare( "logger.Logger", null, {
       return num.toString( );
     }
   },
-  addServerLine: function ( message, time ) {
-    this.lines.push( this._formatServerLine( message, time ) );
-  },
-  _formatServerLine: function ( message, time ) {
-    return [
-      this._getFormattedDate( time, false ),
-      " <Server> ", message, "\n"
-    ].join( "" );
-  },
   destroy: function ( ) {
     this.close( );
     delete this.dir;

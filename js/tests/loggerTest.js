@@ -25,13 +25,11 @@ var log, logTest,
     hostmask = "!n=Zhijin@115.171.38.30",
     fileName,
     serverMessage,
-    serverLineFormat,
     lineFormat,
     lines;
 
 fileName = serverName + "_" + channelName + "_2009_09_27_12_50_49.txt";
 serverMessage = nick + hostmask + " has joined " + channelName + "."; 
-serverLineFormat = "[2009-09-27 12:50:49] <Server> " + serverMessage + "\n";
 lineFormat = "[2009-09-27 12:50:49] <" + nick + "> " + message + "\n";
 
 logTest = new Achaean( "loggingTest" );
@@ -58,14 +56,13 @@ logTest.assertEquals( lines[ 0 ], lineFormat, "Line incorrect" );
 log._clearLines( );
 
 logTest.assertEquals( lines.length, 0, "No lines should be present" );
-logTest.assertEquals( log._formatServerLine( serverMessage, time ), serverLineFormat, "server line format incorrect" );
-
-log.addServerLine( serverMessage, time );
 
 lines = log._getLines( );
 
+log.addLine( nick, message, time );
+
 logTest.assertEquals( lines.length, 1, "Only one line added since clear" );
-logTest.assertEquals( lines[ 0 ], serverLineFormat, "Server line format incorrect" );
+logTest.assertEquals( lines[ 0 ], lineFormat, "Line incorrect" );
 
 logTest.run( function ( ) {
   var results = logTest.getResults( ), i, errors, error;
