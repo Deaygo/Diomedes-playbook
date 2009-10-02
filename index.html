@@ -51,12 +51,12 @@
   <script src="servicemonitor.swf" type="application/x-shockwave-flash"/>
   <script src="applicationupdater_ui.swf" type="application/x-shockwave-flash" />
   <script type="text/javascript" src="js/AIRAliases.js"></script> 
-  <script type="text/javascript" src="js/AIRIntrospector.js"></script> 
-  <script type="text/javascript" src="js/dojo/dojo.js"></script> 
+  <!-- <script type="text/javascript" src="js/AIRIntrospector.js"></script>  -->
+  <script type="text/javascript" src="js/release/dojo/dojo/dojo.js"></script> 
+  <script type="text/javascript" src="js/release/dojo/diom/diom.js"></script> 
   <script type="text/javascript" src="js/include.js"></script> 
   <script type="text/javascript" src="js/util.js"></script> 
   <script type="text/javascript" src="js/topics.js"></script> 
-  <script type="text/javascript" src="js/logger.js"></script> 
   <script type="text/javascript" src="js/irc.js"></script> 
   <script type="text/javascript" src="js/connection.js"></script> 
   <script type="text/javascript" src="js/network.js"></script> 
@@ -67,7 +67,7 @@
 
     var m, v, c;
     
-    var console =  air.Introspector.Console;
+    //var console =  air.Introspector.Console;
 
     function checkClose ( e ) {
       if ( !confirm( "Are you sure you want to quit?" ) ) {

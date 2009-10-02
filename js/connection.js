@@ -775,7 +775,7 @@ if ( window.runtime && air && util ) {
     this.topic = null;
     this.activityList = new dConnection.ActivityList( );
     this.logPref = logPref;
-    this.logger = new logger.Logger( server, name );
+    this.logger = new diom.Logger( server, name );
     this.isLogOpen = false;
     if ( logPref ) {
       this.logger.open( );

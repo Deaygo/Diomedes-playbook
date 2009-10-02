@@ -1,11 +1,46 @@
 #!/bin/bash
 
-#do jslint
+set -e
 
-#run tests
+./createRelease
 
-#build dojo
+jsFiles=(
+  "release/dojo/diom/diom"
+  "release/dojo/dojo/dojo"
+  "AIRAliases"
+  "AIRIntrospector"
+  "connection"
+  "controller"
+  "dojo"
+  "irc"
+  "model"
+  "network"
+  "topics"
+  "util"
+  "view"
+)
+numFiles=${#jsFiles[@]}
 
-#if ok build:
+jsFilesAdded=""
 
-~/air/bin/adt -package -storetype pkcs12 -keystore apphacker.pfx Diomedes.air Diomedes-app.xml updateConfig.xml index.html networks.html prefs.html preferences.xml performs.html servers.html servicemonitor.swf applicationupdater_ui.swf help.html aliases.html channels.html js/ icons/ css/ images/ LICENSE
+for (( i=0; i<${numFiles}; i++ ));
+do
+  echo appending ./js/${jsFiles[$i]}.js
+  jsFilesAdded="${jsFilesAdded} ./js/${jsFiles[$i]}.js"
+done
+
+echo js files added: $jsFilesAdded
+
+cert="-package -storetype pkcs12 -keystore apphacker.pfx"
+binaryName="Diomedes.air"
+htmlFiles="index.html networks.html prefs.html performs.html servers.html help.html aliases.html channels.html"
+resourceDirs="icons/ css/ images/"
+configFile="Diomedes-app.xml"
+xmlFiles="updateConfig.xml preferences.xml"
+swfFiles="servicemonitor.swf applicationupdater_ui.swf"
+
+configVars="${cert} ${binaryName} ${configFile} ${xmlFiles} ${htmlFiles} ${swfFiles} ${jsFilesAdded} ${resourceDirs} LICENSE"
+echo configVars: $configVars
+
+~/air/bin/adt $configVars
+echo Created $binaryName release

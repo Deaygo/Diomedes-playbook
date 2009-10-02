@@ -4,9 +4,11 @@
 /*jslint passfail: true */
 /*global window, dojo, util */
 
-var logger;
-if ( !dojo.isObject( logger ) ) {
-  logger = {};
+dojo.provide( "diom.logger" );
+
+var diom;
+if ( !dojo.isObject( diom ) ) {
+  diom = {};
 } 
 
 var air;
@@ -32,7 +34,7 @@ var air;
  *
 */
 
-dojo.declare( "logger.Logger", null, {
+dojo.declare( "diom.Logger", null, {
   constructor: function ( serverName, channelName ) {
     var tmpDir;
     this.channelName = channelName;

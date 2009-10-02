@@ -1,0 +1,8 @@
+#!/bin/bash
+
+set -e
+./checkErrors
+
+cd  ./js/util/buildscripts
+./build.sh profile=diomedes action=release
+cd ../../..

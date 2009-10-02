@@ -1,27 +1,22 @@
 #!/bin/bash
 
+#quit if any command causes an error
+set -e
+
 checkFiles=(
-  "logger" 
-  "include"
+  "diom/diom"
+  "diom/logger" 
+  "diom/include"
 
   "tests/loggerTest"
 
 )
 numFiles=${#checkFiles[@]}
 
-quitIfFail ( ) 
-{
-  if [ $? -gt 0 ]
-  then
-    exit
-  fi
-}
-
 for (( i=0; i<${numFiles}; i++ ));
 do
   echo Running jsLint on ${checkFiles[$i]}.js
   java -jar js/util/shrinksafe/js.jar js/tests/jslint.js ./js/${checkFiles[$i]}.js
-  quitIfFail
 done
 
 #unit testing:
@@ -35,7 +30,6 @@ for (( i=0; i<${numTests}; i++ ));
 do
   echo Running test for ${tests[$i]}.js
   java -jar js/util/shrinksafe/js.jar ./js/tests/${tests[$i]}Test.js
-  quitIfFail
 done
 
 

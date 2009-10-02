@@ -2,7 +2,7 @@
 /*jslint nomen: false */
 /*jslint plusplus: false */
 /*jslint passfail: true */
-/*global window, Achaean, dojo, logger */
+/*global window, Achaean, dojo, diom */
 
 /* runs in rhino, assumes rhino in dojo available */
 
@@ -13,7 +13,7 @@ var djConfig = {
 };
 
 load( 'js/dojo/dojo.js' );
-load( 'js/logger.js' );
+load( 'js/diom/logger.js' );
 load( 'js/tests/achaean.js' );
 
 var log, logTest,
@@ -33,7 +33,7 @@ serverMessage = nick + hostmask + " has joined " + channelName + ".";
 lineFormat = "[2009-09-27 12:50:49] <" + nick + "> " + message + "\n";
 
 logTest = new Achaean( "loggingTest" );
-log = new logger.Logger( serverName, channelName );
+log = new diom.Logger( serverName, channelName );
 
 logTest.setUp( function( ) {
   print( "Running setup" );
