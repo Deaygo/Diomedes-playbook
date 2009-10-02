@@ -28,6 +28,7 @@ if ( window.runtime && air && util ) {
     this.changeTheme( prefs.multiOptionPrefs.theme );
     this.activityWindows = {};
     this.activeWin = null;
+    this.activeNickCount = 0;
     this.appVersion = "";
 
     util.connect( this.channelList, "onclick", this, "handleChannelListClick" );
@@ -42,6 +43,7 @@ if ( window.runtime && air && util ) {
     util.subscribe( topics.PREFS_CHANGE_THEME, this, "changeTheme", [] );
     util.subscribe( topics.NOTIFY, this, "notify", []);
     util.subscribe( topics.CHANNEL_TOPIC, this, "handleTopic", [] );
+    util.subscribe( topics.NICK_CHANGE, this, "handleNickChange", [] );
     util.subscribe( topics.INPUT_PAGE_UP, this, "scrollUp", [] );
     util.subscribe( topics.INPUT_PAGE_DOWN, this, "scrollDown", [] );
     util.subscribe( topics.INPUT_CHANNEL_NEXT, this, "selectNextChannel", [] );
@@ -90,11 +92,25 @@ if ( window.runtime && air && util ) {
   }
 
   _vvp.setTopicView = function ( channelName, topic ) {
-    var msg = channelName;
+    var msg = channelName, nickCount = "";
+    if ( this.activeNickCount ) {
+      nickCount = " (" + this.activeNickCount + ") ";
+    } 
     if ( topic ) {
-      msg += ": " + topic;
+      msg += nickCount + ": " + topic;
     }
     document.title = msg;
+  }
+
+  _vvp.handleNickChange = function ( nicks, serverName, channelName ) {
+    var topic, tmp;
+    if ( this.activeWin.serverName == serverName && this.activeWin.channelName == channelName ) {
+      this.activeNickCount = nicks.length;
+      tmp = document.title.split( ": " );
+      tmp.shift( );
+      topic = tmp.join( ": " );
+      this.setTopicView( channelName, topic );
+    }
   }
 
   _vvp.handleTopic = function ( serverName, channelName, topic ) {
@@ -1266,8 +1282,14 @@ if ( window.runtime && air && util ) {
     var halfOpsR = [];
     var voicedR = [];
     var nicks = this.sort( users );
+    var tmpNicks = [];
     for ( var i = 0; i < nicks.length; i++ ) {
       var nick = nicks[ i ];
+      if ( nick ) {
+        tmpNicks.push( nick );
+      } else {
+        continue;
+      }
       var user = users[ nick ];
       if ( user.isCreator( channelName ) ) {
         mode = "!";
@@ -1286,6 +1308,7 @@ if ( window.runtime && air && util ) {
         usersR.push( this.getNickButton( user, mode ) );
       }
     }
+    nicks = tmpNicks;
     r = r.concat( creatorsR );
     r = r.concat( opsR );
     r = r.concat( halfOpsR );
