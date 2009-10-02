@@ -100,10 +100,16 @@ dojo.declare( "diom.Logger", null, {
     }
   },
   _formatLine: function ( nick, message, time ) {
+    var lineEnding;
+    if ( air ) {
+      lineEnding = air.File.lineEnding;
+    } else {
+      lineEnding = "\n";
+    }
     return [
       this._getFormattedDate( time, false ),
       " <", nick, "> ",
-      message, "\n"
+      message, lineEnding
     ].join( "" );
   },
   _getFormattedDate: function ( time, isFileName ) {
