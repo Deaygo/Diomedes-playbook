@@ -1,8 +1,14 @@
+/*jslint white: false */
+/*jslint nomen: false */
+/*jslint plusplus: false */
+/*jslint passfail: true */
+/*global window, dojo, util, diom */
 
 dojo.provide( "diom.connection.activityItem" );
 
-  //Activity Item Class
-  dConnection.ActivityItem = function ( cmd, nick, target, msg, user, host, altUser ) {
+dojo.declare( "diom.connection.ActivityItem", null, {
+
+  constructor: function ( cmd, nick, target, msg, user, host, altUser ) {
     this.cmd = cmd;
     this.nick = nick;
     this.user = ( user ? user : null );
@@ -22,12 +28,10 @@ dojo.provide( "diom.connection.activityItem" );
     this._useAltUser = null;
     this._altMsg = null;
     this._setProperties( );
-  }
+  },
 
-  var _cai = dConnection.ActivityItem.prototype;
-
-  _cai.clone = function ( ) {
-    var ai = new dConnection.ActivityItem( this.cmd, this.nick, this.target, null, this.user, this.host, this.altUser );
+  clone: function ( ) {
+    var ai = new diom.connection.ActivityItem( this.cmd, this.nick, this.target, null, this.user, this.host, this.altUser );
     ai.msg = this.msg; //avoid resanitizing
     ai.setDateTime( this.datetime );
     ai.setAltUser( this.altUser );
@@ -42,45 +46,46 @@ dojo.provide( "diom.connection.activityItem" );
     ai._altMsg = this._altMsg;
 
     return ai;
-  }
+  },
 
-  _cai.isServer = function ( ) {
+  isServer: function ( ) {
     return this._isServer;
-  }
+  },
 
-  _cai.isAction = function ( ) {
+  isAction: function ( ) {
     return this._isAction;
-  }
+  },
 
-  _cai.showBrackets = function ( ) {
+  showBrackets: function ( ) {
     return this._showBrackets;
-  }
+  },
 
-  _cai.isNotice = function ( ) {
+  isNotice: function ( ) {
     return this._isNotice;
-  }
+  },
 
-  _cai.getUser = function ( ) {
+  getUser: function ( ) {
     if ( this._useAltUser ) {
       return this.getAltUser( );
     } else {
       return this.user;
     }
-  }
+  },
 
-  _cai.getMsg = function ( ) {
+  getMsg: function ( ) {
     if ( this._altMsg ) {
       return this._altMsg;
     } else {
       return this.msg;
     }
-  }
+  },
 
-  _cai.getNickWithStatus = function ( channelName ) {
+  getNickWithStatus: function ( channelName ) {
+  	var user;
     if ( !channelName ) { 
       return null; 
     }
-    var user = this.getUser( );
+    user = this.getUser( );
     if ( this.isServer( ) ) {
       return  "Server";
     } else if ( user && user.isCreator( channelName ) ) {
@@ -93,9 +98,10 @@ dojo.provide( "diom.connection.activityItem" );
       return "+" + this.nick;
     } 
     return this.nick;
-  }
+  },
 
-  _cai._setProperties = function ( ) {
+  _setProperties: function ( ) {
+  	var d;
     if ( this.cmd ) {
       //XXX: need to get rid of this switch statement some how
       switch ( this.cmd.toLowerCase( ) ) {
@@ -121,7 +127,7 @@ dojo.provide( "diom.connection.activityItem" );
           break;
         case "topic":
           this._isServer = true;
-          var d = " On " + this.getAltDatetime( ).toUTCString( ) + " "; 
+          d = " On " + this.getAltDatetime( ).toUTCString( ) + " "; 
           this._altMsg = d + this.nick + " set the topic for " + this.target + " to: " + this.msg;
           break;
         case "notice":
@@ -145,61 +151,63 @@ dojo.provide( "diom.connection.activityItem" );
           break;
       }
     }
-  }
+  },
 
-  _cai.makeFullID = function ( nick, user ) {
+  makeFullID: function ( nick, user ) {
+  	var host;
     if ( user ) {
-      var host = user.getHost( );
+      host = user.getHost( );
       if ( host ) {
         nick = [ nick, "!", host ].join( "" );
       }
     }
     return nick;
-  }
+  },
 
-  _cai.setDateTime = function ( datetime ) {
+  setDateTime: function ( datetime ) {
     delete this.datetime;
     this.datetime = datetime;
-  }
+  },
 
-  _cai.setAltDatetime = function ( datetime ) {
-    if ( this.altDatetime ) delete this.altDatetime;
+  setAltDatetime: function ( datetime ) {
+    if ( this.altDatetime ) { delete this.altDatetime; }
     this.altDatetime = datetime;
-  }
+  },
 
-  _cai.getAltDatetime = function ( ) {
+  getAltDatetime: function ( ) {
     if ( this.altDatetime ) {
       return this.altDatetime;
     } else {
       return this.datetime;
     } 
-  }
+  },
 
-  _cai.setAltUser = function ( altUser ) {
+  setAltUser: function ( altUser ) {
     this.altUser = altUser;
-  }
+  },
 
-  _cai.setReferencesUser = function ( ) {
+  setReferencesUser: function ( ) {
     this._referencesUser = true;
-  }
+  },
 
-  _cai.referencesUser = function ( ) {
+  referencesUser: function ( ) {
     return this._referencesUser;
-  }
+  },
 
-  _cai.getAltUser = function ( ) {
+  getAltUser: function ( ) {
     return this.altUser;
-  }
+  },
 
-  _cai.setDisplay = function ( display ) {
+  setDisplay: function ( display ) {
     this.displayMsg = display;
-  }
+  },
 
-  _cai.getDisplay = function ( ) {
+  getDisplay: function ( ) {
     return this.displayMsg;
-  }
+  },
 
-  _cai.destroy = function ( ) {
+  destroy: function ( ) {
     delete this.datetime;
   }
 
+} );
