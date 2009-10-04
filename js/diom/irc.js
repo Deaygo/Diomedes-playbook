@@ -7,6 +7,8 @@
 /*jslint passfail: true */
 /*global window, dojo, util */
 
+dojo.provide( "diom.irc" );
+
 var diom;
 if ( !dojo.isObject( diom ) ) {
   diom = {};
@@ -15,7 +17,6 @@ if ( !dojo.isObject( diom ) ) {
 
 var air;
 
-  //requires AIR and util
 dojo.declare( "diom.ircClient", null, {
   
   constructor: function ( server, port, defaultChannels, nick, userName, realName ) {

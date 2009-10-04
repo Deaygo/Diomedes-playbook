@@ -8,5 +8,6 @@ dojo.provide( "diom.include" );
 
 /*add any dojo.require here */
 
+dojo.require( "diom.irc" );
 dojo.require( "diom.logger" );
 

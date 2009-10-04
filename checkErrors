@@ -7,7 +7,7 @@ checkFiles=(
   "diom/diom"
   "diom/logger" 
   "diom/include"
-  "irc"
+  "diom/irc"
 
   "tests/loggerTest"
 

@@ -10,7 +10,7 @@
   <link rel="stylesheet" type="text/css" media="screen" href="css/linkLog.css" />
   <link id="themeLink" rel="stylesheet" type="text/css" media="screen" href="css/themes/default.css" />
 </head> 
-<body id="body" onLoad="appLoad( );" onUnload="appUnload( );"> 
+<body id="body" onUnload="appUnload( );"> 
   <div id="view">
     <div id="linksBtn">
     </div>
@@ -54,10 +54,8 @@
   <script type="text/javascript" src="js/AIRIntrospector.js"></script>
   <script type="text/javascript" src="js/release/dojo/dojo/dojo.js"></script> 
   <script type="text/javascript" src="js/release/dojo/diom/diom.js"></script> 
-  <script type="text/javascript" src="js/include.js"></script> 
   <script type="text/javascript" src="js/util.js"></script> 
   <script type="text/javascript" src="js/topics.js"></script> 
-  <script type="text/javascript" src="js/irc.js"></script> 
   <script type="text/javascript" src="js/connection.js"></script> 
   <script type="text/javascript" src="js/network.js"></script> 
   <script type="text/javascript" src="js/view.js"></script> 
@@ -92,6 +90,7 @@
     }
 
     window.nativeWindow.addEventListener( air.Event.CLOSING, checkClose );
+    dojo.addOnLoad( appLoad );
 
   </script> 
 </body> 
