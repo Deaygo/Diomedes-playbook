@@ -14,7 +14,6 @@ if ( window.runtime && air && util ) {
   dConnection.CHANNEL_TYPES = { "SERVER":"server", "PM":"pm", "CHANNEL":"channel" }
   
   dConnection.Connection = function ( server, port, preferences, appVersion, ignores ) {
-    util.log( "\n\n\n\nconn start\n\n\n\n\n" );
 
     var nick = preferences.nick;
     this.channels = {};
@@ -66,7 +65,6 @@ if ( window.runtime && air && util ) {
     util.subscribe( topics.PREFS_CHANGE_AUTOJOIN, this, "setAutoJoin", [] );
     util.subscribe( topics.IGNORES_UPDATE, this, "handleIgnoresUpdate", [] );
     util.subscribe( topics.PREFS_CHANGE_LOGGING, this, "handleChangeLoggingPref", [] );
-    util.log( "\n\n\n\nconn end\n\n\n\n\n" );
   }
 
   var _cnp = dConnection.Connection.prototype;
