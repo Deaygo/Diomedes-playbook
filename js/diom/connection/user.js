@@ -1,8 +1,15 @@
+/*jslint white: false */
+/*jslint nomen: false */
+/*jslint plusplus: false */
+/*jslint passfail: true */
+/*global window, dojo, util, diom */
 
 dojo.provide( "diom.connection.user" );
 
+dojo.declare( "diom.connection.Connection", null, {
+
   //User Class
-  dConnection.User = function ( nick, host ) {
+  constructor: function ( nick, host ) {
     this.update( nick, host );
     this.nick = nick;
     this.host = host;
@@ -10,77 +17,77 @@ dojo.provide( "diom.connection.user" );
     this._voice = {};
     this._halfOp = {};
     this._creator = {};
-  }
+  },
 
-  var _cup = dConnection.User.prototype;
-
-  _cup.rename = function ( newName ) {
+  rename: function ( newName ) {
     this.nick = newName;
-  }
+  },
 
-  _cup.setHost = function ( host ) {
+  setHost: function ( host ) {
     this.host = host;
-  }
+  },
 
-  _cup.getHost = function ( ) {
+  getHost: function ( ) {
     return this.host;
-  }
+  },
 
-  _cup.op = function ( channelName ) {
+  op: function ( channelName ) {
     this._op[ channelName ] = true;
-  }
+  },
 
-  _cup.deOp = function ( channelName ) {
-    if ( channelName in this._op ) delete this._op[ channelName ];
-  }
+  deOp: function ( channelName ) {
+    if ( channelName in this._op ) { delete this._op[ channelName ]; }
+  },
 
-  _cup.isOp = function ( channelName ) {
+  isOp: function ( channelName ) {
     return ( channelName in this._op );
-  }
+  },
 
-  _cup.voice = function ( channelName ) {
+  voice: function ( channelName ) {
     this._voice[ channelName ] = true;
-  }
+  },
 
-  _cup.deVoice = function ( channelName ) {
-    if ( channelName in this._voice ) delete this._voice[ channelName ];
-  }
+  deVoice: function ( channelName ) {
+    if ( channelName in this._voice ) { delete this._voice[ channelName ]; }
+  },
 
-  _cup.isVoice = function ( channelName ) {
+  isVoice: function ( channelName ) {
     return ( channelName in this._voice );
-  }
+  },
 
-  _cup.halfOp = function ( channelName ) {
+  halfOp: function ( channelName ) {
     this._halfOp[ channelName ] = true;
-  }
+  },
 
-  _cup.deHalfOp = function ( channelName ) {
-    if (channelName in this._halfOp ) delete this._halfOp[ channelName ];
-  }
+  deHalfOp: function ( channelName ) {
+    if (channelName in this._halfOp ) { delete this._halfOp[ channelName ]; }
+  },
 
-  _cup.isHalfOp = function ( channelName ) {
+  isHalfOp: function ( channelName ) {
     return ( channelName in this._halfOp );
-  }
+  },
 
-  _cup.creator = function ( channelName ) {
+  creator: function ( channelName ) {
     this._creator[ channelName ] = true;
-  }
+  },
 
-  _cup.deCreator = function ( channelName ) {
-    if ( channelName in this._creator ) delete this._creator[ channelName ];
-  }
+  deCreator: function ( channelName ) {
+    if ( channelName in this._creator ) { delete this._creator[ channelName ]; }
+  },
 
-  _cup.isCreator = function ( channelName ) {
+  isCreator: function ( channelName ) {
     return ( channelName in this._creator );
-  }
+  },
 
-  _cup.update = function ( nick, host ) {
+  update: function ( nick, host ) {
     this.nick = nick;
     this.host = host;
-  }
+  },
 
-  _cup.destroy = function ( ) {
+  destroy: function ( ) {
     delete this.nick;
     delete this.host;
   }
+
+} );
 
