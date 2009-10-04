@@ -8,6 +8,7 @@ checkFiles=(
   "diom/logger" 
   "diom/include"
   "diom/irc"
+  "diom/connection/connection"
 
   "tests/loggerTest"
 

@@ -1,21 +1,19 @@
 /*
   Copyright (c) 2009 Apphacker apphacker@gmail.com
 */
+/*jslint white: false */
+/*jslint nomen: false */
+/*jslint plusplus: false */
+/*jslint passfail: true */
+/*global window, dojo, util, diom */
 
 dojo.provide( "diom.connection.connection" );
 
-var dConnection;
+dojo.declare( "diom.connection.Connection", null, {
 
-if ( !dConnection ) {
-  dConnection = {};
-}
+  CHANNEL_TYPES: { "SERVER":"server", "PM":"pm", "CHANNEL":"channel" },
 
-if ( window.runtime && air && util ) {
-  //requires AIR and util
-  
-  dConnection.CHANNEL_TYPES = { "SERVER":"server", "PM":"pm", "CHANNEL":"channel" }
-  
-  dConnection.Connection = function ( server, port, preferences, appVersion, ignores ) {
+  constructor: function ( server, port, preferences, appVersion, ignores ) {
 
     var nick = preferences.nick;
     this.channels = {};
@@ -25,7 +23,7 @@ if ( window.runtime && air && util ) {
     this.logPref = preferences.logging === true || preferences.logging === "true";
     this.ignores = ignores;
     this.host = "";
-    this.users[ nick ] = new dConnection.User( nick, "" ); 
+    this.users[ nick ] = new diom.connection.User( nick, "" ); 
     this.server = server;
     this.serverChannel = null;
     this.port = port;
@@ -37,7 +35,7 @@ if ( window.runtime && air && util ) {
     this.autoJoin = null;
     this.setAutoJoin( preferences.autoJoin );
 
-    this.client = new diom.ircClient( server, port, [], nick, preferences.userName, preferences.realName );
+    this.client = new diom.IRCClient( server, port, [], nick, preferences.userName, preferences.realName );
     this.client.setClientInfo( appVersion );
     this.client.setFinger( preferences.finger );
 
@@ -63,301 +61,319 @@ if ( window.runtime && air && util ) {
     this.client.setTopicDelegate(util.hitch(this,"handleTopic"));
     this.client.setModeDelegate(util.hitch(this, "handleMode"));
     this.client.setKickDelegate(util.hitch(this, "handleKick"));
-    util.subscribe( topics.CHANNEL_CLOSE, this, "closeChannel", [] );
-    util.subscribe( topics.PREFS_CHANGE_AUTOJOIN, this, "setAutoJoin", [] );
-    util.subscribe( topics.IGNORES_UPDATE, this, "handleIgnoresUpdate", [] );
-    util.subscribe( topics.PREFS_CHANGE_LOGGING, this, "handleChangeLoggingPref", [] );
-  }
+    util.subscribe( diom.topics.CHANNEL_CLOSE, this, "closeChannel", [] );
+    util.subscribe( diom.topics.PREFS_CHANGE_AUTOJOIN, this, "setAutoJoin", [] );
+    util.subscribe( diom.topics.IGNORES_UPDATE, this, "handleIgnoresUpdate", [] );
+    util.subscribe( diom.topics.PREFS_CHANGE_LOGGING, this, "handleChangeLoggingPref", [] );
+  },
 
-  var _cnp = dConnection.Connection.prototype;
-
-  _cnp.handleChangeLoggingPref = function ( newValue ) {
+  handleChangeLoggingPref: function ( newValue ) {
     this.logPref = newValue;
-  }
+  },
 
-  _cnp.handleIgnoresUpdate = function ( ignores ) {
+  handleIgnoresUpdate: function ( ignores ) {
     util.log( "handle connection ignores update " );
     this.ignores = ignores;
-  }
+  },
 
-  _cnp.setAutoJoin = function ( autoJoin ) {
-    this.autoJoin = ( autoJoin == "true" );
-  }
+  setAutoJoin: function ( autoJoin ) {
+    this.autoJoin = ( autoJoin === "true" );
+  },
 
-  _cnp.getNick = function ( ) {
+  getNick: function ( ) {
     return this.client.getNick( );
-  }
+  },
 
-  _cnp.getUser = function ( nick ) {
+  getUser: function ( nick ) {
     if ( nick in this.users ) {
       return this.users[ nick ];
     }
     return null;
-  }
+  },
 
-  _cnp.isIgnored = function ( msg ) {
-    if ( !msg.host ) return false;
-    if ( !this.ignores ) return false;
-    if ( !msg.nick == this.getNick( ) ) return false;
-    var from = [ msg.nick, msg.host ].join( "!" );
-    for ( var i = 0; i < this.ignores.length; i++ ) {
-      var ignore = this.ignores[ i ];
-      if ( from.search( ignore ) != -1 ) {
+  isIgnored: function ( msg ) {
+    var from, i, ignore;
+    if ( !msg.host ) { return false; }
+    if ( !this.ignores ) { return false; }
+    if ( !msg.nick === this.getNick( ) ) { return false; }
+    from = [ msg.nick, msg.host ].join( "!" );
+    for ( i = 0; i < this.ignores.length; i++ ) {
+      ignore = this.ignores[ i ];
+      if ( from.search( ignore ) !== -1 ) {
         return true;
       }
     }
     return false;
-  }
+  },
 
-  _cnp.addActivityToChannel = function( target, msg, from ) {
+  addActivityToChannel: function( target, msg, from ) {
+    var isPM, _nick, channelName, channel;
     //check to see if ignored first:
-    if ( this.isIgnored( msg ) ) return;
+    if ( this.isIgnored( msg ) ) { return; }
     //from is optional and is explicit about who the message is from
     //only applicable to private messages
-    var isPM = false;
-    var _nick = this.getNick( );
+    isPM = false;
+    _nick = this.getNick( );
     //determine if channel or PM first
     if ( !this.client.isChannelName( target ) ) {
       isPM = true;
-      if ( from & from != _nick ) {
-        var channelName = this.getChannelName( from );
-      } else if ( msg.nick != _nick ) {
-        var channelName = this.getChannelName( msg.nick );
+      if ( from && from !== _nick ) {
+        channelName = this.getChannelName( from );
+      } else if ( msg.nick !== _nick ) {
+        channelName = this.getChannelName( msg.nick );
       } else {
-        var channelName = this.getChannelName( target );
+        channelName = this.getChannelName( target );
       }
     } else {
-      var channelName = this.getChannelName( target );
+      channelName = this.getChannelName( target );
     }
     if ( channelName in this.channels ) {
-      var channel = this.channels[ channelName ];
+      channel = this.channels[ channelName ];
       channel.addActivity( msg );
     } else if ( isPM ) {
       //open new window for new PM
-      if ( from && _nick == from ) {
+      if ( from && _nick === from ) {
         if ( this.serverChannel ) {
           msg.msg = [ "PM to ", target, ": ", msg.msg ].join( "" );
           this.serverChannel.addActivity( msg );
         }
       } else {
         util.log( "JOINING PM: " + target );
-        this.channels[ channelName ] = new dConnection.Channel( channelName, dConnection.CHANNEL_TYPES.PM, this.server, this.logPref );
-        var channel = this.channels[ channelName ];
-        util.publish( topics.CHANNELS_CHANGED, [] );
+        this.channels[ channelName ] = new diom.connection.Channel( channelName, this.CHANNEL_TYPES.PM, this.server, this.logPref );
+        channel = this.channels[ channelName ];
+        util.publish( diom.topics.CHANNELS_CHANGED, [] );
         channel.addActivity( msg );
         if ( !( target in this.users ) ) {
-          this.users[ target ] = new dConnection.User( target, "" );
+          this.users[ target ] = new diom.connection.User( target, "" );
         }
         channel.addUser( this.users[ target ] );
         channel.addUser( this.users[ _nick ] );
         channel.publishUserActivity( );
       }
     }
-    delete msg;
-  }
+    msg = null;
+  },
 
-  _cnp.connect = function () {
+  connect: function () {
     this.stayConnected = true;
     this.client.connect( );
-    this.serverChannel = new dConnection.Channel( this.server, dConnection.CHANNEL_TYPES.SERVER, this.server, this.logPref );
-    util.publish( topics.CHANNELS_CHANGED, [] );
-  }
+    this.serverChannel = new diom.connection.Channel( this.server, this.CHANNEL_TYPES.SERVER, this.server, this.logPref );
+    util.publish( diom.topics.CHANNELS_CHANGED, [] );
+  },
 
-  _cnp.reconnect = function ( ) {
+  reconnect: function ( ) {
     if ( this.stayConnected ) {
       this.connect( );
     }
-  }
+  },
 
-  _cnp.isConnected = function ( ) {
+  isConnected: function ( ) {
     return this.client.isConnected( );
-  }
+  },
 
-  _cnp.close = function ( ) {
+  close: function ( ) {
     this.cancelReconnect( );
     this.stayConnected = false;
     this.client.closeConnection( "Closed connection." );
-  }
+  },
 
-  _cnp.handleInvite = function ( nick, target ) {
-    var msg_ = [ "You have been invited to", target, "by", nick ].join( " " ); 
-    var msg = new dConnection.ActivityItem( "server", null, null, msg_, null, null );
+  handleInvite: function ( nick, target ) {
+    var msg_, msg;
+    msg_ = [ "You have been invited to", target, "by", nick ].join( " " ); 
+    msg = new diom.connection.ActivityItem( "server", null, null, msg_, null, null );
     this.serverChannel.addActivity( msg );
     if ( this.autoJoin ) {
       this.client.join( target );
     }
-  }
+  },
 
-  _cnp.handleConnection = function ( msg, connected, nickInUse ) {
-    var msg_ = new dConnection.ActivityItem( "server", null, null, msg, null, null );
-    if ( nickInUse && this.getNick( ) != this.preferences.altNick && !this.altNickTries ) {
+  handleConnection: function ( msg, connected, nickInUse ) {
+    var msg_, target, pollTime, channels, channelName;
+    msg_ = new diom.connection.ActivityItem( "server", null, null, msg, null, null );
+    if ( nickInUse && this.getNick( ) !== this.preferences.altNick && !this.altNickTries ) {
       this.altNickTries = 1;
       this.client.changeNick( this.preferences.altNick );
       return;
     }
     if ( !connected ) {
-      for ( var target in this.channels ) {
-        this.channels[ target ].addActivity( msg_ );
+      for ( target in this.channels ) {
+        if ( this.channels.hasOwnProperty( target ) ) {
+          this.channels[ target ].addActivity( msg_ );
+        }
       }
       this.serverChannel.addActivity( msg_ );
       util.log("PUBLISHING CONNECTION_DISCONNECTED: " + this.server );
-      util.publish( topics.CONNECTION_DISCONNECTED, [ this.server ] );
-      var pollTime = this.pollTime;
+      util.publish( diom.topics.CONNECTION_DISCONNECTED, [ this.server ] );
+      pollTime = this.pollTime;
       if ( pollTime && this.stayConnected ) {
         this.reconnectId = window.setTimeout( util.hitch( this, "reconnect" ), pollTime * 1000 );
       }
     } else {
-      var channels = [];
-      for ( var channelName in this.channels ) {
-        channels.push( channelName );
+      channels = [];
+      for ( channelName in this.channels ) {
+        if ( this.channels.hasOwnProperty( channelName ) ) {
+          channels.push( channelName );
+        }
       }
       this.serverChannel.addActivity( msg_ );
       if ( channels.length ) {
         this.client.join( channels );
       } 
-      util.publish( topics.CHANNELS_CHANGED, [ "connect", null, this.server ] );
+      util.publish( diom.topics.CHANNELS_CHANGED, [ "connect", null, this.server ] );
     }
-  }
+  },
 
-  _cnp.handleJoin = function ( nick, host, target ) {
+  handleJoin: function ( nick, host, target ) {
+    var channelName, _nick, user, channel, msg; 
     //add nick to connection users
-    if ( !nick || !target ) return;
-    var channelName = this.getChannelName( target );
-    var _nick = this.getNick( );
-    if ( nick == _nick ) {
+    if ( !nick || !target ) { return; }
+    channelName = this.getChannelName( target );
+    _nick = this.getNick( );
+    if ( nick === _nick ) {
       util.log( "JOINING CHANNEL: " + target );
-      this.channels[ channelName ] = new dConnection.Channel( target, dConnection.CHANNEL_TYPES.CHANNEL, this.server, this.logPref );
+      this.channels[ channelName ] = new diom.connection.Channel( target, this.CHANNEL_TYPES.CHANNEL, this.server, this.logPref );
       this.client.getTopic( target );
-      util.publish( topics.CHANNELS_CHANGED, [ "join", channelName, this.server ] );
+      util.publish( diom.topics.CHANNELS_CHANGED, [ "join", channelName, this.server ] );
       if ( channelName in this.names ) {
         this.addNamesToChannel( channelName, this.names[ channelName ] );
       } else {
         this.client.sendNames( target );
       }
     }
-    var user = this.getUser( nick );
+    user = this.getUser( nick );
     if ( !user ) {
-      user = new dConnection.User( nick, host ); 
+      user = new diom.connection.User( nick, host ); 
       this.users[nick] = user;
     }
     //add nick to channel
     if (channelName in this.channels) {
-      var channel = this.channels[channelName];
+      channel = this.channels[channelName];
       channel.addUser(user);
       channel.publishUserActivity( );
     }
-    var msg = new dConnection.ActivityItem( "join", nick, target, null, user, host );
+    msg = new diom.connection.ActivityItem( "join", nick, target, null, user, host );
     this.addActivityToChannel( target, msg );
-  }
+  },
 
-  _cnp.handleNotice = function ( nick, host, target, msg ) {
-    var user = this.getUser( nick );
-    if ( user ) user.setHost( host );
-    var msg = new dConnection.ActivityItem( "notice", nick, target, msg, user, host );
-    for ( var channel in this.channels ) {
-      this.addActivityToChannel( channel, msg, channel );
+  handleNotice: function ( nick, host, target, msg ) {
+    var user = this.getUser( nick ), channel;
+    if ( user ) { user.setHost( host ); }
+    msg = new diom.connection.ActivityItem( "notice", nick, target, msg, user, host );
+    for ( channel in this.channels ) {
+      if ( this.channels.hasOwnProperty( channel ) ) {
+        this.addActivityToChannel( channel, msg, channel );
+      }
     }
     this.serverChannel.addActivity( msg );
-  }
+  },
 
-  _cnp.handleQuit = function ( nick, host, msg ) {
+  handleQuit: function ( nick, host, msg ) {
+    var user, channel, target;
     //remove nick from channels
-    var user = this.getUser( nick );
+    user = this.getUser( nick );
     if ( user ) {
       user.setHost( host );
-      var msg = new dConnection.ActivityItem( "quit", nick, null, msg, user, host );
-      for ( var target in this.channels ) {
-        var channel = this.channels[ target ];
-        if ( channel.hasUser( user.nick ) ) {
-          //check channels nick is in
-          channel.addActivity( msg );
-          channel.remUser( user );
-          channel.publishUserActivity( );
+      msg = new diom.connection.ActivityItem( "quit", nick, null, msg, user, host );
+      for ( target in this.channels ) {
+        if ( this.channels.hasOwnProperty( target ) ) {
+          channel = this.channels[ target ];
+          if ( channel.hasUser( user.nick ) ) {
+            //check channels nick is in
+            channel.addActivity( msg );
+            channel.remUser( user );
+            channel.publishUserActivity( );
+          }
         }
       }
       //remove nick's user from Connection
       delete this.users[nick];
     }
-  }
+  },
 
-  _cnp.handleMode = function ( nick, host, target, msg, modes ) {
+  handleMode: function ( nick, host, target, msg, modes ) {
+    var channelName, channel, user;
     if ( msg ) {
-      var channelName = this.getChannelName( target );
+      channelName = this.getChannelName( target );
       if ( channelName in this.channels ) {
-        var channel = this.channels[ channelName ];
+        channel = this.channels[ channelName ];
         channel.addModes( modes );
         channel.publishUserActivity( );
       }
       user = this.getUser( nick );
-      var msg = new dConnection.ActivityItem("mode", nick, target, msg, user, host );
+      msg = new diom.connection.ActivityItem("mode", nick, target, msg, user, host );
       this.addActivityToChannel( target, msg );
     }
-  }
+  },
 
-  _cnp.handleKick = function ( nick, kickedNick, host, target, msg ) {
+  handleKick: function ( nick, kickedNick, host, target, msg ) {
+    var user, altUser, channelName;
     util.log( "handling kick nick: "  + nick + " kickedNick: " + kickedNick );
-    var user = this.getUser( nick );
-    if ( user ) user.setHost( host );
-    var altUser = this.getUser( kickedNick );
-    var msg = new dConnection.ActivityItem( "kick", nick, target, msg, user, host, altUser );
-    if ( kickedNick != this.getNick( ) ) {
+    user = this.getUser( nick );
+    if ( user ) { user.setHost( host ); }
+    altUser = this.getUser( kickedNick );
+    msg = new diom.connection.ActivityItem( "kick", nick, target, msg, user, host, altUser );
+    if ( kickedNick !== this.getNick( ) ) {
       this.remUserFromChannel( kickedNick, target );
       this.addActivityToChannel( target, msg );
     } else {
-      var channelName = this.getChannelName( target );
+      channelName = this.getChannelName( target );
       if ( channelName in this.channels ) {
         this.serverChannel.addActivity( msg );
         delete this.channels[ channelName ];
-        util.publish( topics.CHANNELS_CHANGED, [ "part", channelName, this.server ] );
+        util.publish( diom.topics.CHANNELS_CHANGED, [ "part", channelName, this.server ] );
       }
     }
-  }
+  },
 
-  _cnp.handleAction = function ( nick, host, target, msg ) {
-    var user = this.getUser( nick );
-    if ( user ) user.setHost( host );
-    var msg = new dConnection.ActivityItem( "action", nick, target, msg, user, host );
+  handleAction: function ( nick, host, target, msg ) {
+    var user;
+    user = this.getUser( nick );
+    if ( user ) { user.setHost( host ); }
+    msg = new diom.connection.ActivityItem( "action", nick, target, msg, user, host );
     if ( this.referencesUser( msg.msg ) ) {
       msg.setReferencesUser( );
     } 
     this.addActivityToChannel( target, msg );
-  }
+  },
 
-  _cnp.handleMessage = function ( nick, host, target, msg ) {
+  handleMessage: function ( nick, host, target, msg ) {
+    var user ;
     //XXX: if target is this.getNick( ) and nick not a channel, open new channel
-    var user = this.getUser( nick );
-    if ( user ) user.setHost( host );
-    var msg = new dConnection.ActivityItem( "privmsg", nick, target, msg, user, host );
+    user = this.getUser( nick );
+    if ( user ) { user.setHost( host ); }
+    msg = new diom.connection.ActivityItem( "privmsg", nick, target, msg, user, host );
     if ( this.referencesUser( msg.msg, target, nick ) ) {
       msg.setReferencesUser( );
     } 
     this.addActivityToChannel( target, msg, nick );
-  }
+  },
 
-  _cnp.referencesUser = function ( msg, target, nick ) {
-    var _nick = this.getNick( );
-    if ( msg && msg.length && ( nick != _nick ) ) { 
-      var referencesUser = ( msg.search( _nick.split("-").join("\\-").split( "|" ).join( "\\|" ).split( "^" ).join( "\\^" ) ) != -1 );
+  referencesUser: function ( msg, target, nick ) {
+    var _nick, referencesUser;
+    _nick = this.getNick( );
+    if ( msg && msg.length && ( nick !== _nick ) ) { 
+      referencesUser = ( msg.search( _nick.split("-").join("\\-").split( "|" ).join( "\\|" ).split( "^" ).join( "\\^" ) ) !== -1 );
       if ( referencesUser ) {
-        util.publish( topics.USER_HIGHLIGHT, [ this.getChannelName( target ), this.server, _nick ] );
+        util.publish( diom.topics.USER_HIGHLIGHT, [ this.getChannelName( target ), this.server, _nick ] );
         return true;
       }
     }
     return false;
-  }
+  },
 
-  _cnp.remUserFromChannel = function ( nick, target ) {
-    var user = this.getUser( nick );
+  remUserFromChannel: function ( nick, target ) {
+    var user, channelName, channel, userExists;
+    user = this.getUser( nick );
     if ( user ) {
-      var channelName = this.getChannelName( target );
+      channelName = this.getChannelName( target );
       if ( channelName in this.channels ) {
-        var channel = this.channels[ channelName ];
+        channel = this.channels[ channelName ];
         channel.remUser( user );
         channel.publishUserActivity( );
       }
       userExists = false;
       //possibly remove nick from connection users
-      for ( var channelName in this.channels ) {
+      for ( channelName in this.channels ) {
         if ( this.channels[ channelName ].hasUser( user.nick ) ) {
           userExists = true;
           break;
@@ -367,30 +383,32 @@ if ( window.runtime && air && util ) {
         delete this.users[ nick ];
       }
     }
-  }
+  },
 
-  _cnp.handlePart = function ( nick, host, target, msg ) {
-    if ( !msg ) msg = "";
-    var user = this.getUser( nick );
-    if ( user ) user.setHost( host );
-    var msg = new dConnection.ActivityItem( "part", nick, target, msg, user, host );
+  handlePart: function ( nick, host, target, msg ) {
+    var user;
+    if ( !msg ) { msg = ""; }
+    user = this.getUser( nick );
+    if ( user ) { user.setHost( host ); }
+    msg = new diom.connection.ActivityItem( "part", nick, target, msg, user, host );
     this.addActivityToChannel( target, msg );
     this.remUserFromChannel( nick, target );
-  }
+  },
 
-  _cnp.handleNickChange = function ( nick, host, newNick ) {
+  handleNickChange: function ( nick, host, newNick ) {
+    var user, msg, target, channel, channelName, newChannelName;
     util.log( "nick: " + nick + " host: " + host + " newNick: " + newNick );
-    var user = this.getUser( nick );
+    user = this.getUser( nick );
     if ( user ) {
       user.setHost( host );
       user.rename( newNick );
       delete this.users [ nick ];
       this.users[ newNick ] = user;
-      var msg = new dConnection.ActivityItem( "nick", nick, null, newNick, this.getUser( newNick ), host );
+      msg = new diom.connection.ActivityItem( "nick", nick, null, newNick, this.getUser( newNick ), host );
       //check channels nick is in
-      for ( var target in this.channels ) {
+      for ( target in this.channels ) {
         if ( this.channels[ target ].hasUser( nick ) ) {
-          var channel = this.channels[target];
+          channel = this.channels[target];
           util.log( "changing " + nick + " to " + user.nick + " in " + target );
           channel.renameUser( nick, newNick );
           channel.publishUserActivity( );
@@ -399,115 +417,119 @@ if ( window.runtime && air && util ) {
       }
       //XXX: also check open channel names to see if they're the nick (PM's)
     }
-    var channelName = this.getChannelName( nick );
+    channelName = this.getChannelName( nick );
     if ( channelName in this.channels ) {
-      var newChannelName = this.getChannelName( newNick );
+      newChannelName = this.getChannelName( newNick );
       this.channels[ newChannelName ] = this.channels[ channelName ];
       this.channels[ newChannelName ].setName( newNick );
       delete this.channels[ channelName ];
-      util.publish( topics.CHANNELS_CHANGED, [ "nick", channelName, this.server, newChannelName ] );
+      util.publish( diom.topics.CHANNELS_CHANGED, [ "nick", channelName, this.server, newChannelName ] );
     }
-
-    if ( nick == this.getNick( ) ) {
+    if ( nick === this.getNick( ) ) {
       this.serverChannel.addActivity( msg );
     }
-    delete msg;
-  }
+    msg = null;
+  },
 
-  _cnp.handleServerMessage = function ( host, msg, target ) {
-    var msg = new dConnection.ActivityItem( "server", null, target, msg, host );
+  handleServerMessage: function ( host, msg, target ) {
+    msg = new diom.connection.ActivityItem( "server", null, target, msg, host );
     if ( this.client.isChannelName( target ) ) {
       this.addActivityToChannel( target, msg );
     } else {
       this.serverChannel.addActivity( msg );
     }
-    delete msg;
-  }
+    msg = null;
+  },
 
-  _cnp.getChannelName = function ( target ) {
+  getChannelName: function ( target ) {
     return target.toLowerCase( );
-  }
+  },
 
-  _cnp.addNamesToChannel = function ( channelName, nicks ) {
-    var channel = this.channels[ channelName ];
-    //user = new dConnection.User(nick, host); 
+  addNamesToChannel: function ( channelName, nicks ) {
+    var channel, i, nick, mode, host, user;
+    channel = this.channels[ channelName ];
+    //user = new diom.connection.User(nick, host); 
     //update names
     channel.remUsers( ); //if names not in this list then no longer in channel
-    for ( var i = 0; i < nicks.length; i++ ) {
+    for ( i = 0; i < nicks.length; i++ ) {
       //create users if don't exist
       //add to channel
-      var nick = nicks[i];
-      var mode = nick[0];
-      var host = "";
-      if (mode == "@" || mode == "+" || mode == "%" || mode == "!" ) {
+      nick = nicks[i];
+      mode = nick[0];
+      host = "";
+      if (mode === "@" || mode === "+" || mode === "%" || mode === "!" ) {
         nick = nick.substr( 1 );
       } else {
         mode = null;
       }
-      var user = this.getUser( nick );
+      user = this.getUser( nick );
       if (!user) {
-        user = new dConnection.User( nick, host, mode ); 
+        user = new diom.connection.User( nick, host, mode ); 
         this.users[ nick ] = user;
       } 
       channel.addUser( user );
-      if ( mode == "@" ) {
+      if ( mode === "@" ) {
         user.op( channelName );
-      } else if ( mode == "!" ) {
+      } else if ( mode === "!" ) {
         user.creator( channelName );
-      } else if ( mode == "+" ) { 
+      } else if ( mode === "+" ) { 
         user.voice( channelName );
-      } else if ( mode == "%" ) { 
+      } else if ( mode === "%" ) { 
         user.halfOp( channelName );
       }
     }
     channel.publishUserActivity( );
-  }
+  },
 
-  _cnp.handleNames = function ( target, nicks ) {
+  handleNames: function ( target, nicks ) {
     var channelName = this.getChannelName( target );
     if ( !( channelName in this.channels ) ) {
-      this.names = [ channelName ] = nicks;
+      this.names[ channelName ] = nicks;
     } else {
       this.addNamesToChannel( channelName, nicks );
     }
-  }
+  },
 
-  _cnp.handleTopic = function ( host, target, topic, topicSetter, datetime ) {
-    var msg = new dConnection.ActivityItem( "topic", topicSetter, target, topic, host );
+  handleTopic: function ( host, target, topic, topicSetter, datetime ) {
+    var msg, channelName, channel;
+    msg = new diom.connection.ActivityItem( "topic", topicSetter, target, topic, host );
     msg.setAltDatetime( datetime );
     this.addActivityToChannel( target, msg );
-    var channelName = this.getChannelName( target );
+    channelName = this.getChannelName( target );
     if ( channelName in this.channels ) {
-      var channel = this.channels[ channelName ];
+      channel = this.channels[ channelName ];
       channel.setTopic( topic );
     }
-    util.publish( topics.CHANNEL_TOPIC, [ this.server, channelName, topic ] );
-    delete msg;
-  }
+    util.publish( diom.topics.CHANNEL_TOPIC, [ this.server, channelName, topic ] );
+    msg = null;
+  },
 
-  _cnp.getServerChannel = function ( ) {
+  getServerChannel: function ( ) {
     return this.serverChannel;
-  }
+  },
 
-  _cnp.getChannel = function ( name ) {
-    var channelName = this.getChannelName( name );
+  getChannel: function ( name ) {
+    var channelName, channel;
+    channelName = this.getChannelName( name );
     if ( channelName in this.channels ) {
-      var channel = this.channels[ channelName ];
+      channel = this.channels[ channelName ];
       return channel;
     } else {
       return null;
     }
-  }
+  },
 
-  _cnp.addNewChannel = function ( name, type ) {
-    this.channels[ name ] = new dConnection.Channel( name, type, this.server, this.logPref );
-  }
+  addNewChannel: function ( name, type ) {
+    this.channels[ name ] = new diom.connection.Channel( name, type, this.server, this.logPref );
+  },
 
-  _cnp.getChannels = function ( ) {
+  getChannels: function ( ) {
     return this.channels;
-  }
+  },
 
-  _cnp.sendCommand = function ( cmd, args, target ) {
+  sendCommand: function ( cmd, args, target ) {
+    var msg, channel, nick, serverName, 
+      _cmd, funcName, param, params, t;
     //XXX: figure out what to do here
     //XXX: using a switch for now, need something better in the future
     switch ( cmd.toLowerCase( ) ) {
@@ -520,23 +542,23 @@ if ( window.runtime && air && util ) {
         util.log( "attempting to join channel(s)." );
         break;
       case "mode":
-        var msg = "";
+        msg = "";
         if ( args && args.length ) {
           msg = args.join( " " );
         } 
         this.client.sendMode( msg );
         break;
       case "kick":
-        var msg = "";
+        msg = "";
         if ( args && args.length > 1 ) {
-          var channel = args.shift( );
-          var nick = args.shift( );
+          channel = args.shift( );
+          nick = args.shift( );
           if ( !nick ) {
             nick = channel;
             channel = target;
           }
           if ( args.length ) {
-            var msg = args.join( " " );
+            msg = args.join( " " );
           }
         }
         this.client.sendKick( channel, nick, msg );
@@ -545,14 +567,14 @@ if ( window.runtime && air && util ) {
         this.client.sendMOTD( );
         break;
       case "whois":
-        var msg = "";
+        msg = "";
         if ( args && args.length ) {
           msg = args.join( " " );
         } 
         this.client.sendWhoIs( msg );
         break;
       case "whowas":
-        var msg = "";
+        msg = "";
         if ( args && args.length ) {
           msg = args.join( " " );
         } 
@@ -560,23 +582,23 @@ if ( window.runtime && air && util ) {
         break;
       case "squit":
         if ( args && args.length > 1 ) {
-          var serverName = args.shift( );
-          var msg = args.join( " " );
+          serverName = args.shift( );
+          msg = args.join( " " );
           this.client.sendSQuit( serverName, msg );
         }
         break;
       case "invite":
         if ( args && args.length > 1 ) {
-          var nick = args.shift( );
-          var channel = args.shift( );
+          nick = args.shift( );
+          channel = args.shift( );
           this.client.sendInvite( nick, channel );
         }
         break;
       case "die":
       case "restart":
       case "rehash":
-        var _cmd = cmd;
-        var funcName = "send" + _cmd; 
+        _cmd = cmd;
+        funcName = "send" + _cmd; 
         if ( funcName in this.client ) {
           this.client[ funcName ]( );
         }
@@ -590,15 +612,14 @@ if ( window.runtime && air && util ) {
       case "trace":
       case "time":
       case "version":
-        var param;
         if ( args && args.length ) {
           param = args.shift( );
         } else {
           param = null;
         }
-        var _cmd = cmd;
+        _cmd = cmd;
         _cmd = _cmd[ 0 ].toUpperCase( ) + _cmd.substr( 1 );
-        var funcName = "send" + _cmd; 
+        funcName = "send" + _cmd; 
         if ( funcName in this.client ) {
           this.client[ funcName ]( param );
         }
@@ -617,31 +638,31 @@ if ( window.runtime && air && util ) {
       case "lusers":
       case "oper":
       case "service":
-        var params = "";
+        params = "";
         if ( args && args.length ) {
           params = args.join( " " );
         } 
-        var _cmd = cmd;
+        _cmd = cmd;
         _cmd = _cmd[ 0 ].toUpperCase( ) + _cmd.substr( 1 );
-        var funcName = "send" + _cmd; 
+        funcName = "send" + _cmd; 
         if ( funcName in this.client ) {
           this.client[ funcName ]( params );
         }
         break;
       case "part":
-        var msg = "";
+        msg = "";
         if ( args && args.length ) {
           if ( this.client.isChannelName( args[0] ) ) {
             target = args.shift( );
           }
           if ( args.length ) {
-            var msg = args.join( " " );
+            msg = args.join( " " );
           }
         }
         this.partChannel( target, msg );
         break;
       case "quit":
-        var msg = "";
+        msg = "";
         if ( args && args.length ) {
           msg = args.join( " " );
         } 
@@ -649,9 +670,9 @@ if ( window.runtime && air && util ) {
         break;
       case "ctcp":
         if ( args && args.length > 1 ) {
-          var target = args.shift( );
-          var msg = args.join( " " );
-          if ( util.trim( msg ).toLowerCase( ) == "ping" ) {
+          target = args.shift( );
+          msg = args.join( " " );
+          if ( util.trim( msg ).toLowerCase( ) === "ping" ) {
             this.client.sendCTCPPing( target );
           } else { 
             this.client.sendCTCP( target, msg );
@@ -659,7 +680,7 @@ if ( window.runtime && air && util ) {
         }
         break;
       case "me":
-        var msg = args.join( " " );
+        msg = args.join( " " );
         this.client.sendAction( target, msg );
         this.handleAction( this.getNick( ), this.host, target, msg );
         break;
@@ -667,29 +688,30 @@ if ( window.runtime && air && util ) {
         if ( this.client.isChannelName( target ) ) {
           this.client.sendNames( target );
         }
+        break;
       case "msg":
         if ( args && args.length > 1 ) {
-          var target = args.shift( );
-          var msg = args.join( " " );
+          target = args.shift( );
+          msg = args.join( " " );
           this.sendMessage( target, msg );
         }
         break;
       case "notice":
         if ( args && args.length > 1 ) {
-          var target = args.shift( );
-          var msg = args.join( " " );
+          target = args.shift( );
+          msg = args.join( " " );
           this.client.sendNotice( target, msg );
           this.handleNotice( this.getNick( ), this.host, target, msg );
         }
         break;
       case "topic":
         if ( args && args.length ) {
-          var t = args.shift( );
+          t = args.shift( );
           if ( !this.client.isChannelName( t ) ) {
             args.unshift( t );
             t = target;
           }
-          var msg = args.join( " " );
+          msg = args.join( " " );
         } else {
           msg = "";
           t = target;
@@ -697,78 +719,89 @@ if ( window.runtime && air && util ) {
         this.client.topic( t, msg );
         break;
     }
-  }
+  },
 
-  _cnp.sendMessage = function ( target, msg ) {
+  sendMessage: function ( target, msg ) {
     if ( msg && target ) {
-      if ( target == this.server ) return;
+      if ( target === this.server ) { return; }
       this.client.sendPM( target, msg ); 
       this.handleMessage( this.getNick( ), this.host, target, msg );
     }
-  }
+  },
 
-  _cnp.closeChannel = function ( serverName, channelName ) {
-    if ( serverName == this.server ) {
+  closeChannel: function ( serverName, channelName ) {
+    if ( serverName === this.server ) {
       this.partChannel( channelName, "Closed channel window." );
     }
-  }
+  },
 
-  _cnp.partChannel = function ( target, msg ) {
-    var channelName = this.getChannelName( target );
+  partChannel: function ( target, msg ) {
+    var channelName, users, user, stillExists, tempUsers, channel;
+    channelName = this.getChannelName( target );
     if ( channelName && channelName in this.channels ) {
       if ( this.client.isChannelName( channelName ) ) {
         util.log( "parting " + channelName );
         this.client.part( target, msg );
       }
-      var users = this.channels[ channelName ].getUsers( );
-      for ( var user in users ) {
-        var stillExists = false;
-        for ( var target in this.channels ) {
-          if ( target != channelName ) {
-            var tempUsers = this.channels[ target ].getUsers( );
-            if ( user.nick in tempUsers ) {
-              stillExists = true;
-              break;
+      users = this.channels[ channelName ].getUsers( );
+      for ( user in users ) {
+        if ( users.hasOwnProperty( user ) ) {
+          stillExists = false;
+          for ( channel in this.channels ) {
+            if ( this.channels.hasOwnProperty( channel ) ) {
+              if ( channel !== channelName ) {
+                tempUsers = this.channels[ channel ].getusers( );
+                if ( user.nick in tempUsers ) {
+                  stillExists = true;
+                  break;
+                }
+              }
             }
           }
-        }
-        if ( !stillExists ) {
-          //if not delete from connection user list
-          delete this.users[ user.nick ];
+          if ( !stillExists ) {
+            //if not delete from connection user list
+            delete this.users[ user.nick ];
+          }
         }
       }
       //delete channel from connection
       delete this.channels[ channelName ];
-      util.publish( topics.CHANNELS_CHANGED, [ "part", channelName, this.server ] );
+      util.publish( diom.topics.CHANNELS_CHANGED, [ "part", channelName, this.server ] );
     }
-  }
+  },
 
-  _cnp.cancelReconnect = function ( ) {
+  cancelReconnect: function ( ) {
     if ( this.reconnectId ) {
       window.clearTimeout( this.reconnectId );
       this.reconnectId = null;
     }
-  }
+  },
 
-  _cnp.destroy = function ( ) {
+  destroy: function ( ) {
+    var user, channel;
     this.stayConnected = false;
     if ( this.client ) {
       this.client.destroy( );
       delete this.client;
       for ( user in this.users ) {
-        this.users[ user ].destroy( );
-        delete this.users[ user ];
+        if ( this.users.hasOwnProperty( user ) ) {
+          this.users[ user ].destroy( );
+          delete this.users[ user ];
+        }
       }
       for ( channel in this.channels ) {
-        this.channels[ channel ].destroy( );
-        delete this.channels[ channel ];
+        if ( this.channels.hasOwnProperty( channel ) ) {
+          this.channels[ channel ].destroy( );
+          delete this.channels[ channel ];
+        }
       }
       this.serverChannel.destroy( );
       delete this.serverChannel;
     }
   }
 
-}
+} );
+
 
 
 

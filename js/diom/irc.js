@@ -5,19 +5,13 @@
 /*jslint nomen: false */
 /*jslint plusplus: false */
 /*jslint passfail: true */
-/*global window, dojo, util */
+/*global window, dojo, util, diom */
 
 dojo.provide( "diom.irc" );
 
-var diom;
-if ( !dojo.isObject( diom ) ) {
-  diom = {};
-} 
-
-
 var air;
 
-dojo.declare( "diom.ircClient", null, {
+dojo.declare( "diom.IRCClient", null, {
   
   constructor: function ( server, port, defaultChannels, nick, userName, realName ) {
 
