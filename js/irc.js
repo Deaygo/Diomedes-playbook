@@ -7,8 +7,6 @@
 /*jslint passfail: true */
 /*global window, dojo, util */
 
-var irc;
-
 var diom;
 if ( !dojo.isObject( diom ) ) {
   diom = {};
@@ -18,7 +16,7 @@ if ( !dojo.isObject( diom ) ) {
 var air;
 
   //requires AIR and util
-dojo.declare( "diom.irc", null, {
+dojo.declare( "diom.ircClient", null, {
   
   constructor: function ( server, port, defaultChannels, nick, userName, realName ) {
 
@@ -568,13 +566,13 @@ dojo.declare( "diom.irc", null, {
 
   isCTCP: function ( msg ) {
     if ( !msg ) { return false; }
-    var token = String.fromCharCode( "\u0001" );
+    var token = String.fromCharCode( 1 );
     return (msg[ 0 ] === token); 
   },
 
   getMsgFromCTCP: function ( msg ) {
     if ( msg && msg.length && this.isCTCP( msg ) ) {
-      var token = String.fromCharCode( "\u0001" );
+      var token = String.fromCharCode( 1 );
       return msg.split( token ).join( "" );
     }
     return msg;
@@ -582,7 +580,7 @@ dojo.declare( "diom.irc", null, {
 
   getAction: function ( msg ) {
     var token, actionCheck;
-    token = String.fromCharCode( "\u0001" );
+    token = String.fromCharCode( 1 );
     actionCheck = token + "ACTION ";
     if ( msg.search( actionCheck ) !== -1 ) {
       return msg.substr( actionCheck.length, msg.length - 1 );
@@ -646,7 +644,7 @@ dojo.declare( "diom.irc", null, {
       this.handlePingReply( );
       return;
     }
-    commandNumber = parseInt( this.getIndex( cmdParts, 1 ), 10 );
+    commandNumber = this.getIndex( cmdParts, 1 );
     userNick = this.getIndex( cmdParts, 2 );
     aboutArg = this.getIndex( cmdParts, 3 );
     target = this.getTarget( cmdParts, msg );
@@ -655,7 +653,7 @@ dojo.declare( "diom.irc", null, {
     switch ( commandNumber ) {
       //with certain server messages it makes go to add channel/target info
       //if this is the case adding it here
-      case this.COMMAND_NUMBER.SERVER_INFO:
+      case this.COMMAND_NUMBERS.SERVER_INFO:
         this.host = this.getIndex( cmdParts, 3 );
         break;
       case this.COMMAND_NUMBERS.MAP:
@@ -759,6 +757,8 @@ dojo.declare( "diom.irc", null, {
           }
         }
         break;
+      default:
+        break;
     }
     if ( this.serverDelegate && msg ) {
       this.serverDelegate( host, msg, null );
@@ -793,7 +793,7 @@ dojo.declare( "diom.irc", null, {
 
   sendCTCP: function ( target, msg ) {
     var token, parts, cmd;
-    token = String.fromCharCode( "\u0001" );
+    token = String.fromCharCode( 1 );
     if ( msg ) {
       parts = msg.split( " " );
       if ( parts && parts.length ) {
@@ -1016,7 +1016,7 @@ dojo.declare( "diom.irc", null, {
   },
 
   makeCTCP: function ( data ) {
-    var token = String.fromCharCode( "\u0001" );
+    var token = String.fromCharCode( 1 );
     return [ token, data, token ].join( "" );
   },
 

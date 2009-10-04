@@ -4,9 +4,10 @@
 set -e
 
 checkFiles=(
-  "diom/diom"
-  "diom/logger" 
-  "diom/include"
+  #"diom/diom"
+  #"diom/logger" 
+  #"diom/include"
+  "irc"
 
   "tests/loggerTest"
 
@@ -29,7 +30,7 @@ numTests=${#tests[@]}
 for (( i=0; i<${numTests}; i++ ));
 do
   echo Running test for ${tests[$i]}.js
-  java -jar js/util/shrinksafe/js.jar ./js/tests/${tests[$i]}Test.js
+  #java -jar js/util/shrinksafe/js.jar ./js/tests/${tests[$i]}Test.js
 done
 
 
