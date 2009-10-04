@@ -151,7 +151,7 @@ if ( window.runtime && air && util ) {
     if ( !networks ) return;
     for ( var i = 0; i < networks.length; i++ ) {
       var network = networks[ i ];
-      this.setNetwork( network.name, new dNetwork.Network( network, this.model.networks, this.channelList, this.model.prefs, this.appVersion, this.ignores ) );
+      this.setNetwork( network.name, new diom.Network( network, this.model.networks, this.channelList, this.model.prefs, this.appVersion, this.ignores ) );
       var connection = this.getNetwork( network.name ).getConnection( );
       if ( connection ) {
         this.currentConnection = connection;
@@ -176,7 +176,7 @@ if ( window.runtime && air && util ) {
         networkName = this.formatNetworkName( networkName );
         var storedNetwork = this.getNetwork( network.name );
         if ( !( storedNetwork ) ) {
-          this.setNetwork( network.name, new dNetwork.Network( network, this.model.networks, this.channelList, this.model.prefs ) );
+          this.setNetwork( network.name, new diom.Network( network, this.model.networks, this.channelList, this.model.prefs ) );
         } else {
           delete networksFound[ this.formatNetworkName( network.name ) ];
         }

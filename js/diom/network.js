@@ -1,19 +1,18 @@
 /*
   Copyright (c) 2009 Apphacker apphacker@gmail.com
 */
+/*jslint white: false */
+/*jslint nomen: false */
+/*jslint plusplus: false */
+/*jslint passfail: true */
+/*global window, dojo, util, diom */
 
 dojo.provide( "diom.network" );
 
-var dNetwork;
 
-if ( !dNetwork ) {
-  dNetwork = {};
-}
+dojo.declare( "diom.Network", null, {
 
-  //requires AIR and util
-  
-
-  dNetwork.Network = function ( data, model, channelList, prefs, appVersion, ignores ) {
+  constructor: function ( data, model, channelList, prefs, appVersion, ignores ) {
     this.prefs = util.cloneObject( prefs.getPrefs( ) );
     this.ignores = ignores;
     this.prefs.nick = data.nick;
@@ -44,71 +43,69 @@ if ( !dNetwork ) {
     util.subscribe( diom.topics.NETWORK_CHANGE, this, "handleNetworksChanged", [] );
     util.subscribe( diom.topics.IGNORES_UPDATE, this, "handleIgnoresUpdate", [] );
     util.subscribe( diom.topics.CHANNELS_CHANGED, this, "handleNetworkConnect", [] );
-  }
+  },
 
-  var _nn = dNetwork.Network.prototype;
-
-  _nn.handleIgnoresUpdate = function ( ignores ) {
+  handleIgnoresUpdate: function ( ignores ) {
     this.ignores = ignores;
-  }
+  },
 
-  _nn.handleNetworkConnect = function ( type, channelName, host ) {
+  handleNetworkConnect: function ( type, channelName, host ) {
     if ( type == "connect" && host == this.currentHost ) {
       this.perform( );
     }
-  }
+  },
 
-  _nn.handleNetworksChanged = function ( id ) {
+  handleNetworksChanged: function ( id ) {
     util.log("hnc in nn");
     if ( id && id == this.data.id ) {
       this.model.getServers( id, util.hitch( this, "handleServerInfo" ) ); 
       this.model.getChannels( id, util.hitch( this, "handleChannelInfo" ) );
       this.model.getPerforms( id, util.hitch( this, "handlePerformInfo" ) );
     }
-  }
+  },
 
-  _nn.handleServerInfo = function ( servers ) {
+  handleServerInfo: function ( servers ) {
     if ( servers ) { 
       this.servers = servers;
     } else {
       this.servers = [];
     }
     this.serverInfoReceived = true;
-  }
+  },
 
-  _nn.handleChannelInfo = function ( channels ) {
+  handleChannelInfo: function ( channels ) {
     if ( channels ) {
       this.channels = channels;
     } else {
       this.channels = [];
     }
     this.channelInfoReceived = true;
-  }
+  },
 
-  _nn.handlePerformInfo = function ( performs ) {
+  handlePerformInfo: function ( performs ) {
     if ( performs ) {
       this.performs = performs;
     } else {
       this.performs = [];
     }
     this.performInfoReceived = true;
-  }
+  },
 
-  _nn.checkInfoProgress = function ( ) {
+  checkInfoProgress: function ( ) {
     if ( this.serverInfoReceived && this.channelInfoReceived && this.performInfoReceived ) {
       this.autoConnect( );
     } else {
       window.setTimeout( util.hitch( this, "checkInfoProgress" ), 1000 );
     }
-  }
+  },
 
-  _nn.autoConnect = function ( ) {
+  autoConnect: function ( ) {
     if ( this.data && this.data.autoJoin && this.data.active ) {
       this.connect( );
     }
-  }
+  },
 
-  _nn.connect = function ( ) {
+  connect: function ( ) {
     if ( !this.servers.length ) return;
     if ( this.currentHost ) {
       util.publish( diom.topics.CONNECTION_CLOSE, [ this.currentHost ] );
@@ -121,9 +118,9 @@ if ( !dNetwork ) {
     this.channelList.createConnection( this.currentHost, port, this.prefs, this.appVersion, this.ignores );
     this.connection = this.channelList.getConnection( this.currentHost );
     util.publish( diom.topics.CHANNELS_CHANGED, [ "connect", this.currentHost, this.currentHost ] );
-  }
+  },
 
-  _nn.getNextServer = function ( ) {
+  getNextServer: function ( ) {
     if ( this.currentHostIndex === null || this.currentHostIndex == ( this.servers.length - 1 ) ) {
       this.currentHostIndex = 0;
     } else {
@@ -132,21 +129,21 @@ if ( !dNetwork ) {
       } while ( !this.servers[ this.currentHostIndex ].active );
     }
     return this.getServer( );
-  }
+  },
 
-  _nn.getHost = function ( ) {
+  getHost: function ( ) {
     return this.currentHost;
-  }
+  },
 
-  _nn.getServer = function ( ) {
+  getServer: function ( ) {
     return this.servers[ this.currentHostIndex ].name;
-  }
+  },
 
-  _nn.getConnection = function ( ) {
+  getConnection: function ( ) {
     return this.connection;
-  }
+  },
 
-  _nn.joinDefaultChannels = function ( ) {
+  joinDefaultChannels: function ( ) {
     var channelsData = this.channels;
     var channels = [];
     for ( var i = 0; i < channelsData.length; i ++ ) {
@@ -157,9 +154,9 @@ if ( !dNetwork ) {
       util.log("this.connection: " + this.connection );
       this.connection.sendCommand( "join", channels, null ); 
     }
-  }
+  },
 
-  _nn.perform = function ( ) {
+  perform: function ( ) {
     var performs = this.performs;
     if ( this.performsProgress >= performs.length ) {
       this.joinDefaultChannels( );
@@ -169,18 +166,19 @@ if ( !dNetwork ) {
     util.publish( diom.topics.USER_INPUT, [ util.fromIndex( performs, this.performsProgress ).command, this.currentHost ] );
     this.performsProgress++;
     window.setTimeout( util.hitch( this, "perform" ), 2500 );
-  }
+  },
 
-  _nn.close = function ( ) {
+  close: function ( ) {
     if ( this.currentHost ) {
       util.publish( diom.topics.CONNECTION_CLOSE, [ this.currentHost ] );
       this.connection.destroy( );
       this.connection = null;
       this.currentHost = null;
     }
-  }
+  },
 
-  _nn.destroy = function ( ) {
+  destroy: function ( ) {
     this.close( );
   }
 
+} );
