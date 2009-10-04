@@ -2,6 +2,8 @@
   Copyright (c) 2009 Apphacker apphacker@gmail.com
 */
 
+dojo.provide( "diom.controller" );
+
 var dController;
 
 if(!dController) {

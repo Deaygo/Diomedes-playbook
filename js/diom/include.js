@@ -21,4 +21,5 @@ dojo.require( "diom.connection.user" );
 dojo.require( "diom.topics" );
 dojo.require( "diom.network" );
 dojo.require( "diom.util" );
+dojo.require( "diom.controller" );
 
