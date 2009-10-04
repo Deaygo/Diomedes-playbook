@@ -6,9 +6,8 @@
 
 dojo.provide( "diom.connection.user" );
 
-dojo.declare( "diom.connection.Connection", null, {
+dojo.declare( "diom.connection.User", null, {
 
-  //User Class
   constructor: function ( nick, host ) {
     this.update( nick, host );
     this.nick = nick;
