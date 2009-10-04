@@ -38,31 +38,31 @@ if ( window.runtime && air && util ) {
     this.networks = {};
     this.getNetworks( );
 
-    util.subscribe( topics.USER_INPUT, this, "handleInput", [] );
-    util.subscribe( topics.CHANNELS_CHANGED, this, "handleChannelChange", [] );
-    util.subscribe( topics.CHANNEL_SELECTED, this, "handleChannelSelect", [] );
-    util.subscribe( topics.CHANNEL_ACTIVITY, this, "handleChannelActivity", [] );
-    util.subscribe( topics.USER_HIGHLIGHT, this, "handleHighlight", [] );
-    util.subscribe( topics.PREFS_SAVE, this, "handlePrefsSave", [] );
-    util.subscribe( topics.NETWORK_ADD, this, "handleNetworkAdd", [] );
-    util.subscribe( topics.NETWORK_EDIT, this, "handleNetworksEdit", [] );
-    util.subscribe( topics.NETWORK_DELETE, this, "handleNetworksDelete", [] );
-    util.subscribe( topics.NETWORK_CHANGE, this, "handleNetworksChanged", [] );
-    util.subscribe( topics.NETWORK_CLOSE, this, "closeNetworkOrConnection", [] );
-    util.subscribe( topics.SERVER_ADD, this, "handleServerAdd", [] );
-    util.subscribe( topics.SERVER_DELETE, this, "handleServerDelete", [] );
-    util.subscribe( topics.CHANNEL_ADD, this, "handleChannelAdd", [] );
-    util.subscribe( topics.CHANNEL_DELETE, this, "handleChannelDelete", [] );
-    util.subscribe( topics.PERFORM_ADD, this, "handlePerformAdd", [] );
-    util.subscribe( topics.PERFORM_DELETE, this, "handlePerformDelete", [] );
-    util.subscribe( topics.ALIAS_ADD, this, "handleAliasAdd", [] );
-    util.subscribe( topics.ALIAS_DELETE, this, "handleAliasDelete", [] );
-    util.subscribe( topics.ALIAS_CHANGE, this, "getAliases", [] );
-    util.subscribe( topics.IGNORE_ADD, this, "handleIgnoreAdd", [] );
-    util.subscribe( topics.IGNORE_DELETE, this, "handleIgnoreDelete", [] );
-    util.subscribe( topics.IGNORES_CHANGE, this, "getIgnores", [] );
-    util.subscribe( topics.CONNECTION_CLOSE, this, "closeConnection", [] );
-    util.subscribe( topics.USER_ACTIVITY, this, "handleUserActivity", [] );
+    util.subscribe( diom.topics.USER_INPUT, this, "handleInput", [] );
+    util.subscribe( diom.topics.CHANNELS_CHANGED, this, "handleChannelChange", [] );
+    util.subscribe( diom.topics.CHANNEL_SELECTED, this, "handleChannelSelect", [] );
+    util.subscribe( diom.topics.CHANNEL_ACTIVITY, this, "handleChannelActivity", [] );
+    util.subscribe( diom.topics.USER_HIGHLIGHT, this, "handleHighlight", [] );
+    util.subscribe( diom.topics.PREFS_SAVE, this, "handlePrefsSave", [] );
+    util.subscribe( diom.topics.NETWORK_ADD, this, "handleNetworkAdd", [] );
+    util.subscribe( diom.topics.NETWORK_EDIT, this, "handleNetworksEdit", [] );
+    util.subscribe( diom.topics.NETWORK_DELETE, this, "handleNetworksDelete", [] );
+    util.subscribe( diom.topics.NETWORK_CHANGE, this, "handleNetworksChanged", [] );
+    util.subscribe( diom.topics.NETWORK_CLOSE, this, "closeNetworkOrConnection", [] );
+    util.subscribe( diom.topics.SERVER_ADD, this, "handleServerAdd", [] );
+    util.subscribe( diom.topics.SERVER_DELETE, this, "handleServerDelete", [] );
+    util.subscribe( diom.topics.CHANNEL_ADD, this, "handleChannelAdd", [] );
+    util.subscribe( diom.topics.CHANNEL_DELETE, this, "handleChannelDelete", [] );
+    util.subscribe( diom.topics.PERFORM_ADD, this, "handlePerformAdd", [] );
+    util.subscribe( diom.topics.PERFORM_DELETE, this, "handlePerformDelete", [] );
+    util.subscribe( diom.topics.ALIAS_ADD, this, "handleAliasAdd", [] );
+    util.subscribe( diom.topics.ALIAS_DELETE, this, "handleAliasDelete", [] );
+    util.subscribe( diom.topics.ALIAS_CHANGE, this, "getAliases", [] );
+    util.subscribe( diom.topics.IGNORE_ADD, this, "handleIgnoreAdd", [] );
+    util.subscribe( diom.topics.IGNORE_DELETE, this, "handleIgnoreDelete", [] );
+    util.subscribe( diom.topics.IGNORES_CHANGE, this, "getIgnores", [] );
+    util.subscribe( diom.topics.CONNECTION_CLOSE, this, "closeConnection", [] );
+    util.subscribe( diom.topics.USER_ACTIVITY, this, "handleUserActivity", [] );
   }
 
   var _ccp = dController.Controller.prototype;
@@ -86,7 +86,7 @@ if ( window.runtime && air && util ) {
         }
       }
     }
-    util.publish( topics.IGNORES_UPDATE, [ this.ignores ] );
+    util.publish( diom.topics.IGNORES_UPDATE, [ this.ignores ] );
   }
 
   _ccp.getAliases = function ( ) {
@@ -307,7 +307,7 @@ if ( window.runtime && air && util ) {
         this.currentChannel.clearActivity( );
         this.view.clearActivityView( );
       } else if ( cmd in this.aliases ) {
-        util.publish( topics.USER_INPUT, [ this.createInputFromAlias( this.aliases[ cmd ], argsR ), server ] );
+        util.publish( diom.topics.USER_INPUT, [ this.createInputFromAlias( this.aliases[ cmd ], argsR ), server ] );
       } else {
         //hand command over to currentConnection
         if ( server ) {
@@ -592,9 +592,9 @@ if ( window.runtime && air && util ) {
     this.appUpdater.delay = updateDelay;
     this.appUpdater.addEventListener( air.StatusUpdateEvent.UPDATE_STATUS, util.hitch( this, "onStatus" ) ); 
     this.appUpdater.initialize();
-    util.subscribe( topics.UPDATE_CHECK, this, "checkNow", [] );
-    util.subscribe( topics.UPDATE_DELAY_CHANGE, this, "changeUpdateDelay", [] );
-    util.subscribe( topics.UPDATE_URL_CHANGE, this, "changeUpdateURL", [] );
+    util.subscribe( diom.topics.UPDATE_CHECK, this, "checkNow", [] );
+    util.subscribe( diom.topics.UPDATE_DELAY_CHANGE, this, "changeUpdateDelay", [] );
+    util.subscribe( diom.topics.UPDATE_URL_CHANGE, this, "changeUpdateURL", [] );
   }
 
   var _cupr = dController.Updater.prototype;
@@ -602,7 +602,7 @@ if ( window.runtime && air && util ) {
   _cupr.onStatus = function ( event ) {
     if ( this.didCheckNow && !event.available ) {
       this.didCheckNow = false;
-      util.publish( topics.UPDATE_NO_NEW_UPDATES );
+      util.publish( diom.topics.UPDATE_NO_NEW_UPDATES );
     }
   }
 
@@ -626,9 +626,9 @@ if ( window.runtime && air && util ) {
   }
 
   dController.LinkLog = function ( ) {
-    util.subscribe( topics.LINK_FOUND, this, "handleLink", [] );
+    util.subscribe( diom.topics.LINK_FOUND, this, "handleLink", [] );
     this.fetchers = {};
-    util.subscribe( topics.LINK_DATA, this, "handleLinkData", [] );
+    util.subscribe( diom.topics.LINK_DATA, this, "handleLinkData", [] );
   }
 
   var _cllp = dController.LinkLog.prototype;
@@ -735,7 +735,7 @@ if ( window.runtime && air && util ) {
   _clfp.publishData = function( ) {
     util.log("publish");
     var d = new Date( ).toString( );
-    util.publish( topics.LINK_DATA, [
+    util.publish( diom.topics.LINK_DATA, [
         this.url,
         {
           "url": this.url,

@@ -40,9 +40,9 @@ if ( window.runtime && air && util ) {
     model.getPerforms( id, util.hitch( this, "handlePerformInfo" ) );
     this.model = model;
     this.checkInfoProgress( );
-    util.subscribe( topics.NETWORK_CHANGE, this, "handleNetworksChanged", [] );
-    util.subscribe( topics.IGNORES_UPDATE, this, "handleIgnoresUpdate", [] );
-    util.subscribe( topics.CHANNELS_CHANGED, this, "handleNetworkConnect", [] );
+    util.subscribe( diom.topics.NETWORK_CHANGE, this, "handleNetworksChanged", [] );
+    util.subscribe( diom.topics.IGNORES_UPDATE, this, "handleIgnoresUpdate", [] );
+    util.subscribe( diom.topics.CHANNELS_CHANGED, this, "handleNetworkConnect", [] );
   }
 
   var _nn = dNetwork.Network.prototype;
@@ -110,7 +110,7 @@ if ( window.runtime && air && util ) {
   _nn.connect = function ( ) {
     if ( !this.servers.length ) return;
     if ( this.currentHost ) {
-      util.publish( topics.CONNECTION_CLOSE, [ this.currentHost ] );
+      util.publish( diom.topics.CONNECTION_CLOSE, [ this.currentHost ] );
       this.connection = null;
       this.currentHost = null;
     }
@@ -119,7 +119,7 @@ if ( window.runtime && air && util ) {
     var port = util.fromIndex( parts, 1 );
     this.channelList.createConnection( this.currentHost, port, this.prefs, this.appVersion, this.ignores );
     this.connection = this.channelList.getConnection( this.currentHost );
-    util.publish( topics.CHANNELS_CHANGED, [ "connect", this.currentHost, this.currentHost ] );
+    util.publish( diom.topics.CHANNELS_CHANGED, [ "connect", this.currentHost, this.currentHost ] );
   }
 
   _nn.getNextServer = function ( ) {
@@ -165,14 +165,14 @@ if ( window.runtime && air && util ) {
       this.performsProgress = 0;
       return;
     }
-    util.publish( topics.USER_INPUT, [ util.fromIndex( performs, this.performsProgress ).command, this.currentHost ] );
+    util.publish( diom.topics.USER_INPUT, [ util.fromIndex( performs, this.performsProgress ).command, this.currentHost ] );
     this.performsProgress++;
     window.setTimeout( util.hitch( this, "perform" ), 2500 );
   }
 
   _nn.close = function ( ) {
     if ( this.currentHost ) {
-      util.publish( topics.CONNECTION_CLOSE, [ this.currentHost ] );
+      util.publish( diom.topics.CONNECTION_CLOSE, [ this.currentHost ] );
       this.connection.destroy( );
       this.connection = null;
       this.currentHost = null;

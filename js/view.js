@@ -38,19 +38,19 @@ if ( window.runtime && air && util ) {
     util.connect( util.get( "linksBtn" ), "onclick", this, "handleLinksBtnClick" );
     util.connect( util.get( "closePopup" ), "onclick", this, "closePopup" );
     util.connect( window, "onclick", this, "handleWindowClick" );
-    util.subscribe( topics.USER_HIGHLIGHT, this, "highlight", [] );
-    util.subscribe( topics.PREFS_CHANGE_FONT, this, "changeFont", [] );
-    util.subscribe( topics.PREFS_CHANGE_THEME, this, "changeTheme", [] );
-    util.subscribe( topics.NOTIFY, this, "notify", []);
-    util.subscribe( topics.CHANNEL_TOPIC, this, "handleTopic", [] );
-    util.subscribe( topics.NICK_CHANGE, this, "handleNickChange", [] );
-    util.subscribe( topics.INPUT_PAGE_UP, this, "scrollUp", [] );
-    util.subscribe( topics.INPUT_PAGE_DOWN, this, "scrollDown", [] );
-    util.subscribe( topics.INPUT_CHANNEL_NEXT, this, "selectNextChannel", [] );
-    util.subscribe( topics.INPUT_CHANNEL_PREV, this, "selectPrevChannel", [] );
-    util.subscribe( topics.INPUT_CHANNEL_PART, this, "closeCurrentChannel", [] );
-    util.subscribe( topics.INPUT_CHANNEL_INDEX, this, "selectChannelFromIndex", [] );
-    util.subscribe( topics.UPDATE_NO_NEW_UPDATES, this, "showNoUpdatesDialog", [] );
+    util.subscribe( diom.topics.USER_HIGHLIGHT, this, "highlight", [] );
+    util.subscribe( diom.topics.PREFS_CHANGE_FONT, this, "changeFont", [] );
+    util.subscribe( diom.topics.PREFS_CHANGE_THEME, this, "changeTheme", [] );
+    util.subscribe( diom.topics.NOTIFY, this, "notify", []);
+    util.subscribe( diom.topics.CHANNEL_TOPIC, this, "handleTopic", [] );
+    util.subscribe( diom.topics.NICK_CHANGE, this, "handleNickChange", [] );
+    util.subscribe( diom.topics.INPUT_PAGE_UP, this, "scrollUp", [] );
+    util.subscribe( diom.topics.INPUT_PAGE_DOWN, this, "scrollDown", [] );
+    util.subscribe( diom.topics.INPUT_CHANNEL_NEXT, this, "selectNextChannel", [] );
+    util.subscribe( diom.topics.INPUT_CHANNEL_PREV, this, "selectPrevChannel", [] );
+    util.subscribe( diom.topics.INPUT_CHANNEL_PART, this, "closeCurrentChannel", [] );
+    util.subscribe( diom.topics.INPUT_CHANNEL_INDEX, this, "selectChannelFromIndex", [] );
+    util.subscribe( diom.topics.UPDATE_NO_NEW_UPDATES, this, "showNoUpdatesDialog", [] );
   }
 
   var _vvp = dView.View.prototype;
@@ -248,11 +248,11 @@ if ( window.runtime && air && util ) {
       var name = n.getAttribute( "name" );
       if ( name == server ) {
         window.setTimeout( function() {
-          util.publish( topics.NETWORK_CLOSE, [ server ] );
+          util.publish( diom.topics.NETWORK_CLOSE, [ server ] );
         }, 0);
       } else {
         window.setTimeout( function() {
-          util.publish( topics.CHANNEL_CLOSE, [ server, name ] );
+          util.publish( diom.topics.CHANNEL_CLOSE, [ server, name ] );
         }, 0);
       }
     }
@@ -264,7 +264,7 @@ if ( window.runtime && air && util ) {
       var type = n.getAttribute( "type" );
       var name = n.getAttribute( "name" );
       window.setTimeout( function() {
-        util.publish( topics.CHANNEL_SELECTED, [ server, type, name ] );
+        util.publish( diom.topics.CHANNEL_SELECTED, [ server, type, name ] );
       }, 0);
     }
   }
@@ -494,7 +494,7 @@ if ( window.runtime && air && util ) {
     if ( !networks ) networks = [];
     window.performsBridge = {
       util : util,
-      topics : topics,
+      topics : diom.topics,
       networks : networks,
       getPerforms : util.hitch( this.model.networks, "getPerforms" ),
     }
@@ -518,7 +518,7 @@ if ( window.runtime && air && util ) {
   }
 
   _vvp.handleUpdateBtnClick = function ( e ) {
-    util.publish( topics.UPDATE_CHECK, [] );
+    util.publish( diom.topics.UPDATE_CHECK, [] );
   }
   
   _vvp.handleHelpBtnClick = function ( e ) {
@@ -529,7 +529,7 @@ if ( window.runtime && air && util ) {
     if ( !networks ) networks = [];
     window.channelsBridge = {
       util : util,
-      topics : topics,
+      topics : diom.topics,
       networks : networks,
       getChannels : util.hitch( this.model.networks, "getChannels" ),
     }
@@ -547,7 +547,7 @@ if ( window.runtime && air && util ) {
     if ( !networks ) networks = [];
     window.serversBridge = {
       util : util,
-      topics : topics,
+      topics : diom.topics,
       networks : networks,
       getServers : util.hitch( this.model.networks, "getServers" ),
     }
@@ -569,7 +569,7 @@ if ( window.runtime && air && util ) {
     if ( !ignores ) ignores = [];
     window.ignoresBridge = {
       util : util,
-      topics : topics,
+      topics : diom.topics,
       ignores : ignores,
     }
     var x = window.nativeWindow.x + 150;
@@ -590,7 +590,7 @@ if ( window.runtime && air && util ) {
     if ( !aliases ) aliases = [];
     window.aliasesBridge = {
       util : util,
-      topics : topics,
+      topics : diom.topics,
       aliases : aliases,
     }
     var x = window.nativeWindow.x + 150;
@@ -607,7 +607,7 @@ if ( window.runtime && air && util ) {
     if ( !networks ) networks = [];
     window.networksBridge = {
       util : util,
-      topics : topics,
+      topics : diom.topics,
       preferences : this.model.prefs.getPrefs( ),
       networks : networks,
     }
@@ -621,7 +621,7 @@ if ( window.runtime && air && util ) {
   _vvp.handlePrefBtnClick = function ( e ) {
     window.prefBridge = {
       util : util,
-      topics : topics,
+      topics : diom.topics,
       preferences : this.model.prefs.getPrefs( ),
     }
     var x = window.nativeWindow.x + 150;
@@ -663,7 +663,7 @@ if ( window.runtime && air && util ) {
     this.channelName = null;
     this.serverName = null;
     this.channels = [];
-    util.subscribe( topics.NICK_CHANGE, this, "handleNickChange", [] );
+    util.subscribe( diom.topics.NICK_CHANGE, this, "handleNickChange", [] );
   }
 
   var _vip = dView.FormInput.prototype;
@@ -697,7 +697,7 @@ if ( window.runtime && air && util ) {
       var input = inputs[ i ];
       this.addToHistory( input );
       util.log("getInput: " + input );
-      util.publish( topics.USER_INPUT, [ input ] );
+      util.publish( diom.topics.USER_INPUT, [ input ] );
     }
   }
 
@@ -734,26 +734,26 @@ if ( window.runtime && air && util ) {
     } else if ( key == 78 && ( e.metaKey || e.ctrlKey ) ) {
       //cntrl+n or command key+n
       util.stopEvent( e );
-      util.publish( topics.INPUT_CHANNEL_NEXT );
+      util.publish( diom.topics.INPUT_CHANNEL_NEXT );
       return;
     } else if ( key == 39 && e.shiftKey && ( e.metaKey || e.ctrlKey ) ) {
       //cntrl+shift+r arrow or command key+shift+r arrow
       util.stopEvent( e );
-      util.publish( topics.INPUT_CHANNEL_NEXT );
+      util.publish( diom.topics.INPUT_CHANNEL_NEXT );
       return;
     } else if ( key == 80 && ( e.metaKey || e.ctrlKey ) ) {
       //cntrl+p or command key+p
       util.stopEvent( e );
-      util.publish( topics.INPUT_CHANNEL_PREV );
+      util.publish( diom.topics.INPUT_CHANNEL_PREV );
       return;
     } else if ( key == 37 && e.shiftKey && ( e.metaKey || e.ctrlKey ) ) {
       //cntrl+shift+l arrow or command key+shift+l arrow
       util.stopEvent( e );
-      util.publish( topics.INPUT_CHANNEL_PREV );
+      util.publish( diom.topics.INPUT_CHANNEL_PREV );
       return;
     } else if ( key == 76 && ( e.metaKey || e.ctrlKey ) ) {
       util.stopEvent( e );
-      util.publish( topics.INPUT_CHANNEL_PART );
+      util.publish( diom.topics.INPUT_CHANNEL_PART );
       return;
     } else if ( key == 13 ) {
       //enter
@@ -769,11 +769,11 @@ if ( window.runtime && air && util ) {
       return;
     } else if ( key == 33 ) {
       //page up
-      util.publish( topics.INPUT_PAGE_UP );
+      util.publish( diom.topics.INPUT_PAGE_UP );
       return;
     } else if ( key == 34 ) {
       //page down
-      util.publish( topics.INPUT_PAGE_DOWN );
+      util.publish( diom.topics.INPUT_PAGE_DOWN );
       return;
     } else {
       this.reset( );
@@ -783,7 +783,7 @@ if ( window.runtime && air && util ) {
         util.stopEvent( e );
         var index = key - 49;
         if ( index < 0 ) index = 9;
-        util.publish( topics.INPUT_CHANNEL_INDEX, [ index ] );
+        util.publish( diom.topics.INPUT_CHANNEL_INDEX, [ index ] );
       }
     }
   }
@@ -925,9 +925,9 @@ if ( window.runtime && air && util ) {
     this.isInStyle = false;
     this.isInBold = false;
     this.maxItems = maxItems;
-    util.subscribe( topics.PREFS_CHANGE_HISTORY_LENGTH, this, "handleChangeHistoryLength", [] );
-    util.subscribe( topics.PREFS_CHANGE_TIME_FORMAT, this, "setTimeFormat", [] );
-    util.subscribe( topics.CHANNEL_TOPIC, this, "handleTopic", [] );
+    util.subscribe( diom.topics.PREFS_CHANGE_HISTORY_LENGTH, this, "handleChangeHistoryLength", [] );
+    util.subscribe( diom.topics.PREFS_CHANGE_TIME_FORMAT, this, "setTimeFormat", [] );
+    util.subscribe( diom.topics.CHANNEL_TOPIC, this, "handleTopic", [] );
   }
 
   var _vap = dView.ActivityWindow.prototype;
@@ -1197,7 +1197,7 @@ if ( window.runtime && air && util ) {
     if ( anchors && anchors.length ) {
       for ( var i = 0; i < anchors.length; i++ )  {
         var a = anchors[ i ];
-        util.publish( topics.LINK_FOUND, [ a.getAttribute( "href" ), this.serverName, this.channelName, nick ] );
+        util.publish( diom.topics.LINK_FOUND, [ a.getAttribute( "href" ), this.serverName, this.channelName, nick ] );
         delete a;
       }
     }
@@ -1316,7 +1316,7 @@ if ( window.runtime && air && util ) {
     r = r.concat( usersR );
     this.setContents( this.win, r.join( "" ), false );
     this.nicks = nicks;
-    util.publish( topics.NICK_CHANGE, [ nicks, this.serverName, this.channelName ] );
+    util.publish( diom.topics.NICK_CHANGE, [ nicks, this.serverName, this.channelName ] );
   }
 
   _vnw.sort = function ( users ) {
@@ -1362,7 +1362,7 @@ if ( window.runtime && air && util ) {
   dView.LinkView = function ( node ) {
     this.node = node;
     this.links = [];
-    util.subscribe( topics.LINK_DATA, this, "addLink", [] );
+    util.subscribe( diom.topics.LINK_DATA, this, "addLink", [] );
   }
 
   var _vlw = dView.LinkView.prototype;

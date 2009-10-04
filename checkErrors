@@ -39,8 +39,6 @@ do
   java -jar js/util/shrinksafe/js.jar ./js/tests/${tests[$i]}Test.js
 done
 
-
-#echo Running rhinoTest.js
-#java -jar js/util/shrinksafe/js.jar rhinoTest.js 
+echo Finished tests!
 
 

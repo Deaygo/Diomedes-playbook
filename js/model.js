@@ -217,7 +217,7 @@ if ( window.runtime && air && util ) {
       active : active 
     }
     this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
-    util.publish( topics.NETWORK_CHANGE, [ null ] );
+    util.publish( diom.topics.NETWORK_CHANGE, [ null ] );
   }
 
   _mnp.editNetwork = function ( id, name, nick, altNick, userName, realName, finger, autoJoin, active ) {
@@ -237,7 +237,7 @@ if ( window.runtime && air && util ) {
       active : active 
     }
     this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
-    util.publish( topics.NETWORK_CHANGE, [ id ] );
+    util.publish( diom.topics.NETWORK_CHANGE, [ id ] );
   }
 
   _mnp.remNetwork = function ( id ) {
@@ -252,7 +252,7 @@ if ( window.runtime && air && util ) {
     this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
     sql = "DELETE FROM performs WHERE networkId = :id";
     this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
-    util.publish( topics.NETWORK_CHANGE, [ null ] );
+    util.publish( diom.topics.NETWORK_CHANGE, [ null ] );
     //rem servers, channels and performs too
   }
 
@@ -271,7 +271,7 @@ if ( window.runtime && air && util ) {
       active : active,
     }
     this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
-    util.publish( topics.NETWORK_CHANGE, [ networkId ] );
+    util.publish( diom.topics.NETWORK_CHANGE, [ networkId ] );
   }
 
   _mnp.editServer = function ( id, networkId, name, autoJoin, active ) {
@@ -285,14 +285,14 @@ if ( window.runtime && air && util ) {
       active : active 
     }
     this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
-    util.publish( topics.NETWORK_CHANGE, [ networkId ] );
+    util.publish( diom.topics.NETWORK_CHANGE, [ networkId ] );
   }
 
   _mnp.remServer = function ( id, networkId ) {
     var sql = "DELETE FROM servers WHERE id = :id";
     var p = { id : id };
     this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
-    util.publish( topics.NETWORK_CHANGE, [ networkId ] );
+    util.publish( diom.topics.NETWORK_CHANGE, [ networkId ] );
   }
 
   _mnp.getChannels = function ( networkId, resultsHandler ) {
@@ -306,14 +306,14 @@ if ( window.runtime && air && util ) {
       "VALUES ( :networkId, :name, :autoJoin )";
     p = { networkId : networkId, name : name, autoJoin : autoJoin };
     this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
-    util.publish( topics.NETWORK_CHANGE, [ networkId ] );
+    util.publish( diom.topics.NETWORK_CHANGE, [ networkId ] );
   }
 
   _mnp.remChannel = function ( id, networkId ) {
     var sql = "DELETE FROM channels WHERE id = :id";
     p = { id : id };
     this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
-    util.publish( topics.NETWORK_CHANGE, [ networkId ] );
+    util.publish( diom.topics.NETWORK_CHANGE, [ networkId ] );
   }
 
   _mnp.getPerforms = function ( networkId, resultsHandler ) {
@@ -334,7 +334,7 @@ if ( window.runtime && air && util ) {
       active : active
     }
     this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
-    util.publish( topics.NETWORK_CHANGE, [ networkId ] );
+    util.publish( diom.topics.NETWORK_CHANGE, [ networkId ] );
   }
 
   _mnp.editPerform = function ( id, networkId, name, command, active ) {
@@ -348,14 +348,14 @@ if ( window.runtime && air && util ) {
       active : active
     }
     this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
-    util.publish( topics.NETWORK_CHANGE, [ networkId ] );
+    util.publish( diom.topics.NETWORK_CHANGE, [ networkId ] );
   }
 
   _mnp.remPerform = function ( id, networkId ) {
     var sql = "DELETE FROM performs WHERE id = :id";
     var p = { id : id };
     this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
-    util.publish( topics.NETWORK_CHANGE, [ networkId ] );
+    util.publish( diom.topics.NETWORK_CHANGE, [ networkId ] );
   }
 
   _mnp._handleCreateTable = function ( e, tableName ) {
@@ -428,7 +428,7 @@ if ( window.runtime && air && util ) {
 
   _mip._handleChange = function ( e ) {
     util.log( "Database changed." );
-    util.publish( topics.IGNORES_CHANGE, [ null ] );
+    util.publish( diom.topics.IGNORES_CHANGE, [ null ] );
   }
 
   dModel.AliasModel = function ( model ) {
@@ -495,7 +495,7 @@ if ( window.runtime && air && util ) {
 
   _map._handleChange = function ( e ) {
     util.log( "Database changed." );
-    util.publish( topics.ALIAS_CHANGE, [ null ] );
+    util.publish( diom.topics.ALIAS_CHANGE, [ null ] );
   }
 
   dModel.PrefModel = function ( model ) {
@@ -692,23 +692,23 @@ if ( window.runtime && air && util ) {
   _mpp.setPrefs = function ( prefs ) {
     if ( !prefs ) return;
     if ( prefs.historyLength != this.preferences.historyLength ) {
-      util.publish( topics.PREFS_CHANGE_HISTORY_LENGTH, [ prefs.historyLength ] );
+      util.publish( diom.topics.PREFS_CHANGE_HISTORY_LENGTH, [ prefs.historyLength ] );
     }
     if ( prefs.autoJoin != this.preferences.autoJoin ) {
-      util.publish( topics.PREFS_CHANGE_AUTOJOIN, [ prefs.autoJoin ] );
+      util.publish( diom.topics.PREFS_CHANGE_AUTOJOIN, [ prefs.autoJoin ] );
     }
     if ( prefs.logging != this.preferences.logging ) {
-      util.publish( topics.PREFS_CHANGE_LOGGING, [ prefs.logging === "true" ] );
+      util.publish( diom.topics.PREFS_CHANGE_LOGGING, [ prefs.logging === "true" ] );
     }
     if ( prefs.updateDelay != this.preferences.updateDelay ) {
-      util.publish( topics.UPDATE_DELAY_CHANGE, [ prefs.updateDelay ] );
+      util.publish( diom.topics.UPDATE_DELAY_CHANGE, [ prefs.updateDelay ] );
     }
     if ( prefs.updateURL != this.preferences.updateURL ) {
-      util.publish( topics.UPDATE_URL_CHANGE, [ prefs.updateURL ] );
+      util.publish( diom.topics.UPDATE_URL_CHANGE, [ prefs.updateURL ] );
     }
-    util.publish( topics.PREFS_CHANGE_FONT, [ prefs.multiOptionPrefs.font, prefs.fontSize ] );
-    util.publish( topics.PREFS_CHANGE_TIME_FORMAT, [ prefs.multiOptionPrefs.time ] );
-    util.publish( topics.PREFS_CHANGE_THEME, [ prefs.multiOptionPrefs.theme ] );
+    util.publish( diom.topics.PREFS_CHANGE_FONT, [ prefs.multiOptionPrefs.font, prefs.fontSize ] );
+    util.publish( diom.topics.PREFS_CHANGE_TIME_FORMAT, [ prefs.multiOptionPrefs.time ] );
+    util.publish( diom.topics.PREFS_CHANGE_THEME, [ prefs.multiOptionPrefs.theme ] );
     this.preferences = prefs;
   }
 
