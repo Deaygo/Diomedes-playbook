@@ -9,6 +9,11 @@ checkFiles=(
   "diom/include"
   "diom/irc"
   "diom/connection/connection"
+  "diom/connection/user"
+  "diom/connection/activityItem"
+  "diom/connection/activityList"
+  "diom/connection/channel"
+  "diom/topics"
 
   "tests/loggerTest"
 

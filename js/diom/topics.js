@@ -1,6 +1,13 @@
 /*
   Copyright (c) 2009 Apphacker apphacker@gmail.com
 */
+/*jslint white: false */
+/*jslint nomen: false */
+/*jslint plusplus: false */
+/*jslint passfail: true */
+/*global window, dojo, util */
+
+dojo.provide( "diom.topics" );
 
 var topics;
 
