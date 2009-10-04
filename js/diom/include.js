@@ -19,4 +19,5 @@ dojo.require( "diom.connection.activityList" );
 dojo.require( "diom.connection.channel" );
 dojo.require( "diom.connection.user" );
 dojo.require( "diom.topics" );
+dojo.require( "diom.network" );
 

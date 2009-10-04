@@ -2,13 +2,14 @@
   Copyright (c) 2009 Apphacker apphacker@gmail.com
 */
 
+dojo.provide( "diom.network" );
+
 var dNetwork;
 
 if ( !dNetwork ) {
   dNetwork = {};
 }
 
-if ( window.runtime && air && util ) {
   //requires AIR and util
   
 
@@ -182,6 +183,4 @@ if ( window.runtime && air && util ) {
   _nn.destroy = function ( ) {
     this.close( );
   }
-
-}
 
