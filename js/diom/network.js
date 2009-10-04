@@ -13,6 +13,7 @@ dojo.provide( "diom.network" );
 dojo.declare( "diom.Network", null, {
 
   constructor: function ( data, model, channelList, prefs, appVersion, ignores ) {
+		var id;
     this.prefs = util.cloneObject( prefs.getPrefs( ) );
     this.ignores = ignores;
     this.prefs.nick = data.nick;
@@ -34,7 +35,7 @@ dojo.declare( "diom.Network", null, {
     this.currentHostIndex = null;
     this.currentHost = null;
     this.TEST_CONNECTION_TIME = 5000;
-    var id = data.id;
+    id = data.id;
     model.getServers( id, util.hitch( this, "handleServerInfo" ) ); 
     model.getChannels( id, util.hitch( this, "handleChannelInfo" ) );
     model.getPerforms( id, util.hitch( this, "handlePerformInfo" ) );
@@ -50,14 +51,14 @@ dojo.declare( "diom.Network", null, {
   },
 
   handleNetworkConnect: function ( type, channelName, host ) {
-    if ( type == "connect" && host == this.currentHost ) {
+    if ( type === "connect" && host === this.currentHost ) {
       this.perform( );
     }
   },
 
   handleNetworksChanged: function ( id ) {
     util.log("hnc in nn");
-    if ( id && id == this.data.id ) {
+    if ( id && id === this.data.id ) {
       this.model.getServers( id, util.hitch( this, "handleServerInfo" ) ); 
       this.model.getChannels( id, util.hitch( this, "handleChannelInfo" ) );
       this.model.getPerforms( id, util.hitch( this, "handlePerformInfo" ) );
@@ -106,22 +107,23 @@ dojo.declare( "diom.Network", null, {
   },
 
   connect: function ( ) {
-    if ( !this.servers.length ) return;
+		var parts, port;
+    if ( !this.servers.length ) { return; }
     if ( this.currentHost ) {
       util.publish( diom.topics.CONNECTION_CLOSE, [ this.currentHost ] );
       this.connection = null;
       this.currentHost = null;
     }
-    var parts = this.getNextServer( ).split( ":" );
+    parts = this.getNextServer( ).split( ":" );
     this.currentHost = util.fromIndex( parts, 0 );
-    var port = util.fromIndex( parts, 1 );
+    port = util.fromIndex( parts, 1 );
     this.channelList.createConnection( this.currentHost, port, this.prefs, this.appVersion, this.ignores );
     this.connection = this.channelList.getConnection( this.currentHost );
     util.publish( diom.topics.CHANNELS_CHANGED, [ "connect", this.currentHost, this.currentHost ] );
   },
 
   getNextServer: function ( ) {
-    if ( this.currentHostIndex === null || this.currentHostIndex == ( this.servers.length - 1 ) ) {
+    if ( this.currentHostIndex === null || this.currentHostIndex === ( this.servers.length - 1 ) ) {
       this.currentHostIndex = 0;
     } else {
       do {
@@ -144,10 +146,11 @@ dojo.declare( "diom.Network", null, {
   },
 
   joinDefaultChannels: function ( ) {
-    var channelsData = this.channels;
-    var channels = [];
-    for ( var i = 0; i < channelsData.length; i ++ ) {
-      var channel = channelsData[ i ];
+		var channelsData, channels, i, channel;
+    channelsData = this.channels;
+    channels = [];
+    for ( i = 0; i < channelsData.length; i ++ ) {
+      channel = channelsData[ i ];
       channels.push( channel.name );
     }
     if ( channels.length ) {
