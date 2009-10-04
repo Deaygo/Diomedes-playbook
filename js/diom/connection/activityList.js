@@ -1,43 +1,48 @@
+/*jslint white: false */
+/*jslint nomen: false */
+/*jslint plusplus: false */
+/*jslint passfail: true */
+/*global window, dojo, util, diom */
 
 dojo.provide( "diom.connection.activityList" );
 
-  //ActivityList Class
-  dConnection.ActivityList = function ( maxItems ) {
+dojo.declare( "diom.connection.ActivityList", null, {
+
+  constructor: function ( maxItems ) {
     this.messages = [];
-    this.maxItems = 500; //XXX: should be a preference
-    util.subscribe( topics.PREFS_CHANGE_HISTORY_LENGTH, this, "handleChangeHistoryLength", [] );
-  }
+    this.maxItems = maxItems; 
+    util.subscribe( diom.topics.PREFS_CHANGE_HISTORY_LENGTH, this, "handleChangeHistoryLength", [] );
+  },
 
-  var _cap = dConnection.ActivityList.prototype;
-
-  _cap.handleChangeHistoryLength = function ( newLen ) {
+  handleChangeHistoryLength: function ( newLen ) {
     this.maxItems = newLen;
-  }
+  },
 
-  _cap.addMessage = function ( msg ) {
+  addMessage: function ( msg ) {
     if ( this.messages.length >= this.maxItems ) {
-      var t_msg = this.messages.shift( );
-      delete t_msg;
+      this.messages.shift( );
     }
     this.messages.push( msg );
-    delete msg;
-  }
+    msg = null;
+  },
 
-  _cap.clearActivity = function ( ) {
+  clearActivity: function ( ) {
     for ( var i = 0; i < this.messages.length; i++ ) {
-      delete this.messages[i];
+      delete this.messages[ i ];
     }
-    this.messages = [];
-  }
+    this.messages = [ ];
+  },
 
-  _cap.getMessages = function ( ) {
+  getMessages: function ( ) {
     return this.messages;
-  }
+  },
 
-  _cap.destroy = function ( ) {
+  destroy: function ( ) {
     for ( var i = 0; i < this.messages.length; i++ ) {
       this.messages[ i ].destroy( );
       delete this.messages[ i ];
     }
   }
+
+} );
 
