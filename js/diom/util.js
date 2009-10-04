@@ -1,38 +1,10 @@
-/*
-  Copyright (c) 2009 Apphacker apphacker@gmail.com twitter.com/apphacker
-  
-  Some code below either is either inspired by, modified or
-  a direct lift from Dojo JavaScript Library.
+/*jslint white: false */
+/*jslint nomen: false */
+/*jslint plusplus: false */
+/*jslint passfail: true */
+/*global window, dojo, diom, air, document */
 
-
-  Copyright (c) 2005-2008, The Dojo Foundation
-  All rights reserved.
-
-  Redistribution and use in source and binary forms, with or without
-  modification, are permitted provided that the following conditions are met:
-
-    * Redistributions of source code must retain the above copyright notice, this
-      list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice,
-      this list of conditions and the following disclaimer in the documentation
-      and/or other materials provided with the distribution.
-    * Neither the name of the Dojo Foundation nor the names of its contributors
-      may be used to endorse or promote products derived from this software
-      without specific prior written permission.
-
-  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-  DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
-  FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-  DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-  
-  
-*/
+dojo.provide( "diom.util" );
 
 var util;
 
@@ -43,148 +15,156 @@ if ( !util ) {
 if ( window.runtime && air ) {
 
   util.isString = function ( str ) {
-    return !!arguments.length && str != null && ( typeof str == "string" || str instanceof String );
-  }
+    return !!arguments.length && str !== null && ( typeof str === "string" || str instanceof String );
+  };
 
   util.trim = function ( str ) {
     return str.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
-  }
+  };
 
   util.isFunction = function ( obj ){
-    return obj && ( typeof obj == "function" || obj instanceof Function ); 
-  }
+    return obj && ( typeof obj === "function" || obj instanceof Function ); 
+  };
 
   util.hitch = function ( o, f, args ) {
-    if ( !f ) throw "util.hitch failure: invalid function: " + f;
-    if ( !o ) throw "util.hitch failure: invalid scope: " + o;
-    if ( !args )  {
+		var a;
+    if ( !f ) { throw "util.hitch failure: invalid function: " + f; }
+    if ( !o ) { throw "util.hitch failure: invalid scope: " + o; }
+    if ( !args ) {
       args = [];
     }
     if ( this.isString( f ) ) {
       return function ( ) {
-        var a = Array.prototype.slice.call(arguments);
+        a = Array.prototype.slice.call(arguments);
         a = a.concat(args);
         return o[f].apply( o, a );
-      }
+      };
     } else {
       return function ( ) {
-        var a = Array.prototype.slice.call(arguments);
+        a = Array.prototype.slice.call(arguments);
         a = a.concat(args);
         return f.apply( o, a );
-      }
+      };
     }
-  }
+  };
 
   util.rand = function ( min, max ) {
     return Math.floor( Math.random( ) * ( max - min + 1 ) ) + min;
-  }
+  };
 
   util.log = function ( msg ) {
     var d = new Date( );
     msg = "[" + d.toString() + "] UTIL LOG: " + msg + "\n";
     air.trace( msg );
     //console.log(msg);
-    delete d;
-  }
+		d = null;
+  };
 
   util.findUp = function ( node, className ) {
-    if ( !node || !className ) return null;
+    if ( !node || !className ) { return null; }
     if ( util.hasClass( node, className ) ) {
       return node;
     } else if ( node.parentNode ) {
       return util.findUp( node.parentNode, className );
     }
     return null;
-  }
+  };
 
   util.hasClass = function ( node, className ) {
-    if ( !node || !className ) return false;
-    if ( node == document ) return false;
-    if ( !node.hasAttribute( "class" ) ) return false;
-    var classes = util.trim( node.getAttribute( "class" ) );
-    if ( !classes || !classes.length ) return false;
-    var classes = classes.split( " " );
-    for ( var i = 0; i < classes.length; i++ ) {
-      var name = classes[ i ];
-      if ( name == className ) {
+		var classes, i, name;
+    if ( !node || !className ) { return false; }
+    if ( node === document ) { return false; }
+    if ( !node.hasAttribute( "class" ) ) { return false; }
+    classes = util.trim( node.getAttribute( "class" ) );
+    if ( !classes || !classes.length ) { return false; }
+    classes = classes.split( " " );
+    for ( i = 0; i < classes.length; i++ ) {
+      name = classes[ i ];
+      if ( name === className ) {
         return true;
       }
     }
     return false;
-  }
+  };
 
   util.addClass = function ( node, className ) {
-    if ( !node || !className ) return;
-    var classes = node.getAttribute( "class" ).split( " " );
+		var classes;
+    if ( !node || !className ) { return; }
+    classes = node.getAttribute( "class" ).split( " " );
     if ( !util.hasClass( node, className ) ) {
       classes.push( className );
     }
     node.setAttribute( "class", classes.join( " " ) );
-  }
+  };
 
   util.remClass = function ( node, className ) {
-    if ( !node || !className ) return;
+		var classes, keep, i, name;
+    if ( !node || !className ) { return; }
     if ( node.hasAttribute( "class" ) ) {
-      var classes = node.getAttribute( "class" ).split( " " );
-      var keep = [];
-      for ( var i = 0; i < classes.length; i++ ) {
-        var name = classes[ i ];
-        if ( name != className ) {
+      classes = node.getAttribute( "class" ).split( " " );
+      keep = [];
+      for ( i = 0; i < classes.length; i++ ) {
+        name = classes[ i ];
+        if ( name !== className ) {
           keep.push( name );
         }
       }
       node.setAttribute( "class", keep.join( " " ) );
     }
-  }
+  };
 
   util.cloneObject = function ( o ) {
-    var newO = {};
-    for ( var key in o ) {
-      if ( o.hasOwnProperty( key ) && key != "prototype" ) {
+		var newO, key;
+    newO = {};
+    for ( key in o ) {
+      if ( o.hasOwnProperty( key ) && key !== "prototype" ) {
         newO[ key ] = o[ key ];
       }
     }
     return newO;
-  }
+  };
 
   util.get = function ( id, doc ) {
     if ( !doc ) {
       doc = document;
     } 
     return doc.getElementById( id );
-  }
+  };
 
   util.connect = function ( o, type, scope, method ) {
-    if ( !type.search( "on" ) ) type = type.substr( 2 );
+    if ( !type.search( "on" ) ) { type = type.substr( 2 ); }
     o.addEventListener( type, this.hitch( scope, method ), false );
-  }
+  };
 
   util._subs = {};
 
   util.subscribe = function ( type, scope, handler, args ) {
-    if ( !this._subs[ type ] ) this._subs[ type ] = [];
-    var length = this._subs[ type ].push( {
+		var length, id;
+    if ( !this._subs[ type ] ) { this._subs[ type ] = []; }
+    length = this._subs[ type ].push( {
         scope : scope, 
         handler : handler, 
         args : ( args ? args : [] )
     } ) ;
-    var id = type + ";" + length; //length is the new index + 1
+    id = type + ";" + length; //length is the new index + 1
     return id;
-  }
+  };
 
   util.unsubscribe = function ( id ) {
-    var parts = id.split( ";" );
-    var type = parts[0];
-    var index = parseInt( parts[1] );
+		var parts, type, index;
+    parts = id.split( ";" );
+    type = parts[0];
+    index = parseInt( parts[1], 10 );
     index -= 1; //index 0 based, but don't want 0 as ID as evaluates to false;
     delete this._subs[type][index];
-  }
+  };
 
   util.publish = function ( type, args ) {
+		var subs, i, subMsg, _args, sub;
     if ( this._subs[type] ) {
-      var subs = this._subs[type], sub, _args;
+      subs = this._subs[type];
       try {
-        for( var i = 0; i < subs.length; i++ ) {
+        for( i = 0; i < subs.length; i++ ) {
           sub = subs[i]; 
           if ( sub ) {
             _args = sub.args.concat( args );
@@ -197,21 +177,21 @@ if ( window.runtime && air ) {
         }
       } catch ( e ) {
         if ( sub && sub.handler ) {
-          var subMsg = " handler: " + sub.handler
+          subMsg = " handler: " + sub.handler;
         } else {
-          var subMsg = "";
+          subMsg = "";
         } 
         throw "bad publish, type: " + type + subMsg + " e: " + e;
       }
     }
-  }
+  };
 
   util.stopEvent = function ( e ) {
     if ( e ) {
       e.preventDefault( );
       e.stopPropagation( );
     }
-  }
+  };
   
   util.fromIndex = function ( arr, index ) {
     if ( arr.length && arr.length > index ) {
@@ -219,12 +199,12 @@ if ( window.runtime && air ) {
     } else {
       return null;
     }
-  }
+  };
 
   util.Timer = function ( ) {
     this.startTime = null;
     this.endTime = null;
-  }
+  };
 
   var _utp = util.Timer.prototype;
 
@@ -232,13 +212,13 @@ if ( window.runtime && air ) {
     this.endTime = null;
     this.startTime = new Date().getTime();
     util.log("Start: " + this.startTime);
-  }
+  };
 
   _utp.finish = function () {
     this.endTime = new Date().getTime();
     util.log("Finish: " + this.endTime);
     this.getTime();
-  }
+  };
 
   _utp.getTime = function () {
     if ( this.startTime && this.endTime ) {
@@ -250,7 +230,7 @@ if ( window.runtime && air ) {
     } else {
       util.log("Start and finish timer before calling this method.");
     }
-  }
+  };
 
   util.timer = new util.Timer();
 }

@@ -14,6 +14,8 @@ checkFiles=(
   "diom/connection/activityList"
   "diom/connection/channel"
   "diom/topics"
+  "diom/network"
+  "diom/util"
 
   "tests/loggerTest"
 

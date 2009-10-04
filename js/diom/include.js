@@ -2,7 +2,7 @@
 /*jslint nomen: false */
 /*jslint plusplus: false */
 /*jslint passfail: true */
-/*global window, dojo, util */
+/*global window, dojo, util, diom */
 
 dojo.provide( "diom.include" );
 
@@ -20,4 +20,5 @@ dojo.require( "diom.connection.channel" );
 dojo.require( "diom.connection.user" );
 dojo.require( "diom.topics" );
 dojo.require( "diom.network" );
+dojo.require( "diom.util" );
 
