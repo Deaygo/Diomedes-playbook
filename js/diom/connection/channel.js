@@ -36,7 +36,9 @@ dojo.declare( "diom.connection.Channel", null, {
     }
   },
 
-  getChannelName: diom.connection.getChannelName,
+  getChannelName: function ( target ) {
+    return target.toLowerCase( );
+	},
 
   setTopic: function ( topic ) {
     this.topic = topic;

@@ -536,7 +536,7 @@ if ( window.runtime && air && util ) {
 
   _cclp.createConnection = function ( server, port, preferences, appVersion, ignores ) {
     if ( !( server in this.connections ) ) {
-      this.connections[server] = new dConnection.Connection( server, port, preferences, appVersion, ignores );
+      this.connections[server] = new diom.connection.Connection( server, port, preferences, appVersion, ignores );
       this.connections[server].connect( );
       return true;
     } else {

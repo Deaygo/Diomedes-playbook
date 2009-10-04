@@ -11,6 +11,7 @@ dojo.provide( "diom.include" );
 dojo.require( "diom.irc" );
 dojo.require( "diom.logger" );
 
+
 //connection
 dojo.require( "diom.connection.connection" );
 dojo.require( "diom.connection.activityItem" );
