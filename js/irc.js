@@ -1,19 +1,26 @@
 /*
   Copyright (c) 2009 Apphacker apphacker@gmail.com twitter.com/apphacker
 */
+/*jslint white: false */
+/*jslint nomen: false */
+/*jslint plusplus: false */
+/*jslint passfail: true */
+/*global window, dojo, util */
 
 var irc;
 
-if ( !irc ){
-  irc = {};
-}
+var diom;
+if ( !dojo.isObject( diom ) ) {
+  diom = {};
+} 
 
-if ( window.runtime && air && util ) {
+
+var air;
+
   //requires AIR and util
+dojo.declare( "diom.irc", null, {
   
-  //irc.Client Class
-  irc.Client = function ( server, port, defaultChannels, nick, userName, realName ){
-
+  constructor: function ( server, port, defaultChannels, nick, userName, realName ) {
 
     //Connection info
     this.host = null;
@@ -28,6 +35,7 @@ if ( window.runtime && air && util ) {
     this.connectionEstablished = false;
     this.connectionAccepted = false;
     this.createConnection( );
+    this.PING_TIME_OUT_WAIT = 60000;
 
     this.pollTime = 0;
 
@@ -69,119 +77,117 @@ if ( window.runtime && air && util ) {
       "&":"&",
       "#":"#",
       "+":"+",
-      "!":"!",
-    }
-  }
+      "!":"!"
+    };
+  },
 
-  var _icp = irc.Client.prototype;
-
-  _icp.setFinger = function ( info ) {
+  setFinger: function ( info ) {
     this.finger = info;
-  }
+  },
 
-  _icp.setClientInfo = function ( info ) {
+  setClientInfo: function ( info ) {
     this.clientInfo = info;
-  }
+  },
 
-  _icp.getNick = function ( ) {
+  getNick: function ( ) {
     return this.nick;
-  }
+  },
 
-  _icp.setJoinDelegate = function ( del ) {
+  setJoinDelegate: function ( del ) {
     //delegate signature must be
       //joinDelegate(nick, host, target)
       this.joinDelegate = del;
-  }
-  _icp.setInviteDelegate = function ( del ) {
+  },
+  setInviteDelegate: function ( del ) {
     //delegate signature must be
       //inviteDelegate(nick, target)
       this.inviteDelegate = del;
-  }
-  _icp.setNoticeDelegate = function ( del ) {
+  },
+  setNoticeDelegate: function ( del ) {
     //delegate signature must be
       //noticeDelegate(nick, host, target, msg)
       this.noticeDelegate = del;
-  }
-  _icp.setQuitDelegate = function ( del ) {
+  },
+  setQuitDelegate: function ( del ) {
     //delegate signature must be
       //quitDelegate(nick, host, msg)
       this.quitDelegate = del;
-  }
-  _icp.setActionDelegate = function ( del ) {
+  },
+  setActionDelegate: function ( del ) {
     //delegate signature must be
       //actionDelegate(nick, host, target, msg)
       this.actionDelegate = del;
-  }
-  _icp.setMessageDelegate = function ( del ) {
+  },
+  setMessageDelegate: function ( del ) {
     //delegate signature must be
       //messageDelegate(nick, host, target, msg)
       this.messageDelegate = del;
-  }
-  _icp.setPartDelegate = function ( del ) {
+  },
+  setPartDelegate: function ( del ) {
     //delegate signature must be
       //partDelegate(nick, host, target, msg)
       this.partDelegate = del;
-  }
-  _icp.setNickDelegate = function ( del ) {
+  },
+  setNickDelegate: function ( del ) {
     //delegate signature must be
       //nickDelegate(nick, host, msg)
       this.nickDelegate = del;
-  }
-  _icp.setServerDelegate = function ( del ) {
+  },
+  setServerDelegate: function ( del ) {
     //delegate signature must be
       //serverDelegate(host, msg)
       this.serverDelegate = del;
-  }
-  _icp.setNamesDelegate = function ( del ) {
+  },
+  setNamesDelegate: function ( del ) {
     //delegate signature must be
     // namesDelegate(host, target, nicks)
     //  nicks is an array
     this.namesDelegate = del;
-  }
-  _icp.setConnectionDelegate = function ( del ) {
+  },
+  setConnectionDelegate: function ( del ) {
     //delegate signature must be:
     //nickInUse is a boolean and only is triggered when first joining
     // connectionDelegate( msg, connected, nickInUse )
     this.connectionDelegate = del;
-  }
-  _icp.setTopicDelegate = function ( del ) {
+  },
+  setTopicDelegate: function ( del ) {
     //delegate signature must be:
     // topicDelegate(host, target, topic, topicSetter, datetime)
     this.topicDelegate = del;
-  }
-  _icp.setModeDelegate = function ( del ) {
+  },
+  setModeDelegate: function ( del ) {
     //delegate signature must be:
     // modeDelegate(nick, host, target, modes, cmdParts)
     this.modeDelegate = del;
-  }
-  _icp.setKickDelegate = function ( del ) {
+  },
+  setKickDelegate: function ( del ) {
     //delegate signature must be:
     // kickDelegate(nick, kickedNick, host, target, msg)
     this.kickDelegate = del;
-  }
+  },
 
-  _icp.connect = function ( ) {
-    if ( this._isConnected) return;
+  connect: function ( ) {
+    if ( this._isConnected) { return; }
     this.log( "Attempting connection on server: " + this.server + ", on host: " + this.host ); 
     this.stayConnected = true;
     this.socketMonitor = new air.SocketMonitor( this.server, this.port ); 
     this.socketMonitor.addEventListener( air.StatusEvent.STATUS, util.hitch( this, "onStatus" ) ); 
     this.socketMonitor.start( ); 
     this._connect( );
-  }
+  },
 
-  _icp.isConnected = function ( ) {
+  isConnected: function ( ) {
     return this._isConnected;
-  }
+  },
 
-  _icp._connect = function ( ) {
+  _connect: function ( ) {
     util.log("attempting connection: ");
     if( this.socketMonitor.available ) {
       this.socket.connect( this.server, this.port );
     }
-  }
+  },
 
-  _icp.onStatus = function ( e ) {
+  onStatus: function ( e ) {
     var status_ = this.socketMonitor.available;
     if ( status_ && this.stayConnected && !this._isConnected ) {
       this._connect( );
@@ -190,12 +196,12 @@ if ( window.runtime && air && util ) {
       }  
     } else if ( !status_ && this.stayConnected && this._isConnected ) {
       this.setDisconnectedStatus( );
-    } else if ( !status && this.stayConnected ) {
+    } else if ( !status_ && this.stayConnected ) {
       this.connectionDelegate( "Can't connect to server.", false, false );
     }
-  }
+  },
 
-  _icp.setDisconnectedStatus = function( ) {
+  setDisconnectedStatus: function( ) {
     this.stopPingService( );
     this.connectionEstablished = false;
     this.connectionAccepted = false;
@@ -203,68 +209,69 @@ if ( window.runtime && air && util ) {
     if ( this.connectionDelegate ) {
       this.connectionDelegate( "Disconnected from server.", false, false );
     }
-  }
+  },
 
-  _icp.onConnect = function ( e ) {
+  onConnect: function ( e ) {
     this.log( "Found server, connecting..." );
     this._isConnected = true;
-  }
+  },
 
-  _icp.startPingService = function ( ) {
-    this.log( "\n\n\n\n\nstartingPingService\n\n\n\n\n" );
+  startPingService: function ( ) {
+    this.log( "startingPingService" );
     if ( this.connectionEstablished ) {
       this._send( "PING DiomedesIRC" );
-      this.pingTimeoutID = window.setTimeout( util.hitch( this, "pingTimeout" ), 60000 );
+      this.pingTimeoutID = window.setTimeout( util.hitch( this, "pingTimeout" ), this.PING_TIME_OUT_WAIT );
     }
-  }
+  },
 
-  _icp.pingTimeout = function ( ) {
-    this.log( "\n\n\n\n\nping timedout\n\n\n\n\n" );
+  pingTimeout: function ( ) {
+    this.log( "ping timedout" );
     this.setDisconnectedStatus( );
-  }
+  },
 
-  _icp.stopPingService = function ( ) {
-    this.log( "\n\n\n\n\nstopping ping service\n\n\n\n\n" );
+  stopPingService: function ( ) {
+    this.log( "stopping ping service" );
     if ( this.pingTimeoutID ) {
       window.clearTimeout( this.pingTimeoutID );
       this.pingTmeoutId = null;
     }
-  }
+  },
 
-  _icp.handlePingReply = function ( ) {
-    this.log( "\n\n\n\n\nhandling ping reply\n\n\n\n\n" );
+  handlePingReply: function ( ) {
+    this.log( "handling ping reply" );
     this.stopPingService( );
-    window.setTimeout( util.hitch( this, "startPingService" ), 60000 );
-  }
+    window.setTimeout( util.hitch( this, "startPingService" ), this.PING_TIME_OUT_WAIT );
+  },
 
-  _icp.onSocketData = function ( e ) {
-    if ( !this._isConnected ) return; //not sure why this happens but it does
-    var data = this.socket.readUTFBytes( this.socket.bytesAvailable );
+  onSocketData: function ( e ) {
+    var data, i, d, _d, dataR, pong;
+    if ( !this._isConnected ) { return; } //not sure why this happens but it does
+    data = this.socket.readUTFBytes( this.socket.bytesAvailable );
     this.log( "RAW rec:" + data );
     if ( !this.connectionEstablished ) {
-      var _d = data.split( "\r\n" );
-      for ( var i = 0; i < _d.length; i++ ) {
+      _d = data.split( "\r\n" );
+      for ( i = 0; i < _d.length; i++ ) {
         if ( this.serverDelegate && _d[ i ] ) {
           this.serverDelegate( this.server , _d[ i ], null );
         }
       }
-      if ( data.search( "NOTICE AUTH" ) != -1 )  {
+      if ( data.search( "NOTICE AUTH" ) !== -1 )  {
         this.log( "found ident" );
         this._send( "NICK " + this.nick );
         this._send( "USER " + this.userName + " " + this.server + " serverName " + " :"  + this.realName );
         this.log( "Connection established." );
         this.connectionEstablished = true;
-      } else if ( data.search( "ERROR" ) != -1 ) {
+      } else if ( data.search( "ERROR" ) !== -1 ) {
         this.closeConnection( data );
         return;
       }
     }
-    var dataR = data.split( "\n" );
+    dataR = data.split( "\n" );
     if ( this.connectionEstablished ) {
-      for ( var i = 0; i < dataR.length; i++ ) {
-        var d = dataR[ i ];
-        if ( d.search( "PING" ) == 0 ) {
-          var pong = data.split(" ")[ 1 ];
+      for ( i = 0; i < dataR.length; i++ ) {
+        d = dataR[ i ];
+        if ( d.search( "PING" ) === 0 ) {
+          pong = data.split(" ")[ 1 ];
           this._send( "PONG " + pong );
         } else if ( d.length ) {
           this.handleData( d );
@@ -274,25 +281,27 @@ if ( window.runtime && air && util ) {
     if ( this.socket && this.socket.connected ) {
       this.socket.flush( );
     }
-  }
+  },
 
-  _icp.getIndex = function ( arr, index ) {
+  getIndex: function ( arr, index ) {
     if ( arr.length && arr.length > index ) {
       return arr[ index ];
     } else {
       return null;
     }
-  }
+  },
 
-  _icp.handleData = function ( line ) {
+  handleData: function ( line ) {
+    var endFragment = null,
+      b, i, msg, cmdParts, newNick, host;
     this.log( "Handling line: " + line );
-    if ( line[ 0 ] != ":" ) {
+    if ( line[ 0 ] !== ":" ) {
       this.log( "lost beginning of line, line length: " + line.length );
-      var endFragment = line;
+      endFragment = line;
     } else {
       line = line.substr( 1 ); //strip beginning :
     }
-    if ( line.substr( -1 ) != "\r" ) {
+    if ( line.substr( -1 ) !== "\r" ) {
       this.beginningFragment = line;
       return;
     } else {
@@ -300,14 +309,14 @@ if ( window.runtime && air && util ) {
         //lost a line between data reads
         //connection asynch so no guarantee
         this.log( "lost a line,  beginning: " + this.beginningFragment + " end:" + endFragment );
-        if( line.search( "ERROR" ) == 0 ) {
+        if( line.search( "ERROR" ) === 0 ) {
             util.log("error caught");
             this.closeConnection( line );
             return;
         }
         if ( this.beginningFragment ) {
           //attempting to recover
-          var b = this.beginningFragment;
+          b = this.beginningFragment;
           this.beginningFragment = null;
           this.handleData( ":" + b + endFragment );
         }
@@ -316,20 +325,20 @@ if ( window.runtime && air && util ) {
         line = line.substr( 0, line.length - 1 ); //strip end \r
       }
     }
-    var i = line.search( ":" ), msg;
-    if ( i != -1 ) {
+    i = line.search( ":" );
+    if ( i !== -1 ) {
       msg = line.substr( i + 1 );
       line = line.substr( 0, i - 1 ); //getting rid of ":" 
     } else {
       msg = null;
     }
-    var cmdParts = line.split( " " );
-    if ( !this.connectionAccepted && ( line.search( "433" ) != -1 ) && this.connectionDelegate ) {
+    cmdParts = line.split( " " );
+    if ( !this.connectionAccepted && ( line.search( "433" ) !== -1 ) && this.connectionDelegate ) {
         this.connectionDelegate( "Nickname is alread in use. Type /nick newNick to change it.", true, true );
     }
-    if ( !this.connectionAccepted && ( line.search( "001" ) != -1 ) ) {
+    if ( !this.connectionAccepted && ( line.search( "001" ) !== -1 ) ) {
       this.host = this.getIndex( cmdParts, 0 );
-      var newNick = this.getIndex( cmdParts, 2 );
+      newNick = this.getIndex( cmdParts, 2 );
       if ( this.nickDelegate && newNick ) {
         this.nickDelegate( this.nick, this.server, newNick );
         this.nick = newNick;
@@ -342,42 +351,41 @@ if ( window.runtime && air && util ) {
         this.connectionDelegate( "Connected to server.", true, false );
       }
     }
-    var host = this.getIndex( cmdParts, 0 );
+    host = this.getIndex( cmdParts, 0 );
     //there are either messages from the server
     //or messages from a user
-    if ( host && host == this.host ) {
+    if ( host && host === this.host ) {
       this.handleServerMessage( cmdParts, msg );
     } else {
       this.handleUserMessage( cmdParts, msg );
     }
-  }
+  },
 
-  _icp.INVITE = function ( nick, host, cmd, target, msg ) {
+  INVITE: function ( nick, host, cmd, target, msg ) {
     if ( target && this.inviteDelegate && this.isChannelName( msg ) ) {
       this.inviteDelegate( nick, msg );
     }
-  }
+  },
 
-  _icp.JOIN = function ( nick, host, cmd, target, msg ) {
+  JOIN: function ( nick, host, cmd, target, msg ) {
     if ( target && this.joinDelegate ) {
       this.joinDelegate( nick, host, target );
     }
-  }
+  },
 
-  _icp.NOTICE = function ( nick, host, cmd, target, msg ) {
+  NOTICE: function ( nick, host, cmd, target, msg ) {
+    var parts, then, now, diff, i;
     if ( target && this.noticeDelegate ) {
       if ( this.isCTCP( msg ) ) {
         msg = this.getMsgFromCTCP( msg );
         if ( msg && msg.length > 1 ) {
-          var parts = msg.split( " " );
-          var cmd = parts.shift( );
+          parts = msg.split( " " );
+          cmd = parts.shift( );
           msg = parts.join ( "  " );
-          for ( var i in this.pingResponses ) {
-          }
-          if ( cmd == "PING" && msg in this.pingResponses ) {
-            var then = this.pingResponses[ msg ];
-            var now = new Date( ).getTime( );
-            var diff = ( now - then ) / 1000;
+          if ( cmd === "PING" && msg in this.pingResponses ) {
+            then = this.pingResponses[ msg ];
+            now = new Date( ).getTime( );
+            diff = ( now - then ) / 1000;
             msg = "PING response from " + nick + " took " + diff + " seconds.";
           } else {
             msg = "CTCP Reply for " + cmd + ": " + msg;
@@ -386,14 +394,14 @@ if ( window.runtime && air && util ) {
       }
       this.noticeDelegate( nick, host, target, msg );
     }
-  }
+  },
   
-  _icp.QUIT = function ( nick, host, cmd, target, msg ) {
+  QUIT: function ( nick, host, cmd, target, msg ) {
     if ( this.quitDelegate ) {
       this.quitDelegate( nick, host, msg );
     }
-  }
-  _icp.PRIVMSG = function ( nick, host, cmd, target, msg ) {
+  },
+  PRIVMSG: function ( nick, host, cmd, target, msg ) {
     var action = this.getAction( msg );        
     if ( action && target && this.actionDelegate ) {
       this.actionDelegate( nick, host, target, action );
@@ -402,66 +410,70 @@ if ( window.runtime && air && util ) {
     } else if ( target && this.messageDelegate ) {
       this.messageDelegate( nick, host, target, msg );
     }
-  }
+  },
   
-  _icp.PART = function ( nick, host, cmd, target, msg ) {
+  PART: function ( nick, host, cmd, target, msg ) {
     if ( target && this.partDelegate ) {
       this.partDelegate( nick, host, target, msg );
     }
-  }
+  },
 
-  _icp.MODE = function ( nick, host, cmd, target, msg, cmdParts ) {
+  MODE: function ( nick, host, cmd, target, msg, cmdParts ) {
+    var args, modes;
     if ( cmdParts && cmdParts.length > 3 ) {
-      var args = cmdParts.splice( 3, cmdParts.length );
-      var msg = args.join( " " );
+      args = cmdParts.splice( 3, cmdParts.length );
+      msg = args.join( " " );
       if ( target && this.modeDelegate && msg ) {
-        var modes = this.getModes( msg, target );
+        modes = this.getModes( msg, target );
         this.modeDelegate( nick, host, target, msg, modes );
       }
     }
-  }
+  },
 
-  _icp.KICK = function ( nick, host, cmd, target, msg, cmdParts ) {
+  KICK: function ( nick, host, cmd, target, msg, cmdParts ) {
     var kickedNick = cmdParts[ 3 ];
     if ( target && kickedNick ) {
       this.kickDelegate( nick, kickedNick, host, target, msg );
     }
-  }
+  },
 
-  _icp.TOPIC = function ( nick, host, cmd, target, msg ) {
+  TOPIC: function ( nick, host, cmd, target, msg ) {
     if ( target ) {
       this.topic ( target, "" ); 
     }
-  }
+  },
 
-  _icp.NICK = function ( nick, host, cmd, target, msg ) {
+  NICK: function ( nick, host, cmd, target, msg ) {
     if ( this.nickDelegate && nick && msg ) {
       this.nickDelegate( nick, host, msg );
     }
-    if ( nick == this.nick && msg ) {
+    if ( nick === this.nick && msg ) {
       this.nick = msg;
     }
-  }
+  },
 
-  _icp.handleUserMessage = function ( cmdParts, msg ) {
-    var userAddress = this.getIndex(cmdParts, 0);
-    var userParts = userAddress.split("!");
-    var nick = this.getIndex(userParts, 0);
-    var host = this.getIndex(userParts, 1);
-    var cmd = this.getIndex(cmdParts, 1);
-    var target = this.getTarget(cmdParts, msg);
+  handleUserMessage: function ( cmdParts, msg ) {
+    var userAddress, userParts, nick, host, cmd, target;
+    userAddress = this.getIndex(cmdParts, 0);
+    userParts = userAddress.split("!");
+    nick = this.getIndex(userParts, 0);
+    host = this.getIndex(userParts, 1);
+    cmd = this.getIndex(cmdParts, 1);
+    target = this.getTarget(cmdParts, msg);
     if ( cmd in this && util.isFunction( this[ cmd ] ) ) {
       this[ cmd ]( nick, host, cmd, target, msg, cmdParts);
     }
-  }
+  },
 
-  _icp.getModes = function ( modes, target ) {
-    var parts = modes.split( " " );
+  getModes: function ( modes, target ) {
+    var parts, modeChanges, setTypes, toggleTypes, 
+      i, j, c, part, toggle, modeObj;
+    parts = modes.split( " " );
     //array items for the below array follow this structure:
     // { "toggle": "+", "type": "o", "arg": "user1", "target": "#myChannel" }
     // { "toggle": "-", "type": "n", "arg": null, "target": "#myChannel" }
-    var modeChanges = []; 
-    var setTypes = {
+    modeChanges = []; 
+    setTypes = {
       O : 'give "channel creator" status;',
       o : 'give/take channel operator privilege;',
       h : 'give/take halfop operator privilege;',
@@ -470,9 +482,9 @@ if ( window.runtime && air && util ) {
       l : 'set/remove the user limit to channel;',
       b : 'set/remove ban mask to keep users out;',
       e : 'set/remove an exception mask to override a ban mask;',
-      I : 'set/remove an invitation mask to automatically override the invite-only flag;',
-    }
-    var toggleTypes = {
+      I : 'set/remove an invitation mask to automatically override the invite-only flag;'
+    };
+    toggleTypes = {
       a : 'toggle the anonymous channel flag;',
       i : 'toggle the invite-only channel flag;',
       m : 'toggle the moderated channel;',
@@ -481,21 +493,21 @@ if ( window.runtime && air && util ) {
       p : 'toggle the private channel flag;',
       s : 'toggle the secret channel flag;',
       r : 'toggle the server reop channel flag;',
-      t : 'toggle the topic settable by channel operator only flag;',
-    }
-    for ( var i = 0; i < parts.length; i++ ) {
-      var part = parts[ i ];
+      t : 'toggle the topic settable by channel operator only flag;'
+    };
+    for ( i = 0; i < parts.length; i++ ) {
+      part = parts[ i ];
       if ( part ) {
-        var toggle = part[ 0 ];
-        if ( toggle == "+" || toggle == "-" ) {
-          for ( var j = 1; j < part.length; j++ ) {
-            var c = part[ j ];
-            var modeObj = {};
+        toggle = part[ 0 ];
+        if ( toggle === "+" || toggle === "-" ) {
+          for ( j = 1; j < part.length; j++ ) {
+            c = part[ j ];
+            modeObj = {};
             modeObj.toggle = toggle;
             modeObj.target = target;
-            if ( c == "+" || c == "-" ) {
+            if ( c === "+" || c === "-" ) {
               toggle = c;
-              delete modeObj;
+              modeObj = null;
               continue;
             }
             if ( c in setTypes ) {
@@ -511,7 +523,7 @@ if ( window.runtime && air && util ) {
             }
           }
         } else {
-          for ( var j = 0; j < modeChanges.length; j++ ){
+          for ( j = 0; j < modeChanges.length; j++ ){
             if ( modeChanges[ j ].arg === undefined ) {
               modeChanges[ j ].arg = part;
               break;
@@ -521,18 +533,20 @@ if ( window.runtime && air && util ) {
       }
     }
     return modeChanges;
-  }
+  },
 
-  _icp.handleCTCP = function ( nick, host, target, msg ) {
-
-    var nowDate = new Date( );
-    var now = nowDate.getTime( );
+  handleCTCP: function ( nick, host, target, msg ) {
+    var nowDate, now, cmdParts, cmd;
+    nowDate = new Date( );
+    now = nowDate.getTime( );
     if ( ( now - this.lastCTCPReq ) > this.CTCP_RESPONSE_WAIT ) {
       msg = msg.substr( 1, msg.length - 2 );
-      var cmdParts = msg.split( " " );
-      var cmd = this.getIndex( cmdParts, 0 );
+      cmdParts = msg.split( " " );
+      cmd = this.getIndex( cmdParts, 0 );
       if ( cmd ) {
-        if ( this.serverDelegate ) this.serverDelegate( host, [ cmd, "from", nick ].join( " " ), null );
+        if ( this.serverDelegate ) { 
+          this.serverDelegate( host, [ cmd, "from", nick ].join( " " ), null ); 
+        }
         switch ( cmd ) {
           case "PING":
             this.sendNotice( nick, this.makeCTCP( msg ) );
@@ -550,35 +564,36 @@ if ( window.runtime && air && util ) {
       }
     }
     this.lastCTCPReq = new Date( ).getTime( );
-  }
+  },
 
-  _icp.isCTCP = function ( msg ) {
-    if ( !msg ) return false;
-    var token = String.fromCharCode( 001 );
-    return (msg[ 0 ] == token); 
-  }
+  isCTCP: function ( msg ) {
+    if ( !msg ) { return false; }
+    var token = String.fromCharCode( "\u0001" );
+    return (msg[ 0 ] === token); 
+  },
 
-  _icp.getMsgFromCTCP = function ( msg ) {
+  getMsgFromCTCP: function ( msg ) {
     if ( msg && msg.length && this.isCTCP( msg ) ) {
-      var token = String.fromCharCode( 001 );
+      var token = String.fromCharCode( "\u0001" );
       return msg.split( token ).join( "" );
     }
     return msg;
-  }
+  },
 
-  _icp.getAction = function ( msg ) {
-    var token = String.fromCharCode( 001 );
-    var actionCheck = token + "ACTION ";
-    if ( msg.search( actionCheck ) != -1 ) {
+  getAction: function ( msg ) {
+    var token, actionCheck;
+    token = String.fromCharCode( "\u0001" );
+    actionCheck = token + "ACTION ";
+    if ( msg.search( actionCheck ) !== -1 ) {
       return msg.substr( actionCheck.length, msg.length - 1 );
     }
     return null;
-  }
+  },
 
-  _icp.getTarget = function ( cmdParts, msg ) {
-    var target = null;
-    for ( var i = 0; i < cmdParts.length; i++ ) {
-      if ( cmdParts[ i][0 ] == "#" ) {
+  getTarget: function ( cmdParts, msg ) {
+    var target = null, i;
+    for ( i = 0; i < cmdParts.length; i++ ) {
+      if ( cmdParts[ i][0 ] === "#" ) {
         target = cmdParts[ i ];
         break;
       }
@@ -590,65 +605,69 @@ if ( window.runtime && air && util ) {
       target = msg;
     }
     return target;
-  }
+  },
 
-  _icp.COMMAND_NUMBERS = {
-    "SERVER_INFO" : 004,
-    "MAP" : 005,
-    "NUM_OPS" : 252,
-    "NUM_UNKNOWN" : 253,
-    "NUM_CHANNELS" : 254,
-    "NAMES_LIST_ADD" : 353,
-    "NAMES_END_LIST" : 366,
-    "TOPIC" : 332,
-    "TOPIC_INFO" : 333,
-    "NICK_AWAY" : 301,
-    "NICK_LOOKS_VERY_HELPFUL" : 310,
-    "NICK_USER_INFO" : 311,
-    "NICK_USER_INFO2" : 314, 
-    "NICK_SERVER_INFO": 312,
-    "NICK_IS_IRCOP" : 313,
-    "END_OF_WHO" : 315,
-    "NICK_SECONDS_SIGNON" : 317,
-    "END_OF_WHOIS" : 318,
-    "NICK_CHANNELS" : 319,
-    "NICK_SIGNED_ON_AS": 320,
-    "CHANNEL_INFO": 322,
-    "WHO": 352,
-    "END_OF_WHO_WAS" : 369,
-    "HOST_CHANGE" : 396,
-    "CANNOT_SEND_TO_CHANNEL" : 404,
-    "NICK_IS_ALREADY_IN_USE" : 433,
-  }
+  COMMAND_NUMBERS: {
+    "SERVER_INFO" : "004",
+    "MAP" : "005",
+    "NUM_OPS" : "252",
+    "NUM_UNKNOWN" : "253",
+    "NUM_CHANNELS" : "254",
+    "NAMES_LIST_ADD" : "353",
+    "NAMES_END_LIST" : "366",
+    "TOPIC" : "332",
+    "TOPIC_INFO" : "333",
+    "NICK_AWAY" : "301",
+    "NICK_LOOKS_VERY_HELPFUL" : "310",
+    "NICK_USER_INFO" : "311",
+    "NICK_USER_INFO2" : "314", 
+    "NICK_SERVER_INFO": "312",
+    "NICK_IS_IRCOP" : "313",
+    "END_OF_WHO" : "315",
+    "NICK_SECONDS_SIGNON" : "317",
+    "END_OF_WHOIS" : "318",
+    "NICK_CHANNELS" : "319",
+    "NICK_SIGNED_ON_AS": "320",
+    "CHANNEL_INFO": "322",
+    "WHO": "352",
+    "END_OF_WHO_WAS" : "369",
+    "HOST_CHANGE" : "396",
+    "CANNOT_SEND_TO_CHANNEL" : "404",
+    "NICK_IS_ALREADY_IN_USE" : "433"
+  },
 
-  _icp.handleServerMessage = function ( cmdParts, msg ) {
-    if ( !this.serverDelegate ) return;
-    var host = this.getIndex( cmdParts, 0 );
-    if ( this.getIndex( cmdParts, 1 ).toLowerCase( ) == "pong" && msg == "DiomedesIRC" ) {
+  handleServerMessage: function ( cmdParts, msg ) {
+    var host, commandNumber, userNick, aboutArg, target,
+      channel, username, address, server, nick, flags,
+      arg1, arg2, nicks, namesList, r, i;
+    if ( !this.serverDelegate ) { return; }
+    host = this.getIndex( cmdParts, 0 );
+    if ( this.getIndex( cmdParts, 1 ).toLowerCase( ) === "pong" && msg === "DiomedesIRC" ) {
       this.handlePingReply( );
       return;
     }
-    var commandNumber = parseInt( this.getIndex( cmdParts, 1 ), 10 );
-    var userNick = this.getIndex( cmdParts, 2 );
-    var aboutArg = this.getIndex( cmdParts, 3 );
-    var target = this.getTarget( cmdParts, msg );
+    commandNumber = parseInt( this.getIndex( cmdParts, 1 ), 10 );
+    userNick = this.getIndex( cmdParts, 2 );
+    aboutArg = this.getIndex( cmdParts, 3 );
+    target = this.getTarget( cmdParts, msg );
 
+    //XXX: GET RID OF THIS SWITCH
     switch ( commandNumber ) {
       //with certain server messages it makes go to add channel/target info
       //if this is the case adding it here
-      case this.COMMAND_NUMBERS[ "SERVER_INFO" ]:
+      case this.COMMAND_NUMBER.SERVER_INFO:
         this.host = this.getIndex( cmdParts, 3 );
         break;
-      case this.COMMAND_NUMBERS[ "MAP" ]:
+      case this.COMMAND_NUMBERS.MAP:
         //what server supports && server info
         return;
-      case this.COMMAND_NUMBERS[ "WHO" ]:
-        var channel = this.getIndex( cmdParts, 4 );
-        var username = this.getIndex( cmdParts, 5 );
-        var address = this.getIndex( cmdParts, 6 );
-        var server = this.getIndex( cmdParts, 7 );
-        var nick = this.getIndex( cmdParts, 8 );
-        var flags = this.getIndex( cmdParts, 9 );
+      case this.COMMAND_NUMBERS.WHO:
+        channel = this.getIndex( cmdParts, 4 );
+        username = this.getIndex( cmdParts, 5 );
+        address = this.getIndex( cmdParts, 6 );
+        server = this.getIndex( cmdParts, 7 );
+        nick = this.getIndex( cmdParts, 8 );
+        flags = this.getIndex( cmdParts, 9 );
         msg = [
           channel,
           username,
@@ -657,62 +676,63 @@ if ( window.runtime && air && util ) {
           nick,
           flags,
           ":",
-          msg,
+          msg
         ].join( " " );
         break;
-      case this.COMMAND_NUMBERS[ "CHANNEL_INFO" ]:
-      case this.COMMAND_NUMBERS[ "NICK_USER_INFO" ]:
-      case this.COMMAND_NUMBERS[ "NICK_USER_INFO2" ]:
-      case this.COMMAND_NUMBERS[ "NICK_SECONDS_SIGNON" ]:
-        var arg1 = this.getIndex( cmdParts, 4 );
-        var arg2 = this.getIndex( cmdParts, 5 );
+      case this.COMMAND_NUMBERS.CHANNEL_INFO:
+      case this.COMMAND_NUMBERS.NICK_USER_INFO:
+      case this.COMMAND_NUMBERS.NICK_USER_INFO2:
+      case this.COMMAND_NUMBERS.NICK_SECONDS_SIGNON:
+        arg1 = this.getIndex( cmdParts, 4 );
+        arg2 = this.getIndex( cmdParts, 5 );
         msg = [ aboutArg, ": ", arg1, " ", arg2, " ", msg ].join( "" );
         break;
-      case this.COMMAND_NUMBERS[ "NICK_SERVER_INFO" ]:
-        var arg1 = this.getIndex( cmdParts, 4 );
+      case this.COMMAND_NUMBERS.NICK_SERVER_INFO:
+        arg1 = this.getIndex( cmdParts, 4 );
         msg = [ aboutArg, ": ", arg1, " ", msg ].join( "" );
         msg = [ aboutArg, ": ", msg ].join( "" );
         break;
-      case this.COMMAND_NUMBERS[ "NICK_AWAY" ]:
+      case this.COMMAND_NUMBERS.NICK_AWAY:
         msg = [ aboutArg, " is away: ", msg ].join( "" );
         break;
-      case this.COMMAND_NUMBERS[ "END_OF_WHO" ]:
-      case this.COMMAND_NUMBERS[ "END_OF_WHOIS" ]:
-      case this.COMMAND_NUMBERS[ "NICK_CHANNELS" ]:
-      case this.COMMAND_NUMBERS[ "NICK_LOOKS_VERY_HELPFUL" ]:
-      case this.COMMAND_NUMBERS[ "NICK_IS_IRCOP" ]:
-      case this.COMMAND_NUMBERS[ "NICK_SIGNED_ON_AS" ]:
-      case this.COMMAND_NUMBERS[ "END_OF_WHO_WAS" ]:
-      case this.COMMAND_NUMBERS[ "NUM_OPS" ]:
-      case this.COMMAND_NUMBERS[ "NUM_CHANNELS" ]:
-      case this.COMMAND_NUMBERS[ "NUM_UNKNOWN" ]:
-      case this.COMMAND_NUMBERS[ "HOST_CHANGE" ]:
+      case this.COMMAND_NUMBERS.END_OF_WHO:
+      case this.COMMAND_NUMBERS.END_OF_WHOIS:
+      case this.COMMAND_NUMBERS.NICK_CHANNELS:
+      case this.COMMAND_NUMBERS.NICK_LOOKS_VERY_HELPFUL:
+      case this.COMMAND_NUMBERS.NICK_IS_IRCOP:
+      case this.COMMAND_NUMBERS.NICK_SIGNED_ON_AS:
+      case this.COMMAND_NUMBERS.END_OF_WHO_WAS:
+      case this.COMMAND_NUMBERS.NUM_OPS:
+      case this.COMMAND_NUMBERS.NUM_CHANNELS:
+      case this.COMMAND_NUMBERS.NUM_UNKNOWN:
+      case this.COMMAND_NUMBERS.HOST_CHANGE:
         msg = [ aboutArg, ": ", msg ].join( "" );
         break;
-      case this.COMMAND_NUMBERS[ "CANNOT_SEND_TO_CHANNEL" ]:
+      case this.COMMAND_NUMBERS.CANNOT_SEND_TO_CHANNEL:
         if ( target ) {
           this.serverDelegate( host, msg, target );
         }
         break;
-      case this.COMMAND_NUMBERS[ "NICK_IS_ALREADY_IN_USE" ]:
+      case this.COMMAND_NUMBERS.NICK_IS_ALREADY_IN_USE:
         if ( target ) {
           this.serverDelegate( host, msg, target );
         }
         break;
-      case this.COMMAND_NUMBERS[ "TOPIC" ]:
+      case this.COMMAND_NUMBERS.TOPIC:
         if ( target ) {
           this.topics[ target ] = {};
-          this.topics[ target ][ "topic" ] = msg;
+          this.topics[ target ].topic = msg;
         }
         break;
-      case this.COMMAND_NUMBERS[ "TOPIC_INFO" ]:
+      case this.COMMAND_NUMBERS.TOPIC_INFO:
         if ( target && ( target in this.topics ) ) {
-          this.topics[ target ][ "nick" ] = this.getIndex( cmdParts, 4 );
-          this.topics[ target ][ "time" ] = new Date( this.getIndex( cmdParts, 5 ) * 1000 );
-          this.topics[ target ][ "host" ] = host;
+          this.topics[ target ].nick = this.getIndex( cmdParts, 4 );
+          this.topics[ target ].time = new Date( this.getIndex( cmdParts, 5 ) * 1000 );
+          this.topics[ target ].host = host;
           this.getTopic( target );
         }
-      case this.COMMAND_NUMBERS[ "NAMES_LIST_ADD" ]:
+        break;
+      case this.COMMAND_NUMBERS.NAMES_LIST_ADD:
         target = target.toLowerCase( );
         if ( target ) {
           if ( !( target in this.namesList ) ) {
@@ -721,16 +741,16 @@ if ( window.runtime && air && util ) {
         }
         this.namesList[ target ].push( msg );
         break;
-      case this.COMMAND_NUMBERS[ "NAMES_END_LIST" ]:
+      case this.COMMAND_NUMBERS.NAMES_END_LIST:
         target = target.toLowerCase( );
         if ( target && target in this.namesList ) {
-          var nicks = [];
-          var namesList = this.namesList[ target ];
+          nicks = [];
+          namesList = this.namesList[ target ];
           this.namesList[ target ] = null;
           delete this.namesList[ target ];
-          for ( var i = 0; i < namesList.length; i++ ) {
+          for ( i = 0; i < namesList.length; i++ ) {
             if ( namesList[ i ] ) {
-              var r = namesList[ i ].split( " " );
+              r = namesList[ i ].split( " " );
               nicks = nicks.concat( r );
             }
           }
@@ -743,266 +763,264 @@ if ( window.runtime && air && util ) {
     if ( this.serverDelegate && msg ) {
       this.serverDelegate( host, msg, null );
     }
-  }
+  },
 
-  _icp.getTopic = function ( target ) {
+  getTopic: function ( target ) {
+    var topic;
     if (this.topicDelegate && ( target in this.topics )  ) {
-      var topic = this.topics[ target ];
+      topic = this.topics[ target ];
       this.topicDelegate( topic.host, target, topic.topic, topic.nick, topic.time );
     }
-  }
+  },
 
-  _icp.sendRaw = function ( msg ) {
+  sendRaw: function ( msg ) {
     this._send(msg);
-  }
+  },
 
-  _icp.join = function ( channels ) {
+  join: function ( channels ) {
     if ( util.isString( channels ) ) {
       this._send( [ "JOIN", channels ].join( " " ) );
     } else {
       this._send( [ "JOIN", channels.join( "," ) ].join( " " ) );
     }
-  }
+  },
 
-  _icp.sendCTCPPing = function ( target ) {
+  sendCTCPPing: function ( target ) {
     var pingKey = util.rand(0, 99999999).toString( );
     this.pingResponses[ pingKey ] = new Date( ).getTime( );
     this.sendCTCP( target, [ "PING", pingKey ].join( " " ) );
-  }
+  },
 
-  _icp.sendCTCP = function ( target, msg ) {
-    var token = String.fromCharCode( 001 );
+  sendCTCP: function ( target, msg ) {
+    var token, parts, cmd;
+    token = String.fromCharCode( "\u0001" );
     if ( msg ) {
-      var parts = msg.split( " " );
+      parts = msg.split( " " );
       if ( parts && parts.length ) {
-        var cmd = parts.shift( );
-        var msg = parts.join( " " );
+        cmd = parts.shift( );
+        msg = parts.join( " " );
         this.sendPM( target, [ token, cmd.toUpperCase( ), " ", msg, token ].join( "" ) );
       }
     }
-  }
+  },
 
-  _icp.sendMOTD = function ( ) {
+  sendMOTD: function ( ) {
     this._send( "MOTD" );
-  }
+  },
 
-  _icp.sendSimpleParam = function ( cmd, params ) {
-    if ( !cmd ) return;
-    if ( !params ) params = "";
+  sendSimpleParam: function ( cmd, params ) {
+    if ( !cmd ) { return; }
+    if ( !params ) { params = ""; }
     this._send( [ cmd.toUpperCase( ), params ].join( " " ) );
-  }
+  },
 
-  _icp.sendOptionalParam = function ( cmd, param ) {
-    var cmd = [ cmd.toUpperCase( ) ];
+  sendOptionalParam: function ( cmd, param ) {
+    cmd = [ cmd.toUpperCase( ) ];
     if ( param ) {
       cmd.push( param );
     }
     this._send( cmd.join( " " ) );
-  }
+  },
 
-  _icp.changeNick = function ( nick ) {
+  changeNick: function ( nick ) {
     this.sendSimpleParam( "NICK", nick );
-  }
+  },
 
-  _icp.sendIson = function ( params ) {
+  sendIson: function ( params ) {
     this.sendSimpleParam( "ISON", params );
-  }
+  },
 
-  _icp.sendUserhost = function ( params ) {
+  sendUserhost: function ( params ) {
     this.sendSimpleParam( "USERHOST", params );
-  }
+  },
 
-  _icp.sendWallops = function ( msg ) {
+  sendWallops: function ( msg ) {
     this._send( [ "WALLOPS", ":" + msg ].join( " " ) );
-  }
+  },
 
-  _icp.sendUsers = function ( target ) {
+  sendUsers: function ( target ) {
     this.sendOptionalParam( "USERS", target );
-  }
+  },
 
-  _icp.sendSummon = function ( params ) {
+  sendSummon: function ( params ) {
     this.sendSimpleParam( "SUMMON", params );
-  }
+  },
 
-  _icp.sendRestart = function ( ) {
+  sendRestart: function ( ) {
     this._send( "RESTART" );
-  }
+  },
 
-  _icp.sendDie = function ( ) {
+  sendDie: function ( ) {
     this._send( "DIE" );
-  }
+  },
 
-  _icp.sendRehash = function ( ) {
+  sendRehash: function ( ) {
     this._send( "REHASH" );
-  }
+  },
 
-  _icp.sendAway = function ( msg ) {
+  sendAway: function ( msg ) {
     if ( msg ) {
       this._send( [ "AWAY", ":" + msg ].join( " " ) );
     } else {
       this._send( "AWAY" );
     }
-  }
+  },
 
-  _icp.sendPing = function ( params ) {
+  sendPing: function ( params ) {
     this.sendSimpleParam( "PING", params );
-  }
+  },
 
-  _icp.sendKill = function ( params ) {
+  sendKill: function ( params ) {
     this.sendSimpleParam( "KILL", params );
-  }
+  },
 
-  _icp.sendWho = function ( params ) {
+  sendWho: function ( params ) {
     this.sendSimpleParam( "WHO", params );
-  }
+  },
 
-  _icp.sendSquery = function ( params ) {
+  sendSquery: function ( params ) {
     this.sendSimpleParam( "SQUERY", params );
-  }
+  },
 
-  _icp.sendServlist = function ( params ) {
+  sendServlist: function ( params ) {
     this.sendSimpleParam( "SERVLIST", params );
-  }
+  },
 
-  _icp.sendInfo = function ( target ) {
+  sendInfo: function ( target ) {
     this.sendOptionalParam( "INFO", target );
-  }
+  },
 
-  _icp.sendAdmin = function ( target ) {
+  sendAdmin: function ( target ) {
     this.sendOptionalParam( "ADMIN", target );
-  }
+  },
 
-  _icp.sendTrace = function ( target ) {
+  sendTrace: function ( target ) {
     this.sendOptionalParam( "TRACE", target );
-  }
+  },
 
-  _icp.sendConnect = function ( params ) {
+  sendConnect: function ( params ) {
     this.sendSimpleParam( "CONNECT", params );
-  }
+  },
 
-  _icp.sendLinks = function ( params ) {
+  sendLinks: function ( params ) {
     this.sendSimpleParam( "LINK", params );
-  }
+  },
 
-  _icp.sendStats = function ( params ) {
+  sendStats: function ( params ) {
     this.sendSimpleParam( "STATS", params );
-  }
+  },
 
-  _icp.sendTime = function ( target ) {
+  sendTime: function ( target ) {
     this.sendOptionalParam( "TIME", target );
-  }
+  },
 
-  _icp.sendVersion = function ( target ) {
+  sendVersion: function ( target ) {
     this.sendOptionalParam( "VERSION", target );
-  }
+  },
 
-  _icp.sendLusers = function ( params ) {
+  sendLusers: function ( params ) {
     this.sendSimpleParam( "LUSERS", params );
-  }
+  },
 
-  _icp.sendPass = function ( password ) {
+  sendPass: function ( password ) {
     this._send( [ "PASS", password ].join( " " ) );
-  }
+  },
 
-  _icp.sendOper = function ( params ) {
+  sendOper: function ( params ) {
     this.sendSimpleParam( "OPER", params );
-  }
+  },
 
-  _icp.sendService = function ( params ) {
+  sendService: function ( params ) {
     this.sendSimpleParam( "SERVICE", params );
-  }
+  },
 
-  _icp.sendSQuit = function ( serverName, msg ) {
+  sendSQuit: function ( serverName, msg ) {
     this._send( [ "SQUIT", serverName, ":" + msg ].join( " " ) );
-  }
+  },
 
-  _icp.sendList = function ( channels, target ) {
-    if ( !util.isString( channels ) ) channels = channels.join( "," );
-    var cmd = [ "LIST", channels ];
+  sendList: function ( channels, target ) {
+    var cmd;
+    if ( !util.isString( channels ) ) { channels = channels.join( "," ); }
+    cmd = [ "LIST", channels ];
     if ( target ) {
       cmd.push( target );
     }
     this._send( cmd.join( " " ) );
-  }
+  },
 
-  _icp.sendInvite = function ( nick, channel ) {
+  sendInvite: function ( nick, channel ) {
     if ( nick && channel ) {
       this._send( [ "INVITE", nick, channel ].join( " " ) );
     }
-  }
+  },
  
-  _icp.sendMode = function ( msg ) {
+  sendMode: function ( msg ) {
     if ( msg ) {
       this._send( [ "MODE", msg ].join( " " ) );
     }
-  }
+  },
 
-  _icp.sendPM = function ( target, msg ) {
+  sendPM: function ( target, msg ) {
     this._send( [ "PRIVMSG", target, ":" + msg ].join ( " " ) );
-  }
+  },
 
-  _icp.sendNames = function ( target ) {
+  sendNames: function ( target ) {
     this._send( [ "NAMES", target ].join( " " ) );
-  }
+  },
 
-  _icp.sendAction = function ( target, msg ) {
+  sendAction: function ( target, msg ) {
     this.sendCTCP( target, [ "ACTION", msg ].join( " " ) );
-  }
+  },
 
-  _icp.sendNotice = function ( target, msg ) {
+  sendNotice: function ( target, msg ) {
     this._send( [ "NOTICE", target, ":" + msg ].join( " " ) );
-  }
+  },
 
-  _icp.quit = function ( msg ) {
+  quit: function ( msg ) {
     this._send( [ "QUIT",  ":" + msg ].join( " " ) );
     this.connectionEstablished = false;
     this.connectionAccepted = false;
-  }
+  },
 
-  _icp.topic = function ( target, topic ) {
+  topic: function ( target, topic ) {
     var cmd = [ "TOPIC", target ];
     if ( topic ) {
       cmd.push( ":" + topic );
     }
     this._send( cmd.join( " " ) );
-  }
+  },
 
-  _icp.part = function ( channel, msg ) {
+  part: function ( channel, msg ) {
     this._send( [ "PART", channel, ":" + msg ].join( " " ) );
-  }
+  },
 
-  _icp.sendQuit = function ( msg ) {
-    if ( !msg ) msg = "";
+  sendQuit: function ( msg ) {
+    if ( !msg ) { msg = ""; }
     this._send( [ "QUIT :", msg ].join( "" ) );
     this.closeConnection( );
-  }
+  },
 
-  _icp.sendWhoIs = function ( msg ) {
+  sendWhoIs: function ( msg ) {
     this.sendSimpleParam( "WHOIS", msg );
-  }
+  },
 
-  _icp.sendWhoWas = function ( msg ) {
+  sendWhoWas: function ( msg ) {
     this.sendSimpleParam( "WHOWAS", msg );
-  }
+  },
 
-  _icp.sendKick = function ( channel, target, msg ) {
-    this.log( "sendKick00000000000000000" );
-    if ( !msg ) msg = "";
-    this.log( "sendKick00000000000000001" );
+  sendKick: function ( channel, target, msg ) {
+    if ( !msg ) { msg = ""; }
     if ( target ) {
-    this.log( "sendKick00000000000000002" );
       this._send( [ "KICK", channel, target, ":" + msg ].join( " " ) );
-    this.log( "sendKick00000000000000003" );
     }
-    this.log( "sendKick00000000000000004" );
-  }
+  },
 
-  _icp.makeCTCP = function ( data ) {
-    var token = String.fromCharCode( 001 );
+  makeCTCP: function ( data ) {
+    var token = String.fromCharCode( "\u0001" );
     return [ token, data, token ].join( "" );
-  }
+  },
 
-  _icp._send = function ( data ) {
+  _send: function ( data ) {
     data = data += "\r\n";
     if ( this.socket && this.socket.connected ) {
       this.socket.writeUTFBytes( data );
@@ -1011,36 +1029,36 @@ if ( window.runtime && air && util ) {
     } else {
       this.log( "Falied send, not connected: " + data );
     }
-  }
+  },
 
-  _icp.log = function ( data ) {
+  log: function ( data ) {
     util.log( "\n" + data ); 
-  }
+  },
 
-  _icp.createConnection = function ( ) {
+  createConnection: function ( ) {
     this.socket = new air.Socket( );
     this.socket.addEventListener( air.Event.CONNECT, util.hitch( this, "onConnect" ) ); 
     this.socket.addEventListener( air.ProgressEvent.SOCKET_DATA, util.hitch( this, "onSocketData" ) ); 
-  }
+  },
 
-  _icp.isChannelName = function ( name ) {
+  isChannelName: function ( name ) {
     //as per RFC 2812
     //returns if given string could be a channel name
     //this should be used instead of checking for a # for first character
-    if ( name && name.length && ( name[ 0 ] in this.CHANNEL_MODE_TYPES ) ) return true;
+    if ( name && name.length && ( name[ 0 ] in this.CHANNEL_MODE_TYPES ) ) { return true; }
     return false;
-  }
+  },
 
-  _icp.close = function ( ) {
+  close: function ( ) {
     if ( this.socket && this.socket.connected ) {
       this.socket.close( );
     }
     if ( this.socketMonitor && this.socketMonitor.running ) {
       this.socketMonitor.stop( );
     }
-  }
+  },
 
-  _icp.closeConnection = function ( msg ) {
+  closeConnection: function ( msg ) {
     this.stayConnected = false;
     this._isConnected = false;
     this.connectionEstablished = false;
@@ -1053,9 +1071,9 @@ if ( window.runtime && air && util ) {
       }
       this.connectionDelegate( quitMsg, false, false );
     }
-  }
+  },
 
-  _icp.destroy = function ( data ) {
+  destroy: function ( data ) {
     this.log( "destroying irc client" );
     this.close( );
     delete this.socket;
@@ -1064,6 +1082,5 @@ if ( window.runtime && air && util ) {
     this.socketMonitor = null;
   }
 
-}
-
+} );
 
