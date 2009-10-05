@@ -1,18 +1,27 @@
+/*jslint white: false */
+/*jslint nomen: false */
+/*jslint regexp: false */
+/*jslint plusplus: false */
+/*jslint passfail: true */
+/*global window, dojo, util, diom, air, runtime */
 
 dojo.provide( "diom.controller.linkInfoFetcher" );
 
-  dController.LinkInfoFetcher = function ( link, serverName, channelName, nick ) {
-    if ( !link ) return;
+dojo.declare( "diom.controller.LinkInfoFetcher", null, {
+
+  constructor: function ( link, serverName, channelName, nick ) {
+		var linkParts;
+    if ( !link ) { return; }
     //don't publish secure sites to link log to avoid annoying 
     //bad security certificate popups
     //XXX: in the future maybe just add url without doing deep url inspection
-    if ( "https" == link.substr( 0, 5 ) ) return;
+    if ( "https" === link.substr( 0, 5 ) ) { return; }
     this.url = link;
     link = link.substr( 7 );
     this.serverName = serverName;
     this.channelName = channelName;
     this.nick = nick;
-    var linkParts = link.split( "/" );
+    linkParts = link.split( "/" );
     this.host = linkParts.shift( );
     this.path = "/";
     if ( linkParts.length ) {
@@ -37,38 +46,37 @@ dojo.provide( "diom.controller.linkInfoFetcher" );
     this.stream.addEventListener( air.IOErrorEvent.IO_ERROR, util.hitch( this, "onError" ) ); 
     this.stream.load( this.request );
 
-  }
+  },
 
-  var _clfp = dController.LinkInfoFetcher.prototype;
-
-  _clfp.onComplete = function ( e ) {
+  onComplete: function ( e ) {
     this.stream.close( );
-  }
+  },
 
-  _clfp.onProgress = function ( e ) {
+  onProgress: function ( e ) {
     this.data = [ this.data, this.stream.readUTFBytes( this.stream.bytesAvailable ) ].join( "" );
     this.checkForTitle( );
-  }
+  },
 
-  _clfp.checkForTitle = function ( ) {
+  checkForTitle: function ( ) {
     var res = this.titleRegex.exec( this.data );
     if ( res && res.length > 1 ) {
       this.stream.close( );
       this.title = res[ 1 ];
       this.publishData( );
     }
-  }
+  },
 
-  _clfp.onStatus = function ( e ) {
+  onStatus: function ( e ) {
+		var isHTML, i, header;
     util.log( "onstatus" );
     this.headers = e.responseHeaders;
     this.httpStatus = e.status;
     this.responseURL = e.responseURL;
-    var isHTML = false;
-    if ( this.httpStatus == 200 ) {
-      for ( var i = 0; i < this.headers.length; i++ ) {
-        var header = this.headers[ i ];
-        if ( header.name == "Content-Type" && header.value.search( "html" ) != -1 ) {
+    isHTML = false;
+    if ( this.httpStatus === 200 ) {
+      for ( i = 0; i < this.headers.length; i++ ) {
+        header = this.headers[ i ];
+        if ( header.name === "Content-Type" && header.value.search( "html" ) !== -1 ) {
           isHTML = true;
           break;
         }
@@ -78,17 +86,18 @@ dojo.provide( "diom.controller.linkInfoFetcher" );
       this.stream.close( );
       this.publishData( );
     }
-  }
+  },
 
 
-  _clfp.completeHandler = function ( e ) {
+  completeHandler: function ( e ) {
     util.log("complete");
-  }
+  },
 
 
-  _clfp.publishData = function( ) {
+  publishData: function( ) {
+		var d;
     util.log("publish");
-    var d = new Date( ).toString( );
+    d = new Date( ).toString( );
     util.publish( diom.topics.LINK_DATA, [
         this.url,
         {
@@ -106,15 +115,16 @@ dojo.provide( "diom.controller.linkInfoFetcher" );
           "title": util.trim( this.title )
         }
     ] );
-  }
+  },
 
-  _clfp.onError = function ( e ) {
+  onError: function ( e ) {
     util.log( " link info fetcher error" );
-  }
+  },
 
-  _clfp.destroy = function ( ) {
+  destroy: function ( ) {
     util.log("destroy");
     delete this.stream;
     delete this.request;
   }
 
+} );
