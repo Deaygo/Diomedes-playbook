@@ -60,14 +60,14 @@
 	-->
 
 	<!-- section below is for dev -->
+	<!--
   <script type="text/javascript" src="js/dojo/dojo.js"></script> 
   <script type="text/javascript" src="js/diom/diom.js"></script> 
+	-->
 
 	<!-- section below is for debugging-->
-	<!--
   <script type="text/javascript" src="js/release/dojo/dojo/dojo.js.uncompressed.js"></script> 
   <script type="text/javascript" src="js/release/dojo/diom/diom.js.uncompressed.js"></script> 
-	-->
 
 
 
@@ -88,7 +88,7 @@
       util.log( "appLoad" ); 
 
       m = new dModel.Model( );
-      v = new dView.View( m );
+      v = new diom.view.View( m );
       c = new diom.controller.Controller( m, v );
 
     }  

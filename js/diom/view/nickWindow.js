@@ -5,7 +5,7 @@
 /*jslint passfail: true */
 /*global window, dojo, util, diom, air, document, alert */
 
-dojo.provide( "diom.view.nickView" );
+dojo.provide( "diom.view.nickWindow" );
 
 dojo.declare( "diom.view.NickWindow", null, {
 

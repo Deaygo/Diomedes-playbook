@@ -144,9 +144,9 @@ dojo.declare( "diom.view.ActivityWindow", null, {
           '<div class="message">',
             '<span class="messageData">',
             '<span class="messageTime" title="',
-              dates.long,
+              dates.longDate,
             '">',
-              dates.short,
+              dates.shortDate,
             '</span> ',
             '<span class="messageNick',
             ( isAction ? ' isAction' : '' ),
@@ -223,7 +223,7 @@ dojo.declare( "diom.view.ActivityWindow", null, {
     minute = this.formatDateItem( date_.getMinutes( ) );
     second = this.formatDateItem( date_.getSeconds( ) );
     return {
-      "long" : [
+      "longDate" : [
         "[",
           year,
           "-",
@@ -239,7 +239,7 @@ dojo.declare( "diom.view.ActivityWindow", null, {
           clock, 
         "]"
       ].join( "" ),
-      "short" : [
+      "shortDate" : [
         "[",
           hour,
           ":",

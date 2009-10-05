@@ -21,6 +21,11 @@ checkFiles=(
   "diom/controller/linkLog"
   "diom/controller/linkInfoFetcher"
   "diom/controller/channelList"
+  "diom/view/view"
+  "diom/view/nickWindow"
+  "diom/view/linkView"
+  "diom/view/formInput"
+  "diom/view/activityWindow"
 
   "tests/loggerTest"
 
