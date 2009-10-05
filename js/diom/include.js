@@ -21,6 +21,13 @@ dojo.require( "diom.connection.activityList" );
 dojo.require( "diom.connection.channel" );
 dojo.require( "diom.connection.user" );
 
+//view
+dojo.require( "diom.view.view" );
+dojo.require( "diom.view.formInput" );
+dojo.require( "diom.view.activityWindow" );
+dojo.require( "diom.view.linkView" );
+dojo.require( "diom.view.nickWindow" );
+
 //controller
 dojo.require( "diom.controller.controller" );
 dojo.require( "diom.controller.channelList" );
