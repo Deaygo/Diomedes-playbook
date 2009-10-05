@@ -1,29 +1,31 @@
 /*
   Copyright (c) 2009 Apphacker apphacker@gmail.com
 */
+/*jslint white: false */
+/*jslint nomen: false */
+/*jslint regexp: false */
+/*jslint plusplus: false */
+/*jslint passfail: true */
+/*global window, dojo, util, diom, air, document, alert */
 
 dojo.provide( "diom.view.view" );
 
-var dView;
+dojo.declare( "diom.view.View", null, {
 
-if ( !dView ) {
-  dView = { };
-}
-
-
-  dView.View = function ( model ) {
+  constructor: function ( model ) {
+		var prefs;
     this.model = model;
     this.prevWord = null;
-    this.input = new dView.FormInput( util.get( "textInput" ), util.get("inputForm") );
+    this.input = new diom.view.FormInput( util.get( "textInput" ), util.get("inputForm") );
     this.popup = util.get( "popup" );
     this.popupContents = util.get( "popupContents" );
-    this.linkView = new dView.LinkView( this.popupContents );
+    this.linkView = new diom.view.LinkView( this.popupContents );
     this.activityWindow = util.get( "activityWindow" );
     this.channelList = util.get( "channelList" );
     this.titleBar = util.get( "titleBar" );
     this.nickList = util.get( "nickList" );
     this.font = null;
-    var prefs = this.model.prefs.getPrefs( );
+    prefs = this.model.prefs.getPrefs( );
     this.changeFont( prefs.multiOptionPrefs.font, prefs.fontSize );
     this.changeTheme( prefs.multiOptionPrefs.theme );
     this.activityWindows = {};
@@ -51,47 +53,45 @@ if ( !dView ) {
     util.subscribe( diom.topics.INPUT_CHANNEL_PART, this, "closeCurrentChannel", [] );
     util.subscribe( diom.topics.INPUT_CHANNEL_INDEX, this, "selectChannelFromIndex", [] );
     util.subscribe( diom.topics.UPDATE_NO_NEW_UPDATES, this, "showNoUpdatesDialog", [] );
-  }
+  },
 
-  var _vvp = dView.View.prototype;
-
-  _vvp.showNoUpdatesDialog = function( ) {
+  showNoUpdatesDialog: function( ) {
     this.notify( "No new updates." );
-  }
+  },
 
-  _vvp.scrollUp = function ( ) {
+  scrollUp: function ( ) {
     if ( this.activeWin ) {
       this.activeWin.scrollUp( );
     }
-  }
+  },
 
-  _vvp.scrollDown = function ( ) {
+  scrollDown: function ( ) {
     if ( this.activeWin ) {
       this.activeWin.scrollDown( );
     }
-  }
+  },
 
-  _vvp.closePopup = function ( e ) {
+  closePopup: function ( e ) {
     util.addClass( this.popup, "hidden" );
     this.popupContents.innerHTML = "";
-  }
+  },
 
-  _vvp.handleLinksBtnClick = function ( e ) {
+  handleLinksBtnClick: function ( e ) {
     util.stopEvent( e );
     this.linkView.display( );
     util.remClass( this.popup, "hidden" );
-  }
+  },
 
-  _vvp.handlePrefsBtnClick = function ( e ) {
+  handlePrefsBtnClick: function ( e ) {
     util.stopEvent( e );
     util.remClass( this.titleBar, "hidden" );
-  }
+  },
 
-  _vvp.handleWindowClick = function ( e ) {
+  handleWindowClick: function ( e ) {
     util.addClass( this.titleBar, "hidden" );
-  }
+  },
 
-  _vvp.setTopicView = function ( channelName, topic ) {
+  setTopicView: function ( channelName, topic ) {
     var msg = channelName, nickCount = "";
     if ( this.activeNickCount ) {
       nickCount = " (" + this.activeNickCount + ") ";
@@ -100,52 +100,54 @@ if ( !dView ) {
       msg += nickCount + ": " + topic;
     }
     document.title = msg;
-  }
+  },
 
-  _vvp.handleNickChange = function ( nicks, serverName, channelName ) {
+  handleNickChange: function ( nicks, serverName, channelName ) {
     var topic, tmp;
-    if ( this.activeWin.serverName == serverName && this.activeWin.channelName == channelName ) {
+    if ( this.activeWin.serverName === serverName && this.activeWin.channelName === channelName ) {
       this.activeNickCount = nicks.length;
       tmp = document.title.split( ": " );
       tmp.shift( );
       topic = tmp.join( ": " );
       this.setTopicView( channelName, topic );
     }
-  }
+  },
 
-  _vvp.handleTopic = function ( serverName, channelName, topic ) {
-    if ( this.activeWin.serverName == serverName && this.activeWin.channelName == channelName ) {
+  handleTopic: function ( serverName, channelName, topic ) {
+    if ( this.activeWin.serverName === serverName && this.activeWin.channelName === channelName ) {
       this.setTopicView( channelName, topic );
     }
-  }
+  },
 
-  _vvp.changeTheme = function ( themePrefs ) {
-    for ( var i = 0; i < themePrefs.length; i++ ) {
-      var theme = themePrefs[ i ];
+  changeTheme: function ( themePrefs ) {
+		var i, theme;
+    for ( i = 0; i < themePrefs.length; i++ ) {
+      theme = themePrefs[ i ];
       if ( "selected" in theme ) {
         this.setTheme( theme.value );
         return;
       }
     }
-  }
+  },
 
-  _vvp.setTheme = function ( themeName ) {
-    var cssPath = "/css/themes/";
-    var n = util.get( "themeLink" );
+  setTheme: function ( themeName ) {
+    var cssPath = "/css/themes/", n;
+    n = util.get( "themeLink" );
     n.setAttribute( "href", [ cssPath, themeName, ".css" ].join( "" ) );
-  }
+  },
   
-  _vvp.changeFont = function ( fontPrefs, size ) {
-    for ( var i = 0; i < fontPrefs.length; i++ ) {
-      var font = fontPrefs[ i ];
+  changeFont: function ( fontPrefs, size ) {
+		var i, font;
+    for ( i = 0; i < fontPrefs.length; i++ ) {
+      font = fontPrefs[ i ];
       if ( "selected" in font ) {
         this.setFont( font.value, size );
         return;
       }
     }
-  }
+  },
 
-  _vvp.setFont = function ( font, size ) {
+  setFont: function ( font, size ) {
     this.font = font;
     size = parseInt( size, 10 );
     if ( size < 8 ) {
@@ -162,19 +164,19 @@ if ( !dView ) {
       size,
       "px;"
     ].join( "" ) ); 
-  }
+  },
 
-  _vvp.notify = function ( msg ) {
+  notify: function ( msg ) {
     if ( msg ) {
       alert( msg );
     }
-  }
+  },
 
-  _vvp.setAppVersion = function ( info ) {
+  setAppVersion: function ( info ) {
     this.appVersion = info;
-  }
+  },
 
-  _vvp.sanitize = function ( msg ) {
+  sanitize: function ( msg ) {
     if ( msg ) {
       msg = msg.split( "&" ).join( "&amp;" );
       msg = msg.split( "<" ).join( "&lt;" );
@@ -182,38 +184,38 @@ if ( !dView ) {
       msg = msg.split( '"' ).join( "&quot;" );
     }
     return msg;
-  }
+  },
 
-  _vvp.getConfirmation = function ( msg ) {
+  getConfirmation: function ( msg ) {
     return window.confirm( "You're about to " + msg + ". Are you sure? " );
-  }
+  },
 
-  _vvp.setContents = function ( node, contents, synchronous ) {
+  setContents: function ( node, contents, synchronous ) {
     if ( synchronous ) {
       node.innerHTML = contents;
     } else {
       //performance gain
       window.setTimeout( function() { node.innerHTML = contents; }, 0 );
     }
-  }
+  },
 
-  _vvp.clearActivityView = function ( ) {
+  clearActivityView: function ( ) {
     if ( this.activeWin ) {
       this.activeWin.clear( );
     }
-  }
+  },
 
-  _vvp.clearNickView = function ( ) {
+  clearNickView: function ( ) {
     this.activeWin.nickWindow.clear( );
-  }
+  },
 
-  _vvp.displayHelp = function ( ) {
+  displayHelp: function ( ) {
     window.open("help.html", "helpWindow", "height=600, scrollbars=yes, width=400, top=10, left=10");
-  }
+  },
 
-  _vvp.changeView = function ( serverName, channelName, topic ) {
+  changeView: function ( serverName, channelName, topic ) {
     this.createActivityViewIfNeeded( channelName, serverName );
-    this.activeWin = this.getActivityWindow( channelName, serverName )
+    this.activeWin = this.getActivityWindow( channelName, serverName );
     this.setTopicView( channelName, topic );
     if ( this.activityWindow.childNodes.length ) {
       this.activityWindow.replaceChild( this.activeWin.getNode( ), this.activityWindow.firstChild );
@@ -227,26 +229,28 @@ if ( !dView ) {
     }
     this.activeWin.changeView( );
     this.input.changeChannel( this.activeWin.nickWindow.getNicks( ), serverName, channelName );
-  }
+  },
 
-  _vvp.handleActivityWindowClick = function ( e ) {
+  handleActivityWindowClick: function ( e ) {
+		var url, urlReq;
     util.stopEvent( e );
-    if ( e.target.nodeName == "A" ) {
-      var url = e.target.getAttribute("href");
+    if ( e.target.nodeName === "A" ) {
+      url = e.target.getAttribute("href");
       if ( url ) {
-        var urlReq = new air.URLRequest( util.trim( url ) ); 
+        urlReq = new air.URLRequest( util.trim( url ) ); 
         air.navigateToURL(urlReq);
       }
     }
     this.input.focus( );
     this.handleWindowClick( e );
-  }
+  },
 
-  _vvp.closeTabFromNode = function ( n ) {
+  closeTabFromNode: function ( n ) {
+		var server, name;
     if ( n ) {
-      var server = n.getAttribute( "server" );
-      var name = n.getAttribute( "name" );
-      if ( name == server ) {
+      server = n.getAttribute( "server" );
+      name = n.getAttribute( "name" );
+      if ( name === server ) {
         window.setTimeout( function() {
           util.publish( diom.topics.NETWORK_CLOSE, [ server ] );
         }, 0);
@@ -256,24 +260,26 @@ if ( !dView ) {
         }, 0);
       }
     }
-  }
+  },
 
-  _vvp.selectChannelFromNode = function ( n ) {
+  selectChannelFromNode: function ( n ) {
+		var server, type, name;
     if ( n ) {
-      var server = n.getAttribute( "server" );
-      var type = n.getAttribute( "type" );
-      var name = n.getAttribute( "name" );
+      server = n.getAttribute( "server" );
+      type = n.getAttribute( "type" );
+      name = n.getAttribute( "name" );
       window.setTimeout( function() {
         util.publish( diom.topics.CHANNEL_SELECTED, [ server, type, name ] );
       }, 0);
     }
-  }
+  },
 
 
-  _vvp.handleChannelListClick = function ( e ) {
+  handleChannelListClick: function ( e ) {
+		var n;
     util.stopEvent( e );
-    var n = e.target;
-    if ( !n ) return;
+    n = e.target;
+    if ( !n ) { return; }
     if ( util.hasClass( n, "closeChannelBtn" ) ) {
       n = util.findUp( n, "channelBtn" );
       this.closeTabFromNode( n );
@@ -282,71 +288,79 @@ if ( !dView ) {
     n = util.findUp( n, "channelBtn" );
     this.selectChannelFromNode( n );
     this.handleWindowClick( e );
-  }
+  },
 
 
-  _vvp.updateNickView = function ( users, serverName, channelName ) {
+  updateNickView: function ( users, serverName, channelName ) {
     this.createActivityViewIfNeeded( channelName, serverName );
     this.getActivityWindow( channelName, serverName ).nickWindow.update( users, channelName );
-  }
+  },
 
-  _vvp.updateChannelView = function ( channels, channelsWithActivity, channelsWithHighlight ) {
+  updateChannelView: function ( channels, channelsWithActivity, channelsWithHighlight ) {
+		var r, channelsR, serverName, server, activeChannels, highlightedChannels, 
+			channelKey, activity, highlight, channelName;
     util.log("updateChannelView");
-    if ( !channels ) return;
-    var r = [];
-    var channelsR = [];
-    for ( var serverName in channels ) {
-      r.push( this.getChannelButton( serverName, serverName, serverName, "SERVER" ) );
-      var server = channels[ serverName ];
-      if ( serverName in channelsWithActivity ) {
-        var activeChannels = channelsWithActivity[ serverName ];
-      } else {
-        var activeChannels = null;
-      }
-      if ( serverName in channelsWithHighlight ) {
-        var highlightedChannels = channelsWithHighlight[ serverName ];
-      } else {
-        var highlightedChannels = null;
-      }
-      for ( var channelKey in server ) {
-        //channelKey is channelName in lowercase
-        channelsR.push( channelKey );
-        var activity = 0;
-        if ( activeChannels && ( channelKey in activeChannels ) ) {
-          activity = activeChannels[ channelKey ];
-        } 
-        var highlight = false;
-        if ( highlightedChannels && ( channelKey in highlightedChannels ) ) {
-          highlight = true;
-        }
-        channelName = server[ channelKey ].getName( ); //channel
-        r.push( this.getChannelButton( serverName, channelKey, channelName, "CHANNEL",  activity, highlight) );
-      }
-    }
+    if ( !channels ) { return; }
+    r = [];
+    channelsR = [];
+    for ( serverName in channels ) {
+			if ( channels.hasOwnProperty( serverName ) ) {
+				r.push( this.getChannelButton( serverName, serverName, serverName, "SERVER" ) );
+				server = channels[ serverName ];
+				if ( serverName in channelsWithActivity ) {
+					activeChannels = channelsWithActivity[ serverName ];
+				} else {
+					activeChannels = null;
+				}
+				if ( serverName in channelsWithHighlight ) {
+					highlightedChannels = channelsWithHighlight[ serverName ];
+				} else {
+					highlightedChannels = null;
+				}
+				for ( channelKey in server ) {
+					//channelKey is channelName in lowercase
+					if ( server.hasOwnProperty( channelKey ) ) {
+						channelsR.push( channelKey );
+						activity = 0;
+						if ( activeChannels && ( channelKey in activeChannels ) ) {
+							activity = activeChannels[ channelKey ];
+						} 
+						highlight = false;
+						if ( highlightedChannels && ( channelKey in highlightedChannels ) ) {
+							highlight = true;
+						}
+						channelName = server[ channelKey ].getName( ); //channel
+						r.push( this.getChannelButton( serverName, channelKey, channelName, "CHANNEL",  activity, highlight) );
+					}
+				}
+			}
+		}
     this.setContents( this.channelList, r.join( "" ), false ); 
     this.input.setChannels( channelsR );
-  }
+  },
 
-  _vvp.closeCurrentChannel = function ( ) {
-    var cl = this.channelList;
-    var nodes = cl.getElementsByTagName( "a" );
-    if ( !nodes || !nodes.length ) return;
-    var prev = null;
-    for ( var i = 0; i < nodes.length; i++ ) {
-      var n = nodes[ i ];
+  closeCurrentChannel: function ( ) {
+		var cl, nodes, i, prev, n;
+    cl = this.channelList;
+    nodes = cl.getElementsByTagName( "a" );
+    if ( !nodes || !nodes.length ) { return; }
+    prev = null;
+    for ( i = 0; i < nodes.length; i++ ) {
+      n = nodes[ i ];
       if ( util.hasClass( n, "currentChannel" ) ) {
         this.closeTabFromNode( n );
       }
     }
-  }
+  },
 
-  _vvp.selectPrevChannel = function ( ) {
-    var cl = this.channelList;
-    var nodes = cl.getElementsByTagName( "a" );
-    if ( !nodes || !nodes.length ) return;
-    var prev = null;
-    for ( var i = 0; i < nodes.length; i++ ) {
-      var n = nodes[ i ];
+  selectPrevChannel: function ( ) {
+		var cl, nodes, prev, i, n;
+    cl = this.channelList;
+    nodes = cl.getElementsByTagName( "a" );
+    if ( !nodes || !nodes.length ) { return; }
+    prev = null;
+    for ( i = 0; i < nodes.length; i++ ) {
+      n = nodes[ i ];
       if ( util.hasClass( n, "currentChannel" ) ) {
         if ( i === 0 ) { 
           prev = nodes[ nodes.length - 1 ];
@@ -357,27 +371,29 @@ if ( !dView ) {
       }
     }
     this.selectChannelFromNode( prev );
-  }
+  },
 
-  _vvp.selectChannelFromIndex = function ( index ) {
+  selectChannelFromIndex: function ( index ) {
+		var cl, nodes;
     util.log( "selecting channel from index: " + index );
-    var cl = this.channelList;
-    var nodes = cl.getElementsByTagName( "a" );
-    if ( !nodes || !nodes.length || nodes.length < ( index + 1 ) ) return;
+    cl = this.channelList;
+    nodes = cl.getElementsByTagName( "a" );
+    if ( !nodes || !nodes.length || nodes.length < ( index + 1 ) ) { return; }
     util.log( nodes );
     util.log( nodes.length );
     util.log( index in nodes );
     util.log( nodes[ index ] );
     this.selectChannelFromNode( nodes[ index ] );
-  }
+  },
 
-  _vvp.selectNextChannel = function ( ) {
-    var cl = this.channelList;
-    var nodes = cl.getElementsByTagName( "a" );
-    if ( !nodes || !nodes.length ) return;
-    var next = null;
-    for ( var i = 0; i < nodes.length; i++ ) {
-      var n = nodes[ i ];
+  selectNextChannel: function ( ) {
+		var cl, nodes, next, i, n;
+    cl = this.channelList;
+    nodes = cl.getElementsByTagName( "a" );
+    if ( !nodes || !nodes.length ) { return; }
+    next = null;
+    for ( i = 0; i < nodes.length; i++ ) {
+      n = nodes[ i ];
       if ( util.hasClass( n, "currentChannel" ) ) {
         next = n.nextSibling;  
         if ( i < nodes.length - 1 ) {
@@ -389,13 +405,13 @@ if ( !dView ) {
       }
     }
     this.selectChannelFromNode( next );
-  }
+  },
 
-  _vvp.getChannelButton = function ( server, channelKey, channelName, type, activity, highlight ) {
-    util.log("getChannelButton");
+  getChannelButton: function ( server, channelKey, channelName, type, activity, highlight ) {
+		var channelActivity, currentChannel;
     util.log("this.activeWin: " + this.activeWin );
     //channelKey is channelName in lowercase
-    var channelActivity = "";
+    channelActivity = "";
     if ( activity ) {
       channelActivity = [
         ' <span class="channelActivity">&nbsp;',
@@ -404,10 +420,10 @@ if ( !dView ) {
       ].join( "" );
     } 
     if ( this.activeWin ) {
-      var currentChannel = ( channelKey == this.activeWin.channelName 
-        && server == this.activeWin.serverName );
+      currentChannel = ( channelKey === this.activeWin.channelName && 
+				server === this.activeWin.serverName );
     } else {
-      var currentChannel = false;
+      currentChannel = false;
     }
     return [
         ' <a href="#" class="channelBtn',
@@ -430,28 +446,28 @@ if ( !dView ) {
           '</span> ',
         '</a> '
       ].join( "" );
-  }
+  },
 
-  _vvp.finishChannelChange = function ( ) {
+  finishChannelChange: function ( ) {
     this.input.focus( );
-  }
+  },
 
-  _vvp.createActivityViewIfNeeded = function ( channelName, serverName ) {
+  createActivityViewIfNeeded: function ( channelName, serverName ) {
     channelName = channelName.toLowerCase( );
     serverName = serverName.toLowerCase( );
     if ( !( serverName in this.activityWindows ) ) {
       this.activityWindows[ serverName ] = {};
     }
     if ( !( channelName in this.activityWindows[ serverName ] ) ) {
-      this.activityWindows[ serverName ][ channelName ] = new dView.ActivityWindow( serverName, 
+      this.activityWindows[ serverName ][ channelName ] = new diom.view.ActivityWindow( serverName, 
           channelName, 
           this.model.prefs.getPrefs( ).historyLength, 
           this.model.prefs.getPrefs( ).multiOptionPrefs.time 
       );
     }
-  }
+  },
 
-  _vvp.getActivityWindow = function ( channelName, serverName ) {
+  getActivityWindow: function ( channelName, serverName ) {
     channelName = channelName.toLowerCase( );
     serverName = serverName.toLowerCase( );
     if ( serverName in this.activityWindows ) {
@@ -460,183 +476,190 @@ if ( !dView ) {
       }
     }
     return null;
-  }
+  },
 
-  _vvp.updateActivityView = function ( messages, userNick, channelName, serverName ) {
+  updateActivityView: function ( messages, userNick, channelName, serverName ) {
     this.createActivityViewIfNeeded( channelName, serverName );
     this.getActivityWindow( channelName, serverName ).update( messages, userNick, channelName );
-  }
+  },
 
-  _vvp.highlight = function ( ) {
-    var na = air.NativeApplication;
-    var nt = air.NotificationType;
-    var nw = air.NativeWindow;
-    if ( na.supportsDockIcon ) {
-      //bounce dock icon
-      var icon = na.nativeApplication.icon;
-      icon.bounce( nt.CRITICAL );
-    } else if ( nw.supportsNotification ) {
-      //flash taskbar
-      window.nativeWindow.notifyUser( nt.CRITICAL );
-    }
-  }
+  highlight: function ( ) {
+		var na, nt, nw, icon;
+		if ( air ) {
+			na = air.NativeApplication;
+			nt = air.NotificationType;
+			nw = air.NativeWindow;
+			if ( na.supportsDockIcon ) {
+				//bounce dock icon
+				icon = na.nativeApplication.icon;
+				icon.bounce( nt.CRITICAL );
+			} else if ( nw.supportsNotification ) {
+				//flash taskbar
+				window.nativeWindow.notifyUser( nt.CRITICAL );
+			}
+		}
+  },
 
-  _vvp.getInput = function ( ) {
+  getInput: function ( ) {
     return this.input.getValue( );
-  }
+  },
 
-  _vvp.destroy = function ( ) {
+  destroy: function ( ) {
     util.log( "destroying view" );
     this.input.destroy();
-  }
+  },
   
-  _vvp.openPerformsWindow = function ( networks ) {
-    if ( !networks ) networks = [];
+  openPerformsWindow: function ( networks ) {
+		var x, y, win;
+    if ( !networks ) { networks = []; }
     window.performsBridge = {
       util : util,
       topics : diom.topics,
       networks : networks,
-      getPerforms : util.hitch( this.model.networks, "getPerforms" ),
-    }
-    var x = window.nativeWindow.x + 150;
-    var y = window.nativeWindow.y + 100;
-    var win = window.open("performs.html", "performsWindow", "height=400, scrollbars=yes, width=600, top=" + y + ", left=" + x);
+      getPerforms : util.hitch( this.model.networks, "getPerforms" )
+    };
+    x = window.nativeWindow.x + 150;
+    y = window.nativeWindow.y + 100;
+    win = window.open("performs.html", "performsWindow", "height=400, scrollbars=yes, width=600, top=" + y + ", left=" + x);
     win = win.nativeWindow;
-  }
+  },
 
-  _vvp.handlePerformBtnClick = function ( e ) {
+  handlePerformBtnClick: function ( e ) {
     this.model.networks.getNetworks( util.hitch( this, "openPerformsWindow" ) );
-  }
+  },
 
-  _vvp.handleAboutBtnClick = function ( e ) {
+  handleAboutBtnClick: function ( e ) {
     var s = this.appVersion; 
     s += "\n\nTwitter: @apphacker";
     s += "\nEmail: apphacker@gmail.com";
     s += "\nWebsite: http://www.apphackers.com";
     s += "\nBlog: http://apphacker.wordpress.com";
     alert( s );
-  }
+  },
 
-  _vvp.handleUpdateBtnClick = function ( e ) {
+  handleUpdateBtnClick: function ( e ) {
     util.publish( diom.topics.UPDATE_CHECK, [] );
-  }
+  },
   
-  _vvp.handleHelpBtnClick = function ( e ) {
+  handleHelpBtnClick: function ( e ) {
     this.displayHelp( );
-  }
+  },
   
-  _vvp.openChannelsWindow = function ( networks ) {
-    if ( !networks ) networks = [];
+  openChannelsWindow: function ( networks ) {
+		var x, y, win;
+    if ( !networks ) { networks = []; }
     window.channelsBridge = {
       util : util,
       topics : diom.topics,
       networks : networks,
-      getChannels : util.hitch( this.model.networks, "getChannels" ),
-    }
-    var x = window.nativeWindow.x + 150;
-    var y = window.nativeWindow.y + 100;
-    var win = window.open("channels.html", "channelsWindow", "height=500, scrollbars=yes, width=500, top=" + y + ", left=" + x);
+      getChannels : util.hitch( this.model.networks, "getChannels" )
+    };
+    x = window.nativeWindow.x + 150;
+    y = window.nativeWindow.y + 100;
+    win = window.open("channels.html", "channelsWindow", "height=500, scrollbars=yes, width=500, top=" + y + ", left=" + x);
     win = win.nativeWindow;
-  }
+  },
 
-  _vvp.handleChannelsBtnClick = function ( e ) {
+  handleChannelsBtnClick: function ( e ) {
     this.model.networks.getNetworks( util.hitch( this, "openChannelsWindow" ) );
-  }
+  },
 
-  _vvp.openServersWindow = function ( networks ) {
-    if ( !networks ) networks = [];
+  openServersWindow: function ( networks ) {
+		var x, y, win;
+    if ( !networks ) { networks = []; }
     window.serversBridge = {
       util : util,
       topics : diom.topics,
       networks : networks,
-      getServers : util.hitch( this.model.networks, "getServers" ),
-    }
-    var x = window.nativeWindow.x + 150;
-    var y = window.nativeWindow.y + 100;
-    var win = window.open("servers.html", "serversWindow", "height=500, scrollbars=yes, width=500, top=" + y + ", left=" + x);
+      getServers : util.hitch( this.model.networks, "getServers" )
+    };
+    x = window.nativeWindow.x + 150;
+    y = window.nativeWindow.y + 100;
+    win = window.open("servers.html", "serversWindow", "height=500, scrollbars=yes, width=500, top=" + y + ", left=" + x);
     win = win.nativeWindow;
-  }
+  },
 
-  _vvp.handleServersBtnClick = function ( e ) {
+  handleServersBtnClick: function ( e ) {
     this.model.networks.getNetworks( util.hitch( this, "openServersWindow" ) );
-  }
+  },
 
-  _vvp.handleIgnoresBtnClick = function ( e ) {
+  handleIgnoresBtnClick: function ( e ) {
     this.model.ignores.getIgnores( util.hitch( this, "openIgnoresWindow" ) );
-  }
+  },
 
-  _vvp.openIgnoresWindow = function ( ignores ) {
-    if ( !ignores ) ignores = [];
+  openIgnoresWindow: function ( ignores ) {
+		var x, y, win;
+    if ( !ignores ) { ignores = []; }
     window.ignoresBridge = {
       util : util,
       topics : diom.topics,
-      ignores : ignores,
-    }
-    var x = window.nativeWindow.x + 150;
-    var y = window.nativeWindow.y + 100;
-    var win = window.open("ignores.html", "ignoresWindow", "height=400, scrollbars=yes, width=600, top=" + y + ", left=" + x);
+      ignores : ignores
+    };
+    x = window.nativeWindow.x + 150;
+    y = window.nativeWindow.y + 100;
+    win = window.open("ignores.html", "ignoresWindow", "height=400, scrollbars=yes, width=600, top=" + y + ", left=" + x);
     win = win.nativeWindow;
-  }
+  },
 
-  _vvp.handleNetworksBtnClick = function ( e ) {
-    this.model.networks.getNetworks( util.hitch( this, "openNetworksWindow" ) );
-  }
-
-  _vvp.handleAliasesBtnClick = function ( e ) {
+  handleAliasesBtnClick: function ( e ) {
     this.model.aliases.getAliases( util.hitch( this, "openAliasesWindow" ) );
-  }
+  },
 
-  _vvp.openAliasesWindow = function ( aliases ) {
-    if ( !aliases ) aliases = [];
+  openAliasesWindow: function ( aliases ) {
+		var x, y, win;
+    if ( !aliases ) { aliases = []; }
     window.aliasesBridge = {
       util : util,
       topics : diom.topics,
-      aliases : aliases,
-    }
-    var x = window.nativeWindow.x + 150;
-    var y = window.nativeWindow.y + 100;
-    var win = window.open("aliases.html", "aliasesWindow", "height=400, scrollbars=yes, width=600, top=" + y + ", left=" + x);
+      aliases : aliases
+    };
+    x = window.nativeWindow.x + 150;
+    y = window.nativeWindow.y + 100;
+    win = window.open("aliases.html", "aliasesWindow", "height=400, scrollbars=yes, width=600, top=" + y + ", left=" + x);
     win = win.nativeWindow;
-  }
+  },
 
-  _vvp.handleNetworksBtnClick = function ( e ) {
+  handleNetworksBtnClick: function ( e ) {
     this.model.networks.getNetworks( util.hitch( this, "openNetworksWindow" ) );
-  }
+  },
 
-  _vvp.openNetworksWindow = function ( networks ) {
-    if ( !networks ) networks = [];
+  openNetworksWindow: function ( networks ) {
+		var x, y, win;
+    if ( !networks ) { networks = []; }
     window.networksBridge = {
       util : util,
       topics : diom.topics,
       preferences : this.model.prefs.getPrefs( ),
-      networks : networks,
-    }
-    var x = window.nativeWindow.x + 150;
-    var y = window.nativeWindow.y + 100;
-    var win = window.open("networks.html", "networksWindow", "height=400, scrollbars=yes, width=500, top=" + y + ", left=" + x);
+      networks : networks
+    };
+    x = window.nativeWindow.x + 150;
+    y = window.nativeWindow.y + 100;
+    win = window.open("networks.html", "networksWindow", "height=400, scrollbars=yes, width=500, top=" + y + ", left=" + x);
     win = win.nativeWindow;
-  }
+  },
 
 
-  _vvp.handlePrefBtnClick = function ( e ) {
+  handlePrefBtnClick: function ( e ) {
+		var x, y ,win;
     window.prefBridge = {
       util : util,
       topics : diom.topics,
-      preferences : this.model.prefs.getPrefs( ),
-    }
-    var x = window.nativeWindow.x + 150;
-    var y = window.nativeWindow.y + 75;
-    var win = window.open("prefs.html", "prefsWindow", "height=550, scrollbars=yes, width=500, top=" + y + ", left=" + x);
+      preferences : this.model.prefs.getPrefs( )
+    };
+    x = window.nativeWindow.x + 150;
+    y = window.nativeWindow.y + 75;
+    win = window.open("prefs.html", "prefsWindow", "height=550, scrollbars=yes, width=500, top=" + y + ", left=" + x);
     win = win.nativeWindow;
     this.model.prefs.savePrefs( );
     win.addEventListener( air.Event.CLOSE, util.hitch( this.model.prefs, "savePrefs" )  ); 
-  }
+  },
 
-  _vvp.handleTitleBarClick = function ( e ) {
+  handleTitleBarClick: function ( e ) {
+		var id, funcName;
     util.stopEvent( e );
-    var id = e.target.id;
+    id = e.target.id;
     if ( id ) { 
-      var funcName = "handle" + id + "Click"; 
+      funcName = "handle" + id + "Click"; 
       if ( this[ funcName ] ) {
         this[ funcName ]( e );
       }
@@ -644,3 +667,4 @@ if ( !dView ) {
     this.handleWindowClick( e );
   }
 
+} );
