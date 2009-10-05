@@ -1,52 +1,74 @@
+/*jslint white: false */
+/*jslint nomen: false */
+/*jslint regexp: false */
+/*jslint plusplus: false */
+/*jslint passfail: true */
+/*global window, dojo, util, diom, air, document, alert */
 
 dojo.provide( "diom.view.nickView" );
 
-  dView.NickWindow = function ( serverName, channelName ) {
+dojo.declare( "diom.view.NickWindow", null, {
+
+  constructor: function ( serverName, channelName ) {
     this.serverName = serverName;
     this.channelName = channelName;
     this.win = document.createElement( "div" );
     this.win.setAttribute( "class", "nickWin" );
     this.win.setAttribute( "server", this.serverName );
     this.win.setAttribute( "channel", this.channelName );
-  }
+  },
 
-  var _vnw = dView.NickWindow.prototype;
+  sanitize: function ( msg ) {
+    if ( msg ) {
+      msg = msg.split( "&" ).join( "&amp;" );
+      msg = msg.split( "<" ).join( "&lt;" );
+      msg = msg.split( ">" ).join( "&gt;" );
+      msg = msg.split( '"' ).join( "&quot;" );
+    }
+    return msg;
+  },
 
-  _vnw.sanitize = dView.View.prototype.sanitize;
+  setContents: function ( node, contents, synchronous ) {
+    if ( synchronous ) {
+      node.innerHTML = contents;
+    } else {
+      //per
+      window.setTimeout( function() { node.innerHTML = contents; }, 0 );
+    }
+  },
 
-  _vnw.setContents = _vvp.setContents;
-
-  _vnw.clear = function ( ) {
+  clear: function ( ) {
     this.win.innerHTML = "";
-  }
+  },
 
-  _vnw.getNode = function ( ) {
+  getNode: function ( ) {
     return this.win;
-  }
+  },
 
-  _vnw.getNicks = function ( ) {
+  getNicks: function ( ) {
     return this.nicks;
-  }
+  },
 
-  _vnw.update = function ( users, channelName ) {
-    if ( !users ) return;
-    var mode;
-    var r = [];
-    var usersR = [];
-    var creatorsR = [];
-    var opsR = [];
-    var halfOpsR = [];
-    var voicedR = [];
-    var nicks = this.sort( users );
-    var tmpNicks = [];
-    for ( var i = 0; i < nicks.length; i++ ) {
-      var nick = nicks[ i ];
+  update: function ( users, channelName ) {
+    var mode, r, usersR, creatorsR, opsR, halfOpsR, voicedR,
+			nicks, tmpNicks, i, nick, user;
+		r = [];
+		usersR = [];
+		creatorsR = [];
+		opsR = [];
+		halfOpsR = [];
+		voicedR = [];
+		nicks = this.sort( users );
+		tmpNicks = [];
+    if ( !users ) { return; }
+    for ( i = 0; i < nicks.length; i++ ) {
+      nick = nicks[ i ];
       if ( nick ) {
         tmpNicks.push( nick );
       } else {
         continue;
       }
-      var user = users[ nick ];
+      user = users[ nick ];
       if ( user.isCreator( channelName ) ) {
         mode = "!";
         creatorsR.push( this.getNickButton( user, mode ) );
@@ -73,23 +95,25 @@ dojo.provide( "diom.view.nickView" );
     this.setContents( this.win, r.join( "" ), false );
     this.nicks = nicks;
     util.publish( diom.topics.NICK_CHANGE, [ nicks, this.serverName, this.channelName ] );
-  }
+  },
 
-  _vnw.sort = function ( users ) {
-    var r = [];
-    for ( var nick in users ) {
-      r.push( nick );
+  sort: function ( users ) {
+    var r = [], nick;
+    for ( nick in users ) {
+			if ( users.hasOwnProperty( nick ) ) {
+      	r.push( nick );
+			}
     }
     r.sort( this.nickCompare );
     return r;
-  }
+  },
 
-  _vnw.getNickButton = function ( user, mode ) {
+  getNickButton: function ( user, mode ) {
     return [
         ' <span class="nickButton',
-        ( mode == "@" ? " op" : "" ),
-        ( mode == "%" ? " halfOp" : "" ),
-        ( mode == "+" ? " voiced" : "" ),
+        ( mode === "@" ? " op" : "" ),
+        ( mode === "%" ? " halfOp" : "" ),
+        ( mode === "+" ? " voiced" : "" ),
         '" mode="',
         mode,
         '" nick="',
@@ -101,9 +125,9 @@ dojo.provide( "diom.view.nickView" );
           this.sanitize( user.nick ),
         '</span> '
       ].join("");
-  }
+  },
 
-  _vnw.nickCompare = function ( nick1, nick2 ) {
+  nickCompare: function ( nick1, nick2 ) {
     nick1 = nick1.toLowerCase( );
     nick2 = nick2.toLowerCase( );
     if ( nick1 < nick2 ) {
@@ -114,4 +138,6 @@ dojo.provide( "diom.view.nickView" );
     }
     return 0;
   } 
+
+} );
 
