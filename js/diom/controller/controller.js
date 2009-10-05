@@ -18,12 +18,11 @@ dojo.declare( "diom.controller.Controller", null, {
 		this.setAppVersion( );
     this.view.setAppVersion( this.appVersion );
     this.channelSubscription = null;
-    this.channelList = new diom.connection.ChannelList( );
-    this.updater = new  diom.connection.Updater( this.model.prefs.getPrefs( ).updateDelay, this.model.prefs.getPrefs( ).updateURL );
-    this.linkLog = new diom.connection.LinkLog( );
+    this.channelList = new diom.controller.ChannelList( );
+    this.updater = new  diom.controller.Updater( this.model.prefs.getPrefs( ).updateDelay, this.model.prefs.getPrefs( ).updateURL );
+    this.linkLog = new diom.controller.LinkLog( );
     this.currentChannel = null;
     this.currentConnection = null;
-    this.defaultNick = "diomedesuser"; //TODO: need model & preferences
     this.queryTimer = {};
     this.channelsWithActivity = {};
     this.channelsHighlighted  = {};
@@ -285,8 +284,6 @@ dojo.declare( "diom.controller.Controller", null, {
       if ( cmd === "server" ) {
         util.log( "Connecting to a server." );
         if ( argsR.length > 0 ) {
-          //XXX: maybe get some preferences in this part
-          nick = this.defaultNick;
           hostParts = argsR[0].split(":");
           host = hostParts[0];
           port = ( ( hostParts.length > 1 ) ? hostParts[1] : null );

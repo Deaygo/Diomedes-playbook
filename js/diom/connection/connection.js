@@ -550,9 +550,13 @@ dojo.declare( "diom.connection.Connection", null, {
         break;
       case "kick":
         msg = "";
-        if ( args && args.length > 1 ) {
+        if ( args && args.length ) {
           channel = args.shift( );
-          nick = args.shift( );
+					if ( args.length ) {
+          	nick = args.shift( );
+					} else {
+						nick = null;
+					}
           if ( !nick ) {
             nick = channel;
             channel = target;
