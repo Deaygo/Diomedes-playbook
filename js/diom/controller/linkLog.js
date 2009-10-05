@@ -1,25 +1,32 @@
+/*jslint white: false */
+/*jslint nomen: false */
+/*jslint plusplus: false */
+/*jslint passfail: true */
+/*global window, dojo, util, diom, air, runtime */
 
 dojo.provide( "diom.controller.linkLog" );
 
-  dController.LinkLog = function ( ) {
+dojo.declare( "diom.controller.LinkLog", null, {
+
+  constructor: function ( ) {
     util.subscribe( diom.topics.LINK_FOUND, this, "handleLink", [] );
     this.fetchers = {};
     util.subscribe( diom.topics.LINK_DATA, this, "handleLinkData", [] );
-  }
+  },
 
-  var _cllp = dController.LinkLog.prototype;
-
-  _cllp.handleLink = function ( link, serverName, channelName, nick ) {
+  handleLink: function ( link, serverName, channelName, nick ) {
     if ( !( link in this.fetchers ) ) {
-      this.fetchers[ link ] = new dController.LinkInfoFetcher( link, serverName, channelName,nick );
+      this.fetchers[ link ] = new diom.controller.LinkInfoFetcher( link, serverName, channelName,nick );
     }
-  }
+  },
 
-  _cllp.handleLinkData = function ( link ) {
+  handleLinkData: function ( link ) {
     //explicitly deleting fetchers to reduce memory leaks
     if ( link in this.fetchers ) {
       this.fetchers[ link ].destroy( );
       delete this.fetchers[ link ];
     }
   }
+
+} );
 
