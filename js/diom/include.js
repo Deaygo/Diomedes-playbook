@@ -21,6 +21,13 @@ dojo.require( "diom.connection.activityList" );
 dojo.require( "diom.connection.channel" );
 dojo.require( "diom.connection.user" );
 
+//model
+dojo.require( "diom.model.model" );
+dojo.require( "diom.model.aliasModel" );
+dojo.require( "diom.model.ignoresModel" );
+dojo.require( "diom.model.networksModel" );
+dojo.require( "diom.model.prefModel" );
+
 //view
 dojo.require( "diom.view.view" );
 dojo.require( "diom.view.formInput" );
