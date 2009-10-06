@@ -69,9 +69,6 @@
   <script type="text/javascript" src="js/release/dojo/diom/diom.js.uncompressed.js"></script> 
 	-->
 
-
-
-  <script type="text/javascript" src="js/model.js"></script> 
   <script type="text/javascript"> 
 
     var m, v, c;
@@ -87,7 +84,7 @@
     function appLoad ( ) { 
       util.log( "appLoad" ); 
 
-      m = new dModel.Model( );
+      m = new diom.model.Model( );
       v = new diom.view.View( m );
       c = new diom.controller.Controller( m, v );
 

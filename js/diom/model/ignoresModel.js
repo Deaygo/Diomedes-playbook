@@ -7,7 +7,7 @@
 
 dojo.provide( "diom.model.ignoresModel" );
 
-dojo.declare( "diom.view.NetworkModel", null, {
+dojo.declare( "diom.model.IgnoresModel", null, {
 
   constructor: function ( model ) {
     this.model = model;

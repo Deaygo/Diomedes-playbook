@@ -10,7 +10,7 @@
 
 dojo.provide( "diom.model.model" );
 
-dojo.declare( "diom.view.Model", null, {
+dojo.declare( "diom.model.Model", null, {
 
   constructor: function ( ) {
     this.SQL_TYPES = {
@@ -113,7 +113,7 @@ dojo.declare( "diom.view.Model", null, {
     sql = [];
     sql = sql.concat( [ "CREATE TABLE IF NOT EXISTS ", name, " (" ] );  
     for ( typeNames in types ) {
-			if ( types.hasOwnProperty( name ) ) {
+			if ( types.hasOwnProperty( typeNames ) ) {
 				sql.push( [ name, types[ name ] ].join( " " ) );
 				sql.push( ", ");
 			}

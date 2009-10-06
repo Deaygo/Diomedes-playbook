@@ -26,6 +26,11 @@ checkFiles=(
   "diom/view/linkView"
   "diom/view/formInput"
   "diom/view/activityWindow"
+  "diom/model/model"
+  "diom/model/prefModel"
+  "diom/model/networksModel"
+  "diom/model/ignoresModel"
+  "diom/model/aliasModel"
 
   "tests/loggerTest"
 

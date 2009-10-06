@@ -7,7 +7,7 @@
 
 dojo.provide( "diom.model.networksModel" );
 
-dojo.declare( "diom.view.NetworkModel", null, {
+dojo.declare( "diom.model.NetworksModel", null, {
 
   constructor: function ( model ) {
     util.log("NetworksModel");

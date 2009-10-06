@@ -7,7 +7,7 @@
 
 dojo.provide( "diom.model.prefModel" );
 
-dojo.declare( "diom.view.PrefModel", null, {
+dojo.declare( "diom.model.PrefModel", null, {
 
   constructor: function ( model ) {
     this.model = model;
