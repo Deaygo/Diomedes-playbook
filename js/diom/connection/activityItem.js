@@ -91,7 +91,7 @@ dojo.declare( "diom.connection.ActivityItem", null, {
     } else if ( user && user.isCreator( channelName ) ) {
       return "!" + this.nick;
     } else if ( user && user.isOp( channelName ) ) {
-      return this.nick;
+      return "@" + this.nick;
     } else if ( user && user.isHalfOp( channelName ) ) {
       return "%" + this.nick;
     } else if ( user && user.isVoice( channelName ) ) {

@@ -36,14 +36,14 @@ dojo.declare( "diom.Network", null, {
     this.currentHost = null;
     this.TEST_CONNECTION_TIME = 5000;
     id = data.id;
-    model.getServers( id, util.hitch( this, "handleServerInfo" ) ); 
-    model.getChannels( id, util.hitch( this, "handleChannelInfo" ) );
-    model.getPerforms( id, util.hitch( this, "handlePerformInfo" ) );
+    model.getServers( id, dojo.hitch( this, "handleServerInfo" ) ); 
+    model.getChannels( id, dojo.hitch( this, "handleChannelInfo" ) );
+    model.getPerforms( id, dojo.hitch( this, "handlePerformInfo" ) );
     this.model = model;
     this.checkInfoProgress( );
-    util.subscribe( diom.topics.NETWORK_CHANGE, this, "handleNetworksChanged", [] );
-    util.subscribe( diom.topics.IGNORES_UPDATE, this, "handleIgnoresUpdate", [] );
-    util.subscribe( diom.topics.CHANNELS_CHANGED, this, "handleNetworkConnect", [] );
+    dojo.subscribe(  diom.topics.NETWORK_CHANGE, this, "handleNetworksChanged" );
+    dojo.subscribe(  diom.topics.IGNORES_UPDATE, this, "handleIgnoresUpdate" );
+    dojo.subscribe(  diom.topics.CHANNELS_CHANGED, this, "handleNetworkConnect" );
   },
 
   handleIgnoresUpdate: function ( ignores ) {
@@ -59,9 +59,9 @@ dojo.declare( "diom.Network", null, {
   handleNetworksChanged: function ( id ) {
     util.log("hnc in nn");
     if ( id && id === this.data.id ) {
-      this.model.getServers( id, util.hitch( this, "handleServerInfo" ) ); 
-      this.model.getChannels( id, util.hitch( this, "handleChannelInfo" ) );
-      this.model.getPerforms( id, util.hitch( this, "handlePerformInfo" ) );
+      this.model.getServers( id, dojo.hitch( this, "handleServerInfo" ) ); 
+      this.model.getChannels( id, dojo.hitch( this, "handleChannelInfo" ) );
+      this.model.getPerforms( id, dojo.hitch( this, "handlePerformInfo" ) );
     }
   },
 
@@ -96,7 +96,7 @@ dojo.declare( "diom.Network", null, {
     if ( this.serverInfoReceived && this.channelInfoReceived && this.performInfoReceived ) {
       this.autoConnect( );
     } else {
-      window.setTimeout( util.hitch( this, "checkInfoProgress" ), 1000 );
+      window.setTimeout( dojo.hitch( this, "checkInfoProgress" ), 1000 );
     }
   },
 
@@ -110,7 +110,7 @@ dojo.declare( "diom.Network", null, {
 		var parts, port;
     if ( !this.servers.length ) { return; }
     if ( this.currentHost ) {
-      util.publish( diom.topics.CONNECTION_CLOSE, [ this.currentHost ] );
+      dojo.publish( diom.topics.CONNECTION_CLOSE, [ this.currentHost ] );
       this.connection = null;
       this.currentHost = null;
     }
@@ -119,7 +119,7 @@ dojo.declare( "diom.Network", null, {
     port = util.fromIndex( parts, 1 );
     this.channelList.createConnection( this.currentHost, port, this.prefs, this.appVersion, this.ignores );
     this.connection = this.channelList.getConnection( this.currentHost );
-    util.publish( diom.topics.CHANNELS_CHANGED, [ "connect", this.currentHost, this.currentHost ] );
+    dojo.publish( diom.topics.CHANNELS_CHANGED, [ "connect", this.currentHost, this.currentHost ] );
   },
 
   getNextServer: function ( ) {
@@ -166,14 +166,14 @@ dojo.declare( "diom.Network", null, {
       this.performsProgress = 0;
       return;
     }
-    util.publish( diom.topics.USER_INPUT, [ util.fromIndex( performs, this.performsProgress ).command, this.currentHost ] );
+    dojo.publish( diom.topics.USER_INPUT, [ util.fromIndex( performs, this.performsProgress ).command, this.currentHost ] );
     this.performsProgress++;
-    window.setTimeout( util.hitch( this, "perform" ), 2500 );
+    window.setTimeout( dojo.hitch( this, "perform" ), 2500 );
   },
 
   close: function ( ) {
     if ( this.currentHost ) {
-      util.publish( diom.topics.CONNECTION_CLOSE, [ this.currentHost ] );
+      dojo.publish( diom.topics.CONNECTION_CLOSE, [ this.currentHost ] );
       this.connection.destroy( );
       this.connection = null;
       this.currentHost = null;

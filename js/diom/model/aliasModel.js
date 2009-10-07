@@ -25,7 +25,7 @@ dojo.declare( "diom.model.AliasModel", null, {
       lastUsed : st.INTEGER
     };
     tableName = "aliases";
-    this.model._createTable( tableName, types, util.hitch( this, "_handleCreateTable", [ tableName ], null ) );
+    this.model._createTable( tableName, types, dojo.hitch( this, "_handleCreateTable", [ tableName ], null ) );
   },
 
   getAliases: function ( resultsHandler ) {
@@ -45,7 +45,7 @@ dojo.declare( "diom.model.AliasModel", null, {
       active : active,
       lastUsed : lastUsed
     };
-    this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
+    this.model._executeSQL( sql, air.SQLMode.UPDATE, dojo.hitch( this, "_handleChange" ), p ); 
   },
 
   editAlias: function ( id, name, command, active, lastUsed ) {
@@ -59,14 +59,14 @@ dojo.declare( "diom.model.AliasModel", null, {
       active : active,
       lastUsed : lastUsed
     };
-    this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
+    this.model._executeSQL( sql, air.SQLMode.UPDATE, dojo.hitch( this, "_handleChange" ), p ); 
   },
 
   remAlias: function ( id ) {
 		var sql, p;
     sql = "DELETE FROM aliases WHERE id = :id ";
     p = { id : id };
-    this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
+    this.model._executeSQL( sql, air.SQLMode.UPDATE, dojo.hitch( this, "_handleChange" ), p ); 
   },
 
   _handleCreateTable: function ( e, tableName ) {
@@ -75,7 +75,7 @@ dojo.declare( "diom.model.AliasModel", null, {
 
   _handleChange: function ( e ) {
     util.log( "Database changed." );
-    util.publish( diom.topics.ALIAS_CHANGE, [ null ] );
+    dojo.publish( diom.topics.ALIAS_CHANGE, [ null ] );
   }
 
 } );

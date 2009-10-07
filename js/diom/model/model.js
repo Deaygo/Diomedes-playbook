@@ -37,7 +37,7 @@ dojo.declare( "diom.model.Model", null, {
       return;
     }
     if ( !errorHandler ) {
-			errorHandler = util.hitch( this, "_handleError", [ "openSQLConnection" ] );
+			errorHandler = dojo.hitch( this, "_handleError", [ "openSQLConnection" ] );
 		}
     if ( this.conn ) { this.closeConnection( ); }
     this.conn = new air.SQLConnection( ); 
@@ -57,7 +57,7 @@ dojo.declare( "diom.model.Model", null, {
       return;
     }
     if ( !errorHandler ) {
-			errorHandler = util.hitch( this, "_handleError", [ "SQL: " + sql ] );
+			errorHandler = dojo.hitch( this, "_handleError", [ "SQL: " + sql ] );
 		}
     if ( !this.conn || !this.conn.connected ) { 
       this.log( "Connection not open when calling _executeSQL, opening it");
@@ -104,7 +104,7 @@ dojo.declare( "diom.model.Model", null, {
   },
 
   _getResultHandler: function ( resultsHandler ) {
-    return util.hitch( this, "_getFilterResult", [ resultsHandler ] );
+    return dojo.hitch( this, "_getFilterResult", [ resultsHandler ] );
   },
 
   _createTable: function ( name, types, resultsHandler, parameters, errorHandler ) {

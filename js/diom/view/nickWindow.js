@@ -94,7 +94,7 @@ dojo.declare( "diom.view.NickWindow", null, {
     r = r.concat( usersR );
     this.setContents( this.win, r.join( "" ), false );
     this.nicks = nicks;
-    util.publish( diom.topics.NICK_CHANGE, [ nicks, this.serverName, this.channelName ] );
+    dojo.publish( diom.topics.NICK_CHANGE, [ nicks, this.serverName, this.channelName ] );
   },
 
   sort: function ( users ) {

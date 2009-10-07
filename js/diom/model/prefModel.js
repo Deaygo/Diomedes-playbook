@@ -215,23 +215,23 @@ dojo.declare( "diom.model.PrefModel", null, {
   setPrefs: function ( prefs ) {
     if ( !prefs ) { return; }
     if ( prefs.historyLength !== this.preferences.historyLength ) {
-      util.publish( diom.topics.PREFS_CHANGE_HISTORY_LENGTH, [ prefs.historyLength ] );
+      dojo.publish( diom.topics.PREFS_CHANGE_HISTORY_LENGTH, [ prefs.historyLength ] );
     }
     if ( prefs.autoJoin !== this.preferences.autoJoin ) {
-      util.publish( diom.topics.PREFS_CHANGE_AUTOJOIN, [ prefs.autoJoin ] );
+      dojo.publish( diom.topics.PREFS_CHANGE_AUTOJOIN, [ prefs.autoJoin ] );
     }
     if ( prefs.logging !== this.preferences.logging ) {
-      util.publish( diom.topics.PREFS_CHANGE_LOGGING, [ prefs.logging === "true" ] );
+      dojo.publish( diom.topics.PREFS_CHANGE_LOGGING, [ prefs.logging === "true" ] );
     }
     if ( prefs.updateDelay !== this.preferences.updateDelay ) {
-      util.publish( diom.topics.UPDATE_DELAY_CHANGE, [ prefs.updateDelay ] );
+      dojo.publish( diom.topics.UPDATE_DELAY_CHANGE, [ prefs.updateDelay ] );
     }
     if ( prefs.updateURL !== this.preferences.updateURL ) {
-      util.publish( diom.topics.UPDATE_URL_CHANGE, [ prefs.updateURL ] );
+      dojo.publish( diom.topics.UPDATE_URL_CHANGE, [ prefs.updateURL ] );
     }
-    util.publish( diom.topics.PREFS_CHANGE_FONT, [ prefs.multiOptionPrefs.font, prefs.fontSize ] );
-    util.publish( diom.topics.PREFS_CHANGE_TIME_FORMAT, [ prefs.multiOptionPrefs.time ] );
-    util.publish( diom.topics.PREFS_CHANGE_THEME, [ prefs.multiOptionPrefs.theme ] );
+    dojo.publish( diom.topics.PREFS_CHANGE_FONT, [ prefs.multiOptionPrefs.font, prefs.fontSize ] );
+    dojo.publish( diom.topics.PREFS_CHANGE_TIME_FORMAT, [ prefs.multiOptionPrefs.time ] );
+    dojo.publish( diom.topics.PREFS_CHANGE_THEME, [ prefs.multiOptionPrefs.theme ] );
     this.preferences = prefs;
   },
 

@@ -9,9 +9,9 @@ dojo.provide( "diom.controller.linkLog" );
 dojo.declare( "diom.controller.LinkLog", null, {
 
   constructor: function ( ) {
-    util.subscribe( diom.topics.LINK_FOUND, this, "handleLink", [] );
+    dojo.subscribe(  diom.topics.LINK_FOUND, this, "handleLink" );
     this.fetchers = {};
-    util.subscribe( diom.topics.LINK_DATA, this, "handleLinkData", [] );
+    dojo.subscribe(  diom.topics.LINK_DATA, this, "handleLinkData" );
   },
 
   handleLink: function ( link, serverName, channelName, nick ) {

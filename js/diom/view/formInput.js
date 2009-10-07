@@ -13,8 +13,8 @@ dojo.declare( "diom.view.FormInput", null, {
     this.MAX_HISTORY_LENGTH = 50;
     this.input = node;
     this.form = form;
-    util.connect(this.form, "onsubmit", this, "handleInput");
-    util.connect(this.input, "onkeydown", this, "handleInputChange");
+    dojo.connect(this.form, "onsubmit", this, "handleInput");
+    dojo.connect(this.input, "onkeydown", this, "handleInputChange");
     this.nicks = [];
     this.listItemIndex = 0;
     this.input.focus( );
@@ -26,7 +26,7 @@ dojo.declare( "diom.view.FormInput", null, {
     this.channelName = null;
     this.serverName = null;
     this.channels = [];
-    util.subscribe( diom.topics.NICK_CHANGE, this, "handleNickChange", [] );
+    dojo.subscribe(  diom.topics.NICK_CHANGE, this, "handleNickChange" );
   },
 
   getValue: function ( ) {
@@ -53,14 +53,14 @@ dojo.declare( "diom.view.FormInput", null, {
 
   handleInput: function ( e ) {
 		var _input, inputs, i, input;
-    util.stopEvent( e );
+    dojo.stopEvent( e );
     _input = this.getValue( );
     inputs = _input.split( "\n" );
     for ( i = 0; i < inputs.length; i++ ) {
       input = inputs[ i ];
       this.addToHistory( input );
       util.log("getInput: " + input );
-      util.publish( diom.topics.USER_INPUT, [ input ] );
+      dojo.publish( diom.topics.USER_INPUT, [ input ] );
     }
   },
 
@@ -97,27 +97,27 @@ dojo.declare( "diom.view.FormInput", null, {
       return;
     } else if ( key === 78 && ( e.metaKey || e.ctrlKey ) ) {
       //cntrl+n or command key+n
-      util.stopEvent( e );
-      util.publish( diom.topics.INPUT_CHANNEL_NEXT );
+      dojo.stopEvent( e );
+      dojo.publish( diom.topics.INPUT_CHANNEL_NEXT );
       return;
     } else if ( key === 39 && e.shiftKey && ( e.metaKey || e.ctrlKey ) ) {
       //cntrl+shift+r arrow or command key+shift+r arrow
-      util.stopEvent( e );
-      util.publish( diom.topics.INPUT_CHANNEL_NEXT );
+      dojo.stopEvent( e );
+      dojo.publish( diom.topics.INPUT_CHANNEL_NEXT );
       return;
     } else if ( key === 80 && ( e.metaKey || e.ctrlKey ) ) {
       //cntrl+p or command key+p
-      util.stopEvent( e );
-      util.publish( diom.topics.INPUT_CHANNEL_PREV );
+      dojo.stopEvent( e );
+      dojo.publish( diom.topics.INPUT_CHANNEL_PREV );
       return;
     } else if ( key === 37 && e.shiftKey && ( e.metaKey || e.ctrlKey ) ) {
       //cntrl+shift+l arrow or command key+shift+l arrow
-      util.stopEvent( e );
-      util.publish( diom.topics.INPUT_CHANNEL_PREV );
+      dojo.stopEvent( e );
+      dojo.publish( diom.topics.INPUT_CHANNEL_PREV );
       return;
     } else if ( key === 76 && ( e.metaKey || e.ctrlKey ) ) {
-      util.stopEvent( e );
-      util.publish( diom.topics.INPUT_CHANNEL_PART );
+      dojo.stopEvent( e );
+      dojo.publish( diom.topics.INPUT_CHANNEL_PART );
       return;
     } else if ( key === 13 ) {
       //enter
@@ -133,21 +133,21 @@ dojo.declare( "diom.view.FormInput", null, {
       return;
     } else if ( key === 33 ) {
       //page up
-      util.publish( diom.topics.INPUT_PAGE_UP );
+      dojo.publish( diom.topics.INPUT_PAGE_UP );
       return;
     } else if ( key === 34 ) {
       //page down
-      util.publish( diom.topics.INPUT_PAGE_DOWN );
+      dojo.publish( diom.topics.INPUT_PAGE_DOWN );
       return;
     } else {
       this.reset( );
     }
     if ( e.metaKey || e.ctrlKey ) {
       if ( key > 46 && key < 59 ) {
-        util.stopEvent( e );
+        dojo.stopEvent( e );
         index = key - 49;
         if ( index < 0 ) { index = 9; }
-        util.publish( diom.topics.INPUT_CHANNEL_INDEX, [ index ] );
+        dojo.publish( diom.topics.INPUT_CHANNEL_INDEX, [ index ] );
       }
     }
   },
@@ -199,7 +199,7 @@ dojo.declare( "diom.view.FormInput", null, {
 		var n, startIndex, word, value, c, lc,
 			list, i, listItem, listItemLC, beg,
 			end;
-    util.stopEvent( e );
+    dojo.stopEvent( e );
     n = e.srcElement;
     this.needsResetting = true;
     if ( this.nicks.length || this.channels.length ) {
@@ -219,7 +219,7 @@ dojo.declare( "diom.view.FormInput", null, {
         this.tabStart = c;
         this.tabFragEnd = lc;
         startIndex = 0;
-        word = util.trim( value.substring( c, lc ) ).toLowerCase( );
+        word = dojo.trim( value.substring( c, lc ) ).toLowerCase( );
         if ( !word ) { return; }
         this.tabFragment = word;
         this.savedValue = value;

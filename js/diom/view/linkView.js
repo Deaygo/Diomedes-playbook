@@ -12,7 +12,7 @@ dojo.declare( "diom.view.LinkView", null, {
   constructor: function ( node ) {
     this.node = node;
     this.links = [];
-    util.subscribe( diom.topics.LINK_DATA, this, "addLink", [] );
+    dojo.subscribe(  diom.topics.LINK_DATA, this, "addLink" );
   },
 
   addLink: function ( link, properties ) {

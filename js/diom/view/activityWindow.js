@@ -44,9 +44,9 @@ dojo.declare( "diom.view.ActivityWindow", null, {
     this.isInStyle = false;
     this.isInBold = false;
     this.maxItems = maxItems;
-    util.subscribe( diom.topics.PREFS_CHANGE_HISTORY_LENGTH, this, "handleChangeHistoryLength", [] );
-    util.subscribe( diom.topics.PREFS_CHANGE_TIME_FORMAT, this, "setTimeFormat", [] );
-    util.subscribe( diom.topics.CHANNEL_TOPIC, this, "handleTopic", [] );
+    dojo.subscribe(  diom.topics.PREFS_CHANGE_HISTORY_LENGTH, this, "handleChangeHistoryLength" );
+    dojo.subscribe(  diom.topics.PREFS_CHANGE_TIME_FORMAT, this, "setTimeFormat" );
+    dojo.subscribe(  diom.topics.CHANNEL_TOPIC, this, "handleTopic" );
   },
 
   sanitize: function ( msg ) {
@@ -99,7 +99,7 @@ dojo.declare( "diom.view.ActivityWindow", null, {
 
   handleChangeHistoryLength: function ( newLen ) {
     this.maxItems = newLen;
-    window.setTimeout( util.hitch( this, "shrinkActivity", [ newLen ] ), 0 );
+    window.setTimeout( dojo.hitch( this, "shrinkActivity", [ newLen ] ), 0 );
   },
 
   shrinkActivity: function ( len ) {
@@ -338,7 +338,7 @@ dojo.declare( "diom.view.ActivityWindow", null, {
     if ( anchors && anchors.length ) {
       for ( i = 0; i < anchors.length; i++ )  {
         a = anchors[ i ];
-        util.publish( diom.topics.LINK_FOUND, [ a.getAttribute( "href" ), this.serverName, this.channelName, nick ] );
+        dojo.publish( diom.topics.LINK_FOUND, [ a.getAttribute( "href" ), this.serverName, this.channelName, nick ] );
 				a = null;
       }
     }

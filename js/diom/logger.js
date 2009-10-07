@@ -2,16 +2,9 @@
 /*jslint nomen: false */
 /*jslint plusplus: false */
 /*jslint passfail: true */
-/*global window, dojo, util */
+/*global window, dojo, util, diom, air */
 
 dojo.provide( "diom.logger" );
-
-var diom;
-if ( !dojo.isObject( diom ) ) {
-  diom = {};
-} 
-
-var air;
 
 /*
  * 

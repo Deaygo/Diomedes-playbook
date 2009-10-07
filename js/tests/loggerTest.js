@@ -8,6 +8,8 @@
 
 print( "***TESTING LOGGING***" );
 
+var air;
+
 var djConfig = {
   baseUrl: "./js/dojo/"
 };

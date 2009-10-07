@@ -8,11 +8,16 @@ dojo.provide( "diom.include" );
 
 /*add any dojo.require here */
 
-dojo.require( "diom.irc" );
-dojo.require( "diom.logger" );
-dojo.require( "diom.topics" );
+//some kind of dojo build error requires 
+//setting the first require omitModuleCheck option to true
+//otherwise get a load error on product
+//order is important too, diom.topics needs to be first
+//haven't stepped through it to see what's causing this issue
+dojo.require( "diom.topics", true ); 
 dojo.require( "diom.network" );
 dojo.require( "diom.util" );
+dojo.require( "diom.irc" );
+dojo.require( "diom.logger" );
 
 //connection
 dojo.require( "diom.connection.connection" );
@@ -41,4 +46,3 @@ dojo.require( "diom.controller.channelList" );
 dojo.require( "diom.controller.linkInfoFetcher" );
 dojo.require( "diom.controller.linkLog" );
 dojo.require( "diom.controller.updater" );
-

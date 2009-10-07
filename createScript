@@ -5,19 +5,10 @@ set -e
 ./createRelease
 
 jsFiles=(
-  "release/dojo/diom/diom"
-  "release/dojo/dojo/dojo"
   "AIRAliases"
   "AIRIntrospector"
-  "connection"
-  "controller"
-  "dojo"
-  "irc"
-  "model"
-  "network"
-  "topics"
-  "util"
-  "view"
+  "release/dojo/dojo/dojo"
+  "release/dojo/diom/diom"
 )
 numFiles=${#jsFiles[@]}
 

@@ -22,7 +22,7 @@ dojo.declare( "diom.connection.Channel", null, {
       this.logger.open( );
       this.isLogOpen = true;
     }
-    util.subscribe( diom.topics.PREFS_CHANGE_LOGGING, this, "handleChangeLoggingPref", [] );
+    dojo.subscribe(  diom.topics.PREFS_CHANGE_LOGGING, this, "handleChangeLoggingPref" );
   },
 
   handleChangeLoggingPref: function ( newValue ) {
@@ -147,11 +147,11 @@ dojo.declare( "diom.connection.Channel", null, {
   },
 
   publishActivity: function ( isPM ) {
-    util.publish( diom.topics.CHANNEL_ACTIVITY, [ this.getChannelName( this.name ), this.server, isPM ] );
+    dojo.publish( diom.topics.CHANNEL_ACTIVITY, [ this.getChannelName( this.name ), this.server, isPM ] );
   },
 
   publishUserActivity: function ( ) {
-    util.publish( diom.topics.USER_ACTIVITY, [ this.server, this.getChannelName( this.name ) ] );
+    dojo.publish( diom.topics.USER_ACTIVITY, [ this.server, this.getChannelName( this.name ) ] );
   },
 
   getActivity: function ( msg ) {

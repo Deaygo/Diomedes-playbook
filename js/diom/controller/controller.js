@@ -36,31 +36,31 @@ dojo.declare( "diom.controller.Controller", null, {
     this.networks = {};
     this.getNetworks( );
 
-    util.subscribe( diom.topics.USER_INPUT, this, "handleInput", [] );
-    util.subscribe( diom.topics.CHANNELS_CHANGED, this, "handleChannelChange", [] );
-    util.subscribe( diom.topics.CHANNEL_SELECTED, this, "handleChannelSelect", [] );
-    util.subscribe( diom.topics.CHANNEL_ACTIVITY, this, "handleChannelActivity", [] );
-    util.subscribe( diom.topics.USER_HIGHLIGHT, this, "handleHighlight", [] );
-    util.subscribe( diom.topics.PREFS_SAVE, this, "handlePrefsSave", [] );
-    util.subscribe( diom.topics.NETWORK_ADD, this, "handleNetworkAdd", [] );
-    util.subscribe( diom.topics.NETWORK_EDIT, this, "handleNetworksEdit", [] );
-    util.subscribe( diom.topics.NETWORK_DELETE, this, "handleNetworksDelete", [] );
-    util.subscribe( diom.topics.NETWORK_CHANGE, this, "handleNetworksChanged", [] );
-    util.subscribe( diom.topics.NETWORK_CLOSE, this, "closeNetworkOrConnection", [] );
-    util.subscribe( diom.topics.SERVER_ADD, this, "handleServerAdd", [] );
-    util.subscribe( diom.topics.SERVER_DELETE, this, "handleServerDelete", [] );
-    util.subscribe( diom.topics.CHANNEL_ADD, this, "handleChannelAdd", [] );
-    util.subscribe( diom.topics.CHANNEL_DELETE, this, "handleChannelDelete", [] );
-    util.subscribe( diom.topics.PERFORM_ADD, this, "handlePerformAdd", [] );
-    util.subscribe( diom.topics.PERFORM_DELETE, this, "handlePerformDelete", [] );
-    util.subscribe( diom.topics.ALIAS_ADD, this, "handleAliasAdd", [] );
-    util.subscribe( diom.topics.ALIAS_DELETE, this, "handleAliasDelete", [] );
-    util.subscribe( diom.topics.ALIAS_CHANGE, this, "getAliases", [] );
-    util.subscribe( diom.topics.IGNORE_ADD, this, "handleIgnoreAdd", [] );
-    util.subscribe( diom.topics.IGNORE_DELETE, this, "handleIgnoreDelete", [] );
-    util.subscribe( diom.topics.IGNORES_CHANGE, this, "getIgnores", [] );
-    util.subscribe( diom.topics.CONNECTION_CLOSE, this, "closeConnection", [] );
-    util.subscribe( diom.topics.USER_ACTIVITY, this, "handleUserActivity", [] );
+    dojo.subscribe(  diom.topics.USER_INPUT, this, "handleInput" );
+    dojo.subscribe(  diom.topics.CHANNELS_CHANGED, this, "handleChannelChange" );
+    dojo.subscribe(  diom.topics.CHANNEL_SELECTED, this, "handleChannelSelect" );
+    dojo.subscribe(  diom.topics.CHANNEL_ACTIVITY, this, "handleChannelActivity" );
+    dojo.subscribe(  diom.topics.USER_HIGHLIGHT, this, "handleHighlight" );
+    dojo.subscribe(  diom.topics.PREFS_SAVE, this, "handlePrefsSave" );
+    dojo.subscribe(  diom.topics.NETWORK_ADD, this, "handleNetworkAdd" );
+    dojo.subscribe(  diom.topics.NETWORK_EDIT, this, "handleNetworksEdit" );
+    dojo.subscribe(  diom.topics.NETWORK_DELETE, this, "handleNetworksDelete" );
+    dojo.subscribe(  diom.topics.NETWORK_CHANGE, this, "handleNetworksChanged" );
+    dojo.subscribe(  diom.topics.NETWORK_CLOSE, this, "closeNetworkOrConnection" );
+    dojo.subscribe(  diom.topics.SERVER_ADD, this, "handleServerAdd" );
+    dojo.subscribe(  diom.topics.SERVER_DELETE, this, "handleServerDelete" );
+    dojo.subscribe(  diom.topics.CHANNEL_ADD, this, "handleChannelAdd" );
+    dojo.subscribe(  diom.topics.CHANNEL_DELETE, this, "handleChannelDelete" );
+    dojo.subscribe(  diom.topics.PERFORM_ADD, this, "handlePerformAdd" );
+    dojo.subscribe(  diom.topics.PERFORM_DELETE, this, "handlePerformDelete" );
+    dojo.subscribe(  diom.topics.ALIAS_ADD, this, "handleAliasAdd" );
+    dojo.subscribe(  diom.topics.ALIAS_DELETE, this, "handleAliasDelete" );
+    dojo.subscribe(  diom.topics.ALIAS_CHANGE, this, "getAliases" );
+    dojo.subscribe(  diom.topics.IGNORE_ADD, this, "handleIgnoreAdd" );
+    dojo.subscribe(  diom.topics.IGNORE_DELETE, this, "handleIgnoreDelete" );
+    dojo.subscribe(  diom.topics.IGNORES_CHANGE, this, "getIgnores" );
+    dojo.subscribe(  diom.topics.CONNECTION_CLOSE, this, "closeConnection" );
+    dojo.subscribe(  diom.topics.USER_ACTIVITY, this, "handleUserActivity" );
   },
 
 	setAppVersion: function ( ) {
@@ -76,7 +76,7 @@ dojo.declare( "diom.controller.Controller", null, {
 	},
 
   getIgnores: function ( ) {
-    this.model.ignores.getIgnores( util.hitch( this, "handleIgnores" ) );
+    this.model.ignores.getIgnores( dojo.hitch( this, "handleIgnores" ) );
   },
 
   handleIgnores: function ( ignores ) {
@@ -95,11 +95,11 @@ dojo.declare( "diom.controller.Controller", null, {
         }
       }
     }
-    util.publish( diom.topics.IGNORES_UPDATE, [ this.ignores ] );
+    dojo.publish( diom.topics.IGNORES_UPDATE, [ this.ignores ] );
   },
 
   getAliases: function ( ) {
-    this.model.aliases.getAliases( util.hitch( this, "handleAliases" ) );
+    this.model.aliases.getAliases( dojo.hitch( this, "handleAliases" ) );
   },
 
   handleAliases: function ( aliases ) {
@@ -115,7 +115,7 @@ dojo.declare( "diom.controller.Controller", null, {
   },
 
   getNetworks: function ( ) {
-    this.model.networks.getNetworks( util.hitch( this, "handleGetNetworks" ) );
+    this.model.networks.getNetworks( dojo.hitch( this, "handleGetNetworks" ) );
   },
 
   getNetwork: function ( networkName ) {
@@ -175,7 +175,7 @@ dojo.declare( "diom.controller.Controller", null, {
   },
 
   handleNetworksChanged: function ( ) {
-    this.model.networks.getNetworks( util.hitch( this, "handleUpdateNetworks" ) );
+    this.model.networks.getNetworks( dojo.hitch( this, "handleUpdateNetworks" ) );
   },
 
   handleUpdateNetworks: function ( networks ) {
@@ -325,7 +325,7 @@ dojo.declare( "diom.controller.Controller", null, {
         this.currentChannel.clearActivity( );
         this.view.clearActivityView( );
       } else if ( cmd in this.aliases ) {
-        util.publish( diom.topics.USER_INPUT, [ this.createInputFromAlias( this.aliases[ cmd ], argsR ), server ] );
+        dojo.publish( diom.topics.USER_INPUT, [ this.createInputFromAlias( this.aliases[ cmd ], argsR ), server ] );
       } else {
         //hand command over to currentConnection
         if ( server ) {
@@ -443,10 +443,10 @@ dojo.declare( "diom.controller.Controller", null, {
     if ( this.currentConnection ) {
       util.log("set currentChannel");
       if ( this.channelSubscription ) {
-        util.unsubscribe( this.channelSubscription );
+        dojo.unsubscribe( this.channelSubscription );
       }
       if ( this.nickListSubscription ) {
-        util.unsubscribe( this.nickListSubscription );
+        dojo.unsubscribe( this.nickListSubscription );
       }
       delete this.currentChannel;
       serverName = this.currentConnection.server;
@@ -476,7 +476,7 @@ dojo.declare( "diom.controller.Controller", null, {
       window.clearTimeout( this.queryTimer[ serverName ][ channelName ] );
       this.queryTimer[ serverName][ channelName ] = null;
     }
-    this.queryTimer[ serverName ][ channelName ] = window.setTimeout( util.hitch( this, "updateChannelFromTimer", [ channelName, serverName ] ), 100 );
+    this.queryTimer[ serverName ][ channelName ] = window.setTimeout( dojo.hitch( this, "updateChannelFromTimer", [ channelName, serverName ] ), 100 );
     if ( this.currentConnection && isPM ) {
       if ( !( this.currentConnection.server === serverName && channelName === this.currentConnection.getChannelName( this.currentChannel.name ) ) ) {
         this.updateUnreadActivity( this.channelsWithActivity, channelName, serverName );

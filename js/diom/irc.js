@@ -5,11 +5,9 @@
 /*jslint nomen: false */
 /*jslint plusplus: false */
 /*jslint passfail: true */
-/*global window, dojo, util, diom */
+/*global window, dojo, util, diom, air */
 
 dojo.provide( "diom.irc" );
-
-var air;
 
 dojo.declare( "diom.IRCClient", null, {
   
@@ -164,7 +162,7 @@ dojo.declare( "diom.IRCClient", null, {
     this.log( "Attempting connection on server: " + this.server + ", on host: " + this.host ); 
     this.stayConnected = true;
     this.socketMonitor = new air.SocketMonitor( this.server, this.port ); 
-    this.socketMonitor.addEventListener( air.StatusEvent.STATUS, util.hitch( this, "onStatus" ) ); 
+    this.socketMonitor.addEventListener( air.StatusEvent.STATUS, dojo.hitch( this, "onStatus" ) ); 
     this.socketMonitor.start( ); 
     this._connect( );
   },
@@ -213,7 +211,7 @@ dojo.declare( "diom.IRCClient", null, {
     this.log( "startingPingService" );
     if ( this.connectionEstablished ) {
       this._send( "PING DiomedesIRC" );
-      this.pingTimeoutID = window.setTimeout( util.hitch( this, "pingTimeout" ), this.PING_TIME_OUT_WAIT );
+      this.pingTimeoutID = window.setTimeout( dojo.hitch( this, "pingTimeout" ), this.PING_TIME_OUT_WAIT );
     }
   },
 
@@ -233,7 +231,7 @@ dojo.declare( "diom.IRCClient", null, {
   handlePingReply: function ( ) {
     this.log( "handling ping reply" );
     this.stopPingService( );
-    window.setTimeout( util.hitch( this, "startPingService" ), this.PING_TIME_OUT_WAIT );
+    window.setTimeout( dojo.hitch( this, "startPingService" ), this.PING_TIME_OUT_WAIT );
   },
 
   onSocketData: function ( e ) {
@@ -453,7 +451,7 @@ dojo.declare( "diom.IRCClient", null, {
     host = this.getIndex(userParts, 1);
     cmd = this.getIndex(cmdParts, 1);
     target = this.getTarget(cmdParts, msg);
-    if ( cmd in this && util.isFunction( this[ cmd ] ) ) {
+    if ( cmd in this && dojo.isFunction( this[ cmd ] ) ) {
       this[ cmd ]( nick, host, cmd, target, msg, cmdParts);
     }
   },
@@ -773,7 +771,7 @@ dojo.declare( "diom.IRCClient", null, {
   },
 
   join: function ( channels ) {
-    if ( util.isString( channels ) ) {
+    if ( dojo.isString( channels ) ) {
       this._send( [ "JOIN", channels ].join( " " ) );
     } else {
       this._send( [ "JOIN", channels.join( "," ) ].join( " " ) );
@@ -935,7 +933,7 @@ dojo.declare( "diom.IRCClient", null, {
 
   sendList: function ( channels, target ) {
     var cmd;
-    if ( !util.isString( channels ) ) { channels = channels.join( "," ); }
+    if ( !dojo.isString( channels ) ) { channels = channels.join( "," ); }
     cmd = [ "LIST", channels ];
     if ( target ) {
       cmd.push( target );
@@ -1032,8 +1030,8 @@ dojo.declare( "diom.IRCClient", null, {
 
   createConnection: function ( ) {
     this.socket = new air.Socket( );
-    this.socket.addEventListener( air.Event.CONNECT, util.hitch( this, "onConnect" ) ); 
-    this.socket.addEventListener( air.ProgressEvent.SOCKET_DATA, util.hitch( this, "onSocketData" ) ); 
+    this.socket.addEventListener( air.Event.CONNECT, dojo.hitch( this, "onConnect" ) ); 
+    this.socket.addEventListener( air.ProgressEvent.SOCKET_DATA, dojo.hitch( this, "onSocketData" ) ); 
   },
 
   isChannelName: function ( name ) {

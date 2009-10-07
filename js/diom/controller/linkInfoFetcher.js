@@ -40,10 +40,10 @@ dojo.declare( "diom.controller.LinkInfoFetcher", null, {
     this.title = "";
     this.responseURL = "";
     this.stream = new air.URLStream( );
-    this.stream.addEventListener( air.HTTPStatusEvent.HTTP_RESPONSE_STATUS, util.hitch( this, "onStatus" ) ); 
-    this.stream.addEventListener( air.ProgressEvent.PROGRESS, util.hitch( this, "onProgress" ) ); 
-    this.stream.addEventListener( air.Event.COMPLETE, util.hitch( this, "onComplete" ) ); 
-    this.stream.addEventListener( air.IOErrorEvent.IO_ERROR, util.hitch( this, "onError" ) ); 
+    this.stream.addEventListener( air.HTTPStatusEvent.HTTP_RESPONSE_STATUS, dojo.hitch( this, "onStatus" ) ); 
+    this.stream.addEventListener( air.ProgressEvent.PROGRESS, dojo.hitch( this, "onProgress" ) ); 
+    this.stream.addEventListener( air.Event.COMPLETE, dojo.hitch( this, "onComplete" ) ); 
+    this.stream.addEventListener( air.IOErrorEvent.IO_ERROR, dojo.hitch( this, "onError" ) ); 
     this.stream.load( this.request );
 
   },
@@ -98,7 +98,7 @@ dojo.declare( "diom.controller.LinkInfoFetcher", null, {
 		var d;
     util.log("publish");
     d = new Date( ).toString( );
-    util.publish( diom.topics.LINK_DATA, [
+    dojo.publish( diom.topics.LINK_DATA, [
         this.url,
         {
           "url": this.url,
@@ -112,7 +112,7 @@ dojo.declare( "diom.controller.LinkInfoFetcher", null, {
           "httpStatus": this.httpStatus,
           "htmlInfo": this.htmlInfo,
           "responseURL": this.responseURL,
-          "title": util.trim( this.title )
+          "title": dojo.trim( this.title )
         }
     ] );
   },

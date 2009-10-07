@@ -92,8 +92,8 @@ dojo.declare( "diom.model.NetworksModel", null, {
       autoJoin : autoJoin, 
       active : active 
     };
-    this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
-    util.publish( diom.topics.NETWORK_CHANGE, [ null ] );
+    this.model._executeSQL( sql, air.SQLMode.UPDATE, dojo.hitch( this, "_handleChange" ), p ); 
+    dojo.publish( diom.topics.NETWORK_CHANGE, [ null ] );
   },
 
   editNetwork: function ( id, name, nick, altNick, userName, realName, finger, autoJoin, active ) {
@@ -113,8 +113,8 @@ dojo.declare( "diom.model.NetworksModel", null, {
       autoJoin : autoJoin, 
       active : active 
     };
-    this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
-    util.publish( diom.topics.NETWORK_CHANGE, [ id ] );
+    this.model._executeSQL( sql, air.SQLMode.UPDATE, dojo.hitch( this, "_handleChange" ), p ); 
+    dojo.publish( diom.topics.NETWORK_CHANGE, [ id ] );
   },
 
   remNetwork: function ( id ) {
@@ -122,14 +122,14 @@ dojo.declare( "diom.model.NetworksModel", null, {
     util.log("Removing network.");
     p = { id : id };
     sql = "DELETE FROM networks WHERE id = :id";
-    this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
+    this.model._executeSQL( sql, air.SQLMode.UPDATE, dojo.hitch( this, "_handleChange" ), p ); 
     sql = "DELETE FROM servers WHERE networkId = :id";
-    this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
+    this.model._executeSQL( sql, air.SQLMode.UPDATE, dojo.hitch( this, "_handleChange" ), p ); 
     sql = "DELETE FROM channels WHERE networkId = :id";
-    this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
+    this.model._executeSQL( sql, air.SQLMode.UPDATE, dojo.hitch( this, "_handleChange" ), p ); 
     sql = "DELETE FROM performs WHERE networkId = :id";
-    this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
-    util.publish( diom.topics.NETWORK_CHANGE, [ null ] );
+    this.model._executeSQL( sql, air.SQLMode.UPDATE, dojo.hitch( this, "_handleChange" ), p ); 
+    dojo.publish( diom.topics.NETWORK_CHANGE, [ null ] );
     //rem servers, channels and performs too
   },
 
@@ -149,8 +149,8 @@ dojo.declare( "diom.model.NetworksModel", null, {
       name : name,
       active : active
     };
-    this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
-    util.publish( diom.topics.NETWORK_CHANGE, [ networkId ] );
+    this.model._executeSQL( sql, air.SQLMode.UPDATE, dojo.hitch( this, "_handleChange" ), p ); 
+    dojo.publish( diom.topics.NETWORK_CHANGE, [ networkId ] );
   },
 
   editServer: function ( id, networkId, name, autoJoin, active ) {
@@ -164,16 +164,16 @@ dojo.declare( "diom.model.NetworksModel", null, {
       autoJoin : autoJoin, 
       active : active 
     };
-    this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
-    util.publish( diom.topics.NETWORK_CHANGE, [ networkId ] );
+    this.model._executeSQL( sql, air.SQLMode.UPDATE, dojo.hitch( this, "_handleChange" ), p ); 
+    dojo.publish( diom.topics.NETWORK_CHANGE, [ networkId ] );
   },
 
   remServer: function ( id, networkId ) {
 		var sql, p;
     sql = "DELETE FROM servers WHERE id = :id";
     p = { id : id };
-    this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
-    util.publish( diom.topics.NETWORK_CHANGE, [ networkId ] );
+    this.model._executeSQL( sql, air.SQLMode.UPDATE, dojo.hitch( this, "_handleChange" ), p ); 
+    dojo.publish( diom.topics.NETWORK_CHANGE, [ networkId ] );
   },
 
   getChannels: function ( networkId, resultsHandler ) {
@@ -188,16 +188,16 @@ dojo.declare( "diom.model.NetworksModel", null, {
     sql = "INSERT INTO channels ( networkId, name, autoJoin ) " +
       "VALUES ( :networkId, :name, :autoJoin )";
     p = { networkId : networkId, name : name, autoJoin : autoJoin };
-    this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
-    util.publish( diom.topics.NETWORK_CHANGE, [ networkId ] );
+    this.model._executeSQL( sql, air.SQLMode.UPDATE, dojo.hitch( this, "_handleChange" ), p ); 
+    dojo.publish( diom.topics.NETWORK_CHANGE, [ networkId ] );
   },
 
   remChannel: function ( id, networkId ) {
 		var sql, p;
     sql = "DELETE FROM channels WHERE id = :id";
     p = { id : id };
-    this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
-    util.publish( diom.topics.NETWORK_CHANGE, [ networkId ] );
+    this.model._executeSQL( sql, air.SQLMode.UPDATE, dojo.hitch( this, "_handleChange" ), p ); 
+    dojo.publish( diom.topics.NETWORK_CHANGE, [ networkId ] );
   },
 
   getPerforms: function ( networkId, resultsHandler ) {
@@ -219,8 +219,8 @@ dojo.declare( "diom.model.NetworksModel", null, {
       command : command,
       active : active
     };
-    this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
-    util.publish( diom.topics.NETWORK_CHANGE, [ networkId ] );
+    this.model._executeSQL( sql, air.SQLMode.UPDATE, dojo.hitch( this, "_handleChange" ), p ); 
+    dojo.publish( diom.topics.NETWORK_CHANGE, [ networkId ] );
   },
 
   editPerform: function ( id, networkId, name, command, active ) {
@@ -234,16 +234,16 @@ dojo.declare( "diom.model.NetworksModel", null, {
       command : command,
       active : active
     };
-    this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
-    util.publish( diom.topics.NETWORK_CHANGE, [ networkId ] );
+    this.model._executeSQL( sql, air.SQLMode.UPDATE, dojo.hitch( this, "_handleChange" ), p ); 
+    dojo.publish( diom.topics.NETWORK_CHANGE, [ networkId ] );
   },
 
   remPerform: function ( id, networkId ) {
 		var sql, p;
     sql = "DELETE FROM performs WHERE id = :id";
     p = { id : id };
-    this.model._executeSQL( sql, air.SQLMode.UPDATE, util.hitch( this, "_handleChange" ), p ); 
-    util.publish( diom.topics.NETWORK_CHANGE, [ networkId ] );
+    this.model._executeSQL( sql, air.SQLMode.UPDATE, dojo.hitch( this, "_handleChange" ), p ); 
+    dojo.publish( diom.topics.NETWORK_CHANGE, [ networkId ] );
   },
 
   _handleCreateTable: function ( e, tableName ) {
@@ -253,7 +253,7 @@ dojo.declare( "diom.model.NetworksModel", null, {
     }
     if ( this.createTablesList.length ) {
       args = this.createTablesList.shift( );
-      this.model._createTable( args.tableName, args.types, util.hitch( this, "_handleCreateTable", [ args.tableName ], null ) );
+      this.model._createTable( args.tableName, args.types, dojo.hitch( this, "_handleCreateTable", [ args.tableName ], null ) );
     }
   },
 

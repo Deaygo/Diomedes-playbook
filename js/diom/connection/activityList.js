@@ -11,7 +11,7 @@ dojo.declare( "diom.connection.ActivityList", null, {
   constructor: function ( maxItems ) {
     this.messages = [];
     this.maxItems = maxItems; 
-    util.subscribe( diom.topics.PREFS_CHANGE_HISTORY_LENGTH, this, "handleChangeHistoryLength", [] );
+    dojo.subscribe(  diom.topics.PREFS_CHANGE_HISTORY_LENGTH, this, "handleChangeHistoryLength" );
   },
 
   handleChangeHistoryLength: function ( newLen ) {
