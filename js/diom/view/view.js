@@ -72,23 +72,23 @@ dojo.declare( "diom.view.View", null, {
   },
 
   closePopup: function ( e ) {
-    dojo.remClass( this.popup, "hidden" );
+    dojo.removeClass( this.popup, "hidden" );
     this.popupContents.innerHTML = "";
   },
 
   handleLinksBtnClick: function ( e ) {
     dojo.stopEvent( e );
     this.linkView.display( );
-    dojo.remClass( this.popup, "hidden" );
+    dojo.removeClass( this.popup, "hidden" );
   },
 
   handlePrefsBtnClick: function ( e ) {
     dojo.stopEvent( e );
-    dojo.remClass( this.titleBar, "hidden" );
+    dojo.removeClass( this.titleBar, "hidden" );
   },
 
   handleWindowClick: function ( e ) {
-    dojo.remClass( this.titleBar, "hidden" );
+    dojo.removeClass( this.titleBar, "hidden" );
   },
 
   setTopicView: function ( channelName, topic ) {
@@ -612,6 +612,7 @@ dojo.declare( "diom.view.View", null, {
   openAliasesWindow: function ( aliases ) {
 		var x, y, win;
     if ( !aliases ) { aliases = []; }
+		alert( "dojo before: " + dojo );
     window.aliasesBridge = {
       util : util,
 			dojo : dojo,

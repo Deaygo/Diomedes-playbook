@@ -504,8 +504,10 @@ dojo.declare( "diom.controller.Controller", null, {
       this.handleChannelChange( "update", channelName, serverName ); //activity added to non current window;
   },
 
-  updateChannelFromTimer: function ( channelName, serverName ) {
-    window.clearTimeout( this.queryTimer[ serverName ][ channelName ] );
+  updateChannelFromTimer: function ( args ) {
+		var channelName, serverName;
+		channelName = args[ 0 ];
+		serverName = args[ 1];
     this.queryTimer[ serverName ][ channelName ] = null;
     this.updateChannel( channelName, serverName );
   },

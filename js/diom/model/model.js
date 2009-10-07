@@ -98,12 +98,13 @@ dojo.declare( "diom.model.Model", null, {
     resultsHandler( result.data );
   },
 
-  _getFilterResult: function ( e, results, resultsHandler ) {
-    //filters the event, and returns just the data;
+  _getFilterResult: function ( args, e,  results ) {
+		var resultsHandler = args[ 0 ];
     resultsHandler( results.data );
   },
 
   _getResultHandler: function ( resultsHandler ) {
+    //filters the event, and returns just the data;
     return dojo.hitch( this, "_getFilterResult", [ resultsHandler ] );
   },
 

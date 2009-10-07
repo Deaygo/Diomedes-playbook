@@ -116,7 +116,7 @@
 
     function showChannelInfo ( ) {
       n = get( "channelInfo" );
-      dojo.remClass( n, "hidden" );
+      dojo.removeClass( n, "hidden" );
     }
 
     function clearForm ( ) {
@@ -128,8 +128,8 @@
       get( "selectNetwork" ).selectedIndex = 0;
       n = get( "channelInfo" );
       selectedNetworkId = null;
-      dojo.remClass( n, "hidden" );
-      dojo.remClass( get( "form" ), "hidden" );
+      dojo.removeClass( n, "hidden" );
+      dojo.removeClass( get( "form" ), "hidden" );
     }
 
     function saveChannel ( event ) {
@@ -149,13 +149,13 @@
 
     function closeForm ( event ) {
       dojo.stopEvent( event );
-      dojo.remClass( get( "form" ), "hidden" );
+      dojo.removeClass( get( "form" ), "hidden" );
     }
 
     function showForm ( ) {
       if ( selectedNetworkId ) {
         get( "networkId" ).value = selectedNetworkId;
-        dojo.remClass( get( "form" ), "hidden" );
+        dojo.removeClass( get( "form" ), "hidden" );
       }
     }
 
