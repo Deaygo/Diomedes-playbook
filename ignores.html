@@ -33,6 +33,7 @@
 
     var bridge = window.opener.ignoresBridge;
     var util = bridge.util;
+		var dojo = bridge.dojo;
     var topics = bridge.topics;
     var ignores = bridge.ignores;
 
@@ -63,14 +64,14 @@
     }
 
     function saveIgnores ( event ) {
-      util.stopEvent( event );
+      dojo.stopEvent( event );
       util.log( "Saving Ignores." );
       var ignoreData = {};
       var id = parseInt( get( "id" ).value, 10 );
       if ( !this.getItem( "regex", "Command", ignoreData ) ) return;
       if ( !this.getItem( "active", "Active", ignoreData, true ) ) return;
       if ( id === 0 ) {
-        util.publish( topics.IGNORE_ADD, [ ignoreData ] );
+        dojo.publish( topics.IGNORE_ADD, [ ignoreData ] );
         closeWindow( event );
         return;
       } 
@@ -89,12 +90,12 @@
     }
 
     function closeForm ( event ) {
-      util.stopEvent( event );
-      util.addClass( get( "form" ), "hidden" );
+      dojo.stopEvent( event );
+      dojo.remClass( get( "form" ), "hidden" );
     }
 
     function showForm ( ) {
-      util.remClass( get( "form" ), "hidden" );
+      dojo.remClass( get( "form" ), "hidden" );
     }
 
     function getItem( id, name, o, isCheckbox ) {
@@ -106,7 +107,7 @@
         }
       }
       var value =  get( id ).value;
-      value = util.trim( value );
+      value = dojo.trim( value );
       if ( !value ) {
         alert( name + " required." );
         return false;
@@ -134,7 +135,7 @@
     }
 
     function deleteIgnore ( id ) {
-      util.publish( topics.IGNORE_DELETE, [ id ] );
+      dojo.publish( topics.IGNORE_DELETE, [ id ] );
       var newIgnores = [];
       for ( var i = 0; i < ignores.length; i++ ) {
         var ignore = ignores[ i ];
@@ -147,13 +148,13 @@
     }
 
     function showAddForm ( event ) {
-      util.stopEvent( event );
+      dojo.stopEvent( event );
       clearForm( );
       showForm( );
     }
 
     function closeWindow ( event ) {
-      util.stopEvent( event );
+      dojo.stopEvent( event );
       window.close( );
     }
 

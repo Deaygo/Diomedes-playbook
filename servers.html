@@ -27,13 +27,13 @@
     </form>
   </div>
   <button onclick="closeWindow( event );">Close Window</button>
-  <script type="text/javascript" src="js/AIRIntrospector.js"></script> 
   <script type="text/javascript">
 
     var console;
 
     var bridge = window.opener.serversBridge;
     var util = bridge.util;
+		var dojo = bridge.dojo;
     var topics = bridge.topics;
     var networks = bridge.networks;
     var getServers = bridge.getServers;
@@ -114,7 +114,7 @@
 
     function showServerInfo ( ) {
       n = get( "serverInfo" );
-      util.remClass( n, "hidden" );
+      dojo.remClass( n, "hidden" );
     }
 
     function clearForm ( ) {
@@ -126,12 +126,12 @@
       get( "selectNetwork" ).selectedIndex = 0;
       n = get( "serverInfo" );
       selectedNetworkId = null;
-      util.addClass( n, "hidden" );
-      util.addClass( get( "form" ), "hidden" );
+      dojo.remClass( n, "hidden" );
+      dojo.remClass( get( "form" ), "hidden" );
     }
 
     function saveServer ( event ) {
-      util.stopEvent( event );
+      dojo.stopEvent( event );
       util.log( "Saving server." );
       var serverData = {};
       //get prefs
@@ -140,20 +140,20 @@
       if ( !this.getItem( "name", "Server name", serverData ) ) return;
       if ( !this.getItem( "active", "Active", serverData, true ) ) return;
       if ( id === 0 ) {
-        util.publish( topics.SERVER_ADD, [ serverData ] );
+        dojo.publish( topics.SERVER_ADD, [ serverData ] );
       }  
       deselectServer( );
     }
 
     function closeForm ( event ) {
-      util.stopEvent( event );
-      util.addClass( get( "form" ), "hidden" );
+      dojo.stopEvent( event );
+      dojo.remClass( get( "form" ), "hidden" );
     }
 
     function showForm ( ) {
       if ( selectedNetworkId ) {
         get( "networkId" ).value = selectedNetworkId;
-        util.remClass( get( "form" ), "hidden" );
+        dojo.remClass( get( "form" ), "hidden" );
       }
     }
 
@@ -166,7 +166,7 @@
         }
       }
       var value =  get( id ).value;
-      value = util.trim( value );
+      value = dojo.trim( value );
       if ( !value ) {
         alert( name + " required." );
         return false;
@@ -195,18 +195,18 @@
     }
 
     function deleteServer ( id, networkId ) {
-      util.publish( topics.SERVER_DELETE, [ id, networkId ] );
+      dojo.publish( topics.SERVER_DELETE, [ id, networkId ] );
       deselectServer( );
     }
 
     function showAddForm ( event ) {
-      util.stopEvent( event );
+      dojo.stopEvent( event );
       clearForm( );
       showForm( );
     }
 
     function closeWindow ( event ) {
-      util.stopEvent( event );
+      dojo.stopEvent( event );
       window.close( );
     }
 

@@ -31,13 +31,13 @@
     </form>
   </div>
   <button onclick="closeWindow( event );">Close Window</button>
-  <script type="text/javascript" src="js/AIRIntrospector.js"></script> 
   <script type="text/javascript">
 
     var console;
 
     var bridge = window.opener.performsBridge;
     var util = bridge.util;
+		var dojo = bridge.dojo;
     var topics = bridge.topics;
     var networks = bridge.networks;
     var getPerforms = bridge.getPerforms;
@@ -119,7 +119,7 @@
 
     function showPerformInfo ( ) {
       n = get( "performInfo" );
-      util.remClass( n, "hidden" );
+      dojo.remClass( n, "hidden" );
     }
 
     function clearForm ( ) {
@@ -132,12 +132,12 @@
       get( "selectNetwork" ).selectedIndex = 0;
       n = get( "performInfo" );
       selectedNetworkId = null;
-      util.addClass( n, "hidden" );
-      util.addClass( get( "form" ), "hidden" );
+      dojo.remClass( n, "hidden" );
+      dojo.remClass( get( "form" ), "hidden" );
     }
 
     function savePerform ( event ) {
-      util.stopEvent( event );
+      dojo.stopEvent( event );
       util.log( "Saving perform." );
       var performData = {};
       //get prefs
@@ -147,20 +147,20 @@
       if ( !this.getItem( "command", "Command", performData ) ) return;
       if ( !this.getItem( "active", "Active", performData, true ) ) return;
       if ( id === 0 ) {
-        util.publish( topics.PERFORM_ADD, [ performData ] );
+        dojo.publish( topics.PERFORM_ADD, [ performData ] );
       }  
       deselectPerform( );
     }
 
     function closeForm ( event ) {
-      util.stopEvent( event );
-      util.addClass( get( "form" ), "hidden" );
+      dojo.stopEvent( event );
+      dojo.remClass( get( "form" ), "hidden" );
     }
 
     function showForm ( ) {
       if ( selectedNetworkId ) {
         get( "networkId" ).value = selectedNetworkId;
-        util.remClass( get( "form" ), "hidden" );
+        dojo.remClass( get( "form" ), "hidden" );
       }
     }
 
@@ -173,7 +173,7 @@
         }
       }
       var value =  get( id ).value;
-      value = util.trim( value );
+      value = dojo.trim( value );
       if ( !value ) {
         alert( name + " required." );
         return false;
@@ -202,18 +202,18 @@
     }
 
     function deletePerform ( id, networkId ) {
-      util.publish( topics.PERFORM_DELETE, [ id, networkId ] );
+      dojo.publish( topics.PERFORM_DELETE, [ id, networkId ] );
       deselectPerform( );
     }
 
     function showAddForm ( event ) {
-      util.stopEvent( event );
+      dojo.stopEvent( event );
       clearForm( );
       showForm( );
     }
 
     function closeWindow ( event ) {
-      util.stopEvent( event );
+      dojo.stopEvent( event );
       window.close( );
     }
 

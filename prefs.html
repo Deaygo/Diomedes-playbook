@@ -59,10 +59,12 @@
     <input type="submit" value="Save" />
     <button onclick="closePrefs( event );">Close</button>
   </form>
+  <script type="text/javascript" src="js/AIRIntrospector.js"></script> 
   <script type="text/javascript">
 
     var bridge = window.opener.prefBridge;
     var util = bridge.util;
+		var dojo = bridge.dojo;
     var topics = bridge.topics;
     var prefs = bridge.preferences;
 
@@ -115,7 +117,7 @@
     }
 
     function savePrefs ( event ) {
-      util.stopEvent( event );
+      dojo.stopEvent( event );
       util.log( "Saving preferences." );
       //get prefs
       for ( pref in prefs ) {
@@ -140,11 +142,11 @@
           }
         }
       }
-      util.publish( topics.PREFS_SAVE, [ prefs ] );
+      dojo.publish( topics.PREFS_SAVE, [ prefs ] );
     }
 
     function closePrefs ( event ) {
-      util.stopEvent( event );
+      dojo.stopEvent( event );
       window.close( );
     }
 

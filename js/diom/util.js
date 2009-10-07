@@ -48,6 +48,10 @@ if ( window.runtime && air ) {
   };
 
   util.get = function ( id, doc ) {
+		if ( !doc ) {
+			doc = document;
+			return doc.getElementById( id );
+		}
     return dojo.byId( id );
   };
 

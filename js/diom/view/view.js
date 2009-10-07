@@ -514,6 +514,7 @@ dojo.declare( "diom.view.View", null, {
     if ( !networks ) { networks = []; }
     window.performsBridge = {
       util : util,
+			dojo : dojo,
       topics : diom.topics,
       networks : networks,
       getPerforms : dojo.hitch( this.model.networks, "getPerforms" )
@@ -550,6 +551,7 @@ dojo.declare( "diom.view.View", null, {
     if ( !networks ) { networks = []; }
     window.channelsBridge = {
       util : util,
+			dojo : dojo,
       topics : diom.topics,
       networks : networks,
       getChannels : dojo.hitch( this.model.networks, "getChannels" )
@@ -569,6 +571,7 @@ dojo.declare( "diom.view.View", null, {
     if ( !networks ) { networks = []; }
     window.serversBridge = {
       util : util,
+			dojo : dojo,
       topics : diom.topics,
       networks : networks,
       getServers : dojo.hitch( this.model.networks, "getServers" )
@@ -592,6 +595,7 @@ dojo.declare( "diom.view.View", null, {
     if ( !ignores ) { ignores = []; }
     window.ignoresBridge = {
       util : util,
+			dojo : dojo,
       topics : diom.topics,
       ignores : ignores
     };
@@ -610,6 +614,7 @@ dojo.declare( "diom.view.View", null, {
     if ( !aliases ) { aliases = []; }
     window.aliasesBridge = {
       util : util,
+			dojo : dojo,
       topics : diom.topics,
       aliases : aliases
     };
@@ -628,6 +633,7 @@ dojo.declare( "diom.view.View", null, {
     if ( !networks ) { networks = []; }
     window.networksBridge = {
       util : util,
+			dojo : dojo,
       topics : diom.topics,
       preferences : this.model.prefs.getPrefs( ),
       networks : networks
@@ -643,6 +649,7 @@ dojo.declare( "diom.view.View", null, {
 		var x, y ,win;
     window.prefBridge = {
       util : util,
+			dojo : dojo,
       topics : diom.topics,
       preferences : this.model.prefs.getPrefs( )
     };
