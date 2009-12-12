@@ -2,6 +2,7 @@
 
 set -e
 
+./checkErrors
 ./createRelease
 
 jsFiles=(
