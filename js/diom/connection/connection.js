@@ -23,7 +23,7 @@ dojo.declare( "diom.connection.Connection", null, {
     this.logPref = preferences.logging === true || preferences.logging === "true";
     this.ignores = ignores;
     this.host = "";
-    this.users[ nick ] = new diom.connection.User( nick, "" ); 
+    this.users[ nick ] = new diom.connection.User( nick, "" );
     this.server = server;
     this.serverChannel = null;
     this.port = port;
@@ -179,7 +179,7 @@ dojo.declare( "diom.connection.Connection", null, {
 
   handleInvite: function ( nick, target ) {
     var msg_, msg;
-    msg_ = [ "You have been invited to", target, "by", nick ].join( " " ); 
+    msg_ = [ "You have been invited to", target, "by", nick ].join( " " );
     msg = new diom.connection.ActivityItem( "server", null, null, msg_, null, null );
     this.serverChannel.addActivity( msg );
     if ( this.autoJoin ) {
@@ -218,13 +218,13 @@ dojo.declare( "diom.connection.Connection", null, {
       this.serverChannel.addActivity( msg_ );
       if ( channels.length ) {
         this.client.join( channels );
-      } 
+      }
       dojo.publish( diom.topics.CHANNELS_CHANGED, [ "connect", null, this.server ] );
     }
   },
 
   handleJoin: function ( nick, host, target ) {
-    var channelName, _nick, user, channel, msg; 
+    var channelName, _nick, user, channel, msg;
     //add nick to connection users
     if ( !nick || !target ) { return; }
     channelName = this.getChannelName( target );
@@ -242,7 +242,7 @@ dojo.declare( "diom.connection.Connection", null, {
     }
     user = this.getUser( nick );
     if ( !user ) {
-      user = new diom.connection.User( nick, host ); 
+      user = new diom.connection.User( nick, host );
       this.users[nick] = user;
     }
     //add nick to channel
@@ -332,7 +332,7 @@ dojo.declare( "diom.connection.Connection", null, {
     msg = new diom.connection.ActivityItem( "action", nick, target, msg, user, host );
     if ( this.referencesUser( msg.msg ) ) {
       msg.setReferencesUser( );
-    } 
+    }
     this.addActivityToChannel( target, msg );
   },
 
@@ -344,14 +344,14 @@ dojo.declare( "diom.connection.Connection", null, {
     msg = new diom.connection.ActivityItem( "privmsg", nick, target, msg, user, host );
     if ( this.referencesUser( msg.msg, target, nick ) ) {
       msg.setReferencesUser( );
-    } 
+    }
     this.addActivityToChannel( target, msg, nick );
   },
 
   referencesUser: function ( msg, target, nick ) {
     var _nick, referencesUser;
     _nick = this.getNick( );
-    if ( msg && msg.length && ( nick !== _nick ) ) { 
+    if ( msg && msg.length && ( nick !== _nick ) ) {
       referencesUser = ( msg.search( _nick.split("-").join("\\-").split( "|" ).join( "\\|" ).split( "^" ).join( "\\^" ) ) !== -1 );
       if ( referencesUser ) {
         dojo.publish( diom.topics.USER_HIGHLIGHT, [ this.getChannelName( target ), this.server, _nick ] );
@@ -448,7 +448,7 @@ dojo.declare( "diom.connection.Connection", null, {
   addNamesToChannel: function ( channelName, nicks ) {
     var channel, i, nick, mode, host, user;
     channel = this.channels[ channelName ];
-    //user = new diom.connection.User(nick, host); 
+    //user = new diom.connection.User(nick, host);
     //update names
     channel.remUsers( ); //if names not in this list then no longer in channel
     for ( i = 0; i < nicks.length; i++ ) {
@@ -464,17 +464,17 @@ dojo.declare( "diom.connection.Connection", null, {
       }
       user = this.getUser( nick );
       if (!user) {
-        user = new diom.connection.User( nick, host, mode ); 
+        user = new diom.connection.User( nick, host, mode );
         this.users[ nick ] = user;
-      } 
+      }
       channel.addUser( user );
       if ( mode === "@" ) {
         user.op( channelName );
       } else if ( mode === "!" ) {
         user.creator( channelName );
-      } else if ( mode === "+" ) { 
+      } else if ( mode === "+" ) {
         user.voice( channelName );
-      } else if ( mode === "%" ) { 
+      } else if ( mode === "%" ) {
         user.halfOp( channelName );
       }
     }
@@ -528,7 +528,7 @@ dojo.declare( "diom.connection.Connection", null, {
   },
 
   sendCommand: function ( cmd, args, target ) {
-    var msg, channel, nick, serverName, 
+    var msg, channel, nick, serverName,
       _cmd, funcName, param, params, t;
     //XXX: figure out what to do here
     //XXX: using a switch for now, need something better in the future
@@ -545,7 +545,7 @@ dojo.declare( "diom.connection.Connection", null, {
         msg = "";
         if ( args && args.length ) {
           msg = args.join( " " );
-        } 
+        }
         this.client.sendMode( msg );
         break;
       case "kick":
@@ -574,14 +574,14 @@ dojo.declare( "diom.connection.Connection", null, {
         msg = "";
         if ( args && args.length ) {
           msg = args.join( " " );
-        } 
+        }
         this.client.sendWhoIs( msg );
         break;
       case "whowas":
         msg = "";
         if ( args && args.length ) {
           msg = args.join( " " );
-        } 
+        }
         this.client.sendWhoWas( msg );
         break;
       case "squit":
@@ -602,7 +602,7 @@ dojo.declare( "diom.connection.Connection", null, {
       case "restart":
       case "rehash":
         _cmd = cmd;
-        funcName = "send" + _cmd; 
+        funcName = "send" + _cmd;
         if ( funcName in this.client ) {
           this.client[ funcName ]( );
         }
@@ -623,7 +623,7 @@ dojo.declare( "diom.connection.Connection", null, {
         }
         _cmd = cmd;
         _cmd = _cmd[ 0 ].toUpperCase( ) + _cmd.substr( 1 );
-        funcName = "send" + _cmd; 
+        funcName = "send" + _cmd;
         if ( funcName in this.client ) {
           this.client[ funcName ]( param );
         }
@@ -645,10 +645,10 @@ dojo.declare( "diom.connection.Connection", null, {
         params = "";
         if ( args && args.length ) {
           params = args.join( " " );
-        } 
+        }
         _cmd = cmd;
         _cmd = _cmd[ 0 ].toUpperCase( ) + _cmd.substr( 1 );
-        funcName = "send" + _cmd; 
+        funcName = "send" + _cmd;
         if ( funcName in this.client ) {
           this.client[ funcName ]( params );
         }
@@ -669,7 +669,7 @@ dojo.declare( "diom.connection.Connection", null, {
         msg = "";
         if ( args && args.length ) {
           msg = args.join( " " );
-        } 
+        }
         this.client.sendQuit( msg );
         break;
       case "ctcp":
@@ -678,7 +678,7 @@ dojo.declare( "diom.connection.Connection", null, {
           msg = args.join( " " );
           if ( dojo.trim( msg ).toLowerCase( ) === "ping" ) {
             this.client.sendCTCPPing( target );
-          } else { 
+          } else {
             this.client.sendCTCP( target, msg );
           }
         }
@@ -728,7 +728,7 @@ dojo.declare( "diom.connection.Connection", null, {
   sendMessage: function ( target, msg ) {
     if ( msg && target ) {
       if ( target === this.server ) { return; }
-      this.client.sendPM( target, msg ); 
+      this.client.sendPM( target, msg );
       this.handleMessage( this.getNick( ), this.host, target, msg );
     }
   },
@@ -754,7 +754,7 @@ dojo.declare( "diom.connection.Connection", null, {
           for ( channel in this.channels ) {
             if ( this.channels.hasOwnProperty( channel ) ) {
               if ( channel !== channelName ) {
-                tempUsers = this.channels[ channel ].getusers( );
+                tempUsers = this.channels[ channel ].getUsers( );
                 if ( user.nick in tempUsers ) {
                   stillExists = true;
                   break;
