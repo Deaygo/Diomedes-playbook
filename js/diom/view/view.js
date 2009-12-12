@@ -72,7 +72,7 @@ dojo.declare( "diom.view.View", null, {
   },
 
   closePopup: function ( e ) {
-    dojo.removeClass( this.popup, "hidden" );
+    dojo.addClass( this.popup, "hidden" );
     this.popupContents.innerHTML = "";
   },
 
@@ -88,14 +88,14 @@ dojo.declare( "diom.view.View", null, {
   },
 
   handleWindowClick: function ( e ) {
-    dojo.removeClass( this.titleBar, "hidden" );
+    dojo.addClass( this.titleBar, "hidden" );
   },
 
   setTopicView: function ( channelName, topic ) {
     var msg = channelName, nickCount = "";
     if ( this.activeNickCount ) {
       nickCount = " (" + this.activeNickCount + ") ";
-    } 
+    }
     if ( topic ) {
       msg += nickCount + ": " + topic;
     }
@@ -135,7 +135,7 @@ dojo.declare( "diom.view.View", null, {
     n = util.get( "themeLink" );
     n.setAttribute( "href", [ cssPath, themeName, ".css" ].join( "" ) );
   },
-  
+
   changeFont: function ( fontPrefs, size ) {
 		var i, font;
     for ( i = 0; i < fontPrefs.length; i++ ) {
@@ -156,14 +156,14 @@ dojo.declare( "diom.view.View", null, {
       size = 32;
     }
     size = size.toString( );
-    util.get( "body" ).setAttribute( "style", [ 
-      "font-family: ",  
+    util.get( "body" ).setAttribute( "style", [
+      "font-family: ",
       font,
       ";",
       "font-size: ",
       size,
       "px;"
-    ].join( "" ) ); 
+    ].join( "" ) );
   },
 
   notify: function ( msg ) {
@@ -237,7 +237,7 @@ dojo.declare( "diom.view.View", null, {
     if ( e.target.nodeName === "A" ) {
       url = e.target.getAttribute("href");
       if ( url ) {
-        urlReq = new air.URLRequest( dojo.trim( url ) ); 
+        urlReq = new air.URLRequest( dojo.trim( url ) );
         air.navigateToURL(urlReq);
       }
     }
@@ -297,7 +297,7 @@ dojo.declare( "diom.view.View", null, {
   },
 
   updateChannelView: function ( channels, channelsWithActivity, channelsWithHighlight ) {
-		var r, channelsR, serverName, server, activeChannels, highlightedChannels, 
+		var r, channelsR, serverName, server, activeChannels, highlightedChannels,
 			channelKey, activity, highlight, channelName;
     util.log("updateChannelView");
     if ( !channels ) { return; }
@@ -324,7 +324,7 @@ dojo.declare( "diom.view.View", null, {
 						activity = 0;
 						if ( activeChannels && ( channelKey in activeChannels ) ) {
 							activity = activeChannels[ channelKey ];
-						} 
+						}
 						highlight = false;
 						if ( highlightedChannels && ( channelKey in highlightedChannels ) ) {
 							highlight = true;
@@ -335,7 +335,7 @@ dojo.declare( "diom.view.View", null, {
 				}
 			}
 		}
-    this.setContents( this.channelList, r.join( "" ), false ); 
+    this.setContents( this.channelList, r.join( "" ), false );
     this.input.setChannels( channelsR );
   },
 
@@ -362,7 +362,7 @@ dojo.declare( "diom.view.View", null, {
     for ( i = 0; i < nodes.length; i++ ) {
       n = nodes[ i ];
       if ( dojo.hasClass( n, "currentChannel" ) ) {
-        if ( i === 0 ) { 
+        if ( i === 0 ) {
           prev = nodes[ nodes.length - 1 ];
         } else {
           prev = nodes[ i - 1 ];
@@ -395,7 +395,7 @@ dojo.declare( "diom.view.View", null, {
     for ( i = 0; i < nodes.length; i++ ) {
       n = nodes[ i ];
       if ( dojo.hasClass( n, "currentChannel" ) ) {
-        next = n.nextSibling;  
+        next = n.nextSibling;
         if ( i < nodes.length - 1 ) {
           next = nodes[ ++i ];
         } else {
@@ -418,9 +418,9 @@ dojo.declare( "diom.view.View", null, {
         activity,
         ' </span> '
       ].join( "" );
-    } 
+    }
     if ( this.activeWin ) {
-      currentChannel = ( channelKey === this.activeWin.channelName && 
+      currentChannel = ( channelKey === this.activeWin.channelName &&
 				server === this.activeWin.serverName );
     } else {
       currentChannel = false;
@@ -459,10 +459,10 @@ dojo.declare( "diom.view.View", null, {
       this.activityWindows[ serverName ] = {};
     }
     if ( !( channelName in this.activityWindows[ serverName ] ) ) {
-      this.activityWindows[ serverName ][ channelName ] = new diom.view.ActivityWindow( serverName, 
-          channelName, 
-          this.model.prefs.getPrefs( ).historyLength, 
-          this.model.prefs.getPrefs( ).multiOptionPrefs.time 
+      this.activityWindows[ serverName ][ channelName ] = new diom.view.ActivityWindow( serverName,
+          channelName,
+          this.model.prefs.getPrefs( ).historyLength,
+          this.model.prefs.getPrefs( ).multiOptionPrefs.time
       );
     }
   },
@@ -508,7 +508,7 @@ dojo.declare( "diom.view.View", null, {
     util.log( "destroying view" );
     this.input.destroy();
   },
-  
+
   openPerformsWindow: function ( networks ) {
 		var x, y, win;
     if ( !networks ) { networks = []; }
@@ -530,7 +530,7 @@ dojo.declare( "diom.view.View", null, {
   },
 
   handleAboutBtnClick: function ( e ) {
-    var s = this.appVersion; 
+    var s = this.appVersion;
     s += "\n\nTwitter: @apphacker";
     s += "\nEmail: apphacker@gmail.com";
     s += "\nWebsite: http://www.apphackers.com";
@@ -541,11 +541,11 @@ dojo.declare( "diom.view.View", null, {
   handleUpdateBtnClick: function ( e ) {
     dojo.publish( diom.topics.UPDATE_CHECK, [] );
   },
-  
+
   handleHelpBtnClick: function ( e ) {
     this.displayHelp( );
   },
-  
+
   openChannelsWindow: function ( networks ) {
 		var x, y, win;
     if ( !networks ) { networks = []; }
@@ -659,15 +659,15 @@ dojo.declare( "diom.view.View", null, {
     win = window.open("prefs.html", "prefsWindow", "height=550, scrollbars=yes, width=500, top=" + y + ", left=" + x);
     win = win.nativeWindow;
     this.model.prefs.savePrefs( );
-    win.addEventListener( air.Event.CLOSE, dojo.hitch( this.model.prefs, "savePrefs" )  ); 
+    win.addEventListener( air.Event.CLOSE, dojo.hitch( this.model.prefs, "savePrefs" )  );
   },
 
   handleTitleBarClick: function ( e ) {
 		var id, funcName;
     dojo.stopEvent( e );
     id = e.target.id;
-    if ( id ) { 
-      funcName = "handle" + id + "Click"; 
+    if ( id ) {
+      funcName = "handle" + id + "Click";
       if ( this[ funcName ] ) {
         this[ funcName ]( e );
       }

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html> 
-<head> 
-  <title>Diomedes</title> 
+<html>
+<head>
+  <title>Diomedes</title>
   <link rel="stylesheet" type="text/css" media="screen" href="css/view.css" />
   <link rel="stylesheet" type="text/css" media="screen" href="css/activityWindow.css" />
   <link rel="stylesheet" type="text/css" media="screen" href="css/nickList.css" />
@@ -9,8 +9,8 @@
   <link rel="stylesheet" type="text/css" media="screen" href="css/inputForm.css" />
   <link rel="stylesheet" type="text/css" media="screen" href="css/linkLog.css" />
   <link id="themeLink" rel="stylesheet" type="text/css" media="screen" href="css/themes/default.css" />
-</head> 
-<body id="body" onUnload="appUnload( );"> 
+</head>
+<body id="body" onUnload="appUnload( );">
   <div id="view">
     <div id="linksBtn">
     </div>
@@ -50,29 +50,29 @@
   </div>
   <script src="servicemonitor.swf" type="application/x-shockwave-flash"/>
   <script src="applicationupdater_ui.swf" type="application/x-shockwave-flash" />
-  <script type="text/javascript" src="js/AIRAliases.js"></script> 
+  <script type="text/javascript" src="js/AIRAliases.js"></script>
   <script type="text/javascript" src="js/AIRIntrospector.js"></script>
 
 	<!-- section below is for production releases -->
-	<!-- 
-  <script type="text/javascript" src="js/release/dojo/dojo/dojo.js"></script> 
+	<!--
+  <script type="text/javascript" src="js/release/dojo/dojo/dojo.js"></script>
   <script type="text/javascript" src="js/release/dojo/diom/diom.js"></script>
 	-->
 
 	<!-- section below is for dev -->
-  <script type="text/javascript" src="js/dojo/dojo.js"></script> 
-  <script type="text/javascript" src="js/diom/diom.js"></script> 
-
-	<!-- section below is for debugging -->
 	<!--
-  <script type="text/javascript" src="js/release/dojo/dojo/dojo.js.uncompressed.js"></script> 
-  <script type="text/javascript" src="js/release/dojo/diom/diom.js.uncompressed.js"></script> 
+  <script type="text/javascript" src="js/dojo/dojo.js"></script>
+  <script type="text/javascript" src="js/diom/diom.js"></script>
 	-->
 
-  <script type="text/javascript"> 
+	<!-- section below is for debugging -->
+  <script type="text/javascript" src="js/release/dojo/dojo/dojo.js.uncompressed.js"></script>
+  <script type="text/javascript" src="js/release/dojo/diom/diom.js.uncompressed.js"></script>
+
+  <script type="text/javascript">
 
     var m, v, c;
-    
+
     var console =  air.Introspector.Console;
 
     function checkClose ( e ) {
@@ -81,14 +81,14 @@
       }
     }
 
-    function appLoad ( ) { 
-      util.log( "appLoad" ); 
+    function appLoad ( ) {
+      util.log( "appLoad" );
 
       m = new diom.model.Model( );
       v = new diom.view.View( m );
       c = new diom.controller.Controller( m, v );
 
-    }  
+    }
 
     function appUnload ( ) {
       c.destroy( );
@@ -100,7 +100,7 @@
     window.nativeWindow.addEventListener( air.Event.CLOSING, checkClose );
     dojo.addOnLoad( appLoad );
 
-  </script> 
-</body> 
+  </script>
+</body>
 </html>
 
