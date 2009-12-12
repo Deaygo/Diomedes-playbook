@@ -28,7 +28,7 @@ if ( window.runtime && air ) {
 
   util.findUp = function ( node, className ) {
     if ( !node || !className ) { return null; }
-    if ( util.hasClass( node, className ) ) {
+    if ( dojo.hasClass( node, className ) ) {
       return node;
     } else if ( node.parentNode ) {
       return util.findUp( node.parentNode, className );
