@@ -48,8 +48,7 @@ if ( window.runtime && air ) {
   };
 
   util.get = function ( id, doc ) {
-		if ( !doc ) {
-			doc = document;
+		if ( doc ) {
 			return doc.getElementById( id );
 		}
     return dojo.byId( id );

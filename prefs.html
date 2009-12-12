@@ -1,12 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html> 
-<head> 
-  <title>Diomedes - Preferences</title> 
+<html>
+<head>
+  <title>Diomedes - Preferences</title>
   <link rel="stylesheet" type="text/css" media="screen" href="css/view.css" />
   <link rel="stylesheet" type="text/css" media="screen" href="css/forms.css" />
-</head> 
-<body class="prefWindow popUpWindow" onLoad="prefLoad( )"> 
+</head>
+<body class="prefWindow popUpWindow" onLoad="prefLoad( )">
   <h1>Preferences</h1>
   <form onsubmit="savePrefs( event );">
     <div class="formItem">
@@ -59,8 +59,10 @@
     <input type="submit" value="Save" />
     <button onclick="closePrefs( event );">Close</button>
   </form>
-  <script type="text/javascript" src="js/AIRIntrospector.js"></script> 
+  <script type="text/javascript" src="js/AIRIntrospector.js"></script>
   <script type="text/javascript">
+
+    var console =  air.Introspector.Console;
 
     var bridge = window.opener.prefBridge;
     var util = bridge.util;
@@ -92,6 +94,7 @@
           util.get( "theme", document ).innerHTML = loadOptions( p.theme );
         } else if ( pref == "autoJoin" ) {
           var n = util.get( "autoJoin", document );
+          console.log( "n: " + n );
           var p = prefs[ pref ];
           n.checked = ( p == "true" );
         } else if ( pref == "logging" ) {
