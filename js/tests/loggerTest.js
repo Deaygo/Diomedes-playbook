@@ -30,8 +30,8 @@ var log, logTest,
     lineFormat,
     lines;
 
-fileName = serverName.split( "." ).join( "_" ) + "_" + channelName + "_2009_09_27_12_50_49.txt";
-serverMessage = nick + hostmask + " has joined " + channelName + "."; 
+fileName = serverName.split( "." ).join( "_" ) + "_" + channelName + ".txt";
+serverMessage = nick + hostmask + " has joined " + channelName + ".";
 lineFormat = "[2009-09-27 12:50:49] <" + nick + "> " + message + "\n";
 
 logTest = new Achaean( "loggingTest" );
