@@ -47,20 +47,20 @@ dojo.declare( "diom.connection.Connection", null, {
     this.names = {};
 
     //set delegates
-    this.client.setConnectionDelegate(dojo.hitch(this,"handleConnection"));
-    this.client.setInviteDelegate(dojo.hitch(this,"handleInvite"));
-    this.client.setJoinDelegate(dojo.hitch(this,"handleJoin"));
-    this.client.setNoticeDelegate(dojo.hitch(this,"handleNotice"));
-    this.client.setQuitDelegate(dojo.hitch(this,"handleQuit"));
-    this.client.setActionDelegate(dojo.hitch(this,"handleAction"));
-    this.client.setMessageDelegate(dojo.hitch(this,"handleMessage"));
-    this.client.setPartDelegate(dojo.hitch(this,"handlePart"));
-    this.client.setNickDelegate(dojo.hitch(this,"handleNickChange"));
-    this.client.setServerDelegate(dojo.hitch(this,"handleServerMessage"));
-    this.client.setNamesDelegate(dojo.hitch(this,"handleNames"));
-    this.client.setTopicDelegate(dojo.hitch(this,"handleTopic"));
-    this.client.setModeDelegate(dojo.hitch(this, "handleMode"));
-    this.client.setKickDelegate(dojo.hitch(this, "handleKick"));
+    this.client.setConnectionDelegate( dojo.hitch( this,"handleConnection" ) );
+    this.client.setInviteDelegate( dojo.hitch( this,"handleInvite" ) );
+    this.client.setJoinDelegate( dojo.hitch( this,"handleJoin" ) );
+    this.client.setNoticeDelegate( dojo.hitch( this,"handleNotice" ) );
+    this.client.setQuitDelegate( dojo.hitch( this,"handleQuit" ) );
+    this.client.setActionDelegate( dojo.hitch( this,"handleAction" ) );
+    this.client.setMessageDelegate( dojo.hitch( this,"handleMessage" ) );
+    this.client.setPartDelegate( dojo.hitch( this,"handlePart" ) );
+    this.client.setNickDelegate( dojo.hitch( this,"handleNickChange" ) );
+    this.client.setServerDelegate( dojo.hitch( this,"handleServerMessage" ) );
+    this.client.setNamesDelegate( dojo.hitch( this,"handleNames" ) );
+    this.client.setTopicDelegate( dojo.hitch( this,"handleTopic" ) );
+    this.client.setModeDelegate( dojo.hitch( this, "handleMode" ) );
+    this.client.setKickDelegate( dojo.hitch( this, "handleKick" ) );
     dojo.subscribe(  diom.topics.CHANNEL_CLOSE, this, "closeChannel" );
     dojo.subscribe(  diom.topics.PREFS_CHANGE_AUTOJOIN, this, "setAutoJoin" );
     dojo.subscribe(  diom.topics.IGNORES_UPDATE, this, "handleIgnoresUpdate" );
@@ -536,6 +536,14 @@ dojo.declare( "diom.connection.Connection", null, {
       case "nick":
         this.client.changeNick( args.shift( ) );
         util.log( "attempting to change nick" );
+        break;
+      case "pass":
+        msg = "";
+        if ( args && args.length ) {
+          msg = args.join( " " );
+        }
+        this.client.pass( msg );
+        util.log( "sending pass: " + args );
         break;
       case "join":
         this.client.join( args );

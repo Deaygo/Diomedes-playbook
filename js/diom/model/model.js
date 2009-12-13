@@ -40,10 +40,10 @@ dojo.declare( "diom.model.Model", null, {
 			errorHandler = dojo.hitch( this, "_handleError", [ "openSQLConnection" ] );
 		}
     if ( this.conn ) { this.closeConnection( ); }
-    this.conn = new air.SQLConnection( ); 
-    dbFile = air.File.applicationStorageDirectory.resolvePath( this.DATABASE_NAME ); 
+    this.conn = new air.SQLConnection( );
+    dbFile = air.File.applicationStorageDirectory.resolvePath( this.DATABASE_NAME );
     try {
-      this.conn.open( dbFile, type ); 
+      this.conn.open( dbFile, type );
     } catch ( error ) {
       errorHandler( error );
     }
@@ -59,15 +59,15 @@ dojo.declare( "diom.model.Model", null, {
     if ( !errorHandler ) {
 			errorHandler = dojo.hitch( this, "_handleError", [ "SQL: " + sql ] );
 		}
-    if ( !this.conn || !this.conn.connected ) { 
+    if ( !this.conn || !this.conn.connected ) {
       this.log( "Connection not open when calling _executeSQL, opening it");
       this._openSQLConn( type, errorHandler );
     }
-    s = new air.SQLStatement( ); 
-    s.sqlConnection = this.conn; 
+    s = new air.SQLStatement( );
+    s.sqlConnection = this.conn;
     this.statement = s;
     this.log( "executing sql: " + sql );
-    s.text = sql; 
+    s.text = sql;
     if ( parameters ) {
       for ( i in parameters ) {
         if ( parameters.hasOwnProperty( i ) && i !== "prototype" ) {
@@ -76,7 +76,7 @@ dojo.declare( "diom.model.Model", null, {
       }
     }
     try {
-      s.execute( ); 
+      s.execute( );
     } catch ( error ) {
       this._statementResultHandler( error, errorHandler );
     }
@@ -108,14 +108,26 @@ dojo.declare( "diom.model.Model", null, {
     return dojo.hitch( this, "_getFilterResult", [ resultsHandler ] );
   },
 
+  _addColumn: function ( tableName, columnName, type, resultsHandler, errorHandler ) {
+
+    var sql;
+
+    this.log( "altering table" );
+    sql = sql.concat( [ "ALTER TABLE", tableName, "ADD COLUMN", columnName, type ] );
+    this._executeSQL( sql.join( " " ), air.SQLMode.UPDATE, resultsHandler, null, errorHandler );
+
+  },
+
   _createTable: function ( name, types, resultsHandler, parameters, errorHandler ) {
+
 		var sql, typeNames;
-    this.log("Creating Table.");
+
+    this.log( "Creating Table." );
     sql = [];
-    sql = sql.concat( [ "CREATE TABLE IF NOT EXISTS ", name, " (" ] );  
+    sql = sql.concat( [ "CREATE TABLE IF NOT EXISTS ", name, " (" ] );
     for ( typeNames in types ) {
 			if ( types.hasOwnProperty( typeNames ) ) {
-				sql.push( [ name, types[ name ] ].join( " " ) );
+				sql.push( [ typeNames, types[ typeNames ] ].join( " " ) );
 				sql.push( ", ");
 			}
     }
@@ -127,8 +139,8 @@ dojo.declare( "diom.model.Model", null, {
   _handleError: function ( e, msg ) {
     this.log("error: " + e);
     this.log("message: " + msg );
-    this.log("Error message:", e.error.message); 
-    this.log("Details:", e.error.details); 
+    this.log("Error message:", e.error.message);
+    this.log("Details:", e.error.details);
   },
 
   log: function ( msg ) {

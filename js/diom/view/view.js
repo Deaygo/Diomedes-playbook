@@ -409,7 +409,6 @@ dojo.declare( "diom.view.View", null, {
 
   getChannelButton: function ( server, channelKey, channelName, type, activity, highlight ) {
 		var channelActivity, currentChannel;
-    util.log("this.activeWin: " + this.activeWin );
     //channelKey is channelName in lowercase
     channelActivity = "";
     if ( activity ) {

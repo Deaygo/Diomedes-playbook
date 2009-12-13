@@ -10,7 +10,7 @@
 dojo.provide( "diom.irc" );
 
 dojo.declare( "diom.IRCClient", null, {
-  
+
   constructor: function ( server, port, defaultChannels, nick, userName, realName ) {
 
     //Connection info
@@ -18,7 +18,7 @@ dojo.declare( "diom.IRCClient", null, {
     this.server = server;
     this.port = ( port ? port : 6667 );
 
-    //Socket and connectivity 
+    //Socket and connectivity
     this.socket = null;
     this.socketMonitor = null;
     this.stayConnected = false;
@@ -41,7 +41,7 @@ dojo.declare( "diom.IRCClient", null, {
     this.namesList = {}; //stores names during NAMES irc list requests (multiple lines)
     this.topics = {}; //stores topics by channel name;
     this.lastCTCPReq = new Date( ).getTime( );
-    this.CTCP_RESPONSE_WAIT = 5 * 1000; //only one ctcp response 
+    this.CTCP_RESPONSE_WAIT = 5 * 1000; //only one ctcp response
     this.pingResponses = {}; //buffer for pings waiting for responses
     this.clientInfo = "";
     this.finger = "";
@@ -159,11 +159,11 @@ dojo.declare( "diom.IRCClient", null, {
 
   connect: function ( ) {
     if ( this._isConnected) { return; }
-    this.log( "Attempting connection on server: " + this.server + ", on host: " + this.host ); 
+    this.log( "Attempting connection on server: " + this.server + ", on host: " + this.host );
     this.stayConnected = true;
-    this.socketMonitor = new air.SocketMonitor( this.server, this.port ); 
-    this.socketMonitor.addEventListener( air.StatusEvent.STATUS, dojo.hitch( this, "onStatus" ) ); 
-    this.socketMonitor.start( ); 
+    this.socketMonitor = new air.SocketMonitor( this.server, this.port );
+    this.socketMonitor.addEventListener( air.StatusEvent.STATUS, dojo.hitch( this, "onStatus" ) );
+    this.socketMonitor.start( );
     this._connect( );
   },
 
@@ -184,7 +184,7 @@ dojo.declare( "diom.IRCClient", null, {
       this._connect( );
       if ( this.connectionDelegate ) {
         this.connectionDelegate( "Connecting to server.", false, false );
-      }  
+      }
     } else if ( !status_ && this.stayConnected && this._isConnected ) {
       this.setDisconnectedStatus( );
     } else if ( !status_ && this.stayConnected ) {
@@ -204,6 +204,9 @@ dojo.declare( "diom.IRCClient", null, {
 
   onConnect: function ( e ) {
     this.log( "Found server, connecting..." );
+    this._send( "NICK " + this.nick );
+    this._send( "USER " + this.userName + " " + this.server + " serverName " + " :"  + this.realName );
+    this.log( "SENT SHIT" );
     this._isConnected = true;
   },
 
@@ -248,8 +251,6 @@ dojo.declare( "diom.IRCClient", null, {
       }
       if ( data.search( "NOTICE AUTH" ) !== -1 )  {
         this.log( "found ident" );
-        this._send( "NICK " + this.nick );
-        this._send( "USER " + this.userName + " " + this.server + " serverName " + " :"  + this.realName );
         this.log( "Connection established." );
         this.connectionEstablished = true;
       } else if ( data.search( "ERROR" ) !== -1 ) {
@@ -268,7 +269,7 @@ dojo.declare( "diom.IRCClient", null, {
           this.handleData( d );
         }
       }
-    } 
+    }
     if ( this.socket && this.socket.connected ) {
       this.socket.flush( );
     }
@@ -296,7 +297,7 @@ dojo.declare( "diom.IRCClient", null, {
       this.beginningFragment = line;
       return;
     } else {
-      if ( endFragment ) { 
+      if ( endFragment ) {
         //lost a line between data reads
         //connection asynch so no guarantee
         this.log( "lost a line,  beginning: " + this.beginningFragment + " end:" + endFragment );
@@ -319,15 +320,22 @@ dojo.declare( "diom.IRCClient", null, {
     i = line.search( ":" );
     if ( i !== -1 ) {
       msg = line.substr( i + 1 );
-      line = line.substr( 0, i - 1 ); //getting rid of ":" 
+      line = line.substr( 0, i - 1 ); //getting rid of ":"
     } else {
       msg = null;
     }
     cmdParts = line.split( " " );
-    if ( !this.connectionAccepted && ( line.search( "433" ) !== -1 ) && this.connectionDelegate ) {
-        this.connectionDelegate( "Nickname is alread in use. Type /nick newNick to change it.", true, true );
+    if ( !this.connectionAccepted && ( line.search( this.COMMAND_NUMBERS.NICK_IS_ALREADY_IN_USE ) !== -1 ) && this.connectionDelegate ) {
+      this.connectionDelegate( "Nickname is alread in use. Type /nick newNick to change it.", true, true );
     }
-    if ( !this.connectionAccepted && ( line.search( "001" ) !== -1 ) ) {
+    if ( !this.connectionAccepted && ( line.search( this.COMMAND_NUMBERS.INVALID_PASSWORD ) !== -1 ) ) {
+      if ( this.connectionDelegate ) {
+        this.connectionDelegate( "Invalid password.", false, false );
+        //this.serverDelegate( this.getIndex( cmdParts, 0 ), "Invalid Password, type /pass PASSWORD using the correct password", this.getIndex( cmdParts, 0 ) );
+        this.close( );
+        this.setDisconnectedStatus( );
+      }
+    } else if ( !this.connectionAccepted && ( line.search( this.COMMAND_NUMBERS.SERVER_CONNECT ) !== -1 ) ) {
       this.host = this.getIndex( cmdParts, 0 );
       newNick = this.getIndex( cmdParts, 2 );
       if ( this.nickDelegate && newNick ) {
@@ -386,14 +394,14 @@ dojo.declare( "diom.IRCClient", null, {
       this.noticeDelegate( nick, host, target, msg );
     }
   },
-  
+
   QUIT: function ( nick, host, cmd, target, msg ) {
     if ( this.quitDelegate ) {
       this.quitDelegate( nick, host, msg );
     }
   },
   PRIVMSG: function ( nick, host, cmd, target, msg ) {
-    var action = this.getAction( msg );        
+    var action = this.getAction( msg );
     if ( action && target && this.actionDelegate ) {
       this.actionDelegate( nick, host, target, action );
     } else if ( this.isCTCP( msg ) ) {
@@ -402,7 +410,7 @@ dojo.declare( "diom.IRCClient", null, {
       this.messageDelegate( nick, host, target, msg );
     }
   },
-  
+
   PART: function ( nick, host, cmd, target, msg ) {
     if ( target && this.partDelegate ) {
       this.partDelegate( nick, host, target, msg );
@@ -430,7 +438,7 @@ dojo.declare( "diom.IRCClient", null, {
 
   TOPIC: function ( nick, host, cmd, target, msg ) {
     if ( target ) {
-      this.topic ( target, "" ); 
+      this.topic ( target, "" );
     }
   },
 
@@ -457,13 +465,13 @@ dojo.declare( "diom.IRCClient", null, {
   },
 
   getModes: function ( modes, target ) {
-    var parts, modeChanges, setTypes, toggleTypes, 
+    var parts, modeChanges, setTypes, toggleTypes,
       i, j, c, part, toggle, modeObj;
     parts = modes.split( " " );
     //array items for the below array follow this structure:
     // { "toggle": "+", "type": "o", "arg": "user1", "target": "#myChannel" }
     // { "toggle": "-", "type": "n", "arg": null, "target": "#myChannel" }
-    modeChanges = []; 
+    modeChanges = [];
     setTypes = {
       O : 'give "channel creator" status;',
       o : 'give/take channel operator privilege;',
@@ -506,7 +514,7 @@ dojo.declare( "diom.IRCClient", null, {
               modeObj.type = c;
               modeChanges.push( modeObj );
               continue;
-            } 
+            }
             if ( c in toggleTypes ) {
               modeObj.arg = null;
               modeObj.type = c;
@@ -535,8 +543,8 @@ dojo.declare( "diom.IRCClient", null, {
       cmdParts = msg.split( " " );
       cmd = this.getIndex( cmdParts, 0 );
       if ( cmd ) {
-        if ( this.serverDelegate ) { 
-          this.serverDelegate( host, [ cmd, "from", nick ].join( " " ), null ); 
+        if ( this.serverDelegate ) {
+          this.serverDelegate( host, [ cmd, "from", nick ].join( " " ), null );
         }
         switch ( cmd ) {
           case "PING":
@@ -560,7 +568,7 @@ dojo.declare( "diom.IRCClient", null, {
   isCTCP: function ( msg ) {
     if ( !msg ) { return false; }
     var token = String.fromCharCode( 1 );
-    return (msg[ 0 ] === token); 
+    return (msg[ 0 ] === token);
   },
 
   getMsgFromCTCP: function ( msg ) {
@@ -599,6 +607,7 @@ dojo.declare( "diom.IRCClient", null, {
   },
 
   COMMAND_NUMBERS: {
+    "SERVER_CONNECT" : "001",
     "SERVER_INFO" : "004",
     "MAP" : "005",
     "NUM_OPS" : "252",
@@ -611,7 +620,7 @@ dojo.declare( "diom.IRCClient", null, {
     "NICK_AWAY" : "301",
     "NICK_LOOKS_VERY_HELPFUL" : "310",
     "NICK_USER_INFO" : "311",
-    "NICK_USER_INFO2" : "314", 
+    "NICK_USER_INFO2" : "314",
     "NICK_SERVER_INFO": "312",
     "NICK_IS_IRCOP" : "313",
     "END_OF_WHO" : "315",
@@ -624,7 +633,8 @@ dojo.declare( "diom.IRCClient", null, {
     "END_OF_WHO_WAS" : "369",
     "HOST_CHANGE" : "396",
     "CANNOT_SEND_TO_CHANNEL" : "404",
-    "NICK_IS_ALREADY_IN_USE" : "433"
+    "NICK_IS_ALREADY_IN_USE" : "433",
+    "INVALID_PASSWORD" : "464"
   },
 
   handleServerMessage: function ( cmdParts, msg ) {
@@ -768,6 +778,10 @@ dojo.declare( "diom.IRCClient", null, {
 
   sendRaw: function ( msg ) {
     this._send(msg);
+  },
+
+  pass: function ( password ) {
+    this._send( [ "PASS", password ].join( " " ) );
   },
 
   join: function ( channels ) {
@@ -946,7 +960,7 @@ dojo.declare( "diom.IRCClient", null, {
       this._send( [ "INVITE", nick, channel ].join( " " ) );
     }
   },
- 
+
   sendMode: function ( msg ) {
     if ( msg ) {
       this._send( [ "MODE", msg ].join( " " ) );
@@ -1025,13 +1039,13 @@ dojo.declare( "diom.IRCClient", null, {
   },
 
   log: function ( data ) {
-    util.log( "\n" + data ); 
+    util.log( "\n" + data );
   },
 
   createConnection: function ( ) {
     this.socket = new air.Socket( );
-    this.socket.addEventListener( air.Event.CONNECT, dojo.hitch( this, "onConnect" ) ); 
-    this.socket.addEventListener( air.ProgressEvent.SOCKET_DATA, dojo.hitch( this, "onSocketData" ) ); 
+    this.socket.addEventListener( air.Event.CONNECT, dojo.hitch( this, "onConnect" ) );
+    this.socket.addEventListener( air.ProgressEvent.SOCKET_DATA, dojo.hitch( this, "onSocketData" ) );
   },
 
   isChannelName: function ( name ) {
