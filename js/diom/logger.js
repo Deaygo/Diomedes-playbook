@@ -7,7 +7,7 @@
 dojo.provide( "diom.logger" );
 
 /*
- * 
+ *
  * Logger will take a channel name (or nick ) and server name *testable
  * and log contents
  *
@@ -51,10 +51,9 @@ dojo.declare( "diom.Logger", null, {
     return this.serverName;
   },
   _getFileName: function ( time ) {
-    var fileName = [ 
-      this.serverName, "_", this.channelName, 
-      this._getFormattedDate( time, true )
-    ].join( "" ); 
+    var fileName = [
+      this.serverName, "_", this.channelName
+    ].join( "" );
     fileName = fileName.split( "." ).join( "_" );
     fileName = [ fileName, ".txt" ].join( "" );
     return fileName;
@@ -62,8 +61,8 @@ dojo.declare( "diom.Logger", null, {
   open: function ( ) {
     //not tested
     if ( this.fileStream ) { return; }
-    this.fileStream = new air.FileStream(); 
-    this.fileStream.open( this.file, air.FileMode.APPEND ); 
+    this.fileStream = new air.FileStream();
+    this.fileStream.open( this.file, air.FileMode.APPEND );
   },
   close: function ( ) {
     //not tested
@@ -106,7 +105,7 @@ dojo.declare( "diom.Logger", null, {
     ].join( "" );
   },
   _getFormattedDate: function ( time, isFileName ) {
-    return [ 
+    return [
       ( isFileName ? "_" : "[" ),
       time.getFullYear( ),
       ( isFileName ? "_" : "-" ),
