@@ -252,7 +252,7 @@ dojo.declare( "diom.IRCClient", null, {
           this.serverDelegate( this.server , _d[ i ], null );
         }
       }
-      if ( data.search( this.COMMAND_NUMBERS.SERVER_CONNECT ) !== -1 )  {
+      if ( data.search( "NOTICE AUTH" ) !== -1 || data.search( this.COMMAND_NUMBERS.SERVER_CONNECT ) !== -1 )  {
         this.log( "found ident" );
         this.log( "Connection established." );
         this.connectionEstablished = true;
@@ -262,13 +262,15 @@ dojo.declare( "diom.IRCClient", null, {
       }
     }
     dataR = data.split( "\n" );
-    for ( i = 0; i < dataR.length; i++ ) {
-      d = dataR[ i ];
-      if ( d.search( "PING" ) === 0 ) {
-        pong = data.split(" ")[ 1 ];
-        this._send( "PONG " + pong );
-      } else if ( d.length ) {
-        this.handleData( d );
+    if ( this.connectionEstablished ) {
+      for ( i = 0; i < dataR.length; i++ ) {
+        d = dataR[ i ];
+        if ( d.search( "PING" ) === 0 ) {
+          pong = data.split(" ")[ 1 ];
+          this._send( "PONG " + pong );
+        } else if ( d.length ) {
+          this.handleData( d );
+        }
       }
     }
     if ( this.socket && this.socket.connected ) {

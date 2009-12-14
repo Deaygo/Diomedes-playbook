@@ -1,12 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html> 
-<head> 
-  <title>Diomedes - Channels</title> 
+<html>
+<head>
+  <title>Diomedes - Channels</title>
   <link rel="stylesheet" type="text/css" media="screen" href="css/view.css" />
   <link rel="stylesheet" type="text/css" media="screen" href="css/forms.css" />
-</head> 
-<body class="prefWindow popUpWindow" onLoad="load( )"> 
+</head>
+<body class="prefWindow popUpWindow" onLoad="load( )">
   <h1>Channels</h1>
   <div id="networksList"></div>
   <div id="channelInfo" class="hidden">
@@ -53,7 +53,7 @@
         var r = ['<select id="selectNetwork" onchange="selectNetwork( event );">'];
         r.push( '<option selected="selected" disabled="disabled">Select a network</option>' );
         for ( var i = 0; i < networks.length; i++ ) {
-          r.push( getNetworkHTML( networks[ i ] ) ); 
+          r.push( getNetworkHTML( networks[ i ] ) );
         }
         r.push('</select>');
         n.innerHTML = r.join( "" );
@@ -72,9 +72,7 @@
       var n = event.target;
       var networkId = n.options[ n.selectedIndex ].value;
       selectedNetworkId = networkId;
-			alert( "bef" );
       getChannels( networkId, listChannels );
-			alert( "after" );
     }
 
     function listChannels ( channels ) {
@@ -90,7 +88,7 @@
       } else {
         var r = [];
         for ( var i = 0; i < channels.length; i++ ) {
-          r.push( getChannelHTML( channels[ i ] ) ); 
+          r.push( getChannelHTML( channels[ i ] ) );
         }
         n.innerHTML = r.join( "" );
       }
@@ -128,8 +126,8 @@
       get( "selectNetwork" ).selectedIndex = 0;
       n = get( "channelInfo" );
       selectedNetworkId = null;
-      dojo.removeClass( n, "hidden" );
-      dojo.removeClass( get( "form" ), "hidden" );
+      dojo.addClass( n, "hidden" );
+      dojo.addClass( get( "form" ), "hidden" );
     }
 
     function saveChannel ( event ) {
@@ -143,13 +141,13 @@
       if ( !this.getItem( "autoJoin", "Auto join", channelData, true ) ) return;
       if ( id === 0 ) {
         dojo.publish( topics.CHANNEL_ADD, [ channelData ] );
-      }  
+      }
       deselectChannel( );
     }
 
     function closeForm ( event ) {
       dojo.stopEvent( event );
-      dojo.removeClass( get( "form" ), "hidden" );
+      dojo.addClass( get( "form" ), "hidden" );
     }
 
     function showForm ( ) {

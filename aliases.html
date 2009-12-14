@@ -1,12 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html> 
-<head> 
-  <title>Diomedes - Aliases</title> 
+<html>
+<head>
+  <title>Diomedes - Aliases</title>
   <link rel="stylesheet" type="text/css" media="screen" href="css/view.css" />
   <link rel="stylesheet" type="text/css" media="screen" href="css/forms.css" />
-</head> 
-<body class="aliasWindow popUpWindow" onLoad="load( )"> 
+</head>
+<body class="aliasWindow popUpWindow" onLoad="load( )">
   <h1>Aliases</h1>
   <div id="aliasesList" onclick="handleListClick( event );"></div>
   <a href="#" onclick="showAddForm( event );">Add an Alias</a>
@@ -14,8 +14,8 @@
     <p>You can use variables such as $nick (for your nick), $channel and $server in the command.</p>
     <p>
       You can also use variables such as $1 for any arguments to your alias. If
-      your alias has any argument is has to use these types of variables.<br/> 
-      For example an alias named "j" with the command "/join $1" when used as 
+      your alias has any argument is has to use these types of variables.<br/>
+      For example an alias named "j" with the command "/join $1" when used as
       "/j #myFavChannel " will turn into "/join #myFavChannel".
     </p>
     <input type="hidden" id="id" value="0"/>
@@ -37,7 +37,6 @@
     var bridge = window.opener.aliasesBridge;
     var util = bridge.util;
 		var dojo = bridge.dojo;
-		alert( "dojo: " + dojo );
     var topics = bridge.topics;
     var aliases = bridge.aliases;
 
@@ -50,7 +49,7 @@
       n.innerHTML = "";
       var r = [];
       for ( var i = 0; i < aliases.length; i++ ) {
-        r.push( getAliasHTML( aliases[ i ] ) ); 
+        r.push( getAliasHTML( aliases[ i ] ) );
       }
       n.innerHTML = r.join( "" );
     }
@@ -81,7 +80,7 @@
         dojo.publish( topics.ALIAS_ADD, [ aliasData ] );
         closeWindow( event );
         return;
-      } 
+      }
       closeForm( event );
     }
 
@@ -116,7 +115,6 @@
       var value =  get( id ).value;
       value = dojo.trim( value );
       if ( !value ) {
-        alert( name + " required." );
         return false;
       }
       o[ id ] = value;

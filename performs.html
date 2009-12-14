@@ -1,12 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html> 
-<head> 
-  <title>Diomedes - Performs</title> 
+<html>
+<head>
+  <title>Diomedes - Performs</title>
   <link rel="stylesheet" type="text/css" media="screen" href="css/view.css" />
   <link rel="stylesheet" type="text/css" media="screen" href="css/forms.css" />
-</head> 
-<body class="prefWindow popUpWindow" onLoad="load( )"> 
+</head>
+<body class="prefWindow popUpWindow" onLoad="load( )">
   <h1>Performs</h1>
   <div id="networksList"></div>
   <div id="performInfo" class="hidden">
@@ -57,7 +57,7 @@
         var r = ['<select id="selectNetwork" onchange="selectNetwork( event );">'];
         r.push( '<option selected="selected" disabled="disabled">Select a network</option>' );
         for ( var i = 0; i < networks.length; i++ ) {
-          r.push( getNetworkHTML( networks[ i ] ) ); 
+          r.push( getNetworkHTML( networks[ i ] ) );
         }
         r.push('</select>');
         n.innerHTML = r.join( "" );
@@ -92,7 +92,7 @@
       } else {
         var r = [];
         for ( var i = 0; i < performs.length; i++ ) {
-          r.push( getPerformHTML( performs[ i ] ) ); 
+          r.push( getPerformHTML( performs[ i ] ) );
         }
         n.innerHTML = r.join( "" );
       }
@@ -132,8 +132,8 @@
       get( "selectNetwork" ).selectedIndex = 0;
       n = get( "performInfo" );
       selectedNetworkId = null;
-      dojo.removeClass( n, "hidden" );
-      dojo.removeClass( get( "form" ), "hidden" );
+      dojo.addClass( n, "hidden" );
+      dojo.addClass( get( "form" ), "hidden" );
     }
 
     function savePerform ( event ) {
@@ -148,13 +148,13 @@
       if ( !this.getItem( "active", "Active", performData, true ) ) return;
       if ( id === 0 ) {
         dojo.publish( topics.PERFORM_ADD, [ performData ] );
-      }  
+      }
       deselectPerform( );
     }
 
     function closeForm ( event ) {
       dojo.stopEvent( event );
-      dojo.removeClass( get( "form" ), "hidden" );
+      dojo.addClass( get( "form" ), "hidden" );
     }
 
     function showForm ( ) {

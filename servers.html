@@ -129,8 +129,8 @@
       get( "selectNetwork" ).selectedIndex = 0;
       n = get( "serverInfo" );
       selectedNetworkId = null;
-      dojo.removeClass( n, "hidden" );
-      dojo.removeClass( get( "form" ), "hidden" );
+      dojo.addClass( n, "hidden" );
+      dojo.addClass( get( "form" ), "hidden" );
     }
 
     function saveServer ( event ) {
