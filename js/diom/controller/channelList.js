@@ -14,14 +14,14 @@ dojo.declare( "diom.controller.ChannelList", null, {
     this.connections = {};
   },
 
-  createConnection: function ( server, port, preferences, appVersion, ignores ) {
+  createConnection: function ( server, port, preferences, appVersion, ignores, password ) {
     if ( !( server in this.connections ) ) {
-      this.connections[server] = new diom.connection.Connection( server, port, preferences, appVersion, ignores );
+      this.connections[server] = new diom.connection.Connection( server, port, preferences, appVersion, ignores, password );
       this.connections[server].connect( );
       return true;
     } else {
       return false;
-    } 
+    }
   },
 
   getServerChannel: function ( host ) {
@@ -31,7 +31,7 @@ dojo.declare( "diom.controller.ChannelList", null, {
   getChannel: function ( channelName, host ) {
     if ( host in this.connections ) {
       return this.connections[host].getChannel( channelName );
-    } 
+    }
     return null;
   },
 

@@ -9,12 +9,14 @@ dojo.provide( "diom.model.networksModel" );
 
 dojo.declare( "diom.model.NetworksModel", null, {
 
-  constructor: function ( model ) {
+  constructor: function ( model, isCurrent ) {
     util.log("NetworksModel");
     this.model = model;
     this.createTablesList = [];
     //check to see if tables exists by attempting to create them
-    this.createTables( );
+    if ( !isCurrent ) {
+      this.createTables( );
+    }
   },
 
   createTables: function ( ) {
@@ -141,14 +143,16 @@ dojo.declare( "diom.model.NetworksModel", null, {
     this.model._executeSQL( sql, air.SQLMode.READ, this.model._getResultHandler( resultsHandler ), p );
   },
 
-  addServer: function ( networkId, name, active ) {
+  addServer: function ( networkId, name, active, password ) {
+    console.log( "addServer password: " + password );
 		var sql, p;
-    sql = "INSERT INTO servers ( networkId, name, active ) " +
-      "Values ( :networkId, :name, :active )";
+    sql = "INSERT INTO servers ( networkId, name, active, password ) " +
+      "Values ( :networkId, :name, :active, :password )";
     p = {
       networkId : networkId,
       name : name,
-      active : active
+      active : active,
+      password: password
     };
     this.model._executeSQL( sql, air.SQLMode.UPDATE, dojo.hitch( this, "_handleChange" ), p );
     dojo.publish( diom.topics.NETWORK_CHANGE, [ networkId ] );
@@ -259,8 +263,14 @@ dojo.declare( "diom.model.NetworksModel", null, {
   },
 
   _alterTables: function ( ) {
-    //added password options for servers (v 1, first time versioning the database):
-    this.model._addColumn( "servers", "password", "TEXT" );
+    if ( this.model.currentVersion < 1 ) {
+      //added password options for servers (v 1, first time versioning the database):
+      this.model._addColumn( "servers", "password", "TEXT", dojo.hitch( this, "_handleChange" ), dojo.hitch( this, "_handleError" ) );
+    }
+  },
+
+  _handleError: function ( e ) {
+    util.log( "Database error:" + e );
   },
 
   _handleChange: function ( e ) {

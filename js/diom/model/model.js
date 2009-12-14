@@ -12,7 +12,12 @@ dojo.provide( "diom.model.model" );
 
 dojo.declare( "diom.model.Model", null, {
 
+  CURRENT_DB_VERSION: 1,
+
   constructor: function ( ) {
+
+    var isCurrent;
+
     this.SQL_TYPES = {
       "INTEGER" : "INTEGER",
       "TEXT" : "TEXT",
@@ -23,15 +28,22 @@ dojo.declare( "diom.model.Model", null, {
     this.statement = null;
     this.DATABASE_NAME = "diomedesModel.db";
     this.prefs = new diom.model.PrefModel( this );
-    this.aliases = new diom.model.AliasModel( this );
-    this.networks = new diom.model.NetworksModel( this );
-    this.ignores = new diom.model.IgnoresModel( this );
+    this.currentVersion = parseInt( this.prefs.getPref( "databaseVersion" ), 10 );
+    util.log( "dbversion: " + this.currentVersion );
+    isCurrent = this.CURRENT_DB_VERSION === this.currentVersion;
+    util.log( "is database current: " + isCurrent );
+    this.aliases = new diom.model.AliasModel( this, isCurrent );
+    this.networks = new diom.model.NetworksModel( this, isCurrent);
+    this.ignores = new diom.model.IgnoresModel( this, isCurrent );
     this.conn = null;
+    if ( !isCurrent ) {
+      this.prefs.setPref( "databaseVersion", this.CURRENT_DB_VERSION );
+      this.prefs.savePrefs( );
+    }
   },
 
   _openSQLConn: function ( type, errorHandler ) {
 		var dbFile;
-    this.log( "Opening SQL connection..." );
     if ( !type ) {
       this.log( "Required params missing for _openSQLConn" );
       return;
@@ -51,7 +63,6 @@ dojo.declare( "diom.model.Model", null, {
 
   _executeSQL: function ( sql, type, resultsHandler, parameters, errorHandler, isRexecution ) {
 		var s, i;
-    this.log( "Executing SQL statement... sql: " + sql );
     if ( !sql || !type || !resultsHandler ) {
       this.log( "Required params missing for _executeSQL" );
       return;
@@ -60,7 +71,6 @@ dojo.declare( "diom.model.Model", null, {
 			errorHandler = dojo.hitch( this, "_handleError", [ "SQL: " + sql ] );
 		}
     if ( !this.conn || !this.conn.connected ) {
-      this.log( "Connection not open when calling _executeSQL, opening it");
       this._openSQLConn( type, errorHandler );
     }
     s = new air.SQLStatement( );
@@ -79,15 +89,14 @@ dojo.declare( "diom.model.Model", null, {
       s.execute( );
     } catch ( error ) {
       this._statementResultHandler( error, errorHandler );
+      return;
     }
     this._statementResultHandler( null, resultsHandler );
   },
 
   _statementResultHandler: function ( e, resultsHandler ) {
 		var result;
-    this.log( "Handling statement completion" );
     result = this.statement.getResult( );
-    this.log("deleting statement with sql of: " + this.statement.text );
     delete this.statement;
     this.statement = null;
     this.closeConnection( );
@@ -112,7 +121,7 @@ dojo.declare( "diom.model.Model", null, {
 
     var sql;
 
-    this.log( "altering table" );
+    sql = [ ];
     sql = sql.concat( [ "ALTER TABLE", tableName, "ADD COLUMN", columnName, type ] );
     this._executeSQL( sql.join( " " ), air.SQLMode.UPDATE, resultsHandler, null, errorHandler );
 
@@ -148,7 +157,6 @@ dojo.declare( "diom.model.Model", null, {
   },
 
   closeConnection: function ( ) {
-    this.log("close connection");
     if ( this.conn && this.conn.connected ) {
       this.conn.close( );
     }

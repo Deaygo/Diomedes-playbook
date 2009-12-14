@@ -242,7 +242,8 @@ dojo.declare( "diom.controller.Controller", null, {
   },
 
   handleServerAdd: function ( data ) {
-    this.model.networks.addServer( data.networkId, data.name, data.active );
+    console.log( "handleServerAdd password: " + data.password );
+    this.model.networks.addServer( data.networkId, data.name, data.active, data.password );
   },
 
   handlePrefsSave: function ( prefs ) {
@@ -398,7 +399,7 @@ dojo.declare( "diom.controller.Controller", null, {
     currentHost = null;
     if ( this.currentConnection ) {
       currentHost = this.currentConnection.server;
-    } 
+    }
     connection = this.channelList.getConnection( host );
     connection.sendCommand( "quit", ["Leaving."], this.getCurrentChannelName( ) );
     this.channelList.destroyConnection( host );
@@ -452,10 +453,10 @@ dojo.declare( "diom.controller.Controller", null, {
       serverName = this.currentConnection.server;
       channelName = this.currentConnection.getChannelName( channel.name );
       this.view.changeView( serverName, channelName, channel.getTopic( ) );
-      if ( serverName in this.channelsWithActivity  && channelName in this.channelsWithActivity[ serverName ] ) { 
+      if ( serverName in this.channelsWithActivity  && channelName in this.channelsWithActivity[ serverName ] ) {
         delete this.channelsWithActivity[ serverName ][ channelName ];
       }
-      if ( serverName in this.channelsHighlighted  && channelName in this.channelsHighlighted[ serverName ] ) { 
+      if ( serverName in this.channelsHighlighted  && channelName in this.channelsHighlighted[ serverName ] ) {
         delete this.channelsHighlighted[ serverName ][ channelName ];
       }
       this.currentChannel = channel;
@@ -530,7 +531,7 @@ dojo.declare( "diom.controller.Controller", null, {
       }
       if ( channel ) {
         users = channel.getUsers( );
-        this.view.updateNickView( users, serverName, channelName ); 
+        this.view.updateNickView( users, serverName, channelName );
       }
     }
   },
@@ -539,9 +540,9 @@ dojo.declare( "diom.controller.Controller", null, {
 		var connection, channel, nick;
     util.log("updateChannel channelName: " + channelName + " serverName: " + serverName );
     connection = this.channelList.getConnection( serverName );
-    if ( connection ) { 
+    if ( connection ) {
       channel = this.channelList.getChannel( channelName, serverName );
-      if ( !channel ) { 
+      if ( !channel ) {
         channel = connection.getServerChannel( );
       }
       nick = connection.getNick( );

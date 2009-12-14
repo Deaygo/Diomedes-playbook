@@ -36,7 +36,7 @@ dojo.declare( "diom.Network", null, {
     this.currentHost = null;
     this.TEST_CONNECTION_TIME = 5000;
     id = data.id;
-    model.getServers( id, dojo.hitch( this, "handleServerInfo" ) ); 
+    model.getServers( id, dojo.hitch( this, "handleServerInfo" ) );
     model.getChannels( id, dojo.hitch( this, "handleChannelInfo" ) );
     model.getPerforms( id, dojo.hitch( this, "handlePerformInfo" ) );
     this.model = model;
@@ -59,14 +59,14 @@ dojo.declare( "diom.Network", null, {
   handleNetworksChanged: function ( id ) {
     util.log("hnc in nn");
     if ( id && id === this.data.id ) {
-      this.model.getServers( id, dojo.hitch( this, "handleServerInfo" ) ); 
+      this.model.getServers( id, dojo.hitch( this, "handleServerInfo" ) );
       this.model.getChannels( id, dojo.hitch( this, "handleChannelInfo" ) );
       this.model.getPerforms( id, dojo.hitch( this, "handlePerformInfo" ) );
     }
   },
 
   handleServerInfo: function ( servers ) {
-    if ( servers ) { 
+    if ( servers ) {
       this.servers = servers;
     } else {
       this.servers = [];
@@ -117,7 +117,7 @@ dojo.declare( "diom.Network", null, {
     parts = this.getNextServer( ).split( ":" );
     this.currentHost = util.fromIndex( parts, 0 );
     port = util.fromIndex( parts, 1 );
-    this.channelList.createConnection( this.currentHost, port, this.prefs, this.appVersion, this.ignores );
+    this.channelList.createConnection( this.currentHost, port, this.prefs, this.appVersion, this.ignores, this.getPassword( ) );
     this.connection = this.channelList.getConnection( this.currentHost );
     dojo.publish( diom.topics.CHANNELS_CHANGED, [ "connect", this.currentHost, this.currentHost ] );
   },
@@ -141,6 +141,14 @@ dojo.declare( "diom.Network", null, {
     return this.servers[ this.currentHostIndex ].name;
   },
 
+  getPassword: function ( ) {
+    if ( this.servers && this.servers.length && ( this.servers[ this.currentHostIndex ] ) ) {
+      return this.servers[ this.currentHostIndex ].password;
+    } else {
+      return "";
+    }
+  },
+
   getConnection: function ( ) {
     return this.connection;
   },
@@ -155,7 +163,7 @@ dojo.declare( "diom.Network", null, {
     }
     if ( channels.length ) {
       util.log("this.connection: " + this.connection );
-      this.connection.sendCommand( "join", channels, null ); 
+      this.connection.sendCommand( "join", channels, null );
     }
   },
 

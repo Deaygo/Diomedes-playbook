@@ -11,11 +11,12 @@ dojo.provide( "diom.irc" );
 
 dojo.declare( "diom.IRCClient", null, {
 
-  constructor: function ( server, port, defaultChannels, nick, userName, realName ) {
+  constructor: function ( server, port, defaultChannels, nick, userName, realName, password ) {
 
     //Connection info
     this.host = null;
     this.server = server;
+    this.password = ( password ? password : null );
     this.port = ( port ? port : 6667 );
 
     //Socket and connectivity
@@ -204,6 +205,9 @@ dojo.declare( "diom.IRCClient", null, {
 
   onConnect: function ( e ) {
     this.log( "Found server, connecting..." );
+    if ( this.password ) {
+      this.pass( this.password );
+    }
     this._send( "NICK " + this.nick );
     this._send( "USER " + this.userName + " " + this.server + " serverName " + " :"  + this.realName );
     this.log( "SENT SHIT" );

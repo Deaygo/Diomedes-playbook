@@ -9,9 +9,11 @@ dojo.provide( "diom.model.ignoresModel" );
 
 dojo.declare( "diom.model.IgnoresModel", null, {
 
-  constructor: function ( model ) {
+  constructor: function ( model, isCurrent ) {
     this.model = model;
-    this.createTables( );
+    if ( !isCurrent ) {
+      this.createTables( );
+    }
   },
 
   createTables: function ( ) {
@@ -30,7 +32,7 @@ dojo.declare( "diom.model.IgnoresModel", null, {
 		var sql, p;
     sql = "SELECT * FROM ignores";
     p = {};
-    this.model._executeSQL( sql, air.SQLMode.READ, this.model._getResultHandler( resultsHandler ), p ); 
+    this.model._executeSQL( sql, air.SQLMode.READ, this.model._getResultHandler( resultsHandler ), p );
   },
 
   addIgnore: function ( regex, active ) {
@@ -40,7 +42,7 @@ dojo.declare( "diom.model.IgnoresModel", null, {
       regex : regex,
       active : active
     };
-    this.model._executeSQL( sql, air.SQLMode.UPDATE, dojo.hitch( this, "_handleChange" ), p ); 
+    this.model._executeSQL( sql, air.SQLMode.UPDATE, dojo.hitch( this, "_handleChange" ), p );
   },
 
   editIgnore: function ( id, regex, active ) {
@@ -51,14 +53,14 @@ dojo.declare( "diom.model.IgnoresModel", null, {
       regex : regex,
       active : active
     };
-    this.model._executeSQL( sql, air.SQLMode.UPDATE, dojo.hitch( this, "_handleChange" ), p ); 
+    this.model._executeSQL( sql, air.SQLMode.UPDATE, dojo.hitch( this, "_handleChange" ), p );
   },
 
   remIgnore: function ( id ) {
 		var sql, p;
     sql = "DELETE FROM ignores WHERE id = :id ";
     p = { id : id };
-    this.model._executeSQL( sql, air.SQLMode.UPDATE, dojo.hitch( this, "_handleChange" ), p ); 
+    this.model._executeSQL( sql, air.SQLMode.UPDATE, dojo.hitch( this, "_handleChange" ), p );
   },
 
   _handleCreateTable: function ( e, tableName ) {

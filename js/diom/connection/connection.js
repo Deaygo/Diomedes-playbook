@@ -13,7 +13,7 @@ dojo.declare( "diom.connection.Connection", null, {
 
   CHANNEL_TYPES: { "SERVER":"server", "PM":"pm", "CHANNEL":"channel" },
 
-  constructor: function ( server, port, preferences, appVersion, ignores ) {
+  constructor: function ( server, port, preferences, appVersion, ignores, password ) {
 
     var nick = preferences.nick;
     this.channels = {};
@@ -35,7 +35,7 @@ dojo.declare( "diom.connection.Connection", null, {
     this.autoJoin = null;
     this.setAutoJoin( preferences.autoJoin );
 
-    this.client = new diom.IRCClient( server, port, [], nick, preferences.userName, preferences.realName );
+    this.client = new diom.IRCClient( server, port, [], nick, preferences.userName, preferences.realName, password );
     this.client.setClientInfo( appVersion );
     this.client.setFinger( preferences.finger );
 

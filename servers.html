@@ -1,12 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html> 
-<head> 
-  <title>Diomedes - Servers</title> 
+<html>
+<head>
+  <title>Diomedes - Servers</title>
   <link rel="stylesheet" type="text/css" media="screen" href="css/view.css" />
   <link rel="stylesheet" type="text/css" media="screen" href="css/forms.css" />
-</head> 
-<body class="prefWindow popUpWindow" onLoad="load( )"> 
+</head>
+<body class="prefWindow popUpWindow" onLoad="load( )">
   <h1>Servers</h1>
   <div id="networksList"></div>
   <div id="serverInfo" class="hidden">
@@ -18,6 +18,9 @@
       <input type="hidden" id="networkId" value="0"/>
       <div class="formItem">
         <label for="name">Name: </label> <input type="text" id="name" />
+      </div>
+      <div class="formItem">
+        <label for="password">Password: </label> <input type="password" id="password" />
       </div>
       <div class="formItem">
         <label for="active">Active: </label> <input type="checkbox" id="active"  checked="true"/>
@@ -53,7 +56,7 @@
         var r = ['<select id="selectNetwork" onchange="selectNetwork( event );">'];
         r.push( '<option selected="selected" disabled="disabled">Select a network</option>' );
         for ( var i = 0; i < networks.length; i++ ) {
-          r.push( getNetworkHTML( networks[ i ] ) ); 
+          r.push( getNetworkHTML( networks[ i ] ) );
         }
         r.push('</select>');
         n.innerHTML = r.join( "" );
@@ -88,7 +91,7 @@
       } else {
         var r = [];
         for ( var i = 0; i < servers.length; i++ ) {
-          r.push( getServerHTML( servers[ i ] ) ); 
+          r.push( getServerHTML( servers[ i ] ) );
         }
         n.innerHTML = r.join( "" );
       }
@@ -137,11 +140,12 @@
       //get prefs
       var id = parseInt( get( "id" ).value, 10 );
       serverData.networkId = parseInt( get( "networkId" ).value, 10 );
-      if ( !this.getItem( "name", "Server name", serverData ) ) return;
-      if ( !this.getItem( "active", "Active", serverData, true ) ) return;
+      if ( !this.getItem( "name", "Server name", serverData, false, true ) ) return;
+      if ( !this.getItem( "active", "Active", serverData, true, true ) ) return;
+      if ( !this.getItem( "password", "Password", serverData, false, false ) ) return;
       if ( id === 0 ) {
         dojo.publish( topics.SERVER_ADD, [ serverData ] );
-      }  
+      }
       deselectServer( );
     }
 
@@ -157,7 +161,7 @@
       }
     }
 
-    function getItem( id, name, o, isCheckbox ) {
+    function getItem( id, name, o, isCheckbox, required ) {
       if ( isCheckbox ) {
         var value = get( id ).checked;
         if ( value === true || value === false ) {
@@ -167,7 +171,7 @@
       }
       var value =  get( id ).value;
       value = dojo.trim( value );
-      if ( !value ) {
+      if ( required && !value ) {
         alert( name + " required." );
         return false;
       }

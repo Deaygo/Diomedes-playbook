@@ -9,9 +9,11 @@ dojo.provide( "diom.model.aliasModel" );
 
 dojo.declare( "diom.model.AliasModel", null, {
 
-  constructor: function ( model ) {
+  constructor: function ( model, isCurrent ) {
     this.model = model;
-    this.createTables( );
+    if ( !isCurrent ) {
+      this.createTables( );
+    }
   },
 
   createTables: function ( ) {
@@ -32,12 +34,12 @@ dojo.declare( "diom.model.AliasModel", null, {
 		var sql, p;
     sql = "SELECT * FROM aliases";
     p = {};
-    this.model._executeSQL( sql, air.SQLMode.READ, this.model._getResultHandler( resultsHandler ), p ); 
+    this.model._executeSQL( sql, air.SQLMode.READ, this.model._getResultHandler( resultsHandler ), p );
   },
 
   addAlias: function ( name, command, active, lastUsed ) {
 		var sql, p;
-    sql = "INSERT INTO aliases ( name, command, active, lastUsed ) " + 
+    sql = "INSERT INTO aliases ( name, command, active, lastUsed ) " +
       "VALUES ( :name, :command, :active, :lastUsed )";
     p = {
       name : name,
@@ -45,12 +47,12 @@ dojo.declare( "diom.model.AliasModel", null, {
       active : active,
       lastUsed : lastUsed
     };
-    this.model._executeSQL( sql, air.SQLMode.UPDATE, dojo.hitch( this, "_handleChange" ), p ); 
+    this.model._executeSQL( sql, air.SQLMode.UPDATE, dojo.hitch( this, "_handleChange" ), p );
   },
 
   editAlias: function ( id, name, command, active, lastUsed ) {
 		var sql, p;
-    sql = "UPDATE aliases SET name = :name, command = :command, " + 
+    sql = "UPDATE aliases SET name = :name, command = :command, " +
       "active = :active, lastUsed = :lastUsed WHERE id = :id";
     p = {
       id : id,
@@ -59,14 +61,14 @@ dojo.declare( "diom.model.AliasModel", null, {
       active : active,
       lastUsed : lastUsed
     };
-    this.model._executeSQL( sql, air.SQLMode.UPDATE, dojo.hitch( this, "_handleChange" ), p ); 
+    this.model._executeSQL( sql, air.SQLMode.UPDATE, dojo.hitch( this, "_handleChange" ), p );
   },
 
   remAlias: function ( id ) {
 		var sql, p;
     sql = "DELETE FROM aliases WHERE id = :id ";
     p = { id : id };
-    this.model._executeSQL( sql, air.SQLMode.UPDATE, dojo.hitch( this, "_handleChange" ), p ); 
+    this.model._executeSQL( sql, air.SQLMode.UPDATE, dojo.hitch( this, "_handleChange" ), p );
   },
 
   _handleCreateTable: function ( e, tableName ) {
