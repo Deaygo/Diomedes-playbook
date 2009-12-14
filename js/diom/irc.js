@@ -210,7 +210,6 @@ dojo.declare( "diom.IRCClient", null, {
     }
     this._send( "NICK " + this.nick );
     this._send( "USER " + this.userName + " " + this.server + " serverName " + " :"  + this.realName );
-    this.log( "SENT SHIT" );
     this._isConnected = true;
   },
 
@@ -253,7 +252,7 @@ dojo.declare( "diom.IRCClient", null, {
           this.serverDelegate( this.server , _d[ i ], null );
         }
       }
-      if ( data.search( "NOTICE AUTH" ) !== -1 )  {
+      if ( data.search( this.COMMAND_NUMBERS.SERVER_CONNECT ) !== -1 )  {
         this.log( "found ident" );
         this.log( "Connection established." );
         this.connectionEstablished = true;
@@ -263,15 +262,13 @@ dojo.declare( "diom.IRCClient", null, {
       }
     }
     dataR = data.split( "\n" );
-    if ( this.connectionEstablished ) {
-      for ( i = 0; i < dataR.length; i++ ) {
-        d = dataR[ i ];
-        if ( d.search( "PING" ) === 0 ) {
-          pong = data.split(" ")[ 1 ];
-          this._send( "PONG " + pong );
-        } else if ( d.length ) {
-          this.handleData( d );
-        }
+    for ( i = 0; i < dataR.length; i++ ) {
+      d = dataR[ i ];
+      if ( d.search( "PING" ) === 0 ) {
+        pong = data.split(" ")[ 1 ];
+        this._send( "PONG " + pong );
+      } else if ( d.length ) {
+        this.handleData( d );
       }
     }
     if ( this.socket && this.socket.connected ) {
@@ -339,7 +336,8 @@ dojo.declare( "diom.IRCClient", null, {
         this.close( );
         this.setDisconnectedStatus( );
       }
-    } else if ( !this.connectionAccepted && ( line.search( this.COMMAND_NUMBERS.SERVER_CONNECT ) !== -1 ) ) {
+    }
+    if ( !this.connectionAccepted && ( line.search( this.COMMAND_NUMBERS.SERVER_CONNECT ) !== -1 ) ) {
       this.host = this.getIndex( cmdParts, 0 );
       newNick = this.getIndex( cmdParts, 2 );
       if ( this.nickDelegate && newNick ) {

@@ -12,7 +12,7 @@ dojo.declare( "diom.controller.LinkInfoFetcher", null, {
   constructor: function ( link, serverName, channelName, nick ) {
 		var linkParts;
     if ( !link ) { return; }
-    //don't publish secure sites to link log to avoid annoying 
+    //don't publish secure sites to link log to avoid annoying
     //bad security certificate popups
     //XXX: in the future maybe just add url without doing deep url inspection
     if ( "https" === link.substr( 0, 5 ) ) { return; }
@@ -35,15 +35,15 @@ dojo.declare( "diom.controller.LinkInfoFetcher", null, {
     this.request = new air.URLRequest( this.url );
     //do not attempt to authenticate
     //this creates an annoying popup box
-    this.request.authenticate = false; 
+    this.request.authenticate = false;
     this.data = "";
     this.title = "";
     this.responseURL = "";
     this.stream = new air.URLStream( );
-    this.stream.addEventListener( air.HTTPStatusEvent.HTTP_RESPONSE_STATUS, dojo.hitch( this, "onStatus" ) ); 
-    this.stream.addEventListener( air.ProgressEvent.PROGRESS, dojo.hitch( this, "onProgress" ) ); 
-    this.stream.addEventListener( air.Event.COMPLETE, dojo.hitch( this, "onComplete" ) ); 
-    this.stream.addEventListener( air.IOErrorEvent.IO_ERROR, dojo.hitch( this, "onError" ) ); 
+    this.stream.addEventListener( air.HTTPStatusEvent.HTTP_RESPONSE_STATUS, dojo.hitch( this, "onStatus" ) );
+    this.stream.addEventListener( air.ProgressEvent.PROGRESS, dojo.hitch( this, "onProgress" ) );
+    this.stream.addEventListener( air.Event.COMPLETE, dojo.hitch( this, "onComplete" ) );
+    this.stream.addEventListener( air.IOErrorEvent.IO_ERROR, dojo.hitch( this, "onError" ) );
     this.stream.load( this.request );
 
   },
@@ -68,7 +68,6 @@ dojo.declare( "diom.controller.LinkInfoFetcher", null, {
 
   onStatus: function ( e ) {
 		var isHTML, i, header;
-    util.log( "onstatus" );
     this.headers = e.responseHeaders;
     this.httpStatus = e.status;
     this.responseURL = e.responseURL;
@@ -90,13 +89,12 @@ dojo.declare( "diom.controller.LinkInfoFetcher", null, {
 
 
   completeHandler: function ( e ) {
-    util.log("complete");
+    //util.log("complete");
   },
 
 
   publishData: function( ) {
 		var d;
-    util.log("publish");
     d = new Date( ).toString( );
     dojo.publish( diom.topics.LINK_DATA, [
         this.url,
@@ -118,11 +116,10 @@ dojo.declare( "diom.controller.LinkInfoFetcher", null, {
   },
 
   onError: function ( e ) {
-    util.log( " link info fetcher error" );
+    //util.log( " link info fetcher error" );
   },
 
   destroy: function ( ) {
-    util.log("destroy");
     delete this.stream;
     delete this.request;
   }

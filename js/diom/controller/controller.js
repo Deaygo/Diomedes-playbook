@@ -242,7 +242,6 @@ dojo.declare( "diom.controller.Controller", null, {
   },
 
   handleServerAdd: function ( data ) {
-    console.log( "handleServerAdd password: " + data.password );
     this.model.networks.addServer( data.networkId, data.name, data.active, data.password );
   },
 

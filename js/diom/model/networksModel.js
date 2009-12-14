@@ -144,7 +144,6 @@ dojo.declare( "diom.model.NetworksModel", null, {
   },
 
   addServer: function ( networkId, name, active, password ) {
-    console.log( "addServer password: " + password );
 		var sql, p;
     sql = "INSERT INTO servers ( networkId, name, active, password ) " +
       "Values ( :networkId, :name, :active, :password )";

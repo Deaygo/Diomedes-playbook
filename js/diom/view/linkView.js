@@ -16,13 +16,11 @@ dojo.declare( "diom.view.LinkView", null, {
   },
 
   addLink: function ( link, properties ) {
-    util.log( "addLink" );
     this.links.push( this.createHTML( properties ) );
   },
 
   createHTML: function ( p ) {
 		var r, i, h;
-    util.log( "createHTML" );
     r = [];
     /*
         {
