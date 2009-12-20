@@ -266,7 +266,7 @@ dojo.declare( "diom.IRCClient", null, {
       for ( i = 0; i < dataR.length; i++ ) {
         d = dataR[ i ];
         if ( d.search( "PING" ) === 0 ) {
-          pong = data.split(" ")[ 1 ];
+          pong = d.split(" ")[ 1 ];
           this._send( "PONG " + pong );
         } else if ( d.length ) {
           this.handleData( d );
