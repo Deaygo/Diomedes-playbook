@@ -13,10 +13,10 @@ dojo.declare( "diom.view.dialog.Dialog", null, {
   DEFAULT_PARAMS: {
     "class": "hidden dialog",
     style: {
-      height: 100,
-      width: 100,
-      top: 0,
-      left: 0
+      height: 200,
+      width: 400,
+      top: 50,
+      left: 50
     }
   },
   STYLE_TYPES: [ "height", "width", "top", "left" ],
@@ -76,7 +76,6 @@ dojo.declare( "diom.view.dialog.Dialog", null, {
     if ( this.params.content ) {
       this.setContent( this.params.content );
     }
-    this.closeBtn.innerHTML = "[X]"; //TODO: put an image this
     dojo.connect( this.closeBtn, "click", dojo.hitch( this, "handleCloseBtnClick" ) );
     this.callback( this );
   },

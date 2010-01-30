@@ -5,6 +5,7 @@
 }
 .dialogHeader {
   border: 1px solid blue;
+  padding: 3px;
 };
 .dialogTitle {
   display: inline;
@@ -12,4 +13,7 @@
 .dialogCloseBtn {
   float: right;
   cursor: pointer;
+  height: 16px;
+  width: 16px;
+  background: transparent url( /images/cross.png ) no-repeat;
 }
