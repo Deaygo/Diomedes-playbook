@@ -17,7 +17,7 @@ a {
   color: #B22222;
 }
 .isServer {
-  color: #00AC6B; 
+  color: #00AC6B;
 }
 .isNotice {
   color: #FF0000;
@@ -54,7 +54,7 @@ a {
   color: #FFF000;
 }
 #nickList .voiced {
-  color: #00AC6B; 
+  color: #00AC6B;
 }
 
 .channelBtn {
@@ -63,7 +63,7 @@ a {
 }
 
 #titleBar {
-  background: #fff;
+  background: #FFF;
   border-color: #000;
 }
 #titleBar a {
@@ -71,9 +71,27 @@ a {
 }
 #popup {
   background-color: #FFF;
-  color: #000; 
+  color: #000;
 }
 .linkLogItem,
 .extraInfo {
   border-color: #000;
+}
+/* DIALOG */
+.dialog {
+  background: #FFF;
+  border-color: #000;
+}
+.dialogHeader {
+  background: #F9F9F9;
+  border-color: #DDD;
+}
+.dialogContent, .dialogContentContainer {
+  border-color: #DDD;
+}
+.dialogContentContainer {
+  background: #FEFEFE;
+}
+.dialogContent {
+  background: #FFF;
 }
