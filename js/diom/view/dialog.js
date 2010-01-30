@@ -35,10 +35,12 @@ dojo.declare( "diom.view.dialog.Dialog", null, {
     '</div>'
   ].join( "" ),
 
-  constructor: function ( params, callback ) {
+  constructor: function ( params, callback, closeCallback ) {
 
-    //callback takes the form of callback( object ) where airgument is the dialog instance
+    //callback takes the form of callback( argument ) where the argument is the dialog instance
     //callback fired when dialog is ready
+    //closeCallback takes the form of closeCallback( ) and is called when the dialog is closed
+
 
     var node, dialog_params;
 
@@ -49,6 +51,7 @@ dojo.declare( "diom.view.dialog.Dialog", null, {
       params = {};
     }
     this.callback = callback;
+    this.closeCallback = closeCallback;
     this.title = null;
     this.content = null;
     this.buttonConnection = null;
@@ -82,6 +85,9 @@ dojo.declare( "diom.view.dialog.Dialog", null, {
   handleCloseBtnClick: function ( event ) {
     dojo.stopEvent( event );
     this.close( );
+    if ( dojo.isFunction( this.closeCallback ) {
+      this.closeCallback( );
+    }
   },
   setStylesFromParams: function ( styles, params ) {
 
