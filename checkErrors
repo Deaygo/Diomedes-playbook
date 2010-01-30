@@ -5,7 +5,7 @@ set -e
 
 checkFiles=(
   "diom/diom"
-  "diom/logger" 
+  "diom/logger"
   "diom/include"
   "diom/irc"
   "diom/connection/connection"
@@ -26,6 +26,7 @@ checkFiles=(
   "diom/view/linkView"
   "diom/view/formInput"
   "diom/view/activityWindow"
+  "diom/view/dialog"
   "diom/model/model"
   "diom/model/prefModel"
   "diom/model/networksModel"

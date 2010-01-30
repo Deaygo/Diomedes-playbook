@@ -61,6 +61,17 @@ dojo.declare( "diom.controller.Controller", null, {
     dojo.subscribe(  diom.topics.IGNORES_CHANGE, this, "getIgnores" );
     dojo.subscribe(  diom.topics.CONNECTION_CLOSE, this, "closeConnection" );
     dojo.subscribe(  diom.topics.USER_ACTIVITY, this, "handleUserActivity" );
+
+    var params, dialog, callback;
+
+    params = {
+      title: "test",
+      content: "SUP!"
+    };
+    callback = function ( dialog ) {
+      dialog.open( );
+    }
+    dialog = new diom.view.dialog.Dialog( params, callback );
   },
 
 	setAppVersion: function ( ) {

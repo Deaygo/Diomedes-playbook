@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2009 Apphacker apphacker@gmail.com
+  Copyright (c) 2010 Apphacker apphacker@gmail.com
 */
 /*jslint white: false */
 /*jslint nomen: false */

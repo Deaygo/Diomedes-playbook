@@ -8,12 +8,12 @@ dojo.provide( "diom.include" );
 
 /*add any dojo.require here */
 
-//some kind of dojo build error requires 
+//some kind of dojo build error requires
 //setting the first require omitModuleCheck option to true
 //otherwise get a load error on product
 //order is important too, diom.topics needs to be first
 //haven't stepped through it to see what's causing this issue
-dojo.require( "diom.topics", true ); 
+dojo.require( "diom.topics", true );
 dojo.require( "diom.network" );
 dojo.require( "diom.util" );
 dojo.require( "diom.irc" );
@@ -39,6 +39,7 @@ dojo.require( "diom.view.formInput" );
 dojo.require( "diom.view.activityWindow" );
 dojo.require( "diom.view.linkView" );
 dojo.require( "diom.view.nickWindow" );
+dojo.require( "diom.view.dialog" );
 
 //controller
 dojo.require( "diom.controller.controller" );
@@ -46,3 +47,6 @@ dojo.require( "diom.controller.channelList" );
 dojo.require( "diom.controller.linkInfoFetcher" );
 dojo.require( "diom.controller.linkLog" );
 dojo.require( "diom.controller.updater" );
+
+
+

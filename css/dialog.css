@@ -1,0 +1,15 @@
+.dialog {
+  position: absolute;
+  border: 1px red solid;
+  background: #ffffff;
+}
+.dialogHeader {
+  border: 1px solid blue;
+};
+.dialogTitle {
+  display: inline;
+}
+.dialogCloseBtn {
+  float: right;
+  cursor: pointer;
+}
