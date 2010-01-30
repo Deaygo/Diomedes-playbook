@@ -232,6 +232,10 @@ dojo.declare( "diom.connection.Connection", null, {
     _nick = this.getNick( );
     if ( nick === _nick ) {
       util.log( "JOINING CHANNEL: " + target );
+      if ( this.channels[ channelName ] ) {
+        this.channels[ channelName ].destroy( );
+        delete this.channels[ channelName ];
+      }
       this.channels[ channelName ] = new diom.connection.Channel( target, this.CHANNEL_TYPES.CHANNEL, this.server, this.logPref );
       this.client.getTopic( target );
       dojo.publish( diom.topics.CHANNELS_CHANGED, [ "join", channelName, this.server ] );

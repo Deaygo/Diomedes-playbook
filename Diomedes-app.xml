@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <application xmlns="http://ns.adobe.com/air/application/1.5">
   <id>diomedes.apphackers.com</id>
-  <version>0.1.22</version>
+  <version>0.1.23</version>
   <filename>Diomedes</filename>
   <initialWindow>
     <content>index.html</content>

@@ -135,7 +135,7 @@ dojo.declare( "diom.connection.Channel", null, {
   addActivity: function ( msg ) {
     this.activityList.addMessage( msg.clone( ) );
     if ( this.logPref ) {
-      this.logger.addLine( msg.getNickWithStatus( this.name ), msg.getMsg( ), msg.datetime ); 
+      this.logger.addLine( msg.getNickWithStatus( this.name ), msg.getMsg( ), msg.datetime );
       this.logger.write( );
     }
     this.publishActivity( ( msg.cmd in { "privmsg" : 1, "action" : 1 } ) );
