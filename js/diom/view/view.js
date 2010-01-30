@@ -168,6 +168,7 @@ dojo.declare( "diom.view.View", null, {
 
   notify: function ( msg ) {
     if ( msg ) {
+      //TODO get rid of this alert, stops js execution
       alert( msg );
     }
   },
@@ -534,6 +535,7 @@ dojo.declare( "diom.view.View", null, {
     s += "\nEmail: apphacker@gmail.com";
     s += "\nWebsite: http://www.apphackers.com";
     s += "\nBlog: http://apphacker.wordpress.com";
+    //TODO get rid of this alert, stops js execution
     alert( s );
   },
 
@@ -611,7 +613,6 @@ dojo.declare( "diom.view.View", null, {
   openAliasesWindow: function ( aliases ) {
 		var x, y, win;
     if ( !aliases ) { aliases = []; }
-		alert( "dojo before: " + dojo );
     window.aliasesBridge = {
       util : util,
 			dojo : dojo,

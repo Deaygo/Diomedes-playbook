@@ -205,10 +205,11 @@ dojo.declare( "diom.connection.Connection", null, {
       util.log("PUBLISHING CONNECTION_DISCONNECTED: " + this.server );
       dojo.publish( diom.topics.CONNECTION_DISCONNECTED, [ this.server ] );
       pollTime = this.pollTime;
-      if ( pollTime && this.stayConnected ) {
+      if ( !this.reconnectId && pollTime && this.stayConnected ) {
         this.reconnectId = window.setTimeout( dojo.hitch( this, "reconnect" ), pollTime * 1000 );
       }
     } else {
+      this.cancelReconnect( );
       channels = [];
       for ( channelName in this.channels ) {
         if ( this.channels.hasOwnProperty( channelName ) ) {
