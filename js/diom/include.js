@@ -1,3 +1,6 @@
+/*
+  Copyright (c) 2010 Apphacker apphacker@gmail.com
+*/
 /*jslint white: false */
 /*jslint nomen: false */
 /*jslint plusplus: false */
@@ -40,6 +43,7 @@ dojo.require( "diom.view.activityWindow" );
 dojo.require( "diom.view.linkView" );
 dojo.require( "diom.view.nickWindow" );
 dojo.require( "diom.view.dialog" );
+dojo.require( "diom.view.help" );
 
 //controller
 dojo.require( "diom.controller.controller" );

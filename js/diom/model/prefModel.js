@@ -21,7 +21,10 @@ dojo.declare( "diom.model.PrefModel", null, {
   },
 
   checkPrefs: function ( ) {
-		var defaultPrefsFile, fileStream, xml, domParser, d, version;
+
+		var defaultPrefsFile, fileStream, xml,
+      domParser, d, version, params, dialog;
+
     util.log( "Checking prefs." );
     defaultPrefsFile = air.File.applicationDirectory.resolvePath( this.fileName );
     fileStream = new air.FileStream( );

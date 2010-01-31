@@ -167,6 +167,9 @@ dojo.declare( "diom.view.View", null, {
   },
 
   notify: function ( msg ) {
+
+    var dialog, params;
+
     if ( msg ) {
       params = {
         center: true,
@@ -216,7 +219,11 @@ dojo.declare( "diom.view.View", null, {
   },
 
   displayHelp: function ( ) {
-    window.open("help.html", "helpWindow", "height=600, scrollbars=yes, width=400, top=10, left=10");
+    //window.open("help.html", "helpWindow", "height=600, scrollbars=yes, width=400, top=10, left=10");
+
+    var dialog;
+
+    dialog = new diom.view.Help( );
   },
 
   changeView: function ( serverName, channelName, topic ) {

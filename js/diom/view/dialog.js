@@ -19,7 +19,7 @@ dojo.declare( "diom.view.dialog.Dialog", null, {
       left: 50
     },
     center: false,
-    auto: false,
+    auto: false
   },
   STYLE_TYPES: [ "height", "width", "top", "left" ],
   LAYOUT_HTML: [
@@ -36,8 +36,11 @@ dojo.declare( "diom.view.dialog.Dialog", null, {
     '<div class="dialogFooter">',
     '</div>'
   ].join( "" ),
-
+  "-chains-": {
+   constructor: "manual"
+  },
   constructor: function ( params, callback, closeCallback ) {
+    console.log( "dialog" );
 
     //callback takes the form of callback( argument ) where the argument is the dialog instance
     //callback fired when dialog is ready
@@ -45,6 +48,8 @@ dojo.declare( "diom.view.dialog.Dialog", null, {
 
 
     var node, dialog_params;
+
+    console.dump( arguments );
 
     if ( !params ) {
       params = {};
