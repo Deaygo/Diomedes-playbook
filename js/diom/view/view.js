@@ -673,6 +673,12 @@ dojo.declare( "diom.view.View", null, {
 
 
   handlePrefBtnClick: function ( e ) {
+
+    var dialog;
+
+    dialog = new diom.view.preferences.Preferences( );
+
+    /*
 		var x, y ,win;
     window.prefBridge = {
       util : util,
@@ -686,6 +692,7 @@ dojo.declare( "diom.view.View", null, {
     win = win.nativeWindow;
     this.model.prefs.savePrefs( );
     win.addEventListener( air.Event.CLOSE, dojo.hitch( this.model.prefs, "savePrefs" )  );
+    */
   },
 
   handleTitleBarClick: function ( e ) {

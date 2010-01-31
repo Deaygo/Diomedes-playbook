@@ -28,6 +28,7 @@ checkFiles=(
   "diom/view/activityWindow"
   "diom/view/dialog"
   "diom/view/help"
+  "diom/view/preferences/preferences"
   "diom/model/model"
   "diom/model/prefModel"
   "diom/model/networksModel"

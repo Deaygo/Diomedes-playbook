@@ -11,7 +11,7 @@ dojo.provide( "diom.view.help" );
 
 dojo.declare( "diom.view.Help", diom.view.dialog.Dialog, {
   "-chains-": {
-   constructor: "manual"
+    constructor: "manual"
   },
   constructor: function ( ) {
 

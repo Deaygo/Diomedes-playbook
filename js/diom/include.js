@@ -44,6 +44,7 @@ dojo.require( "diom.view.linkView" );
 dojo.require( "diom.view.nickWindow" );
 dojo.require( "diom.view.dialog" );
 dojo.require( "diom.view.help" );
+dojo.require( "diom.view.preferences.preferences" );
 
 //controller
 dojo.require( "diom.controller.controller" );

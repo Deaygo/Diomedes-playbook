@@ -1,0 +1,15 @@
+
+.preferences {
+  font-size: 12px;
+  max-width: 500px;
+  margin: 10px auto;
+}
+.preferences h1 {
+  font-size: 16px;
+}
+.preferences .formItem {
+  margin: 5px 10px;
+  text-align: right;
+}
+.preferences label {
+}

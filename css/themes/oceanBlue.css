@@ -123,6 +123,12 @@ a {
   color: #8796FF;
 }
 
+input[type="text"], input[type="password"]{
+  background: #001180;
+  color: #8796FF;
+  border-color: #1427A0;
+}
+
 
 /* primary colors for ocean blue theme
   #000734 dark blue
