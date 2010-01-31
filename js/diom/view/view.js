@@ -676,7 +676,7 @@ dojo.declare( "diom.view.View", null, {
 
     var dialog;
 
-    dialog = new diom.view.preferences.Preferences( );
+    dialog = new diom.view.preferences.Preferences( this.model.prefs.getPrefs( ) );
 
     /*
 		var x, y ,win;

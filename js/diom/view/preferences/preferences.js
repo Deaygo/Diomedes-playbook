@@ -43,14 +43,58 @@ dojo.declare( "diom.view.preferences.PreferencesBase", diom.view.dialog.Dialog, 
   },
   getContent: function ( ) {
     throw "getContent is an bstract method that needs to be overwritten";
+  },
+  loadOptions: function ( prefs ) {
+
+    var options, i;
+
+    options = [];
+    for ( i = 0; i < prefs.length; i++ ) {
+      options.push( [
+        "<option value='", i, "' ",
+        ( "selected" in prefs[ i ] ? 'selected="selected" ' : '' ),
+        ">",
+        prefs[ i ].valueName,
+        "</option>"
+      ].join( "" ) );
+    }
+    return options.join( "" );
+  },
+  prefLoad: function ( prefs ) {
+
+    var node, option, multiOptions, pref;
+
+    for ( pref in prefs ) {
+      if ( prefs.hasOwnProperty( pref ) ) {
+        if ( pref === "multiOptionPrefs" ) {
+          multiOptions = prefs[ pref ];
+          for ( option in multiOptions ) {
+            if ( multiOptions.hasOwnProperty( option ) ) {
+              dojo.byId( option ).innerHTML = this.loadOptions( multiOptions[ option ]  );
+            }
+          }
+          continue;
+        }
+        node = dojo.byId( pref );
+        if ( node && node.getAttribute( "type" ) === "checkbox" ) {
+          dojo.byId( pref ).checked = ( prefs[ pref ] === "true" );
+        } else if ( node ) {
+          node.value = prefs[ pref ];
+        }
+      }
+    }
   }
+
+
 } );
 
 dojo.declare( "diom.view.preferences.Preferences", diom.view.preferences.PreferencesBase, {
-  constructor: function ( ) {
+  constructor: function ( prefs ) {
+    this.prefs = prefs;
     this.inherited( arguments );
   },
   handleLoad: function ( ) {
+    this.prefLoad( this.prefs );
     this.open( );
   },
   getContent: function ( ) {
@@ -110,6 +154,6 @@ dojo.declare( "diom.view.preferences.Preferences", diom.view.preferences.Prefere
         '</form>',
       '</div>'
     ].join( "" );
-  },
+  }
 } );
 

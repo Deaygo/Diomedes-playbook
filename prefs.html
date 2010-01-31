@@ -86,31 +86,6 @@
       return options.join( "\n" );
     }
 
-    function prefLoad ( ) {
-      //load values to form
-      for ( pref in prefs ) {
-        if ( pref == "multiOptionPrefs" ) {
-          var p = prefs[ pref ];
-          util.get( "font", document ).innerHTML = loadOptions( p.font );
-          util.get( "time", document ).innerHTML = loadOptions( p.time );
-          util.get( "theme", document ).innerHTML = loadOptions( p.theme );
-        } else if ( pref == "autoJoin" ) {
-          var n = util.get( "autoJoin", document );
-          var p = prefs[ pref ];
-          n.checked = ( p == "true" );
-        } else if ( pref == "logging" ) {
-          var n = util.get( "logging", document );
-          var p = prefs[ pref ];
-          n.checked = ( p == "true" );
-        } else {
-          var n = util.get( pref, document );
-          if ( n ) {
-            n.value = prefs[ pref ];
-          }
-        }
-      }
-    }
-
     function setSelectedOption ( pref, select ) {
       for( var i = 0; i < pref.length; i++ ) {
         if ( "selected" in pref[ i ] ) {
