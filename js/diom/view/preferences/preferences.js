@@ -30,6 +30,10 @@ dojo.declare( "diom.view.preferences.PreferencesBase", diom.view.dialog.Dialog, 
       content: this.getContent( )
     };
     this.inherited( arguments, [ params, dojo.hitch( this, "handleLoad" ), dojo.hitch( this, "handleExit" ) ] );
+    dojo.connect( this.node, "onclick", dojo.hitch( this, "handleClick" ) );
+  },
+  handleClick: function ( e ) {
+    dojo.stopEvent( e );
   },
   handleLoad: function ( ) {
     throw "handleLoad is an bstract method that needs to be overwritten";
