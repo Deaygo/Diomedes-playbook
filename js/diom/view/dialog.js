@@ -17,7 +17,8 @@ dojo.declare( "diom.view.dialog.Dialog", null, {
       width: 400,
       top: 50,
       left: 50
-    }
+    },
+    center: false
   },
   STYLE_TYPES: [ "height", "width", "top", "left" ],
   LAYOUT_HTML: [
@@ -82,16 +83,13 @@ dojo.declare( "diom.view.dialog.Dialog", null, {
     dojo.connect( this.closeBtn, "click", dojo.hitch( this, "handleCloseBtnClick" ) );
     this.callback( this );
   },
-  handleCloseBtnClick: function ( event ) {
-    dojo.stopEvent( event );
+  handleCloseBtnClick: function ( ) {
     this.close( );
-    if ( dojo.isFunction( this.closeCallback ) {
-      this.closeCallback( );
-    }
   },
   setStylesFromParams: function ( styles, params ) {
 
-    var key, appendPx, styleArray;
+    var key, appendPx, styleArray,
+      height, width, _top, left;
 
     appendPx = [ "height", "width", "top", "left" ];
     if ( params ) {
@@ -100,6 +98,16 @@ dojo.declare( "diom.view.dialog.Dialog", null, {
           styles[ key ] = params[ key ];
         }
       }
+    }
+    if ( this.params.center ) {
+      height = 200;
+      width = 400;
+      _top = Math.round( ( window.nativeWindow.height/2 ) - ( height/2 ) );
+      left = Math.round( ( window.nativeWindow.width/2 ) - ( width/2 ) );
+      styles.height = height;
+      styles.width = width;
+      styles.top = _top;
+      styles.left = left;
     }
     styleArray = [ ];
     for ( key in styles ) {
@@ -126,6 +134,9 @@ dojo.declare( "diom.view.dialog.Dialog", null, {
   },
   close: function ( ) {
     dojo.addClass( this.node, "hidden" );
+    if ( dojo.isFunction( this.closeCallback ) ) {
+      this.closeCallback( );
+    }
   },
   destroy: function ( ) {
     dojo.disconnect( this.buttonConnection );

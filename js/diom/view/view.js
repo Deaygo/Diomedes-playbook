@@ -6,7 +6,7 @@
 /*jslint regexp: false */
 /*jslint plusplus: false */
 /*jslint passfail: true */
-/*global window, dojo, util, diom, air, document, alert */
+/*global window, dojo, util, diom, air, document */
 
 dojo.provide( "diom.view.view" );
 
@@ -168,9 +168,19 @@ dojo.declare( "diom.view.View", null, {
 
   notify: function ( msg ) {
     if ( msg ) {
-      //TODO get rid of this alert, stops js execution
-      alert( msg );
-    }
+        params = {
+          center: true,
+          title: "Notice",
+          content: msg
+        };
+        callback = function ( dialog ) {
+          dialog.open( );
+        };
+        closeCallback = function ( ) {
+          dialog.destroy( );
+        };
+        dialog = new diom.view.dialog.Dialog( params, callback );
+      }
   },
 
   setAppVersion: function ( info ) {
@@ -530,13 +540,33 @@ dojo.declare( "diom.view.View", null, {
   },
 
   handleAboutBtnClick: function ( e ) {
-    var s = this.appVersion;
-    s += "\n\nTwitter: @apphacker";
-    s += "\nEmail: apphacker@gmail.com";
-    s += "\nWebsite: http://www.apphackers.com";
-    s += "\nBlog: http://apphacker.wordpress.com";
-    //TODO get rid of this alert, stops js execution
-    alert( s );
+
+    var params, dialog, callback, s;
+
+    s = [
+      '<div class="aboutDialog">',
+        '<h1>', this.appVersion, '</h1><br/>',
+        '<p>Twitter: <a href="http://twitter.com/apphacker">@apphacker</a></p>',
+        '<p>Email: <a href="mailto:apphacker@gmail.com">apphacker@gmail.com</a></p>',
+        '<p>Website: <a href="http://apphackers.com">apphackers.com</a></p>',
+        '<p>Blog: <a href="http://blog.apphackers.com">blog.apphackers.com</a></p>',
+        '<p>IRC: #diomedes on irc.freenode.org</p><br/>',
+        '<p>Thank you for using Diomedes!</p>',
+      '</div>'
+    ].join( "" );
+
+    params = {
+      center: true,
+      title: "About Diomedes IRC",
+      content: s
+    };
+    callback = function ( dialog ) {
+      dialog.open( );
+    };
+    closeCallback = function ( ) {
+      dialog.destroy( );
+    };
+    dialog = new diom.view.dialog.Dialog( params, callback );
   },
 
   handleUpdateBtnClick: function ( e ) {
