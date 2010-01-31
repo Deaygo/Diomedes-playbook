@@ -77,31 +77,81 @@ dojo.declare( "diom.view.preferences.PreferencesBase", diom.view.dialog.Dialog, 
         }
         node = dojo.byId( pref );
         if ( node && node.getAttribute( "type" ) === "checkbox" ) {
-          dojo.byId( pref ).checked = ( prefs[ pref ] === "true" );
+          node.checked = ( prefs[ pref ] === "true" );
         } else if ( node ) {
           node.value = prefs[ pref ];
         }
       }
     }
+  },
+  setSelectedOption: function ( pref, select ) {
+
+    var i;
+
+    for( i = 0; i < pref.length; i++ ) {
+      if ( "selected" in pref[ i ] ) {
+        delete pref[ i ].selected;
+      }
+    }
+    pref[ select.selectedIndex ].selected = "true";
+  },
+  savePrefs: function ( event ) {
+
+    var node, option, multiOptions, pref, value;
+
+
+    dojo.stopEvent( event );
+    util.log( "Saving preferences." );
+    for ( pref in this.prefs ) {
+      if ( this.prefs.hasOwnProperty( pref ) ) {
+        if ( pref === "multiOptionPrefs" ) {
+          multiOptions = this.prefs[ pref ];
+          for ( option in multiOptions ) {
+            if ( multiOptions.hasOwnProperty( option ) ) {
+              this.setSelectedOption( multiOptions[ option ], dojo.byId( option ) );
+            }
+          }
+          continue;
+        }
+        node = dojo.byId( pref );
+        if ( node && node.getAttribute( "type" ) === "checkbox" ) {
+          this.prefs[ pref ] = node.checked.toString( );
+        } else if ( node ) {
+          value = node.value;
+          if ( value || value === 0 || value === "" ) {
+            this.prefs[ pref ] = value;
+          }
+        }
+      }
+    }
+    dojo.publish( diom.topics.PREFS_SAVE, [ this.prefs ] );
   }
-
-
 } );
 
 dojo.declare( "diom.view.preferences.Preferences", diom.view.preferences.PreferencesBase, {
+  "-chains-": {
+    destroy: "before",
+    constructor: "manual"
+  },
   constructor: function ( prefs ) {
+    this.closePrefsBtnConnection = null;
+    this.saveFormConnection = null;
     this.prefs = prefs;
     this.inherited( arguments );
   },
   handleLoad: function ( ) {
+    dojo.connect( dojo.byId( "closePrefsBtn" ), "onclick", dojo.hitch( this, "close" ) );
     this.prefLoad( this.prefs );
     this.open( );
+  },
+  destroy: function ( ) {
+    dojo.disconnect( this.closePrefsBtnConnection );
   },
   getContent: function ( ) {
     return [
       '<div class="preferences">',
         '<h1>Preferences</h1>',
-        '<form onsubmit="savePrefs( event );">',
+        '<form id="preferenceForm">',
           '<div class="formItem">',
             '<label for="nick">Nick: </label> <input type="text" id="nick" />',
           '</div>',
@@ -150,7 +200,7 @@ dojo.declare( "diom.view.preferences.Preferences", diom.view.preferences.Prefere
             '<label for="time">Time: </label> <select id="time" ><option value="none">none</option></select>',
           '</div>',
           '<input type="submit" value="Save" />',
-          '<button onclick="closePrefs( event );">Close</button>',
+          '<button id="closePrefsBtn">Close</button>',
         '</form>',
       '</div>'
     ].join( "" );
