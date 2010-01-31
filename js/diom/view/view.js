@@ -679,22 +679,6 @@ dojo.declare( "diom.view.View", null, {
     var dialog;
 
     dialog = new diom.view.preferences.Preferences( this.model.prefs.getPrefs( ) );
-
-    /*
-		var x, y ,win;
-    window.prefBridge = {
-      util : util,
-			dojo : dojo,
-      topics : diom.topics,
-      preferences : this.model.prefs.getPrefs( )
-    };
-    x = window.nativeWindow.x + 150;
-    y = window.nativeWindow.y + 75;
-    win = window.open("prefs.html", "prefsWindow", "height=550, scrollbars=yes, width=500, top=" + y + ", left=" + x);
-    win = win.nativeWindow;
-    this.model.prefs.savePrefs( );
-    win.addEventListener( air.Event.CLOSE, dojo.hitch( this.model.prefs, "savePrefs" )  );
-    */
   },
 
   handleTitleBarClick: function ( e ) {
