@@ -1,14 +1,14 @@
 /* colors all go in themes */
-/* primary colors for ocean blue theme
-  #7F0000 dark red	
+/* primary colors for volcano red theme
+  #7F0000 dark red
   #7F2626 mid red
-  #CC0000 light red 
+  #CC0000 light red
   #FF0000 bright red
   #FF4C4C pale red
   #EBE2C3 tan
   #ECCD65 yellow tan
   #A4A9AD gray
- * 
+ *
  * */
 
 body {
@@ -30,7 +30,7 @@ a {
   color: #FF4C4C;
 }
 .isServer {
-  color: #FF0000; 
+  color: #FF0000;
 }
 .isNotice {
   color: #ECCD65;
@@ -68,7 +68,7 @@ a {
   color: #A4A9AD;
 }
 #nickList .voiced {
-  color: #FF4C4C; 
+  color: #FF4C4C;
 }
 
 .channelBtn {
@@ -97,7 +97,7 @@ a {
 }
 #popup {
   background-color: #7F0000;
-  color: #FF0000; 
+  color: #FF0000;
 }
 .linkLogItem,
 .extraInfo {
@@ -105,5 +105,35 @@ a {
 }
 
 
+/* DIALOG */
+.dialog {
+  background: #000;
+  border-color: #ECCD65;
+}
+.dialogHeader {
+  background: #7F0000;
+  border-color: #FF4C4C;
+  color: #A4A9AD;
+}
+.dialogContent, .dialogContentContainer {
+  border-color: #CC0000;
+}
+.dialogContentContainer {
+  background: #7F2626;
+}
+.dialogContent {
+  background: #000;
+  color: #FF0000;
+}
 
+/* primary colors for volcano red theme
+  #7F0000 dark red
+  #7F2626 mid red
+  #CC0000 light red
+  #FF0000 bright red
+  #FF4C4C pale red
+  #EBE2C3 tan
+  #ECCD65 yellow tan
+  #A4A9AD gray
+ * */
 
