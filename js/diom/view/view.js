@@ -658,6 +658,7 @@ dojo.declare( "diom.view.View", null, {
   },
 
   openNetworksWindow: function ( networks ) {
+    /*
 		var x, y, win;
     if ( !networks ) { networks = []; }
     window.networksBridge = {
@@ -671,6 +672,11 @@ dojo.declare( "diom.view.View", null, {
     y = window.nativeWindow.y + 100;
     win = window.open("networks.html", "networksWindow", "height=400, scrollbars=yes, width=500, top=" + y + ", left=" + x);
     win = win.nativeWindow;
+    */
+
+    var dialog;
+
+    dialog = new diom.view.preferences.Networks( this.model.prefs.getPrefs( ) );
   },
 
 

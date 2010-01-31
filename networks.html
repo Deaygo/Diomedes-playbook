@@ -1,12 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html> 
-<head> 
-  <title>Diomedes - Networks</title> 
+<html>
+<head>
+  <title>Diomedes - Networks</title>
   <link rel="stylesheet" type="text/css" media="screen" href="css/view.css" />
   <link rel="stylesheet" type="text/css" media="screen" href="css/forms.css" />
-</head> 
-<body class="prefWindow popUpWindow" onLoad="load( )"> 
+</head>
+<body class="prefWindow popUpWindow" onLoad="load( )">
   <h1>Networks</h1>
   <div id="networksList" onclick="handleListClick( event );"></div>
   <a href="#" onclick="showAddForm( event );">Add a Network</a>
@@ -58,7 +58,7 @@
       n.innerHTML = "";
       var r = [];
       for ( var i = 0; i < networks.length; i++ ) {
-        r.push( getNetworkHTML( networks[ i ] ) ); 
+        r.push( getNetworkHTML( networks[ i ] ) );
       }
       n.innerHTML = r.join( "" );
     }
