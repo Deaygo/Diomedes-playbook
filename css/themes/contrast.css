@@ -3,11 +3,11 @@
   #000 Black
   #222 Dark Gray
   #FFF White
-  #FFF bright blue
+  #7B72E9 bright blue
   #EBE2C3 tan
   #ECCD65 yellow tan
   #A4A9AD gray
- * 
+ *
  * */
 
 body {
@@ -26,7 +26,7 @@ a {
   border-color: #555;
 }
 .messageNick {
-  color: #7B72E9; 
+  color: #7B72E9;
 }
 .isServer {
   color: #65B519;
@@ -66,7 +66,7 @@ a {
   color: #A4A9AD;
 }
 #nickList .voiced {
-  color: #FFF; 
+  color: #FFF;
 }
 
 .channelBtn {
@@ -100,5 +100,34 @@ a {
 .extraInfo {
   border-color: #EEE;
 }
+/* DIALOG */
+.dialog {
+  background: #000;
+  background-color: #A4A9Ad;
+  color: #FFF;
+}
+.dialogHeader {
+  background: #222;
+  border-color: #EBE2C3;
+  color: #ECCD65;
+}
+.dialogContent, .dialogContentContainer {
+  border-color: #EBE2C3;
+}
+.dialogContentContainer {
+  background: #222;
+}
+.dialogContent {
+  background: #000;
+  color: #EBE2c3;
+}
 
-
+/*
+  #000 Black
+  #222 Dark Gray
+  #FFF White
+  #7B72E9 bright blue
+  #EBE2C3 tan
+  #ECCD65 yellow tan
+  #A4A9AD gray
+*/
