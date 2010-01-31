@@ -1,6 +1,6 @@
 /* colors all go in themes */
 /* primary colors for ocean blue theme
-  #000734 dark blue	
+  #000734 dark blue
   #001180 mid blue
   #1427A0 light blue
   #6577EC ligher blue
@@ -8,7 +8,7 @@
   #EBE2C3 tan
   #ECCD65 yellow tan
   #A4A9AD gray
- * 
+ *
  * */
 
 body {
@@ -30,7 +30,7 @@ a {
   color: #8796FF;
 }
 .isServer {
-  color: #6577EC; 
+  color: #6577EC;
 }
 .isNotice {
   color: #ECCD65;
@@ -67,7 +67,7 @@ a {
   color: #A4A9AD;
 }
 #nickList .voiced {
-  color: #8796FF; 
+  color: #8796FF;
 }
 
 .channelBtn {
@@ -95,14 +95,43 @@ a {
 }
 #popup {
   background-color: #000737;
-  color: #6577EC; 
+  color: #6577EC;
 }
 .linkLogItem,
 .extraInfo {
   border-color: #ECCD65;
 }
 
+/* DIALOG */
+.dialog {
+  background: #000734;
+  border-color: #1427A0;
+}
+.dialogHeader {
+  background: #001180;
+  border-color: #1427A0;
+  color: #A4A9AD;
+}
+.dialogContent, .dialogContentContainer {
+  border-color: #1427A0;
+}
+.dialogContentContainer {
+  background: #000734;
+}
+.dialogContent {
+  background: #000734;
+  color: #8796FF;
+}
 
 
-
+/* primary colors for ocean blue theme
+  #000734 dark blue
+  #001180 mid blue
+  #1427A0 light blue
+  #6577EC ligher blue
+  #8796FF bright blue
+  #EBE2C3 tan
+  #ECCD65 yellow tan
+  #A4A9AD gray
+ * */
 
