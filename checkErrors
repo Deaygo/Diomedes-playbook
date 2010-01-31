@@ -27,6 +27,7 @@ checkFiles=(
   "diom/view/formInput"
   "diom/view/activityWindow"
   "diom/view/dialog"
+  "diom/view/help"
   "diom/model/model"
   "diom/model/prefModel"
   "diom/model/networksModel"

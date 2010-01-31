@@ -40,7 +40,6 @@ dojo.declare( "diom.view.dialog.Dialog", null, {
    constructor: "manual"
   },
   constructor: function ( params, callback, closeCallback ) {
-    console.log( "dialog" );
 
     //callback takes the form of callback( argument ) where the argument is the dialog instance
     //callback fired when dialog is ready
@@ -48,8 +47,6 @@ dojo.declare( "diom.view.dialog.Dialog", null, {
 
 
     var node, dialog_params;
-
-    console.dump( arguments );
 
     if ( !params ) {
       params = {};
