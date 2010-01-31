@@ -3,7 +3,7 @@
 /*jslint regexp: false */
 /*jslint plusplus: false */
 /*jslint passfail: true */
-/*global window, dojo, util, diom, air, document, alert */
+/*global window, dojo, util, diom, air, document */
 
 dojo.provide( "diom.view.activityWindow" );
 
@@ -39,7 +39,7 @@ dojo.declare( "diom.view.ActivityWindow", null, {
     this.topic = null;
     this.win = document.createElement( "div" );
     this.win.setAttribute( "class", "activityWin" );
-    this.serverName = serverName; 
+    this.serverName = serverName;
     this.channelName = channelName;
     this.isInStyle = false;
     this.isInBold = false;
@@ -90,7 +90,7 @@ dojo.declare( "diom.view.ActivityWindow", null, {
 		var i, time;
     for ( i = 0; i < timePrefs.length; i++ ) {
       time = timePrefs[ i ];
-      if ( "selected" in time ) { 
+      if ( "selected" in time ) {
         this.timeFormat = parseInt( time.value, 10 );
         return;
       }
@@ -236,7 +236,7 @@ dojo.declare( "diom.view.ActivityWindow", null, {
           minute,
           ":",
           second,
-          clock, 
+          clock,
         "]"
       ].join( "" ),
       "shortDate" : [
@@ -280,7 +280,7 @@ dojo.declare( "diom.view.ActivityWindow", null, {
     }
     return newMsg;
   },
-  
+
   findColors: function ( msg ) {
 		var pos, styles, styleLength, possibleCode, setResult,
 			commaPos, beg, middleParts, middle, end, newMsg;

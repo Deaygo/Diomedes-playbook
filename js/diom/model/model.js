@@ -6,7 +6,7 @@
 /*jslint regexp: false */
 /*jslint plusplus: false */
 /*jslint passfail: true */
-/*global window, dojo, util, diom, air, document, alert */
+/*global window, dojo, util, diom, air, document */
 
 dojo.provide( "diom.model.model" );
 

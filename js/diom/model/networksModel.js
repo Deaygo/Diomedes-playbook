@@ -3,7 +3,7 @@
 /*jslint regexp: false */
 /*jslint plusplus: false */
 /*jslint passfail: true */
-/*global window, dojo, util, diom, air, document, alert, DOMParser, XMLSerializer */
+/*global window, dojo, util, diom, air, document, DOMParser, XMLSerializer */
 
 dojo.provide( "diom.model.networksModel" );
 

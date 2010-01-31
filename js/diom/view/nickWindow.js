@@ -3,7 +3,7 @@
 /*jslint regexp: false */
 /*jslint plusplus: false */
 /*jslint passfail: true */
-/*global window, dojo, util, diom, air, document, alert */
+/*global window, dojo, util, diom, air, document */
 
 dojo.provide( "diom.view.nickWindow" );
 
@@ -137,7 +137,7 @@ dojo.declare( "diom.view.NickWindow", null, {
       return 1;
     }
     return 0;
-  } 
+  }
 
 } );
 

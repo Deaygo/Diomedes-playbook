@@ -3,7 +3,7 @@
 /*jslint regexp: false */
 /*jslint plusplus: false */
 /*jslint passfail: true */
-/*global window, dojo, util, diom, air, document, alert */
+/*global window, dojo, util, diom, air, document */
 
 dojo.provide( "diom.view.formInput" );
 
@@ -176,8 +176,8 @@ dojo.declare( "diom.view.FormInput", null, {
         this.setValue( value );
         this.needsResetting = true;
         return;
-      } 
-    } 
+      }
+    }
     this.setValue( "" );
   },
 
@@ -235,7 +235,7 @@ dojo.declare( "diom.view.FormInput", null, {
         listItem = list[ i ];
         listItemLC = listItem.toLowerCase( );
         if ( listItemLC.search( word ) === 0 ) {
-          //add 
+          //add
           this.listItemIndex = i + 1;
           //if c is 0 replace at beginning, if not, one char after c (that is after space)
           beg = value.slice( 0, ( c ? c + 1 : c ) );
