@@ -164,6 +164,7 @@ dojo.declare( "diom.connection.Connection", null, {
   reconnect: function ( ) {
     if ( this.stayConnected ) {
       this.connect( );
+      this.clearReconnect( ); //if connect attempt fails, it will be reset in handleConnection
     }
   },
 
@@ -172,7 +173,7 @@ dojo.declare( "diom.connection.Connection", null, {
   },
 
   close: function ( ) {
-    this.cancelReconnect( );
+    this.clearReconnect( );
     this.stayConnected = false;
     this.client.closeConnection( "Closed connection." );
   },
@@ -209,7 +210,7 @@ dojo.declare( "diom.connection.Connection", null, {
         this.reconnectId = window.setTimeout( dojo.hitch( this, "reconnect" ), pollTime * 1000 );
       }
     } else {
-      this.cancelReconnect( );
+      this.clearReconnect( );
       channels = [];
       for ( channelName in this.channels ) {
         if ( this.channels.hasOwnProperty( channelName ) ) {
@@ -787,7 +788,7 @@ dojo.declare( "diom.connection.Connection", null, {
     }
   },
 
-  cancelReconnect: function ( ) {
+  clearReconnect: function ( ) {
     if ( this.reconnectId ) {
       window.clearTimeout( this.reconnectId );
       this.reconnectId = null;
