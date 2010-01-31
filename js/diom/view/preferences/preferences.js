@@ -140,7 +140,8 @@ dojo.declare( "diom.view.preferences.Preferences", diom.view.preferences.Prefere
     this.inherited( arguments );
   },
   handleLoad: function ( ) {
-    dojo.connect( dojo.byId( "closePrefsBtn" ), "onclick", dojo.hitch( this, "close" ) );
+    this.saveFormConnection = dojo.connect( dojo.byId( "savePrefsBtn" ), "onclick", dojo.hitch( this, "savePrefs" ) );
+    this.closePrefsBtnConnection = dojo.connect( dojo.byId( "closePrefsBtn" ), "onclick", dojo.hitch( this, "close" ) );
     this.prefLoad( this.prefs );
     this.open( );
   },
@@ -199,7 +200,7 @@ dojo.declare( "diom.view.preferences.Preferences", diom.view.preferences.Prefere
           '<div class="formItem">',
             '<label for="time">Time: </label> <select id="time" ><option value="none">none</option></select>',
           '</div>',
-          '<input type="submit" value="Save" />',
+          '<input id="savePrefsBtn" type="submit" value="Save" />',
           '<button id="closePrefsBtn">Close</button>',
         '</form>',
       '</div>'
