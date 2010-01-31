@@ -62,8 +62,6 @@ dojo.declare( "diom.controller.Controller", null, {
     dojo.subscribe(  diom.topics.CONNECTION_CLOSE, this, "closeConnection" );
     dojo.subscribe(  diom.topics.USER_ACTIVITY, this, "handleUserActivity" );
 
-    var params, dialog, callback;
-
     this.view.notify( "sup" );
   },
 

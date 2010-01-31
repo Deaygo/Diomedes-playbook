@@ -168,19 +168,14 @@ dojo.declare( "diom.view.View", null, {
 
   notify: function ( msg ) {
     if ( msg ) {
-        params = {
-          center: true,
-          title: "Notice",
-          content: msg
-        };
-        callback = function ( dialog ) {
-          dialog.open( );
-        };
-        closeCallback = function ( ) {
-          dialog.destroy( );
-        };
-        dialog = new diom.view.dialog.Dialog( params, callback );
-      }
+      params = {
+        center: true,
+        auto: true,
+        title: "Notice",
+        content: msg
+      };
+      dialog = new diom.view.dialog.Dialog( params );
+    }
   },
 
   setAppVersion: function ( info ) {
@@ -557,16 +552,11 @@ dojo.declare( "diom.view.View", null, {
 
     params = {
       center: true,
+      auto: true,
       title: "About Diomedes IRC",
       content: s
     };
-    callback = function ( dialog ) {
-      dialog.open( );
-    };
-    closeCallback = function ( ) {
-      dialog.destroy( );
-    };
-    dialog = new diom.view.dialog.Dialog( params, callback );
+    dialog = new diom.view.dialog.Dialog( params );
   },
 
   handleUpdateBtnClick: function ( e ) {

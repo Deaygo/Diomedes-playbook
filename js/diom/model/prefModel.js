@@ -3,7 +3,7 @@
 /*jslint regexp: false */
 /*jslint plusplus: false */
 /*jslint passfail: true */
-/*global window, dojo, util, diom, air, document, alert, DOMParser, XMLSerializer */
+/*global window, dojo, util, diom, air, document, DOMParser, XMLSerializer */
 
 dojo.provide( "diom.model.prefModel" );
 
@@ -24,8 +24,8 @@ dojo.declare( "diom.model.PrefModel", null, {
 		var defaultPrefsFile, fileStream, xml, domParser, d, version;
     util.log( "Checking prefs." );
     defaultPrefsFile = air.File.applicationDirectory.resolvePath( this.fileName );
-    fileStream = new air.FileStream( ); 
-    fileStream.open( defaultPrefsFile, air.FileMode.READ ); 
+    fileStream = new air.FileStream( );
+    fileStream.open( defaultPrefsFile, air.FileMode.READ );
     xml = fileStream.readUTFBytes( fileStream.bytesAvailable );
     fileStream.close( );
     fileStream = null;
@@ -39,7 +39,13 @@ dojo.declare( "diom.model.PrefModel", null, {
       this.version = version;
       this.updatePreferences( d );
       //view not created yet, need to notify user anyhow:
-      alert( "Preferenes have been updated in this version. Some preferences may have been reset." );
+      params = {
+        center: true,
+        auto: true,
+        title: "Notice",
+        content: "Preferenes have been updated in this version. Some preferences may have been reset."
+      };
+      dialog = new diom.view.dialog.Dialog( params );
       return;
     }
     d = null;
@@ -117,8 +123,8 @@ dojo.declare( "diom.model.PrefModel", null, {
 		var defaultPrefsFile, xml;
     if ( !fileStream ) {
       defaultPrefsFile = air.File.applicationDirectory.resolvePath( this.fileName );
-      fileStream = new air.FileStream( ); 
-      fileStream.open( defaultPrefsFile, air.FileMode.READ ); 
+      fileStream = new air.FileStream( );
+      fileStream.open( defaultPrefsFile, air.FileMode.READ );
     }
     xml = fileStream.readUTFBytes( fileStream.bytesAvailable );
     fileStream.close( );
@@ -141,12 +147,12 @@ dojo.declare( "diom.model.PrefModel", null, {
   },
 
   getMultiValuePrefs: function ( doc ) {
-		var prefs, mNodes, i, pref, name, 
+		var prefs, mNodes, i, pref, name,
 			options, j, option, o;
     prefs = {};
     mNodes = doc.getElementsByTagName( "multiOptionPreference" );
     for ( i = 0; i < mNodes.length; i++ ) {
-      pref = mNodes[ i ]; 
+      pref = mNodes[ i ];
       name = pref.getAttribute( "name" );
       prefs[ name ] = [];
       options = pref.getElementsByTagName( "option" );
@@ -198,10 +204,10 @@ dojo.declare( "diom.model.PrefModel", null, {
 			return util.cloneObject( this.preferences );
 		}
     this.updated = false;
-    fileStream = new air.FileStream( ); 
+    fileStream = new air.FileStream( );
     file = this.getFile( );
     if ( file.exists ) {
-      fileStream.open( file, air.FileMode.READ ); 
+      fileStream.open( file, air.FileMode.READ );
       xml = fileStream.readUTFBytes( fileStream.bytesAvailable );
       fileStream.close( );
       fileStream = null;
@@ -240,7 +246,7 @@ dojo.declare( "diom.model.PrefModel", null, {
 			prefName, multiOptionPref, m, i, o, value,
 			p, x, s, option;
     this.updated = true;
-    fileStream = new air.FileStream( ); 
+    fileStream = new air.FileStream( );
     fileStream.open( this.getFile( ), air.FileMode.WRITE ); //WRITE truncates
     d = document.implementation.createDocument( "", "preferences", null );
     //add prefs
@@ -266,14 +272,14 @@ dojo.declare( "diom.model.PrefModel", null, {
 							d.firstChild.appendChild( m );
 						}
           }
-        } else { 
+        } else {
           value = this.preferences[ name ];
-          p = d.createElement( "preference" ); 
+          p = d.createElement( "preference" );
           //0's and empty strings are valid values
           if ( name && ( value || value === 0 || value === "" ) ) {
             p.setAttribute( "name", name );
             p.setAttribute( "value", value );
-          } 
+          }
           d.firstChild.appendChild( p );
         }
       }

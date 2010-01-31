@@ -18,7 +18,8 @@ dojo.declare( "diom.view.dialog.Dialog", null, {
       top: 50,
       left: 50
     },
-    center: false
+    center: false,
+    auto: false,
   },
   STYLE_TYPES: [ "height", "width", "top", "left" ],
   LAYOUT_HTML: [
@@ -45,20 +46,24 @@ dojo.declare( "diom.view.dialog.Dialog", null, {
 
     var node, dialog_params;
 
-    if ( !callback ) {
-      throw "No callback for dialog";
-    }
     if ( !params ) {
       params = {};
     }
-    this.callback = callback;
-    this.closeCallback = closeCallback;
+    if ( params.auto ) {
+      this.callback = dojo.hitch( this, "autoOpen" );
+      this.closeCallback = dojo.hitch( this, "autoDestroy" );
+    } else {
+      this.callback = callback;
+      this.closeCallback = closeCallback;
+    }
+    if ( !this.callback ) {
+      throw "No callback for dialog";
+    }
     this.title = null;
     this.content = null;
     this.buttonConnection = null;
     this.nodeId = this.generateNodeId( );
     this.params = params;
-    this.callback = callback;
     dialog_params = {};
     dojo.mixin( dialog_params, this.DEFAULT_PARAMS );
     dialog_params.style = this.setStylesFromParams( dialog_params.style, params );
@@ -66,6 +71,12 @@ dojo.declare( "diom.view.dialog.Dialog", null, {
     this.node = dojo.create( "div", dialog_params, dojo.body( ), "last" );
     this.node.innerHTML = this.LAYOUT_HTML;
     setTimeout( dojo.hitch( this, "handleNodeLoad" ), 0 );
+  },
+  autoOpen: function ( ) {
+    this.open( );
+  },
+  autoDestroy: function ( ) {
+    this.destroy( );
   },
   generateNodeId: function ( ) {
     return "DialogNode" + Math.round( Math.random( ) * 100000 ).toString( );
