@@ -36,9 +36,6 @@ dojo.declare( "diom.view.dialog.Dialog", null, {
     '<div class="dialogFooter">',
     '</div>'
   ].join( "" ),
-  "-chains-": {
-   constructor: "manual"
-  },
   constructor: function ( params, callback, closeCallback ) {
 
     //callback takes the form of callback( argument ) where the argument is the dialog instance

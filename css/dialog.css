@@ -27,6 +27,8 @@
   right: 3px;
   bottom: 3px;
   padding: 3px;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 .dialogContent {
 }

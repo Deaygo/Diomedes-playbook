@@ -110,3 +110,23 @@ body {
 .aboutDialog h1 {
   font-size: 18px;
 }
+dt {
+  margin-top: 10px;
+  font-weight: bold;
+}
+dd {
+  font-style: italic;
+  margin: 5px;
+}
+#mainHelp {
+  font-size: 12px;
+  margin: 5px;
+}
+#mainHelp h1 {
+  font-size: 16px;
+  margin: 10px 0px;
+}
+#mainHelp h2 {
+  font-size: 14px;
+  margin: 5px 0px;
+}

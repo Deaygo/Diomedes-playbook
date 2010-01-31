@@ -219,7 +219,6 @@ dojo.declare( "diom.view.View", null, {
   },
 
   displayHelp: function ( ) {
-    //window.open("help.html", "helpWindow", "height=600, scrollbars=yes, width=400, top=10, left=10");
 
     var dialog;
 

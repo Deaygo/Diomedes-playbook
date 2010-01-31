@@ -61,8 +61,6 @@ dojo.declare( "diom.controller.Controller", null, {
     dojo.subscribe(  diom.topics.IGNORES_CHANGE, this, "getIgnores" );
     dojo.subscribe(  diom.topics.CONNECTION_CLOSE, this, "closeConnection" );
     dojo.subscribe(  diom.topics.USER_ACTIVITY, this, "handleUserActivity" );
-
-    this.view.notify( "sup" );
   },
 
 	setAppVersion: function ( ) {
