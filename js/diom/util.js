@@ -14,6 +14,8 @@ if ( !util ) {
 
 if ( window.runtime && air ) {
 
+  util.EVENT_HANDLED = "eventhandled";
+
   util.rand = function ( min, max ) {
     return Math.floor( Math.random( ) * ( max - min + 1 ) ) + min;
   };

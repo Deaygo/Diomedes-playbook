@@ -245,16 +245,18 @@ dojo.declare( "diom.view.View", null, {
 
   handleActivityWindowClick: function ( e ) {
 		var url, urlReq;
-    dojo.stopEvent( e );
     if ( e.target.nodeName === "A" ) {
+      dojo.stopEvent( e );
       url = e.target.getAttribute("href");
       if ( url ) {
         urlReq = new air.URLRequest( dojo.trim( url ) );
         air.navigateToURL(urlReq);
       }
     }
-    this.input.focus( );
-    this.handleWindowClick( e );
+    if ( !e[ util.EVENT_HANDLED ] ) {
+      this.input.focus( );
+      this.handleWindowClick( e );
+    }
   },
 
   closeTabFromNode: function ( n ) {

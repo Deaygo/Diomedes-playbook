@@ -247,6 +247,7 @@ dojo.declare( "diom.controller.Controller", null, {
 
   handlePrefsSave: function ( prefs ) {
     this.model.prefs.setPrefs( prefs );
+    this.model.prefs.savePrefs( );
   },
 
   handleNetworkAdd: function ( data ) {

@@ -33,10 +33,26 @@ dojo.declare( "diom.view.preferences.PreferencesBase", diom.view.dialog.Dialog, 
     dojo.connect( this.node, "onclick", dojo.hitch( this, "handleClick" ) );
   },
   handleClick: function ( e ) {
-    dojo.stopEvent( e );
+
+    var node;
+
+    node = e.target;
+    if ( node.getAttribute( "type" ) === "checkbox" ) {
+      node.setAttribute( "checked", false );
+      node.setAttribute( "value", 0 );
+      //node.checked = node.checked;
+    } else if ( node.hasAttribute( "for" ) ) {
+      node = dojo.byId( node.getAttribute( "for" ) );
+      node.checked = !node.checked;
+    }
+    e[ util.EVENT_HANDLED ] = true;
   },
   handleLoad: function ( ) {
     throw "handleLoad is an bstract method that needs to be overwritten";
+  },
+  handleClose: function ( e ) {
+    dojo.stopEvent( e );
+    this.close( );
   },
   handleExit: function ( ) {
     this.destroy( );
@@ -140,8 +156,8 @@ dojo.declare( "diom.view.preferences.Preferences", diom.view.preferences.Prefere
     this.inherited( arguments );
   },
   handleLoad: function ( ) {
-    this.saveFormConnection = dojo.connect( dojo.byId( "savePrefsBtn" ), "onclick", dojo.hitch( this, "savePrefs" ) );
-    this.closePrefsBtnConnection = dojo.connect( dojo.byId( "closePrefsBtn" ), "onclick", dojo.hitch( this, "close" ) );
+    this.saveFormConnection = dojo.connect( dojo.byId( "preferenceForm" ), "onsubmit", dojo.hitch( this, "savePrefs" ) );
+    this.closePrefsBtnConnection = dojo.connect( dojo.byId( "closePrefsBtn" ), "onclick", dojo.hitch( this, "handleClose" ) );
     this.prefLoad( this.prefs );
     this.open( );
   },
