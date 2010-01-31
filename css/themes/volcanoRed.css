@@ -125,6 +125,11 @@ a {
   background: #000;
   color: #FF0000;
 }
+input[type="text"], input[type="password"]{
+  background: #7F2626;
+  color: #ECCD65;
+  border-color: #FF4C4C;
+}
 
 /* primary colors for volcano red theme
   #7F0000 dark red

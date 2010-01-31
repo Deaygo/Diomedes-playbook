@@ -122,6 +122,13 @@ a {
   color: #EBE2c3;
 }
 
+input[type="text"], input[type="password"]{
+  background: #222;
+  color: #ECCD65;
+  border-color: #A4A9AD;
+  outline-style: none;
+}
+
 /*
   #000 Black
   #222 Dark Gray
