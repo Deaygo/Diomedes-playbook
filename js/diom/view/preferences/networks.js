@@ -134,17 +134,10 @@ dojo.declare( "diom.view.preferences.Networks", diom.view.preferences.Preference
     }
     node.innerHTML = r.join( "" );
   },
-  showAddForm: function ( event ) {
-    dojo.stopEvent( event );
-    this.clearForm( );
-    this.showForm( );
-  },
   clearForm: function ( ) {
 
     var node, pref;
 
-    dojo.byId( "name" ).value = "";
-    dojo.byId( "id" ).value = "0";
     for ( pref in this.prefs ) {
       if ( this.prefs.hasOwnProperty( pref ) ) {
         node = dojo.byId( pref );
@@ -153,6 +146,7 @@ dojo.declare( "diom.view.preferences.Networks", diom.view.preferences.Preference
         }
       }
     }
+    this.inherited( arguments );
   },
   showForm: function ( ) {
     dojo.removeClass( dojo.byId( "networksForm" ), "hidden" );
@@ -217,8 +211,8 @@ dojo.declare( "diom.view.preferences.Networks", diom.view.preferences.Preference
   getNetworkHTML: function ( network ) {
     return [
       '<div><span class="networkName">', network.name, '</span> ',
-      '<a href="#" id="edit.', network.id, '">Edit</a> ',
-      '<a href="#" id="delete.', network.id, '">Delete</a> ',
+      '<button id="edit.', network.id, '">Edit</button> ',
+      '<button id="delete.', network.id, '">Delete</button> ',
       '</div>'].join( "" );
   },
   getContent: function ( ) {

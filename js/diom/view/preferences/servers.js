@@ -19,9 +19,11 @@ dojo.declare( "diom.view.preferences.Servers", diom.view.preferences.Preferences
     //this.model.networks.getServers( callback );
     this.title = "Servers";
     this.selectedNetworkId = null;
+    /*
     this.closePrefsBtnConnection = null;
-    this.addFormBtnConnection = null;
     this.saveFormConnection = null;
+    */
+    this.addFormBtnConnection = null;
     this.networksListConnection = null;
     this.networks = null;
     this.model = model;
@@ -36,9 +38,9 @@ dojo.declare( "diom.view.preferences.Servers", diom.view.preferences.Preferences
     /*
     this.closePrefsBtnConnection = dojo.connect( dojo.byId( "closeWindowBtn" ), "onclick", dojo.hitch( this, "handleClose" ) );
     this.closePrefsBtnConnection = dojo.connect( dojo.byId( "closeFormBtn" ), "onclick", dojo.hitch( this, "closeForm" ) );
-    this.addFormBtnConnection = dojo.connect( dojo.byId( "addFormBtn" ), "onclick", dojo.hitch( this, "showAddForm" ) );
     this.saveFormConnection = dojo.connect( dojo.byId( "networksForm" ), "onsubmit", dojo.hitch( this, "saveNetworks" ) );
     */
+    this.addFormBtnConnection = dojo.connect( dojo.byId( "addFormBtn" ), "onclick", dojo.hitch( this, "showAddForm" ) );
     this.displayNetworks( );
     this.open( );
   },
@@ -150,15 +152,11 @@ dojo.declare( "diom.view.preferences.Servers", diom.view.preferences.Preferences
     this.clearForm( );
     this.showForm( );
   },
-  clearForm: function ( ) {
-
-    var node, pref;
-
-    dojo.byId( "name" ).value = "";
-    dojo.byId( "id" ).value = "0";
-  },
   showForm: function ( ) {
-    dojo.removeClass( dojo.byId( "networksForm" ), "hidden" );
+    if ( this.selectedNetworkId ) {
+      dojo.byId( "networkId" ).value = this.selectedNetworkId;
+      dojo.removeClass( dojo.byId( "serverForm" ), "hidden" );
+    }
   },
   handleListClick: function ( event ) {
 
@@ -216,9 +214,9 @@ dojo.declare( "diom.view.preferences.Servers", diom.view.preferences.Preferences
           '<div class="preferencesList">',
             '<div>Servers for <span id="networkName"></span>:</div>',
             '<div id="serverList" onclick="handleListClick( event );"></div>',
-            '<a href="#" onclick="showAddForm( event );">Add a Server</a>',
+            '<button id="addFormBtn">Add a Server</button>',
           '</div>',
-          '<form class="hidden" id="form" onsubmit="saveServer( event );">',
+          '<form class="hidden" id="serverForm" onsubmit="saveServer( event );">',
             '<input type="hidden" id="id" value="0"/>',
             '<input type="hidden" id="networkId" value="0"/>',
             '<div class="formItem">',
@@ -230,8 +228,10 @@ dojo.declare( "diom.view.preferences.Servers", diom.view.preferences.Preferences
             '<div class="formItem">',
               '<label for="active">Active: </label> <input type="checkbox" id="active"  checked="true"/>',
             '</div>',
-            '<input type="submit" value="Save" />',
-            '<button onclick="closeForm( event );">Cancel</button>',
+            '<div class="preferencesList">',
+              '<input type="submit" value="Save" />',
+              '<button onclick="closeForm( event );">Cancel</button>',
+            '</div>',
           '</form>',
         '</div>',
         '<div class="preferencesList">',

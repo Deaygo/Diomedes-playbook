@@ -141,6 +141,15 @@ dojo.declare( "diom.view.preferences.PreferencesBase", diom.view.dialog.Dialog, 
       }
     }
     dojo.publish( diom.topics.PREFS_SAVE, [ this.prefs ] );
+  },
+  showAddForm: function ( event ) {
+    dojo.stopEvent( event );
+    this.clearForm( );
+    this.showForm( );
+  },
+  clearForm: function ( ) {
+    dojo.byId( "name" ).value = "";
+    dojo.byId( "id" ).value = "0";
   }
 } );
 
