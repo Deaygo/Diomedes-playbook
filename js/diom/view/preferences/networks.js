@@ -14,17 +14,23 @@ dojo.declare( "diom.view.preferences.Networks", diom.view.preferences.Preference
     destroy: "before",
     constructor: "manual"
   },
-  constructor: function ( networks, prefs, view ) {
+  constructor: function ( model, prefs, view ) {
+    this.title = "Networks";
     this.closePrefsBtnConnection = null;
     this.addFormBtnConnection = null;
     this.saveFormConnection = null;
     this.networksListConnection = null;
+    this.networks = null;
     this.prefs = prefs;
-    this.networks = networks;
+    this.model = model;
     this.view = view;
     this.inherited( arguments );
   },
   handleLoad: function ( ) {
+    this.model.getNetworks( dojo.hitch( this, "initialize" ) );
+  },
+  initialize: function ( data ) {
+    this.networks = data;
     this.closePrefsBtnConnection = dojo.connect( dojo.byId( "closeWindowBtn" ), "onclick", dojo.hitch( this, "handleClose" ) );
     this.closePrefsBtnConnection = dojo.connect( dojo.byId( "closeFormBtn" ), "onclick", dojo.hitch( this, "closeForm" ) );
     this.addFormBtnConnection = dojo.connect( dojo.byId( "addFormBtn" ), "onclick", dojo.hitch( this, "showAddForm" ) );
@@ -32,6 +38,10 @@ dojo.declare( "diom.view.preferences.Networks", diom.view.preferences.Preference
     this.saveFormConnection = dojo.connect( dojo.byId( "networksForm" ), "onsubmit", dojo.hitch( this, "saveNetworks" ) );
     this.displayNetworks( );
     this.open( );
+  },
+  handleModelLoad: function ( data ) {
+    this.networks = data;
+    this.displayNetworks( );
   },
   saveNetworks: function ( event ) {
 
@@ -52,7 +62,8 @@ dojo.declare( "diom.view.preferences.Networks", diom.view.preferences.Preference
     if ( !this.getItem( "autoJoin", "Auto join", networkData, true ) ) { return; }
     if ( id === 0 ) {
       dojo.publish( diom.topics.NETWORK_ADD, [ networkData ] );
-      this.handleClose( event );
+      this.closeForm( event );
+      this.model.getNetworks( dojo.hitch( this, "handleModelLoad" ) );
       return;
     } else {
       networkData.id = id;
@@ -71,7 +82,7 @@ dojo.declare( "diom.view.preferences.Networks", diom.view.preferences.Preference
 
     for ( i = 0; i < this.networks.length; i++ ) {
       temp = this.networks[ i ];
-      if ( temp.id === this.network.id ) {
+      if ( temp.id === network.id ) {
         this.networks[ i ] = network;
         this.displayNetworks( this.networks );
         return;
@@ -151,6 +162,7 @@ dojo.declare( "diom.view.preferences.Networks", diom.view.preferences.Preference
         } else if ( cmd === "delete" ) {
           dojo.stopEvent( event );
           this.deleteNetwork( id );
+          this.closeForm( event );
         }
       }
     }
@@ -202,9 +214,11 @@ dojo.declare( "diom.view.preferences.Networks", diom.view.preferences.Preference
     return [
       '<div class="preferences">',
         '<h1>Networks</h1>',
-        '<div id="networksList"></div>',
-        '<button id="addFormBtn">Add a Network</button>',
-        '<form class="hidden" id="networksForm" onsubmit="saveNetworks( event );">',
+        '<div class="preferencesList" id="networksList"></div>',
+        '<div class="preferencesList">',
+          '<button id="addFormBtn">Add a Network</button>',
+        '</div>',
+        '<form class="hidden" id="networksForm">',
           '<input type="hidden" id="id" value="0"/>',
           '<div class="formItem">',
             '<label for="name">Name: </label> <input type="text" id="name" />',
@@ -230,10 +244,14 @@ dojo.declare( "diom.view.preferences.Networks", diom.view.preferences.Preference
           '<div class="formItem">',
             '<label for="autoJoin">Auto join: </label> <input type="checkbox" id="autoJoin" checked="true" />',
           '</div>',
-          '<input type="submit" value="Save" />',
-          '<button id="closeFormBtn">Cancel</button>',
+          '<div class="preferencesList">',
+            '<input type="submit" value="Save" />',
+            '<button id="closeFormBtn">Cancel</button>',
+          '</div>',
         '</form>',
-        '<button id="closeWindowBtn">Close Window</button>',
+        '<div class="preferencesList">',
+          '<button id="closeWindowBtn">Close Window</button>',
+        '</div>',
       '</div>'
     ].join( "" );
   }

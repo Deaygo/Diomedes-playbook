@@ -26,7 +26,7 @@ dojo.declare( "diom.view.preferences.PreferencesBase", diom.view.dialog.Dialog, 
       width: width,
       "top": Math.round( ( window.nativeWindow.height/2 ) - ( height/2 ) ),
       left: Math.round( ( window.nativeWindow.width/2 ) - ( width/2 ) ),
-      title: "Help",
+      title: this.title, //set by child class
       content: this.getContent( )
     };
     this.inherited( arguments, [ params, dojo.hitch( this, "handleLoad" ), dojo.hitch( this, "handleExit" ) ] );
@@ -150,6 +150,7 @@ dojo.declare( "diom.view.preferences.Preferences", diom.view.preferences.Prefere
     constructor: "manual"
   },
   constructor: function ( prefs ) {
+    this.title = "Preferences";
     this.closePrefsBtnConnection = null;
     this.saveFormConnection = null;
     this.prefs = prefs;

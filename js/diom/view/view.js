@@ -654,31 +654,11 @@ dojo.declare( "diom.view.View", null, {
   },
 
   handleNetworksBtnClick: function ( e ) {
-    this.model.networks.getNetworks( dojo.hitch( this, "openNetworksWindow" ) );
-  },
-
-  openNetworksWindow: function ( networks ) {
-    /*
-		var x, y, win;
-    if ( !networks ) { networks = []; }
-    window.networksBridge = {
-      util : util,
-			dojo : dojo,
-      topics : diom.topics,
-      preferences : this.model.prefs.getPrefs( ),
-      networks : networks
-    };
-    x = window.nativeWindow.x + 150;
-    y = window.nativeWindow.y + 100;
-    win = window.open("networks.html", "networksWindow", "height=400, scrollbars=yes, width=500, top=" + y + ", left=" + x);
-    win = win.nativeWindow;
-    */
 
     var dialog;
 
-    dialog = new diom.view.preferences.Networks( networks, this.model.prefs.getPrefs( ), this );
+    dialog = new diom.view.preferences.Networks( this.model.networks, this.model.prefs.getPrefs( ), this );
   },
-
 
   handlePrefBtnClick: function ( e ) {
 
