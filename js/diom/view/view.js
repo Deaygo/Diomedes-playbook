@@ -676,7 +676,7 @@ dojo.declare( "diom.view.View", null, {
 
     var dialog;
 
-    dialog = new diom.view.preferences.Networks( this.model.prefs.getPrefs( ) );
+    dialog = new diom.view.preferences.Networks( networks, this.model.prefs.getPrefs( ), this );
   },
 
 
