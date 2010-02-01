@@ -17,6 +17,7 @@ dojo.declare( "diom.view.preferences.Networks", diom.view.preferences.Preference
   constructor: function ( model, prefs, view ) {
     this.title = "Networks";
     this.closePrefsBtnConnection = null;
+    this.closeFormBtnConnection = null;
     this.addFormBtnConnection = null;
     this.saveFormConnection = null;
     this.networksListConnection = null;
@@ -32,7 +33,7 @@ dojo.declare( "diom.view.preferences.Networks", diom.view.preferences.Preference
   initialize: function ( data ) {
     this.networks = data;
     this.closePrefsBtnConnection = dojo.connect( dojo.byId( "closeWindowBtn" ), "onclick", dojo.hitch( this, "handleClose" ) );
-    this.closePrefsBtnConnection = dojo.connect( dojo.byId( "closeFormBtn" ), "onclick", dojo.hitch( this, "closeForm" ) );
+    this.closeFormBtnConnection = dojo.connect( dojo.byId( "closeFormBtn" ), "onclick", dojo.hitch( this, "closeForm" ) );
     this.addFormBtnConnection = dojo.connect( dojo.byId( "addFormBtn" ), "onclick", dojo.hitch( this, "showAddForm" ) );
     this.networksListConnection = dojo.connect( dojo.byId( "networksList" ), "onclick", dojo.hitch( this, "handleListClick" ) );
     this.saveFormConnection = dojo.connect( dojo.byId( "networksForm" ), "onsubmit", dojo.hitch( this, "saveNetworks" ) );
@@ -110,6 +111,15 @@ dojo.declare( "diom.view.preferences.Networks", diom.view.preferences.Preference
   },
   destroy: function ( ) {
     dojo.disconnect( this.closePrefsBtnConnection );
+    delete this.closePrefsBtnConnection;
+    dojo.disconnect( this.closeFormBtnConnection );
+    delete this.closeFormBtnConnection;
+    dojo.disconnect( this.addFormBtnConnection );
+    delete this.addFormBtnConnection;
+    dojo.disconnect( this.networksListConnection );
+    delete this.networksListConnection;
+    dojo.disconnect( this.saveFormConnection );
+    delete this.saveFormConnection;
   },
   displayNetworks: function ( ) {
 

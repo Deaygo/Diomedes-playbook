@@ -18,6 +18,7 @@ dojo.declare( "diom.view.preferences.Servers", diom.view.preferences.Preferences
     //this.model.networks.getNetworks( callback );
     //this.model.networks.getServers( callback );
     this.title = "Servers";
+    this.selectedNetworkId = null;
     this.closePrefsBtnConnection = null;
     this.addFormBtnConnection = null;
     this.saveFormConnection = null;
@@ -36,7 +37,6 @@ dojo.declare( "diom.view.preferences.Servers", diom.view.preferences.Preferences
     this.closePrefsBtnConnection = dojo.connect( dojo.byId( "closeWindowBtn" ), "onclick", dojo.hitch( this, "handleClose" ) );
     this.closePrefsBtnConnection = dojo.connect( dojo.byId( "closeFormBtn" ), "onclick", dojo.hitch( this, "closeForm" ) );
     this.addFormBtnConnection = dojo.connect( dojo.byId( "addFormBtn" ), "onclick", dojo.hitch( this, "showAddForm" ) );
-    this.networksListConnection = dojo.connect( dojo.byId( "networksList" ), "onclick", dojo.hitch( this, "handleListClick" ) );
     this.saveFormConnection = dojo.connect( dojo.byId( "networksForm" ), "onsubmit", dojo.hitch( this, "saveNetworks" ) );
     */
     this.displayNetworks( );
@@ -46,51 +46,9 @@ dojo.declare( "diom.view.preferences.Servers", diom.view.preferences.Preferences
     this.networks = data;
     this.displayNetworks( );
   },
-  saveNetworks: function ( event ) {
-
-    var networkData, id;
-
-    dojo.stopEvent( event );
-    util.log( "Saving Networks." );
-    networkData = {};
-    //get prefs
-    id = parseInt( dojo.byId( "id" ).value, 10 );
-    if ( !this.getItem( "name", "Network name", networkData ) ) { return; }
-    if ( !this.getItem( "nick", "Nick", networkData ) ) { return; }
-    if ( !this.getItem( "altNick", "Alternate nick", networkData ) ) { return; }
-    if ( !this.getItem( "userName", "Username", networkData ) ) { return; }
-    if ( !this.getItem( "realName", "Real name", networkData ) ) { return; }
-    if ( !this.getItem( "finger", "Finger", networkData ) ) { return; }
-    if ( !this.getItem( "active", "Active", networkData, true ) ) { return; }
-    if ( !this.getItem( "autoJoin", "Auto join", networkData, true ) ) { return; }
-    if ( id === 0 ) {
-      dojo.publish( diom.topics.NETWORK_ADD, [ networkData ] );
-      this.closeForm( event );
-      this.model.getNetworks( dojo.hitch( this, "handleModelLoad" ) );
-      return;
-    } else {
-      networkData.id = id;
-      this.updateNetworks( networkData );
-      dojo.publish( diom.topics.NETWORK_EDIT, [ id, networkData ] );
-    }
-    this.closeForm( event );
-  },
   closeForm: function ( event ) {
     dojo.stopEvent( event );
     dojo.addClass( dojo.byId( "networksForm" ), "hidden" );
-  },
-  updateNetworks: function ( network ) {
-
-    var i, temp;
-
-    for ( i = 0; i < this.networks.length; i++ ) {
-      temp = this.networks[ i ];
-      if ( temp.id === network.id ) {
-        this.networks[ i ] = network;
-        this.displayNetworks( this.networks );
-        return;
-      }
-    }
   },
   getItem: function ( id, name, dataStore, isCheckbox ) {
 
@@ -121,9 +79,9 @@ dojo.declare( "diom.view.preferences.Servers", diom.view.preferences.Preferences
     node = dojo.byId( "networksList" );
     node.innerHTML = "";
     if ( this.networks && this.networks.length ) {
-      var r = ['<select id="selectNetwork" onchange="selectNetwork( event );">'];
+      r = ['<select id="selectNetwork" onchange="selectNetwork( event );">'];
       r.push( '<option selected="selected" disabled="disabled">Select a network</option>' );
-      for ( var i = 0; i < this.networks.length; i++ ) {
+      for ( i = 0; i < this.networks.length; i++ ) {
         r.push( this.getNetworkHTML( this.networks[ i ] ) );
       }
       r.push('</select>');
@@ -131,6 +89,61 @@ dojo.declare( "diom.view.preferences.Servers", diom.view.preferences.Preferences
     } else {
       node.innerHTML = "You have not created any networks.";
     }
+    setTimeout( dojo.hitch( this, function ( ) {
+      this.networksListConnection = dojo.connect( dojo.byId( "selectNetwork" ), "onchange", dojo.hitch( this, "selectNetwork" ) );
+    } ), 0 );
+  },
+  selectNetwork: function ( event ) {
+
+    var node;
+
+    node = event.target;
+    this.selectedNetworkId = parseInt( node.options[ node.selectedIndex ].value, 10 );
+    this.model.getServers( this.selectedNetworkId, dojo.hitch( this, "listServers" ) );
+  },
+  listServers: function ( servers ) {
+
+    var networkName, node, r, i;
+
+    networkName = this.getNetworkName( this.selectedNetworkId );
+    if ( networkName ) {
+      dojo.byId( "networkName" ).innerHTML = networkName;
+    } else {
+      return;
+    }
+    node = dojo.byId( "serverList" );
+    if ( !servers || !servers.length ) {
+      node.innerHTML = "No servers currently added for network.";
+    } else {
+      r = [];
+      for ( i = 0; i < servers.length; i++ ) {
+        r.push( this.getServerHTML( servers[ i ] ) );
+      }
+      node.innerHTML = r.join( "" );
+    }
+    this.showServerInfo( );
+  },
+  getServerHTML: function ( server ) {
+    return [
+      '<div><span class="servername">', server.name, '</span> ',
+      '<a href="#" id="delete.', server.id, '.', server.networkId, '">Delete</a> ',
+      '</div>'].join( "" );
+  },
+  getNetworkName: function ( id ) {
+
+
+    var i, network;
+
+    for ( i = 0; i < this.networks.length; i++ ) {
+      network = this.networks[ i ];
+      if ( id === network.id ) {
+        return network.name;
+      }
+    }
+    return null;
+  },
+  showServerInfo: function ( ) {
+    dojo.removeClass( dojo.byId( "serverInfo" ), "hidden" );
   },
   showAddForm: function ( event ) {
     dojo.stopEvent( event );
@@ -189,24 +202,9 @@ dojo.declare( "diom.view.preferences.Servers", diom.view.preferences.Preferences
     dojo.byId( "autoJoin" ).checked = network.autoJoin;
     this.showForm( );
   },
-  deleteNetwork: function ( id ) {
-
-    var newNetworks, i, network;
-
-    dojo.publish( diom.topics.NETWORK_DELETE, [ id ] );
-    newNetworks = [];
-    for ( i = 0; i < this.networks.length; i++ ) {
-      network = this.networks[ i ];
-      if ( network.id !== id ) {
-        newNetworks.push( network );
-      }
-    }
-    this.networks = newNetworks;
-    this.displayNetworks( );
-  },
   getNetworkHTML: function ( network ) {
     return [
-      '<option value="', network.id, '",>', network.name, '</option> ',
+      '<option value="', network.id, '",>', network.name, '</option> '
     ].join( "" );
   },
   getContent: function ( ) {
@@ -215,9 +213,11 @@ dojo.declare( "diom.view.preferences.Servers", diom.view.preferences.Preferences
         '<h1>Servers</h1>',
         '<div class="preferencesList" id="networksList"></div>',
         '<div id="serverInfo" class="hidden">',
-          '<div>Servers for <span id="networkName"></span>:</div>',
-          '<div id="serverList" onclick="handleListClick( event );"></div>',
-          '<a href="#" onclick="showAddForm( event );">Add a Server</a>',
+          '<div class="preferencesList">',
+            '<div>Servers for <span id="networkName"></span>:</div>',
+            '<div id="serverList" onclick="handleListClick( event );"></div>',
+            '<a href="#" onclick="showAddForm( event );">Add a Server</a>',
+          '</div>',
           '<form class="hidden" id="form" onsubmit="saveServer( event );">',
             '<input type="hidden" id="id" value="0"/>',
             '<input type="hidden" id="networkId" value="0"/>',
