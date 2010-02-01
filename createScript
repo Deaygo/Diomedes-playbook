@@ -25,7 +25,7 @@ echo js files added: $jsFilesAdded
 
 cert="-package -storetype pkcs12 -keystore apphacker.pfx"
 binaryName="Diomedes.air"
-htmlFiles="index.html networks.html performs.html servers.html aliases.html channels.html"
+htmlFiles="index.html performs.html aliases.html channels.html"
 resourceDirs="icons/ css/ images/"
 configFile="Diomedes-app.xml"
 xmlFiles="updateConfig.xml preferences.xml"

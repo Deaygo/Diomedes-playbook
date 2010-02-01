@@ -118,6 +118,7 @@ dojo.declare( "diom.view.preferences.Networks", diom.view.preferences.Preference
     node = dojo.byId( "networksList" );
     node.innerHTML = "";
     r = [];
+    if ( !this.networks ) { return; }
     for ( i = 0; i < this.networks.length; i++ ) {
       r.push( this.getNetworkHTML( this.networks[ i ] ) );
     }

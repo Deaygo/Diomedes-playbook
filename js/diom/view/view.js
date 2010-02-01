@@ -595,24 +595,11 @@ dojo.declare( "diom.view.View", null, {
     this.model.networks.getNetworks( dojo.hitch( this, "openChannelsWindow" ) );
   },
 
-  openServersWindow: function ( networks ) {
-		var x, y, win;
-    if ( !networks ) { networks = []; }
-    window.serversBridge = {
-      util : util,
-			dojo : dojo,
-      topics : diom.topics,
-      networks : networks,
-      getServers : dojo.hitch( this.model.networks, "getServers" )
-    };
-    x = window.nativeWindow.x + 150;
-    y = window.nativeWindow.y + 100;
-    win = window.open("servers.html", "serversWindow", "height=500, scrollbars=yes, width=500, top=" + y + ", left=" + x);
-    win = win.nativeWindow;
-  },
-
   handleServersBtnClick: function ( e ) {
-    this.model.networks.getNetworks( dojo.hitch( this, "openServersWindow" ) );
+
+    var dialog;
+
+    dialog = new diom.view.preferences.Servers( this.model.networks, this );
   },
 
   handleIgnoresBtnClick: function ( e ) {
