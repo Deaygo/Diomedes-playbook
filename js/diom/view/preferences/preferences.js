@@ -26,7 +26,7 @@ dojo.declare( "diom.view.preferences.PreferencesBase", diom.view.dialog.Dialog, 
       width: width,
       "top": Math.round( ( window.nativeWindow.height/2 ) - ( height/2 ) ),
       left: Math.round( ( window.nativeWindow.width/2 ) - ( width/2 ) ),
-      title: this.title, //set by child class
+      title: this.id, //set by child class
       content: this.getContent( )
     };
     this.inherited( arguments, [ params, dojo.hitch( this, "handleLoad" ), dojo.hitch( this, "handleExit" ) ] );
@@ -194,10 +194,40 @@ dojo.declare( "diom.view.preferences.PreferencesBase", diom.view.dialog.Dialog, 
     dataStore[ id ] = value;
     return true;
   },
+  getNetworkHTML: function ( network ) {
+    return [
+      '<option value="', network.id, '",>', network.name, '</option> '
+    ].join( "" );
+  },
+  selectNetwork: function ( ) {
+
+    var node;
+
+    this.closeForm( );
+    node = dojo.byId( "selectNetwork" );
+    this.selectedNetworkId = parseInt( node.options[ node.selectedIndex ].value, 10 );
+    this.model[ "get" + this.id ]( this.selectedNetworkId, dojo.hitch( this, this.listMethod ) );
+  },
+  handleModelLoad: function ( data ) {
+    this.networks = data;
+    this.displayNetworks( );
+  },
   showAddForm: function ( event ) {
     dojo.stopEvent( event );
     this.clearForm( );
     this.showForm( );
+  },
+  showForm: function ( ) {
+    if ( this.selectedNetworkId ) {
+      dojo.byId( "networkId" ).value = this.selectedNetworkId;
+    }
+    dojo.removeClass( dojo.byId( this.formId ), "hidden" );
+  },
+  closeForm: function ( event ) {
+    if ( event ) {
+      dojo.stopEvent( event );
+    }
+    dojo.addClass( dojo.byId( this.formId ), "hidden" );
   },
   clearForm: function ( ) {
     dojo.byId( "name" ).value = "";

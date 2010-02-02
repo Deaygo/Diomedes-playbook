@@ -32,6 +32,7 @@ checkFiles=(
   "diom/view/preferences/networks"
   "diom/view/preferences/servers"
   "diom/view/preferences/channels"
+  "diom/view/preferences/performs"
 #  "diom/model/model"
 #  "diom/model/prefModel"
 #  "diom/model/networksModel"

@@ -522,29 +522,13 @@ dojo.declare( "diom.view.View", null, {
     this.input.destroy();
   },
 
-  openPerformsWindow: function ( networks ) {
-		var x, y, win;
-    if ( !networks ) { networks = []; }
-    window.performsBridge = {
-      util : util,
-			dojo : dojo,
-      topics : diom.topics,
-      networks : networks,
-      getPerforms : dojo.hitch( this.model.networks, "getPerforms" )
-    };
-    x = window.nativeWindow.x + 150;
-    y = window.nativeWindow.y + 100;
-    win = window.open("performs.html", "performsWindow", "height=400, scrollbars=yes, width=600, top=" + y + ", left=" + x);
-    win = win.nativeWindow;
-  },
-
   handlePerformBtnClick: function ( e ) {
-    this.model.networks.getNetworks( dojo.hitch( this, "openPerformsWindow" ) );
+    return diom.view.preferences.Performs( this.model.networks, this );
   },
 
   handleAboutBtnClick: function ( e ) {
 
-    var params, dialog, callback, s;
+    var params, callback, s;
 
     s = [
       '<div class="aboutDialog">',
@@ -564,7 +548,7 @@ dojo.declare( "diom.view.View", null, {
       title: "About Diomedes IRC",
       content: s
     };
-    dialog = new diom.view.dialog.Dialog( params );
+    return new diom.view.dialog.Dialog( params );
   },
 
   handleUpdateBtnClick: function ( e ) {
@@ -576,17 +560,11 @@ dojo.declare( "diom.view.View", null, {
   },
 
   handleChannelsBtnClick: function ( e ) {
-
-    var dialog;
-
-    dialog = new diom.view.preferences.Channels( this.model.networks, this );
+    return new diom.view.preferences.Channels( this.model.networks, this );
   },
 
   handleServersBtnClick: function ( e ) {
-
-    var dialog;
-
-    dialog = new diom.view.preferences.Servers( this.model.networks, this );
+    return new diom.view.preferences.Servers( this.model.networks, this );
   },
 
   handleIgnoresBtnClick: function ( e ) {
@@ -628,17 +606,11 @@ dojo.declare( "diom.view.View", null, {
   },
 
   handleNetworksBtnClick: function ( e ) {
-
-    var dialog;
-
-    dialog = new diom.view.preferences.Networks( this.model.networks, this.model.prefs.getPrefs( ), this );
+    return new diom.view.preferences.Networks( this.model.networks, this.model.prefs.getPrefs( ), this );
   },
 
   handlePrefBtnClick: function ( e ) {
-
-    var dialog;
-
-    dialog = new diom.view.preferences.Preferences( this.model.prefs.getPrefs( ) );
+    return new diom.view.preferences.Preferences( this.model.prefs.getPrefs( ) );
   },
 
   handleTitleBarClick: function ( e ) {

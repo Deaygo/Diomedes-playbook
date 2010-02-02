@@ -15,7 +15,8 @@ dojo.declare( "diom.view.preferences.Networks", diom.view.preferences.Preference
     constructor: "manual"
   },
   constructor: function ( model, prefs, view ) {
-    this.title = "Networks";
+    this.id = "Networks";
+    this.formId = "networksForm";
     this.closePrefsBtnConnection = null;
     this.closeFormBtnConnection = null;
     this.addFormBtnConnection = null;
@@ -39,10 +40,6 @@ dojo.declare( "diom.view.preferences.Networks", diom.view.preferences.Preference
     this.saveFormConnection = dojo.connect( dojo.byId( "networksForm" ), "onsubmit", dojo.hitch( this, "saveNetworks" ) );
     this.displayNetworks( );
     this.open( );
-  },
-  handleModelLoad: function ( data ) {
-    this.networks = data;
-    this.displayNetworks( );
   },
   saveNetworks: function ( event ) {
 
@@ -73,10 +70,6 @@ dojo.declare( "diom.view.preferences.Networks", diom.view.preferences.Preference
     }
     this.closeForm( event );
   },
-  closeForm: function ( event ) {
-    dojo.stopEvent( event );
-    dojo.addClass( dojo.byId( "networksForm" ), "hidden" );
-  },
   updateNetworks: function ( network ) {
 
     var i, temp;
@@ -101,6 +94,7 @@ dojo.declare( "diom.view.preferences.Networks", diom.view.preferences.Preference
     delete this.networksListConnection;
     dojo.disconnect( this.saveFormConnection );
     delete this.saveFormConnection;
+    this.inherited( arguments );
   },
   displayNetworks: function ( ) {
 
@@ -128,9 +122,6 @@ dojo.declare( "diom.view.preferences.Networks", diom.view.preferences.Preference
       }
     }
     this.inherited( arguments );
-  },
-  showForm: function ( ) {
-    dojo.removeClass( dojo.byId( "networksForm" ), "hidden" );
   },
   handleListClick: function ( event ) {
 

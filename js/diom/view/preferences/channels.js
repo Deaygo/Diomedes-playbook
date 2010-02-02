@@ -15,7 +15,9 @@ dojo.declare( "diom.view.preferences.Channels", diom.view.preferences.Preference
     constructor: "manual"
   },
   constructor: function ( model, view ) {
-    this.title = "Channels";
+    this.id = "Channels";
+    this.formId = "channelForm";
+    this.listMethod = "listChannels";
     this.selectedNetworkId = null;
     this.closePrefsBtnConnection = null;
     this.closeFormBtnConnection = null;
@@ -39,16 +41,6 @@ dojo.declare( "diom.view.preferences.Channels", diom.view.preferences.Preference
     this.channelPreferenceListConnection = dojo.connect( dojo.byId( "channelPreferenceList" ), "onclick", dojo.hitch( this, "handleListClick" ) );
     this.displayNetworks( );
     this.open( );
-  },
-  handleModelLoad: function ( data ) {
-    this.networks = data;
-    this.displayNetworks( );
-  },
-  closeForm: function ( event ) {
-    if ( event ) {
-      dojo.stopEvent( event );
-    }
-    dojo.addClass( dojo.byId( "channelForm" ), "hidden" );
   },
   showChannelInfo: function ( ) {
     dojo.removeClass( dojo.byId( "channelInfo" ), "hidden" );
@@ -107,26 +99,7 @@ dojo.declare( "diom.view.preferences.Channels", diom.view.preferences.Preference
     delete this.saveFormConnection;
     dojo.disconnect( this.addFormBtnConnection );
     delete this.addFormBtnConnection;
-  },
-  selectNetwork: function ( ) {
-
-    var node;
-
-    this.closeForm( );
-    node = dojo.byId( "selectNetwork" );
-    this.selectedNetworkId = parseInt( node.options[ node.selectedIndex ].value, 10 );
-    this.model.getChannels( this.selectedNetworkId, dojo.hitch( this, "listChannels" ) );
-  },
-  showAddForm: function ( event ) {
-    dojo.stopEvent( event );
-    this.clearForm( );
-    this.showForm( );
-  },
-  showForm: function ( ) {
-    if ( this.selectedNetworkId ) {
-      dojo.byId( "networkId" ).value = this.selectedNetworkId;
-      dojo.removeClass( dojo.byId( "channelForm" ), "hidden" );
-    }
+    this.inherited( arguments );
   },
   handleListClick: function ( event ) {
 
@@ -149,32 +122,6 @@ dojo.declare( "diom.view.preferences.Channels", diom.view.preferences.Preference
     dojo.publish( diom.topics.CHANNEL_DELETE, [ id, networkId ] );
     this.selectNetwork( );
   },
-  showEditForm: function ( id ) {
-
-    var network, i, keys, key;
-
-    network = null;
-    for ( i = 0; i < this.networks.length; i++ ) {
-      if ( this.networks[ i ].id === id ) {
-        network = this.networks[ i ];
-        break;
-      }
-    }
-    if ( !network ) { return; }
-    keys = [ "id", "name", "nick", "altNick", "userName", "realName", "finger" ];
-    for ( i = 0; i < keys.length; i++ ) {
-      key = keys[ i ];
-      dojo.byId( key ).value = network[ key ];
-    }
-    dojo.byId( "active" ).checked = network.active;
-    dojo.byId( "autoJoin" ).checked = network.autoJoin;
-    this.showForm( );
-  },
-  getNetworkHTML: function ( network ) {
-    return [
-      '<option value="', network.id, '",>', network.name, '</option> '
-    ].join( "" );
-  },
   getContent: function ( ) {
     return [
       '<div class="preferences">',
@@ -185,7 +132,7 @@ dojo.declare( "diom.view.preferences.Channels", diom.view.preferences.Preference
         '<div id="channelInfo" class="hidden">',
           '<div class="preferencesList">',
             '<div>Channels for <span id="networkName"></span>:</div>',
-            '<div id="channelPreferenceList">Moo</div>',
+            '<div id="channelPreferenceList"></div>',
               '<button id="addFormBtn">Add a Channel</button>',
           '</div>',
           '<form class="hidden" id="channelForm">',
