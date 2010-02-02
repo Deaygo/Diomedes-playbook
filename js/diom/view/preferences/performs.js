@@ -16,16 +16,14 @@ dojo.declare( "diom.view.preferences.Performs", diom.view.preferences.Preference
   },
   constructor: function ( model, view ) {
     this.id = "Performs";
-    this.formid = "performForm";
+    this.formId = "performForm";
     this.listMethod = "listPerforms";
-    /*
     this.selectedNetworkId = null;
     this.closePrefsBtnConnection = null;
     this.closeFormBtnConnection = null;
     this.saveFormConnection = null;
     this.addFormBtnConnection = null;
     this.channelPreferenceListConnection = null;
-    */
     this.networks = null;
     this.model = model;
     this.view = view;
@@ -36,20 +34,18 @@ dojo.declare( "diom.view.preferences.Performs", diom.view.preferences.Preference
   },
   initialize: function ( data ) {
     this.networks = data;
-    /*
     this.closePrefsBtnConnection = dojo.connect( dojo.byId( "closeWindowBtn" ), "onclick", dojo.hitch( this, "handleClose" ) );
     this.closeFormBtnConnection = dojo.connect( dojo.byId( "closeFormBtn" ), "onclick", dojo.hitch( this, "closeForm" ) );
-    this.saveFormConnection = dojo.connect( dojo.byId( "channelForm" ), "onsubmit", dojo.hitch( this, "saveChannel" ) );
+    this.saveFormConnection = dojo.connect( dojo.byId( "performForm" ), "onsubmit", dojo.hitch( this, "savePerform" ) );
     this.addFormBtnConnection = dojo.connect( dojo.byId( "addFormBtn" ), "onclick", dojo.hitch( this, "showAddForm" ) );
-    this.channelPreferenceListConnection = dojo.connect( dojo.byId( "channelPreferenceList" ), "onclick", dojo.hitch( this, "handleListClick" ) );
-    */
+    this.channelPreferenceListConnection = dojo.connect( dojo.byId( "performList" ), "onclick", dojo.hitch( this, "handleListClick" ) );
     this.displayNetworks( );
     this.open( );
   },
   showPerformInfo: function ( ) {
-    dojo.removeClass( dojo.byId( "channelInfo" ), "hidden" );
+    dojo.removeClass( dojo.byId( "performInfo" ), "hidden" );
   },
-  listPerforms: function ( channels ) {
+  listPerforms: function ( performs ) {
 
     var networkName, node, r, i;
 
@@ -59,17 +55,17 @@ dojo.declare( "diom.view.preferences.Performs", diom.view.preferences.Preference
     } else {
       return;
     }
-    node = dojo.byId( "channelPreferenceList" );
-    if ( !channels || !channels.length ) {
-      node.innerHTML = "No channels currently added for network.";
+    node = dojo.byId( "performList" );
+    if ( !performs || !performs.length ) {
+      node.innerHTML = "No performs currently added for network.";
     } else {
       r = [];
-      for ( i = 0; i < channels.length; i++ ) {
-        r.push( this.getChannelHTML( channels[ i ] ) );
+      for ( i = 0; i < performs.length; i++ ) {
+        r.push( this.getPerformHTML( performs[ i ] ) );
       }
       node.innerHTML = r.join( "" );
     }
-    this.showChannelInfo( );
+    this.showPerformInfo( );
   },
   getPerformHTML: function ( channel ) {
     return [
@@ -77,22 +73,9 @@ dojo.declare( "diom.view.preferences.Performs", diom.view.preferences.Preference
       '<button id="delete.', channel.id, '.', channel.networkId, '">Delete</button> ',
       '</div>'].join( "" );
   },
-  savePerform: function ( event ) {
-
-    var channelData, id;
-
-    dojo.stopEvent( event );
-    util.log( "Saving channel." );
-    channelData = {};
-    //get prefs
-    id = parseInt( dojo.byId( "id" ).value, 10 );
-    channelData.networkId = parseInt( dojo.byId( "networkId" ).value, 10 );
-    if ( !this.getItem( "name", "Channel name", channelData, false, true ) ) { return; }
-    if ( !this.getItem( "autoJoin", "Auto join", channelData, true, true ) ) { return; }
-    if ( id === 0 ) {
-      dojo.publish( diom.topics.CHANNEL_ADD, [ channelData ] );
-    }
-    this.selectNetwork( );
+  clearForm: function ( ) {
+    dojo.byId( "command" ).value = "";
+    this.inherited( arguments );
   },
   destroy: function ( ) {
     dojo.disconnect( this.closePrefsBtnConnection );
@@ -122,37 +105,63 @@ dojo.declare( "diom.view.preferences.Performs", diom.view.preferences.Preference
       }
     }
   },
-  deleteChannel: function ( id, networkId ) {
-    dojo.publish( diom.topics.CHANNEL_DELETE, [ id, networkId ] );
+  deletePerform: function ( id, networkId ) {
+    dojo.publish( diom.topics.PERFORM_DELETE, [ id, networkId ] );
+    this.selectNetwork( );
+  },
+  savePerform: function ( event ) {
+
+    var performData, id;
+
+    dojo.stopEvent( event );
+    util.log( "Saving perform." );
+    performData = {};
+    id = parseInt( dojo.byId( "id" ).value, 10 );
+    performData.networkId = parseInt( dojo.byId( "networkId" ).value, 10 );
+    if ( !this.getItem( "name", "Perform name", performData, false, true ) ) { return; }
+    if ( !this.getItem( "command", "Command", performData, false, true ) ) { return; }
+    if ( !this.getItem( "active", "Active", performData, true, true ) ) { return; }
+    if ( id === 0 ) {
+      dojo.publish( diom.topics.PERFORM_ADD, [ performData ] );
+    }
     this.selectNetwork( );
   },
   getContent: function ( ) {
     return [
       '<div class="preferences">',
-        '<h1>Channels</h1>',
+        '<h1>Performs</h1>',
         '<div class="preferencesList">',
           '<div id="networksList"></div>',
-        '</div>',
-        '<div id="channelInfo" class="hidden">',
-          '<div class="preferencesList">',
-            '<div>Channels for <span id="networkName"></span>:</div>',
-            '<div id="channelPreferenceList">Moo</div>',
-              '<button id="addFormBtn">Add a Channel</button>',
-          '</div>',
-          '<form class="hidden" id="channelForm">',
-            '<input type="hidden" id="id" value="0"/>',
-            '<input type="hidden" id="networkId" value="0"/>',
-            '<div class="formItem">',
-              '<label for="name">Name: </label> <input type="text" id="name" />',
-            '</div>',
-            '<div class="formItem">',
-              '<label for="autoJoin">Auto join: </label> <input type="checkbox" id="autoJoin"  checked="true"/>',
-            '</div>',
+          '<div id="performInfo" class="hidden">',
             '<div class="preferencesList">',
+              '<div>Performs for <span id="networkName"></span>:</div>',
+              '<div id="performList"></div>',
+              '<button id="addFormBtn">Add a Perform</button>',
+            '</div>',
+            '<form class="hidden" id="performForm">',
+              '<p>You can use variables such as $nick (for your nick) and $server.</p>',
+              '<input type="hidden" id="id" value="0"/>',
+              '<input type="hidden" id="networkId" value="0"/>',
+              '<div class="formItem">',
+                '<label for="name">Name: </label> <input type="text" id="name" />',
+              '</div>',
+              '<div class="formItem">',
+                '<label for="command">Command: </label> <input type="text" id="command" />',
+              '</div>',
+              '<div class="formItem">',
+                '<label for="active">Active: </label> <input type="checkbox" id="active"  checked="true"/>',
+              '</div>',
               '<input type="submit" value="Save" />',
               '<button id="closeFormBtn">Cancel</button>',
-            '</div>',
-          '</form>',
+            '</form>',
+          '</div>',
+        '</div>',
+        '<div id="PerformInfo" class="hidden">',
+          '<div class="preferencesList">',
+            '<div>Performs for <span id="networkName"></span>:</div>',
+            '<div id="performsList"></div>',
+              '<button id="addFormBtn">Add a Perform</button>',
+          '</div>',
         '</div>',
         '<div class="preferencesList">',
           '<button id="closeWindowBtn">Close Window</button>',

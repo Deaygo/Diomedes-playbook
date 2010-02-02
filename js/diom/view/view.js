@@ -523,7 +523,7 @@ dojo.declare( "diom.view.View", null, {
   },
 
   handlePerformBtnClick: function ( e ) {
-    return diom.view.preferences.Performs( this.model.networks, this );
+    return new diom.view.preferences.Performs( this.model.networks, this );
   },
 
   handleAboutBtnClick: function ( e ) {
