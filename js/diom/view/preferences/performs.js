@@ -23,7 +23,7 @@ dojo.declare( "diom.view.preferences.Performs", diom.view.preferences.Preference
     this.closeFormBtnConnection = null;
     this.saveFormConnection = null;
     this.addFormBtnConnection = null;
-    this.channelPreferenceListConnection = null;
+    this.aliasListConnection = null;
     this.networks = null;
     this.model = model;
     this.view = view;
@@ -38,7 +38,7 @@ dojo.declare( "diom.view.preferences.Performs", diom.view.preferences.Preference
     this.closeFormBtnConnection = dojo.connect( dojo.byId( "closeFormBtn" ), "onclick", dojo.hitch( this, "closeForm" ) );
     this.saveFormConnection = dojo.connect( dojo.byId( "performForm" ), "onsubmit", dojo.hitch( this, "savePerform" ) );
     this.addFormBtnConnection = dojo.connect( dojo.byId( "addFormBtn" ), "onclick", dojo.hitch( this, "showAddForm" ) );
-    this.channelPreferenceListConnection = dojo.connect( dojo.byId( "performList" ), "onclick", dojo.hitch( this, "handleListClick" ) );
+    this.aliasListConnection = dojo.connect( dojo.byId( "performList" ), "onclick", dojo.hitch( this, "handleListClick" ) );
     this.displayNetworks( );
     this.open( );
   },
@@ -86,6 +86,8 @@ dojo.declare( "diom.view.preferences.Performs", diom.view.preferences.Preference
     delete this.saveFormConnection;
     dojo.disconnect( this.addFormBtnConnection );
     delete this.addFormBtnConnection;
+    dojo.disconnect( this.aliasListConnection );
+    delete this.aliasListConnection;
     this.inherited( arguments );
   },
   handleListClick: function ( event ) {

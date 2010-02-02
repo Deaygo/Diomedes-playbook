@@ -99,6 +99,8 @@ dojo.declare( "diom.view.preferences.Channels", diom.view.preferences.Preference
     delete this.saveFormConnection;
     dojo.disconnect( this.addFormBtnConnection );
     delete this.addFormBtnConnection;
+    dojo.disconnect( this.channelPreferenceListConnection );
+    delete this.channelPreferenceListConnection;
     this.inherited( arguments );
   },
   handleListClick: function ( event ) {

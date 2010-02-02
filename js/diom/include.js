@@ -49,6 +49,7 @@ dojo.require( "diom.view.preferences.networks" );
 dojo.require( "diom.view.preferences.servers" );
 dojo.require( "diom.view.preferences.channels" );
 dojo.require( "diom.view.preferences.performs" );
+dojo.require( "diom.view.preferences.aliases" );
 
 //controller
 dojo.require( "diom.controller.controller" );

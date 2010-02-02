@@ -587,22 +587,7 @@ dojo.declare( "diom.view.View", null, {
   },
 
   handleAliasesBtnClick: function ( e ) {
-    this.model.aliases.getAliases( dojo.hitch( this, "openAliasesWindow" ) );
-  },
-
-  openAliasesWindow: function ( aliases ) {
-		var x, y, win;
-    if ( !aliases ) { aliases = []; }
-    window.aliasesBridge = {
-      util : util,
-			dojo : dojo,
-      topics : diom.topics,
-      aliases : aliases
-    };
-    x = window.nativeWindow.x + 150;
-    y = window.nativeWindow.y + 100;
-    win = window.open("aliases.html", "aliasesWindow", "height=400, scrollbars=yes, width=600, top=" + y + ", left=" + x);
-    win = win.nativeWindow;
+    return new diom.view.preferences.Aliases( this.model.aliases, this );
   },
 
   handleNetworksBtnClick: function ( e ) {
