@@ -53,14 +53,14 @@ dojo.declare( "diom.view.preferences.Networks", diom.view.preferences.Preference
     networkData = {};
     //get prefs
     id = parseInt( dojo.byId( "id" ).value, 10 );
-    if ( !this.getItem( "name", "Network name", networkData ) ) { return; }
-    if ( !this.getItem( "nick", "Nick", networkData ) ) { return; }
-    if ( !this.getItem( "altNick", "Alternate nick", networkData ) ) { return; }
-    if ( !this.getItem( "userName", "Username", networkData ) ) { return; }
-    if ( !this.getItem( "realName", "Real name", networkData ) ) { return; }
-    if ( !this.getItem( "finger", "Finger", networkData ) ) { return; }
-    if ( !this.getItem( "active", "Active", networkData, true ) ) { return; }
-    if ( !this.getItem( "autoJoin", "Auto join", networkData, true ) ) { return; }
+    if ( !this.getItem( "name", "Network name", networkData, false, true ) ) { return; }
+    if ( !this.getItem( "nick", "Nick", networkData, false, true ) ) { return; }
+    if ( !this.getItem( "altNick", "Alternate nick", networkData, false, true ) ) { return; }
+    if ( !this.getItem( "userName", "Username", networkData, false, true ) ) { return; }
+    if ( !this.getItem( "realName", "Real name", networkData, false, true ) ) { return; }
+    if ( !this.getItem( "finger", "Finger", networkData, false, true ) ) { return; }
+    if ( !this.getItem( "active", "Active", networkData, true, true ) ) { return; }
+    if ( !this.getItem( "autoJoin", "Auto join", networkData, true, true ) ) { return; }
     if ( id === 0 ) {
       dojo.publish( diom.topics.NETWORK_ADD, [ networkData ] );
       this.closeForm( event );
@@ -89,25 +89,6 @@ dojo.declare( "diom.view.preferences.Networks", diom.view.preferences.Preference
         return;
       }
     }
-  },
-  getItem: function ( id, name, dataStore, isCheckbox ) {
-
-    var value;
-
-    if ( isCheckbox ) {
-      value = dojo.byId( id ).checked;
-      if ( value === true || value === false ) {
-        dataStore[ id ] = value;
-        return true;
-      }
-    }
-    value = dojo.trim( dojo.byId( id ).value );
-    if ( !value ) {
-      this.view.notify( name + " required." );
-      return false;
-    }
-    dataStore[ id ] = value;
-    return true;
   },
   destroy: function ( ) {
     dojo.disconnect( this.closePrefsBtnConnection );

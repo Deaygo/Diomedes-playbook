@@ -142,6 +142,25 @@ dojo.declare( "diom.view.preferences.PreferencesBase", diom.view.dialog.Dialog, 
     }
     dojo.publish( diom.topics.PREFS_SAVE, [ this.prefs ] );
   },
+  getItem: function ( id, name, dataStore, isCheckbox, required ) {
+
+    var value;
+
+    if ( isCheckbox ) {
+      value = dojo.byId( id ).checked;
+      if ( value === true || value === false ) {
+        dataStore[ id ] = value;
+        return true;
+      }
+    }
+    value = dojo.trim( dojo.byId( id ).value );
+    if ( required && !value ) {
+      this.view.notify( name + " required." );
+      return false;
+    }
+    dataStore[ id ] = value;
+    return true;
+  },
   showAddForm: function ( event ) {
     dojo.stopEvent( event );
     this.clearForm( );

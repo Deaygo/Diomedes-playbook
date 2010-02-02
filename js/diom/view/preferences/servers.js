@@ -15,16 +15,13 @@ dojo.declare( "diom.view.preferences.Servers", diom.view.preferences.Preferences
     constructor: "manual"
   },
   constructor: function ( model, view ) {
-    //this.model.networks.getNetworks( callback );
-    //this.model.networks.getServers( callback );
     this.title = "Servers";
     this.selectedNetworkId = null;
-    /*
     this.closePrefsBtnConnection = null;
+    this.closeFormBtnConnection = null;
     this.saveFormConnection = null;
-    */
     this.addFormBtnConnection = null;
-    this.networksListConnection = null;
+    this.serverListConnection = null;
     this.networks = null;
     this.model = model;
     this.view = view;
@@ -35,12 +32,11 @@ dojo.declare( "diom.view.preferences.Servers", diom.view.preferences.Preferences
   },
   initialize: function ( data ) {
     this.networks = data;
-    /*
     this.closePrefsBtnConnection = dojo.connect( dojo.byId( "closeWindowBtn" ), "onclick", dojo.hitch( this, "handleClose" ) );
-    this.closePrefsBtnConnection = dojo.connect( dojo.byId( "closeFormBtn" ), "onclick", dojo.hitch( this, "closeForm" ) );
-    this.saveFormConnection = dojo.connect( dojo.byId( "networksForm" ), "onsubmit", dojo.hitch( this, "saveNetworks" ) );
-    */
+    this.closeFormBtnConnection = dojo.connect( dojo.byId( "closeFormBtn" ), "onclick", dojo.hitch( this, "closeForm" ) );
+    this.saveFormConnection = dojo.connect( dojo.byId( "serverForm" ), "onsubmit", dojo.hitch( this, "saveServer" ) );
     this.addFormBtnConnection = dojo.connect( dojo.byId( "addFormBtn" ), "onclick", dojo.hitch( this, "showAddForm" ) );
+    this.serverListConnection = dojo.connect( dojo.byId( "serverList" ), "onclick", dojo.hitch( this, "handleListClick" ) );
     this.displayNetworks( );
     this.open( );
   },
@@ -49,27 +45,39 @@ dojo.declare( "diom.view.preferences.Servers", diom.view.preferences.Preferences
     this.displayNetworks( );
   },
   closeForm: function ( event ) {
-    dojo.stopEvent( event );
-    dojo.addClass( dojo.byId( "networksForm" ), "hidden" );
+    if ( event ) {
+      dojo.stopEvent( event );
+    }
+    dojo.addClass( dojo.byId( "serverForm" ), "hidden" );
   },
-  getItem: function ( id, name, dataStore, isCheckbox ) {
+  saveServer: function ( event ) {
 
-    var value;
+    var serverData, id;
 
-    if ( isCheckbox ) {
-      value = dojo.byId( id ).checked;
-      if ( value === true || value === false ) {
-        dataStore[ id ] = value;
-        return true;
-      }
+    dojo.stopEvent( event );
+    util.log( "Saving server." );
+    serverData = {};
+    //get prefs
+    id = parseInt( dojo.byId( "id" ).value, 10 );
+    serverData.networkId = parseInt( dojo.byId( "networkId" ).value, 10 );
+    if ( !this.getItem( "name", "Server name", serverData, false, true ) ) { return; }
+    if ( !this.getItem( "active", "Active", serverData, true, true ) ) { return; }
+    if ( !this.getItem( "password", "Password", serverData, false, false ) ) { return; }
+    if ( id === 0 ) {
+      dojo.publish( diom.topics.SERVER_ADD, [ serverData ] );
     }
-    value = dojo.trim( dojo.byId( id ).value );
-    if ( !value ) {
-      this.view.notify( name + " required." );
-      return false;
-    }
-    dataStore[ id ] = value;
-    return true;
+    this.clearForm( );
+    this.selectNetwork( );
+  },
+  deselectServer: function ( ) {
+
+    var node;
+
+    dojo.byId( "selectNetwork" ).selectedIndex = 0;
+    node = dojo.byId( "serverInfo" );
+    this.selectedNetworkId = null;
+    dojo.addClass( node, "hidden" );
+    dojo.addClass( dojo.byId( "serverForm" ), "hidden" );
   },
   destroy: function ( ) {
     dojo.disconnect( this.closePrefsBtnConnection );
@@ -95,11 +103,12 @@ dojo.declare( "diom.view.preferences.Servers", diom.view.preferences.Preferences
       this.networksListConnection = dojo.connect( dojo.byId( "selectNetwork" ), "onchange", dojo.hitch( this, "selectNetwork" ) );
     } ), 0 );
   },
-  selectNetwork: function ( event ) {
+  selectNetwork: function ( ) {
 
     var node;
 
-    node = event.target;
+    this.closeForm( );
+    node = dojo.byId( "selectNetwork" );
     this.selectedNetworkId = parseInt( node.options[ node.selectedIndex ].value, 10 );
     this.model.getServers( this.selectedNetworkId, dojo.hitch( this, "listServers" ) );
   },
@@ -128,7 +137,7 @@ dojo.declare( "diom.view.preferences.Servers", diom.view.preferences.Preferences
   getServerHTML: function ( server ) {
     return [
       '<div><span class="servername">', server.name, '</span> ',
-      '<a href="#" id="delete.', server.id, '.', server.networkId, '">Delete</a> ',
+      '<button id="delete.', server.id, '.', server.networkId, '">Delete</button> ',
       '</div>'].join( "" );
   },
   getNetworkName: function ( id ) {
@@ -160,24 +169,24 @@ dojo.declare( "diom.view.preferences.Servers", diom.view.preferences.Preferences
   },
   handleListClick: function ( event ) {
 
-    var id, parts, cmd;
+    var id, parts, cmd, networkId;
 
     id = event.target.id;
     if ( id ) {
       parts = id.split( "." );
       if ( parts.length ) {
         cmd = parts[ 0 ];
-        id = parseInt( parts[ 1 ], 10 );
-        if ( cmd === "edit" ) {
-          dojo.stopEvent( event );
-          this.showEditForm( id );
-        } else if ( cmd === "delete" ) {
-          dojo.stopEvent( event );
-          this.deleteNetwork( id );
-          this.closeForm( event );
+        id = parts [ 1 ];
+        networkId = parts[ 2 ];
+        if ( cmd === "delete" ) {
+          this.deleteServer( id, networkId );
         }
       }
     }
+  },
+  deleteServer: function ( id, networkId ) {
+    dojo.publish( diom.topics.SERVER_DELETE, [ id, networkId ] );
+    this.selectNetwork( );
   },
   showEditForm: function ( id ) {
 
@@ -213,10 +222,10 @@ dojo.declare( "diom.view.preferences.Servers", diom.view.preferences.Preferences
         '<div id="serverInfo" class="hidden">',
           '<div class="preferencesList">',
             '<div>Servers for <span id="networkName"></span>:</div>',
-            '<div id="serverList" onclick="handleListClick( event );"></div>',
+            '<div id="serverList"></div>',
             '<button id="addFormBtn">Add a Server</button>',
           '</div>',
-          '<form class="hidden" id="serverForm" onsubmit="saveServer( event );">',
+          '<form class="hidden" id="serverForm"">',
             '<input type="hidden" id="id" value="0"/>',
             '<input type="hidden" id="networkId" value="0"/>',
             '<div class="formItem">',
@@ -230,12 +239,12 @@ dojo.declare( "diom.view.preferences.Servers", diom.view.preferences.Preferences
             '</div>',
             '<div class="preferencesList">',
               '<input type="submit" value="Save" />',
-              '<button onclick="closeForm( event );">Cancel</button>',
+              '<button id="closeFormBtn">Cancel</button>',
             '</div>',
           '</form>',
         '</div>',
         '<div class="preferencesList">',
-          '<button onclick="closeWindow( event );">Close Window</button>',
+          '<button id="closeWindowBtn">Close Window</button>',
         '</div>',
       '</div>'
     ].join( "" );
