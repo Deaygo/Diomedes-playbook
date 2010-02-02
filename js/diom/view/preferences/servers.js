@@ -81,27 +81,15 @@ dojo.declare( "diom.view.preferences.Servers", diom.view.preferences.Preferences
   },
   destroy: function ( ) {
     dojo.disconnect( this.closePrefsBtnConnection );
-  },
-  displayNetworks: function ( ) {
-
-    var node, r, i;
-
-    node = dojo.byId( "networksList" );
-    node.innerHTML = "";
-    if ( this.networks && this.networks.length ) {
-      r = ['<select id="selectNetwork" onchange="selectNetwork( event );">'];
-      r.push( '<option selected="selected" disabled="disabled">Select a network</option>' );
-      for ( i = 0; i < this.networks.length; i++ ) {
-        r.push( this.getNetworkHTML( this.networks[ i ] ) );
-      }
-      r.push('</select>');
-      node.innerHTML = r.join( "" );
-    } else {
-      node.innerHTML = "You have not created any networks.";
-    }
-    setTimeout( dojo.hitch( this, function ( ) {
-      this.networksListConnection = dojo.connect( dojo.byId( "selectNetwork" ), "onchange", dojo.hitch( this, "selectNetwork" ) );
-    } ), 0 );
+    delete this.closePrefsBtnConnection;
+    dojo.disconnect( this.closeFormBtnConnection );
+    delete this.closeFormBtnConnection;
+    dojo.disconnect( this.saveFormConnection );
+    delete this.saveFormConnection;
+    dojo.disconnect( this.addFormBtnConnection );
+    delete this.addFormBtnConnection;
+    dojo.disconnect( this.serverListConnection );
+    delete this.serverListConnection;
   },
   selectNetwork: function ( ) {
 
@@ -139,19 +127,6 @@ dojo.declare( "diom.view.preferences.Servers", diom.view.preferences.Preferences
       '<div><span class="servername">', server.name, '</span> ',
       '<button id="delete.', server.id, '.', server.networkId, '">Delete</button> ',
       '</div>'].join( "" );
-  },
-  getNetworkName: function ( id ) {
-
-
-    var i, network;
-
-    for ( i = 0; i < this.networks.length; i++ ) {
-      network = this.networks[ i ];
-      if ( id === network.id ) {
-        return network.name;
-      }
-    }
-    return null;
   },
   showServerInfo: function ( ) {
     dojo.removeClass( dojo.byId( "serverInfo" ), "hidden" );

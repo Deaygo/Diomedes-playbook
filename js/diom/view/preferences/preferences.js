@@ -142,6 +142,39 @@ dojo.declare( "diom.view.preferences.PreferencesBase", diom.view.dialog.Dialog, 
     }
     dojo.publish( diom.topics.PREFS_SAVE, [ this.prefs ] );
   },
+  getNetworkName: function ( id ) {
+
+    var i, network;
+
+    for ( i = 0; i < this.networks.length; i++ ) {
+      network = this.networks[ i ];
+      if ( id === network.id ) {
+        return network.name;
+      }
+    }
+    return null;
+  },
+  displayNetworks: function ( ) {
+
+    var node, r, i;
+
+    node = dojo.byId( "networksList" );
+    node.innerHTML = "";
+    if ( this.networks && this.networks.length ) {
+      r = ['<select id="selectNetwork" onchange="selectNetwork( event );">'];
+      r.push( '<option selected="selected" disabled="disabled">Select a network</option>' );
+      for ( i = 0; i < this.networks.length; i++ ) {
+        r.push( this.getNetworkHTML( this.networks[ i ] ) );
+      }
+      r.push('</select>');
+      node.innerHTML = r.join( "" );
+    } else {
+      node.innerHTML = "You have not created any networks.";
+    }
+    setTimeout( dojo.hitch( this, function ( ) {
+      this.networksListConnection = dojo.connect( dojo.byId( "selectNetwork" ), "onchange", dojo.hitch( this, "selectNetwork" ) );
+    } ), 0 );
+  },
   getItem: function ( id, name, dataStore, isCheckbox, required ) {
 
     var value;
