@@ -102,6 +102,19 @@ dojo.declare( "diom.view.preferences.Networks", diom.view.preferences.Preference
     dojo.disconnect( this.saveFormConnection );
     delete this.saveFormConnection;
   },
+  displayNetworks: function ( ) {
+
+    var node, r, i;
+
+    node = dojo.byId( "networksList" );
+    node.innerHTML = "";
+    r = [];
+    if ( !this.networks ) { return; }
+    for ( i = 0; i < this.networks.length; i++ ) {
+      r.push( this.getNetworkHTML( this.networks[ i ] ) );
+    }
+    node.innerHTML = r.join( "" );
+  },
   clearForm: function ( ) {
 
     var node, pref;
