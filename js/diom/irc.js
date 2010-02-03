@@ -248,11 +248,11 @@ dojo.declare( "diom.IRCClient", null, {
     if ( !this.connectionEstablished ) {
       _d = data.split( "\r\n" );
       for ( i = 0; i < _d.length; i++ ) {
-        if ( this.serverDelegate && _d[ i ] ) {
+        if ( !this.connectionEstablished && this.serverDelegate && _d[ i ] ) {
           this.serverDelegate( this.server , _d[ i ], null );
         }
       }
-      if ( data.search( "NOTICE AUTH" ) !== -1 || data.search( this.COMMAND_NUMBERS.SERVER_CONNECT ) !== -1 )  {
+      if ( data.search( "NOTICE" ) !== -1 || data.search( this.COMMAND_NUMBERS.SERVER_CONNECT ) !== -1 )  {
         this.log( "found ident" );
         this.log( "Connection established." );
         this.connectionEstablished = true;
