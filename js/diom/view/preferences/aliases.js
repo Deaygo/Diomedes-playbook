@@ -127,7 +127,7 @@ dojo.declare( "diom.view.preferences.Aliases", diom.view.preferences.Preferences
         '<h1>Aliases</h1>',
           '<div class="preferencesList">',
             '<div id="aliasesList"></div>',
-            '<button id="addFormBtn">Add a Perform</button>',
+            '<button id="addFormBtn">Add an Alias</button>',
           '</div>',
         '<form class="hidden" id="aliasForm">',
           '<p>You can use variables such as $nick (for your nick), $channel and $server in the command.</p>',
