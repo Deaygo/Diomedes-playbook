@@ -6,8 +6,9 @@
   right: 0px;
 }
 
-#inputForm #textInput { 
+#inputForm #textInput {
   width: 100%;
+  height: 50px;
   min-width: 300px;
   overflow-y: scroll;
   overflow-x: hidden;

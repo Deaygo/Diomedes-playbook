@@ -31,7 +31,10 @@ dojo.declare( "diom.view.FormInput", null, {
 
   getValue: function ( ) {
     //TODO: add history here and uparrow behavior
-    var value = this.input.value;
+
+    var value;
+
+    value = this.input.textContent;
     this.setValue( "" );
     this.input.focus( );
     return value;
@@ -39,12 +42,19 @@ dojo.declare( "diom.view.FormInput", null, {
 
   setValue: function ( value ) {
 		var length, input;
-    input = this.input;
-    input.value = value;
-    window.setTimeout( function ( ) {
-      length = input.value.length;
-      input.setSelectionRange(length, length);
-    }, 0 );
+    editor = this.input;
+    document.execCommand( "selectAll", false, "" );
+    document.execCommand( "insertHTML", false, value );
+    //editor.document.execCommand( "insertHTML", null, "" );
+    /*
+    window.setTimeout( dojo.hitch( this, function ( ) {
+      //length = input.innerHTML.length;
+      //input.setSelectionRange(length, length);
+      console.log( "bef" );
+      this.focus( );
+      console.log( "aft" );
+    } ), 3000 );
+    */
   },
 
   focus: function ( ) {
@@ -88,11 +98,12 @@ dojo.declare( "diom.view.FormInput", null, {
   },
 
   handleInputChange: function ( e ) {
-    // window.runtime.flash.display
+    //dojo.stopEvent should prevent insert of characters
 		var key, index;
     key = e.keyCode;
     if ( key === 9 ) {
       //tab
+      dojo.stopEvent( e );
       this.tabCompletion( e );
       return;
     } else if ( key === 78 && ( e.metaKey || e.ctrlKey ) ) {
@@ -121,6 +132,7 @@ dojo.declare( "diom.view.FormInput", null, {
       return;
     } else if ( key === 13 ) {
       //enter
+      dojo.stopEvent( e );
       this.handleInput ( e );
       return;
     } else if ( key === 38 ) {
@@ -196,10 +208,11 @@ dojo.declare( "diom.view.FormInput", null, {
   },
 
   tabCompletion: function ( e ) {
+
 		var n, startIndex, word, value, c, lc,
 			list, i, listItem, listItemLC, beg,
 			end;
-    dojo.stopEvent( e );
+
     n = e.srcElement;
     this.needsResetting = true;
     if ( this.nicks.length || this.channels.length ) {
@@ -211,8 +224,9 @@ dojo.declare( "diom.view.FormInput", null, {
         lc = this.tabFragEnd;
       } else {
         c = 0;
-        value = n.value;
+        value = n.innerHTML;
         lc = n.selectionStart;
+        console.log( "selectionStart: " + lc );
         for ( c = ( lc - 1 ); c > 0; c-- ) {
           if ( value[c] === " " ) { break; }
         }

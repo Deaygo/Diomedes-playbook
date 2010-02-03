@@ -41,7 +41,7 @@
     <div id="inputFormCon">
       <form id="inputForm">
         <!-- <textarea id="textInput" name="textInput" rows="1" >/help</textarea> -->
-        <textarea id="textInput" name="textInput" rows="2" ></textarea>
+        <div id="textInput" contentEditable="true" ></div>
       </form>
     </div>
   </div>
@@ -53,19 +53,17 @@
   <script src="servicemonitor.swf" type="application/x-shockwave-flash"/>
   <script src="applicationupdater_ui.swf" type="application/x-shockwave-flash" />
   <script type="text/javascript" src="js/AIRAliases.js"></script>
-	<!--
   <script type="text/javascript" src="js/AIRIntrospector.js"></script>
-	-->
 
 	<!-- section below is for production releases -->
+	<!--
   <script type="text/javascript" src="js/release/dojo/dojo/dojo.js"></script>
   <script type="text/javascript" src="js/release/dojo/diom/diom.js"></script>
+	-->
 
 	<!-- section below is for dev -->
-	<!--
   <script type="text/javascript" src="js/dojo/dojo.js"></script>
   <script type="text/javascript" src="js/diom/diom.js"></script>
-	-->
 
 	<!-- section below is for debugging -->
 	<!--
@@ -77,7 +75,7 @@
 
     var m, v, c;
 
-    //var console =  air.Introspector.Console;
+    var console =  air.Introspector.Console;
 
     function checkClose ( e ) {
       if ( !confirm( "Are you sure you want to quit?" ) ) {
