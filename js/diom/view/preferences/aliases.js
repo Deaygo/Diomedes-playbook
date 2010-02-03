@@ -115,9 +115,6 @@ dojo.declare( "diom.view.preferences.Aliases", diom.view.preferences.Preferences
     }
   },
   deleteAlias: function ( id ) {
-
-    var newAliases, i, alias;
-
     dojo.publish( diom.topics.ALIAS_DELETE, [ id ] );
     this.updateAliases( );
   },

@@ -230,7 +230,9 @@ dojo.declare( "diom.view.preferences.PreferencesBase", diom.view.dialog.Dialog, 
     dojo.addClass( dojo.byId( this.formId ), "hidden" );
   },
   clearForm: function ( ) {
-    dojo.byId( "name" ).value = "";
+    if ( dojo.byId( "name" ) ) {
+      dojo.byId( "name" ).value = "";
+    }
     dojo.byId( "id" ).value = "0";
   }
 } );

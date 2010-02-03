@@ -522,10 +522,6 @@ dojo.declare( "diom.view.View", null, {
     this.input.destroy();
   },
 
-  handlePerformBtnClick: function ( e ) {
-    return new diom.view.preferences.Performs( this.model.networks, this );
-  },
-
   handleAboutBtnClick: function ( e ) {
 
     var params, callback, s;
@@ -559,6 +555,10 @@ dojo.declare( "diom.view.View", null, {
     this.displayHelp( );
   },
 
+  handlePerformBtnClick: function ( e ) {
+    return new diom.view.preferences.Performs( this.model.networks, this );
+  },
+
   handleChannelsBtnClick: function ( e ) {
     return new diom.view.preferences.Channels( this.model.networks, this );
   },
@@ -568,22 +568,7 @@ dojo.declare( "diom.view.View", null, {
   },
 
   handleIgnoresBtnClick: function ( e ) {
-    this.model.ignores.getIgnores( dojo.hitch( this, "openIgnoresWindow" ) );
-  },
-
-  openIgnoresWindow: function ( ignores ) {
-		var x, y, win;
-    if ( !ignores ) { ignores = []; }
-    window.ignoresBridge = {
-      util : util,
-			dojo : dojo,
-      topics : diom.topics,
-      ignores : ignores
-    };
-    x = window.nativeWindow.x + 150;
-    y = window.nativeWindow.y + 100;
-    win = window.open("ignores.html", "ignoresWindow", "height=400, scrollbars=yes, width=600, top=" + y + ", left=" + x);
-    win = win.nativeWindow;
+    return new diom.view.preferences.Ignores( this.model.ignores, this );
   },
 
   handleAliasesBtnClick: function ( e ) {
