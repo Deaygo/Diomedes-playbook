@@ -1,0 +1,23 @@
+Starting release log at version 0.1.24 revision 435, new entries at top
+
+ - Release 0.1.24 February 02, 2010
+
+    Switched from pop up windows to DOM dialogs for preferences
+    Fixed reconnection logic
+    Fixed irc client so that it is compatible with the new Freenode IRCD
+
+ - Release 0.1.23 January 30, 2010
+
+    Bug fix: reconnection attempts never stopped
+    Bug fix: reconnection created new channels over old ones, with logging enabled led to errors due to multiple attempts to read the same log file
+
+ - Previous logs lost
+
+ - Release  0.1.17 October 02, 2009
+
+    * added logging
+    * added server ping mechanism to improve client awareness of connection state
+    * added number of people count in a channel to title bar
+    * bug fixes
+
+ - Older logs lost
