@@ -50,9 +50,7 @@ dojo.declare( "diom.view.FormInput", null, {
     window.setTimeout( dojo.hitch( this, function ( ) {
       //length = input.innerHTML.length;
       //input.setSelectionRange(length, length);
-      console.log( "bef" );
       this.focus( );
-      console.log( "aft" );
     } ), 3000 );
     */
   },
@@ -207,6 +205,16 @@ dojo.declare( "diom.view.FormInput", null, {
     }
   },
 
+  getCursorPosition: function ( ) {
+
+    var sel;
+
+    sel = window.getSelection( );
+
+    return sel.baseOffset;
+
+  },
+
   tabCompletion: function ( e ) {
 
 		var n, startIndex, word, value, c, lc,
@@ -224,16 +232,18 @@ dojo.declare( "diom.view.FormInput", null, {
         lc = this.tabFragEnd;
       } else {
         c = 0;
-        value = n.innerHTML;
-        lc = n.selectionStart;
-        console.log( "selectionStart: " + lc );
+        value = n.innerText;
+        //lc = n.selectionStart;
+        lc = this.getCursorPosition( );
         for ( c = ( lc - 1 ); c > 0; c-- ) {
           if ( value[c] === " " ) { break; }
         }
         this.tabStart = c;
         this.tabFragEnd = lc;
         startIndex = 0;
-        word = dojo.trim( value.substring( c, lc ) ).toLowerCase( );
+        word = value.substring( c, lc ).toLowerCase( );
+        word = word.split( String.fromCharCode( 160 ) ).join( " " );
+        word = dojo.trim( word )
         if ( !word ) { return; }
         this.tabFragment = word;
         this.savedValue = value;
