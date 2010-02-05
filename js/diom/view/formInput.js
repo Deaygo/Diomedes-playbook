@@ -27,9 +27,11 @@ dojo.declare( "diom.view.FormInput", null, {
     this.channelName = null;
     this.serverName = null;
     this.channels = [];
+    this.errorNode = null;
     dojo.subscribe(  diom.topics.NICK_CHANGE, this, "handleNickChange" );
     this.spellEngine = new window.runtime.com.adobe.linguistics.spelling.SpellChecker( );
     this.dict = new window.runtime.com.adobe.linguistics.spelling.SpellingDictionary( );
+    this.specialChars = [ '.',';','_','?','!','"',"'",')',']' ];
     url  = new air.URLRequest( 'usa.zwl' );
     this.spellCheckLoaded = false;
     this.dict.addEventListener( air.Event.COMPLETE, dojo.hitch( this, function( event ) {
@@ -39,8 +41,39 @@ dojo.declare( "diom.view.FormInput", null, {
     this.dict.load( url );
     dojo.connect( this.form, "onsubmit", this, "handleInput" );
     dojo.connect( this.input, "onkeydown", this, "handleInputChange" );
+    dojo.connect( this.form, "oncontextmenu", this, "handleContextMenu" );
   },
 
+  handleContextMenu: function ( event ) {
+
+    var node, menu, command, suggestions, word, i,
+      suggestion;
+
+    node = event.target;
+    if ( dojo.hasClass( node, "spellingError" ) ) {
+      this.errorNode = node;
+      dojo.stopEvent( event );
+      word = node.innerText;
+      suggestions = this.spellEngine.getSuggestions( word );
+      menu = new air.NativeMenu();
+      for ( i = 0; i < suggestions.length; i++ ) {
+        suggestion = suggestions[ i ];
+        command = menu.addItem( new air.NativeMenuItem( suggestion ) );
+        command.addEventListener( air.Event.SELECT, dojo.hitch( this, "handleSpellSuggestion" ) );
+      }
+      menu.display( window.nativeWindow.stage, event.clientX, event.clientY );
+    }
+  },
+  handleSpellSuggestion: function ( event ) {
+
+    var label, value;
+
+    label = event.target.label;
+    this.errorNode.innerText = label;
+    value = this.getValue( );
+    this.setValue( value );
+
+  },
   getValue: function ( ) {
 
     var value;
@@ -102,7 +135,7 @@ dojo.declare( "diom.view.FormInput", null, {
   },
   checkSpelling: function ( value ) {
 
-    var words, i, word, passes, hasErrors, fakeBlank;
+    var words, i, word, passes, hasErrors, fakeBlank, lastChar;
 
     fakeBlank = String.fromCharCode( 160 );
     value = value.split( fakeBlank ).join( ' ' );
@@ -111,6 +144,10 @@ dojo.declare( "diom.view.FormInput", null, {
       hasErrors = false;
       for ( i = 0; i < words.length; i++ ) {
         word = words[ i ];
+        lastChar = word[ word.length - 1 ];
+        if ( this.specialChars.indexOf( lastChar ) !== -1 ) {
+          word = word.substr( 0, word.length - 1 );
+        }
         for ( var j = 0; j < word.length; j++ ) {
         }
         passes = this.spellEngine.checkWord( word );
