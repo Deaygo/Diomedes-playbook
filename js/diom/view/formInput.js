@@ -10,11 +10,12 @@ dojo.provide( "diom.view.formInput" );
 dojo.declare( "diom.view.FormInput", null, {
 
   constructor: function ( node, form ) {
+
+    var url;
+
     this.MAX_HISTORY_LENGTH = 50;
     this.input = node;
     this.form = form;
-    dojo.connect(this.form, "onsubmit", this, "handleInput");
-    dojo.connect(this.input, "onkeydown", this, "handleInputChange");
     this.nicks = [];
     this.listItemIndex = 0;
     this.input.focus( );
@@ -27,10 +28,20 @@ dojo.declare( "diom.view.FormInput", null, {
     this.serverName = null;
     this.channels = [];
     dojo.subscribe(  diom.topics.NICK_CHANGE, this, "handleNickChange" );
+    this.spellEngine = new window.runtime.com.adobe.linguistics.spelling.SpellChecker( );
+    this.dict = new window.runtime.com.adobe.linguistics.spelling.SpellingDictionary( );
+    url  = new air.URLRequest( 'usa.zwl' );
+    this.spellCheckLoaded = false;
+    this.dict.addEventListener( air.Event.COMPLETE, dojo.hitch( this, function( event ) {
+      util.log( "Dictionary loaded in spellcheck engine" + this.dict.loaded );
+      this.spellCheckLoaded = this.spellEngine.addDictionary( this.dict );
+    } ) );
+    this.dict.load( url );
+    dojo.connect( this.form, "onsubmit", this, "handleInput" );
+    dojo.connect( this.input, "onkeydown", this, "handleInputChange" );
   },
 
   getValue: function ( ) {
-    //TODO: add history here and uparrow behavior
 
     var value;
 
@@ -41,18 +52,13 @@ dojo.declare( "diom.view.FormInput", null, {
   },
 
   setValue: function ( value ) {
+
 		var length, input;
+
+    value.split( " " ).join( "&nbsp;" );
     editor = this.input;
     document.execCommand( "selectAll", false, "" );
     document.execCommand( "insertHTML", false, value );
-    //editor.document.execCommand( "insertHTML", null, "" );
-    /*
-    window.setTimeout( dojo.hitch( this, function ( ) {
-      //length = input.innerHTML.length;
-      //input.setSelectionRange(length, length);
-      this.focus( );
-    } ), 3000 );
-    */
   },
 
   focus: function ( ) {
@@ -94,7 +100,32 @@ dojo.declare( "diom.view.FormInput", null, {
       this.nicks = nicks;
     }
   },
+  checkSpelling: function ( value ) {
 
+    var words, i, word, passes, hasErrors, fakeBlank;
+
+    fakeBlank = String.fromCharCode( 160 );
+    value = value.split( fakeBlank ).join( ' ' );
+    words = value.split( ' ' );
+    if( this.spellCheckLoaded ) {
+      hasErrors = false;
+      for ( i = 0; i < words.length; i++ ) {
+        word = words[ i ];
+        for ( var j = 0; j < word.length; j++ ) {
+        }
+        passes = this.spellEngine.checkWord( word );
+        if ( !passes ) {
+          words[ i ] = this.highlightSpellingError( word );
+          hasErrors = true;
+        }
+      }
+    }
+    value = words.join( "&nbsp;" );
+    return value;
+  },
+  highlightSpellingError: function ( word ) {
+    return '<span class="spellingError">' + word + '</span>';
+  },
   handleInputChange: function ( e ) {
     //dojo.stopEvent should prevent insert of characters
 		var key, index;
@@ -149,6 +180,10 @@ dojo.declare( "diom.view.FormInput", null, {
       //page down
       dojo.publish( diom.topics.INPUT_PAGE_DOWN );
       return;
+    } else if ( key === 160 || key === 32 ) {
+      value = this.getValue( );
+      value = this.checkSpelling( value );
+      this.setValue( value + "&nbsp;" );
     } else {
       this.reset( );
     }
@@ -233,7 +268,6 @@ dojo.declare( "diom.view.FormInput", null, {
       } else {
         c = 0;
         value = n.innerText;
-        //lc = n.selectionStart;
         lc = this.getCursorPosition( );
         for ( c = ( lc - 1 ); c > 0; c-- ) {
           if ( value[c] === " " ) { break; }

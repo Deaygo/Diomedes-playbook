@@ -13,3 +13,8 @@
   overflow-y: scroll;
   overflow-x: hidden;
 }
+.spellingError {
+  display: inline-block;
+  border: 0px dotted #FF0000;
+  border-bottom-width: 2px;
+}
