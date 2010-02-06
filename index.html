@@ -14,6 +14,16 @@
 </head>
 <body id="body" onUnload="appUnload( );">
   <div id="view">
+    <div id="mainWindow">
+      <div id="activityWindow">
+        Try /help for more commands.
+      </div>
+      <div id="nickList"></div>
+      <br style="clear:both;" />
+    </div>
+    <div id="inputFormCon">
+        <div id="textInput" contentEditable="true" ></div>
+    </div>
     <div id="linksBtn">
     </div>
     <div id="prefBtn">
@@ -31,19 +41,6 @@
       <a href="#" class="titleBarBtn" id="AboutBtn">About</a>
     </div>
     <div id="channelList"></div>
-    <div id="mainWindow">
-      <div id="activityWindow">
-        Try /help for more commands.
-      </div>
-      <div id="nickList"></div>
-      <br style="clear:both;" />
-    </div>
-    <div id="inputFormCon">
-      <form id="inputForm">
-        <!-- <textarea id="textInput" name="textInput" rows="1" >/help</textarea> -->
-        <div id="textInput" contentEditable="true" ></div>
-      </form>
-    </div>
   </div>
   <div class="hidden" id="popup">
     <div id="closePopup" href="#">Close</div>

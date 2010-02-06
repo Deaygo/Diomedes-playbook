@@ -9,13 +9,12 @@ dojo.provide( "diom.view.formInput" );
 
 dojo.declare( "diom.view.FormInput", null, {
 
-  constructor: function ( node, form ) {
+  constructor: function ( node ) {
 
     var url;
 
     this.MAX_HISTORY_LENGTH = 50;
     this.input = node;
-    this.form = form;
     this.nicks = [];
     this.listItemIndex = 0;
     this.input.focus( );
@@ -40,10 +39,9 @@ dojo.declare( "diom.view.FormInput", null, {
       this.spellCheckLoaded = this.spellEngine.addDictionary( this.dict );
     } ) );
     this.dict.load( url );
-    dojo.connect( this.form, "onsubmit", this, "handleInput" );
     dojo.connect( this.input, "onkeydown", this, "handleInputChange" );
     dojo.connect( this.input, "onclick", this, "handleInputClick" );
-    dojo.connect( this.form, "oncontextmenu", this, "handleContextMenu" );
+    dojo.connect( this.input, "oncontextmenu", this, "handleContextMenu" );
   },
 
   handleContextMenu: function ( event ) {
@@ -360,7 +358,6 @@ dojo.declare( "diom.view.FormInput", null, {
     delete this.nicks;
     delete this.history;
     delete this.input;
-    delete this.form;
   }
 
 } );

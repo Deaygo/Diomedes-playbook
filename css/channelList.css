@@ -1,31 +1,36 @@
-
-#channelList {
-  overflow-x: hidden;
-  overflow-y: auto;
-  height: 60px;
-  margin-right: 40px;
-}
 .channelActivity {
-  text-align: center;
+  margin-left: 2px;
 }
 .currentChannel {
   font-weight: bold;
 }
 .channelBtn {
+  font-size: 85%;
   display: block;
   margin: 2px;
   float: left;
   border: 1px solid;
   white-space: nowrap;
   text-decoration: none;
+  width: 10%;
+  overflow: hidden;
   padding: 3px;
+  text-align: center;
+  font-size: 90%;
+}
+.closeChannelBtn {
+  display: block;
+  float: left;
+  width: 16px;
+  height: 16px;
+  background: transparent url(/images/cross_faded.png) no-repeat;
 }
 .channelBtn .channelBtnWrapper {
 }
 .channelBtnName {
-  display: inline-block;
+  text-align: center;
   margin-left: 2px;
+  display: inline-block;
   overflow: hidden;
-  max-width: 100px;
 }
 

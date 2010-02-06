@@ -17,10 +17,10 @@ body {
 
 #mainWindow {
   position: absolute;
-  top: 60px;
+  top: 0px;
   left: 0px;
   right: 0px;
-  bottom: 36px;
+  bottom: 111px;
 }
 
 #prefBtn,
@@ -28,8 +28,25 @@ body {
   width: 32px;
   height: 32px;
   position: absolute;
-  top: 3px;
+  bottom: 5px;
   z-index: 2;
+}
+#inputFormCon {
+  height: 50px;
+  position: absolute;
+  bottom: 60px;
+  left: 0px;
+  right: 0px;
+  overflow: hidden;
+}
+#channelList {
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  right: 70px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  height: 60px;
 }
 #prefBtn {
   background: transparent url( /images/preferences.png ) no-repeat;
@@ -43,7 +60,7 @@ body {
 }
 #linksBtn {
   background: transparent url( /images/links.png ) no-repeat;
-  right: 43px;
+  right: 38px;
 }
 #linksBtn:hover {
   background-image: url( /images/linksOver.png );
@@ -55,10 +72,8 @@ body {
   width: auto;
   height: auto;
   position: absolute;
-  top: 35px;;
+  bottom: 0px;
   right: 10px;
-  left: auto;
-  bottom: auto;
   z-index: 3;
   border: 1px solid;
   padding: 5px;

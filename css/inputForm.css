@@ -1,20 +1,14 @@
-#inputFormCon {
-  height: 36px;
+#textInput {
   position: absolute;
+  top: 0px;
   bottom: 0px;
   left: 0px;
   right: 0px;
-}
-#textInput {
   font-size: 85%;
   padding: 5px 5px;
-}
-
-#inputForm #textInput {
-  width: 100%;
-  height: 50px;
+  overflow: hidden;
   min-width: 300px;
-  overflow-y: scroll;
+  overflow-y: auto;
   overflow-x: hidden;
 }
 .spellingError {

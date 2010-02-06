@@ -16,7 +16,7 @@ dojo.declare( "diom.view.View", null, {
 		var prefs;
     this.model = model;
     this.prevWord = null;
-    this.input = new diom.view.FormInput( util.get( "textInput" ), util.get("inputForm") );
+    this.input = new diom.view.FormInput( util.get( "textInput" ) );
     this.popup = util.get( "popup" );
     this.popupContents = util.get( "popupContents" );
     this.linkView = new diom.view.LinkView( this.popupContents );
@@ -450,13 +450,13 @@ dojo.declare( "diom.view.View", null, {
         '" name="',
         this.sanitize( channelKey ),
         '">',
+          ' <span class="closeChannelBtn"></span>',
+          '</span> ',
           ' <span class="channelBtnWrapper"> ',
           channelActivity,
           ' <span class="channelBtnName" >',
             this.sanitize( channelName ),
           ' </span>',
-          ' <span class="closeChannelBtn">x</span>',
-          '</span> ',
         '</a> '
       ].join( "" );
   },
