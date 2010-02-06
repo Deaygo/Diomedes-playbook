@@ -32,6 +32,7 @@ dojo.declare( "diom.view.FormInput", null, {
     this.spellEngine = new window.runtime.com.adobe.linguistics.spelling.SpellChecker( );
     this.dict = new window.runtime.com.adobe.linguistics.spelling.SpellingDictionary( );
     this.specialChars = [ '.',';','_','?','!','"',"'",')',']' ];
+    this.fakeBlank = String.fromCharCode( 160 );
     url  = new air.URLRequest( 'usa.zwl' );
     this.spellCheckLoaded = false;
     this.dict.addEventListener( air.Event.COMPLETE, dojo.hitch( this, function( event ) {
@@ -41,6 +42,7 @@ dojo.declare( "diom.view.FormInput", null, {
     this.dict.load( url );
     dojo.connect( this.form, "onsubmit", this, "handleInput" );
     dojo.connect( this.input, "onkeydown", this, "handleInputChange" );
+    dojo.connect( this.input, "onclick", this, "handleInputClick" );
     dojo.connect( this.form, "oncontextmenu", this, "handleContextMenu" );
   },
 
@@ -56,10 +58,14 @@ dojo.declare( "diom.view.FormInput", null, {
       word = node.innerText;
       suggestions = this.spellEngine.getSuggestions( word );
       menu = new air.NativeMenu();
-      for ( i = 0; i < suggestions.length; i++ ) {
-        suggestion = suggestions[ i ];
-        command = menu.addItem( new air.NativeMenuItem( suggestion ) );
-        command.addEventListener( air.Event.SELECT, dojo.hitch( this, "handleSpellSuggestion" ) );
+      if ( suggestions && suggestions.length ) {
+        for ( i = 0; i < suggestions.length; i++ ) {
+          suggestion = suggestions[ i ];
+          command = menu.addItem( new air.NativeMenuItem( suggestion ) );
+          command.addEventListener( air.Event.SELECT, dojo.hitch( this, "handleSpellSuggestion" ) );
+        }
+      } else {
+          command = menu.addItem( new air.NativeMenuItem( "No suggestions found" ) );
       }
       menu.display( window.nativeWindow.stage, event.clientX, event.clientY );
     }
@@ -72,6 +78,7 @@ dojo.declare( "diom.view.FormInput", null, {
     this.errorNode.innerText = label;
     value = this.getValue( );
     this.setValue( value );
+    window.getSelection( ).collapseToEnd( );
 
   },
   getValue: function ( ) {
@@ -81,6 +88,7 @@ dojo.declare( "diom.view.FormInput", null, {
     value = this.input.textContent;
     this.setValue( "" );
     this.input.focus( );
+    value = value.split( this.fakeBlank ).join( ' ' );
     return value;
   },
 
@@ -89,13 +97,13 @@ dojo.declare( "diom.view.FormInput", null, {
 		var length, input;
 
     value.split( " " ).join( "&nbsp;" );
-    editor = this.input;
     document.execCommand( "selectAll", false, "" );
     document.execCommand( "insertHTML", false, value );
   },
 
   focus: function ( ) {
     this.input.focus( );
+    window.getSelection( ).collapseToEnd( );
   },
 
   handleInput: function ( e ) {
@@ -133,12 +141,12 @@ dojo.declare( "diom.view.FormInput", null, {
       this.nicks = nicks;
     }
   },
-  checkSpelling: function ( value ) {
+  checkSpelling: function ( ) {
 
-    var words, i, word, passes, hasErrors, fakeBlank, lastChar;
+    var words, i, word, passes, hasErrors, lastChar,
+      value, begTime, endTime;
 
-    fakeBlank = String.fromCharCode( 160 );
-    value = value.split( fakeBlank ).join( ' ' );
+    value = this.getValue( );
     words = value.split( ' ' );
     if( this.spellCheckLoaded ) {
       hasErrors = false;
@@ -148,8 +156,6 @@ dojo.declare( "diom.view.FormInput", null, {
         if ( this.specialChars.indexOf( lastChar ) !== -1 ) {
           word = word.substr( 0, word.length - 1 );
         }
-        for ( var j = 0; j < word.length; j++ ) {
-        }
         passes = this.spellEngine.checkWord( word );
         if ( !passes ) {
           words[ i ] = this.highlightSpellingError( word );
@@ -158,10 +164,10 @@ dojo.declare( "diom.view.FormInput", null, {
       }
     }
     value = words.join( "&nbsp;" );
-    return value;
+    this.setValue( value );
   },
   highlightSpellingError: function ( word ) {
-    return '<span class="spellingError">' + word + '</span>';
+    return [ '<span class="spellingError">', word, '</span>' ].join( "" );
   },
   handleInputChange: function ( e ) {
     //dojo.stopEvent should prevent insert of characters
@@ -196,6 +202,9 @@ dojo.declare( "diom.view.FormInput", null, {
       dojo.stopEvent( e );
       dojo.publish( diom.topics.INPUT_CHANNEL_PART );
       return;
+    } else if ( key === 83 && ( e.metaKey || e.ctrlKey ) ) {
+      dojo.stopEvent( e );
+      this.checkSpelling( );
     } else if ( key === 13 ) {
       //enter
       dojo.stopEvent( e );
@@ -218,9 +227,7 @@ dojo.declare( "diom.view.FormInput", null, {
       dojo.publish( diom.topics.INPUT_PAGE_DOWN );
       return;
     } else if ( key === 160 || key === 32 ) {
-      value = this.getValue( );
-      value = this.checkSpelling( value );
-      this.setValue( value + "&nbsp;" );
+      //this.checkSpelling( );
     } else {
       this.reset( );
     }
@@ -233,7 +240,9 @@ dojo.declare( "diom.view.FormInput", null, {
       }
     }
   },
-
+  handleInputClick: function ( e ) {
+    dojo.stopEvent( e );
+  },
 
   handleHistoryUp: function ( ) {
 		var value;
@@ -314,7 +323,7 @@ dojo.declare( "diom.view.FormInput", null, {
         startIndex = 0;
         word = value.substring( c, lc ).toLowerCase( );
         word = word.split( String.fromCharCode( 160 ) ).join( " " );
-        word = dojo.trim( word )
+        word = dojo.trim( word );
         if ( !word ) { return; }
         this.tabFragment = word;
         this.savedValue = value;

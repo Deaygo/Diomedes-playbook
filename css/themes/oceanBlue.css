@@ -101,6 +101,9 @@ a {
 .extraInfo {
   border-color: #ECCD65;
 }
+.spellingError {
+  border-color: #ECCD65;
+}
 
 /* DIALOG */
 .dialog {

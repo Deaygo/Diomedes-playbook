@@ -5,6 +5,10 @@
   left: 0px;
   right: 0px;
 }
+#textInput {
+  font-size: 85%;
+  padding: 5px 5px;
+}
 
 #inputForm #textInput {
   width: 100%;
@@ -15,6 +19,6 @@
 }
 .spellingError {
   display: inline-block;
-  border: 0px dotted #FF0000;
+  border: 0px dotted;
   border-bottom-width: 2px;
 }

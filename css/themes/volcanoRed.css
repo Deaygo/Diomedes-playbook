@@ -103,7 +103,9 @@ a {
 .extraInfo {
   border-color: #CC0000;
 }
-
+.spellingError {
+  border-color: #ECCD65;
+}
 
 /* DIALOG */
 .dialog {

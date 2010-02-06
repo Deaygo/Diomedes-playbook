@@ -2,7 +2,7 @@
 
 set -e
 
-#./checkErrors
+./checkErrors
 ./createRelease
 
 jsFiles=(
@@ -28,10 +28,11 @@ binaryName="Diomedes.air"
 htmlFiles="index.html"
 resourceDirs="icons/ css/ images/"
 configFile="Diomedes-app.xml"
+otherResources="usa.zwl"
 xmlFiles="updateConfig.xml preferences.xml"
-swfFiles="servicemonitor.swf applicationupdater_ui.swf"
+swfFiles="servicemonitor.swf applicationupdater_ui.swf spellingENgine.swf"
 
-configVars="${cert} ${binaryName} ${configFile} ${xmlFiles} ${htmlFiles} ${swfFiles} ${jsFilesAdded} ${resourceDirs} LICENSE"
+configVars="${cert} ${binaryName} ${configFile} ${xmlFiles} ${htmlFiles} ${swfFiles} ${otherResources} ${jsFilesAdded} ${resourceDirs} LICENSE"
 echo configVars: $configVars
 
 ~/air/bin/adt $configVars

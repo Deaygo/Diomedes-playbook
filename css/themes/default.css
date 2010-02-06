@@ -77,6 +77,11 @@ a {
 .extraInfo {
   border-color: #000;
 }
+
+.spellingError {
+  border-color: #FF0000;
+}
+
 /* DIALOG */
 .dialog {
   background: #FFF;
