@@ -10,6 +10,7 @@
 dojo.provide( "diom.view.preferences.preferences" );
 
 dojo.declare( "diom.view.preferences.PreferencesBase", diom.view.dialog.Dialog, {
+  MAX_WIDTH: 600,
   "-chains-": {
     constructor: "manual"
   },
@@ -19,6 +20,9 @@ dojo.declare( "diom.view.preferences.PreferencesBase", diom.view.dialog.Dialog, 
 
     height = Math.round( ( window.nativeWindow.height/3 ) * 2 );
     width = Math.round( ( window.nativeWindow.width/5 ) * 4 );
+    if ( width > this.MAX_WIDTH ) {
+      width = this.MAX_WIDTH;
+    }
     params = {
       center: false,
       auto: false,
