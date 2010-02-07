@@ -23,8 +23,7 @@ body {
   bottom: 111px;
 }
 
-#prefBtn,
-#linksBtn {
+#prefBtn {
   width: 32px;
   height: 32px;
   position: absolute;
@@ -43,7 +42,7 @@ body {
   position: absolute;
   bottom: 0px;
   left: 0px;
-  right: 70px;
+  right: 40px;
   overflow-x: hidden;
   overflow-y: auto;
   height: 60px;
@@ -57,16 +56,6 @@ body {
 }
 #prefBtn:active {
   background-image: url( /images/preferencesDown.png );
-}
-#linksBtn {
-  background: transparent url( /images/links.png ) no-repeat;
-  right: 38px;
-}
-#linksBtn:hover {
-  background-image: url( /images/linksOver.png );
-}
-#linksBtn:active {
-  background-image: url( /images/linksDown.png );
 }
 #titleBar {
   width: auto;

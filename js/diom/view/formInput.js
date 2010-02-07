@@ -3,7 +3,7 @@
 /*jslint regexp: false */
 /*jslint plusplus: false */
 /*jslint passfail: true */
-/*global window, dojo, util, diom, air, document */
+/*global window, dojo, util, diom, air, document, confirm */
 
 dojo.provide( "diom.view.formInput" );
 
@@ -49,7 +49,7 @@ dojo.declare( "diom.view.FormInput", null, {
 
     var data, lines;
 
-    var data = event.clipboardData.getData( "text/plain" );
+    data = event.clipboardData.getData( "text/plain" );
     lines = data.split( air.File.lineEnding );
     if ( lines.length > 1 ) {
       dojo.stopEvent( event );
