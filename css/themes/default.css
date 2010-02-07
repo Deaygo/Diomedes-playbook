@@ -8,10 +8,10 @@ a {
   color: blue;
 }
 #view {
-  border-color: #444;
+  border-color: #999;
 }
 #activityWindow {
-  border-color: #444;
+  border-color: #999;
 }
 .messageNick {
   color: #B22222;
@@ -23,10 +23,10 @@ a {
   color: #FF0000;
 }
 .messageText {
-  border-color: #444;
+  border-color: #999;
 }
 #activityWindow {
-  border-color: #444;
+  border-color: #999;
 }
 .hasActivity {
   color: #FF0000;
@@ -46,9 +46,12 @@ a {
   background-color: #FF0000 !important;
   color: #FFF !important;
 }
+#nickList {
+  color: #000;
+  border-color: #999;
+}
 #nickList .op {
   color: #FF0000;
-  border-color: #000;
 }
 #nickList .halfOp {
   color: #FFF000;
@@ -58,13 +61,13 @@ a {
 }
 
 .channelBtn {
-  border-color: #000;
+  border-color: #999;
   color: #000;
 }
 
 #titleBar {
   background: #FFF;
-  border-color: #000;
+  border-color: #999;
 }
 #titleBar a {
   color: #000;
@@ -75,7 +78,7 @@ a {
 }
 .linkLogItem,
 .extraInfo {
-  border-color: #000;
+  border-color: #999;
 }
 
 .spellingError {
@@ -85,7 +88,7 @@ a {
 /* DIALOG */
 .dialog {
   background: #FFF;
-  border-color: #000;
+  border-color: #999;
 }
 .dialogHeader {
   background: #F9F9F9;
@@ -100,3 +103,7 @@ a {
 .dialogContent {
   background: #FFF;
 }
+#textInput {
+  border-color: #999;
+}
+

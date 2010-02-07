@@ -133,6 +133,9 @@ input[type="text"], input[type="password"]{
   border-color: #A4A9AD;
   outline-style: none;
 }
+#textInput {
+  border-color: #555;
+}
 
 /*
   #000 Black

@@ -132,6 +132,9 @@ input[type="text"], input[type="password"]{
   color: #ECCD65;
   border-color: #FF4C4C;
 }
+#textInput {
+  border-color: #CC0000;
+}
 
 /* primary colors for volcano red theme
   #7F0000 dark red

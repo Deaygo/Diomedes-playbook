@@ -267,6 +267,7 @@ dojo.declare( "diom.view.FormInput", null, {
   },
   handleInputClick: function ( e ) {
     dojo.stopEvent( e );
+    dojo.publish( diom.topics.POPUP_CLOSE );
   },
 
   handleHistoryUp: function ( ) {

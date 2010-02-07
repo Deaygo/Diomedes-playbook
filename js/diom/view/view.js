@@ -41,6 +41,7 @@ dojo.declare( "diom.view.View", null, {
     dojo.connect( util.get( "linksBtn" ), "onclick", this, "handleLinksBtnClick" );
     dojo.connect( util.get( "closePopup" ), "onclick", this, "closePopup" );
     dojo.connect( window, "onclick", this, "handleWindowClick" );
+    dojo.subscribe( diom.topics.POPUP_CLOSE, this, "handleWindowClick" );
     dojo.subscribe( diom.topics.USER_HIGHLIGHT, this, "highlight" );
     dojo.subscribe( diom.topics.PREFS_CHANGE_FONT, this, "changeFont" );
     dojo.subscribe( diom.topics.PREFS_CHANGE_THEME, this, "changeTheme" );

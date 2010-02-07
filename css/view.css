@@ -42,7 +42,7 @@ body {
   position: absolute;
   bottom: 0px;
   left: 0px;
-  right: 40px;
+  right: 35px;
   overflow-x: hidden;
   overflow-y: auto;
   height: 60px;
@@ -80,7 +80,7 @@ body {
 }
 #prefBtn {
   background: transparent url( /images/preferences.png ) no-repeat;
-  right: 3px;
+  right: 0px;
 }
 #prefBtn:hover {
   background-image: url( /images/preferencesOver.png );
@@ -92,7 +92,7 @@ body {
   width: auto;
   height: auto;
   position: absolute;
-  bottom: 0px;
+  bottom: 10px;
   right: 10px;
   z-index: 3;
   border: 1px solid;

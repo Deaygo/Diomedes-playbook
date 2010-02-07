@@ -4,12 +4,14 @@
   bottom: 0px;
   left: 0px;
   right: 0px;
-  font-size: 85%;
+  font-size: 90%;
   padding: 5px 5px;
   overflow: hidden;
   min-width: 300px;
   overflow-y: auto;
   overflow-x: hidden;
+  border: 0px solid;
+  border-bottom-width: 1px;
 }
 .spellingError {
   display: inline-block;
