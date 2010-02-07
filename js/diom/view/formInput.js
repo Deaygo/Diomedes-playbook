@@ -114,7 +114,6 @@ dojo.declare( "diom.view.FormInput", null, {
 
 		var length, input;
 
-    //console.log( "value: " + value );
     value.split( "<br/>" ).join( "\n" );
     value.split( " " ).join( "&nbsp;" );
     document.execCommand( "selectAll", false, "" );

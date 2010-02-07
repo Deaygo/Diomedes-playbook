@@ -33,7 +33,7 @@ xmlFiles="updateConfig.xml preferences.xml"
 swfFiles="servicemonitor.swf applicationupdater_ui.swf spellingENgine.swf"
 
 configVars="${cert} ${binaryName} ${configFile} ${xmlFiles} ${htmlFiles} ${swfFiles} ${otherResources} ${jsFilesAdded} ${resourceDirs} LICENSE"
-echo configVars: $configVars
+echo ~/air/bin/adt $configVars
 
 ~/air/bin/adt $configVars
 echo Created $binaryName release
