@@ -14,6 +14,7 @@ dojo.declare( "diom.view.FormInput", null, {
     var url;
 
     this.MAX_HISTORY_LENGTH = 50;
+    this.BIG_PASTE_LINE_NUMBER_COUNT = 10;
     this.input = node;
     this.nicks = [];
     this.listItemIndex = 0;
@@ -42,8 +43,27 @@ dojo.declare( "diom.view.FormInput", null, {
     dojo.connect( this.input, "onkeydown", this, "handleInputChange" );
     dojo.connect( this.input, "onclick", this, "handleInputClick" );
     dojo.connect( this.input, "oncontextmenu", this, "handleContextMenu" );
+    dojo.connect( this.input, "onpaste", this, "handlePaste" );
   },
+  handlePaste: function ( event ) {
 
+    var data, lines;
+
+    var data = event.clipboardData.getData( "text/plain" );
+    lines = data.split( air.File.lineEnding );
+    if ( lines.length > 1 ) {
+      dojo.stopEvent( event );
+      if ( lines.length > this.BIG_PASTE_LINE_NUMBER_COUNT ) {
+        if ( !confirm( "You're about to paste " + lines.length + " lines of text, proceed?" ) ) {
+          return;
+        }
+      }
+      this.announceInput( this.getValue( ) );
+      while ( lines.length ) {
+        this.announceInput( lines.shift( ) );
+      }
+    }
+  },
   handleContextMenu: function ( event ) {
 
     var node, menu, command, suggestions, word, i,
@@ -94,6 +114,8 @@ dojo.declare( "diom.view.FormInput", null, {
 
 		var length, input;
 
+    //console.log( "value: " + value );
+    value.split( "<br/>" ).join( "\n" );
     value.split( " " ).join( "&nbsp;" );
     document.execCommand( "selectAll", false, "" );
     document.execCommand( "insertHTML", false, value );
@@ -103,20 +125,22 @@ dojo.declare( "diom.view.FormInput", null, {
     this.input.focus( );
     window.getSelection( ).collapseToEnd( );
   },
-
   handleInput: function ( e ) {
+
 		var _input, inputs, i, input;
+
     dojo.stopEvent( e );
     _input = this.getValue( );
     inputs = _input.split( "\n" );
     for ( i = 0; i < inputs.length; i++ ) {
-      input = inputs[ i ];
-      this.addToHistory( input );
-      util.log("getInput: " + input );
-      dojo.publish( diom.topics.USER_INPUT, [ input ] );
+      this.announceInput( inputs[ i ] );
     }
   },
-
+  announceInput: function ( input ) {
+    this.addToHistory( input );
+    util.log("getInput: " + input );
+    dojo.publish( diom.topics.USER_INPUT, [ input ] );
+  },
   addToHistory: function ( input ) {
     this.history.unshift( input );
     if ( this.history.length > this.MAX_HISTORY_LENGTH ) {

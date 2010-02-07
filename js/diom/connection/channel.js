@@ -133,6 +133,7 @@ dojo.declare( "diom.connection.Channel", null, {
   },
 
   addActivity: function ( msg ) {
+    if ( !msg ) { return; }
     this.activityList.addMessage( msg.clone( ) );
     if ( this.logPref ) {
       this.logger.addLine( msg.getNickWithStatus( this.name ), msg.getMsg( ), msg.datetime );
