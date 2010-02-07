@@ -259,11 +259,13 @@ dojo.declare( "diom.view.View", null, {
     if ( e.target.id === "nickListControl" ) {
       dojo.stopEvent( e );
       this.handleNickListControlClick( );
+      this.scrollDown( );
       return;
     }
     if ( !e[ util.EVENT_HANDLED ] ) {
       this.input.focus( );
       this.handleWindowClick( e );
+      this.scrollDown( );
     }
   },
 

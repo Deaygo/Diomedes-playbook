@@ -1,5 +1,17 @@
 Starting release log at version 0.1.24 revision 435, new entries at top
 
+ - Release 0.1.26
+    Bug Fix: activity window doesn't scroll down after expanding nicklist
+    Added short cut aliases for:
+      /msg - /q, /query
+      /mode - /m
+      /join - /j
+      /quit - /q
+      /part - /p
+      /nick - /n
+      /topic - /t
+      /win - /w
+
  - Release 0.1.25
     Spell check!
     UI Improvements:

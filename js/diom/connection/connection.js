@@ -539,6 +539,7 @@ dojo.declare( "diom.connection.Connection", null, {
     //XXX: figure out what to do here
     //XXX: using a switch for now, need something better in the future
     switch ( cmd.toLowerCase( ) ) {
+      case "n":
       case "nick":
         this.client.changeNick( args.shift( ) );
         util.log( "attempting to change nick" );
@@ -551,10 +552,12 @@ dojo.declare( "diom.connection.Connection", null, {
         this.client.pass( msg );
         util.log( "sending pass: " + args );
         break;
+      case "j":
       case "join":
         this.client.join( args );
         util.log( "attempting to join channel(s)." );
         break;
+      case "m":
       case "mode":
         msg = "";
         if ( args && args.length ) {
@@ -562,6 +565,7 @@ dojo.declare( "diom.connection.Connection", null, {
         }
         this.client.sendMode( msg );
         break;
+      case "k":
       case "kick":
         msg = "";
         if ( args && args.length ) {
@@ -667,6 +671,7 @@ dojo.declare( "diom.connection.Connection", null, {
           this.client[ funcName ]( params );
         }
         break;
+      case "p":
       case "part":
         msg = "";
         if ( args && args.length ) {
@@ -679,6 +684,7 @@ dojo.declare( "diom.connection.Connection", null, {
         }
         this.partChannel( target, msg );
         break;
+      case "q":
       case "quit":
         msg = "";
         if ( args && args.length ) {
@@ -707,6 +713,8 @@ dojo.declare( "diom.connection.Connection", null, {
           this.client.sendNames( target );
         }
         break;
+      case "q":
+      case "query":
       case "msg":
         if ( args && args.length > 1 ) {
           target = args.shift( );
@@ -722,6 +730,7 @@ dojo.declare( "diom.connection.Connection", null, {
           this.handleNotice( this.getNick( ), this.host, target, msg );
         }
         break;
+      case "t":
       case "topic":
         if ( args && args.length ) {
           t = args.shift( );

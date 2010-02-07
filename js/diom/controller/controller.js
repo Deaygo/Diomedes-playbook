@@ -302,7 +302,7 @@ dojo.declare( "diom.controller.Controller", null, {
         } else {
           util.log( "not enough args given to connect to server" );
         }
-      } else if ( cmd === "win" ) {
+      } else if ( cmd === "w" || cmd === "win" ) {
         dojo.publish( diom.topics.INPUT_CHANNEL_INDEX, [ parseInt( argsR.shift( ), 10 ) - 1  ] );
       } else if ( cmd === "network" ) {
         if ( argsR.length > 0 ) {
