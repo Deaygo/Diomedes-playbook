@@ -8,7 +8,7 @@
   <preference name="historyLength" value="500" />
   <preference name="pollTime" value="0" />
   <preference name="font" value="verdana" />
-  <preference name="fontSize" value="15" />
+  <preference name="fontSize" value="14" />
   <preference name="updateDelay" value="1" />
   <preference name="updateURL" value="http://www.apphackers.com/diomedesVersionInfo.xml" />
   <preference name="autoJoin" value="true" />

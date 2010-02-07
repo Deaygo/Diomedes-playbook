@@ -1,5 +1,15 @@
 Starting release log at version 0.1.24 revision 435, new entries at top
 
+ - Release 0.1.25
+    Spell check!
+    UI Improvements:
+      * moved channel list underneath input box for less mouse traveling
+      * reduced font size of channel buttons to get more channels to fit
+      * added a better close button for channelbuttons and dialogs, neutral gray
+      * reduced default font size by 1px, current default too big
+      * reduced maximum dialog width for preferences window
+    Better paste handling, if it's a big paste, asks for confirmation
+
  - Release 0.1.24 February 02, 2010
 
     Switched from pop up windows to DOM dialogs for preferences
