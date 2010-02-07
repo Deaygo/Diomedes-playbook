@@ -84,6 +84,8 @@ diom.topics = {
 	IGNORES_CHANGE: "/ignores/change/",
 	IGNORES_UPDATE: "/ignores/update/",
 
+  NICK_LIST_TOGGLE: "/nick/list/toggle",
+
 	POPUP_CLOSE: "/popup/close/"
 };
 

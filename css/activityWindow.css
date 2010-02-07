@@ -14,13 +14,6 @@
   padding: 3px;
 }
 
-#activityWindow {
-  right: 152px;
-  border: 1px solid;
-  overflow: hidden;
-  font-size: 85%;
-}
-
 .isAction {
   font-style: italic;
 }

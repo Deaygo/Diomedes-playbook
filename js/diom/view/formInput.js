@@ -220,6 +220,9 @@ dojo.declare( "diom.view.FormInput", null, {
       dojo.stopEvent( e );
       dojo.publish( diom.topics.INPUT_CHANNEL_PREV );
       return;
+    } else if ( key === 85 && ( e.metaKey || e.ctrlKey ) ) {
+      dojo.stopEvent( e );
+      dojo.publish( diom.topics.NICK_LIST_TOGGLE );
     } else if ( key === 76 && ( e.metaKey || e.ctrlKey ) ) {
       dojo.stopEvent( e );
       dojo.publish( diom.topics.INPUT_CHANNEL_PART );

@@ -31,6 +31,7 @@ dojo.declare( "diom.view.View", null, {
     this.activityWindows = {};
     this.activeWin = null;
     this.activeNickCount = 0;
+    this.nickListCollapsed = false;
     this.appVersion = "";
 
     dojo.connect( this.channelList, "onclick", this, "handleChannelListClick" );
@@ -40,19 +41,20 @@ dojo.declare( "diom.view.View", null, {
     dojo.connect( util.get( "linksBtn" ), "onclick", this, "handleLinksBtnClick" );
     dojo.connect( util.get( "closePopup" ), "onclick", this, "closePopup" );
     dojo.connect( window, "onclick", this, "handleWindowClick" );
-    dojo.subscribe(  diom.topics.USER_HIGHLIGHT, this, "highlight" );
-    dojo.subscribe(  diom.topics.PREFS_CHANGE_FONT, this, "changeFont" );
-    dojo.subscribe(  diom.topics.PREFS_CHANGE_THEME, this, "changeTheme" );
-    dojo.subscribe(  diom.topics.NOTIFY, this, "notify" );
-    dojo.subscribe(  diom.topics.CHANNEL_TOPIC, this, "handleTopic" );
-    dojo.subscribe(  diom.topics.NICK_CHANGE, this, "handleNickChange" );
-    dojo.subscribe(  diom.topics.INPUT_PAGE_UP, this, "scrollUp" );
-    dojo.subscribe(  diom.topics.INPUT_PAGE_DOWN, this, "scrollDown" );
-    dojo.subscribe(  diom.topics.INPUT_CHANNEL_NEXT, this, "selectNextChannel" );
-    dojo.subscribe(  diom.topics.INPUT_CHANNEL_PREV, this, "selectPrevChannel" );
-    dojo.subscribe(  diom.topics.INPUT_CHANNEL_PART, this, "closeCurrentChannel" );
-    dojo.subscribe(  diom.topics.INPUT_CHANNEL_INDEX, this, "selectChannelFromIndex" );
-    dojo.subscribe(  diom.topics.UPDATE_NO_NEW_UPDATES, this, "showNoUpdatesDialog" );
+    dojo.subscribe( diom.topics.USER_HIGHLIGHT, this, "highlight" );
+    dojo.subscribe( diom.topics.PREFS_CHANGE_FONT, this, "changeFont" );
+    dojo.subscribe( diom.topics.PREFS_CHANGE_THEME, this, "changeTheme" );
+    dojo.subscribe( diom.topics.NOTIFY, this, "notify" );
+    dojo.subscribe( diom.topics.CHANNEL_TOPIC, this, "handleTopic" );
+    dojo.subscribe( diom.topics.NICK_CHANGE, this, "handleNickChange" );
+    dojo.subscribe( diom.topics.INPUT_PAGE_UP, this, "scrollUp" );
+    dojo.subscribe( diom.topics.INPUT_PAGE_DOWN, this, "scrollDown" );
+    dojo.subscribe( diom.topics.INPUT_CHANNEL_NEXT, this, "selectNextChannel" );
+    dojo.subscribe( diom.topics.INPUT_CHANNEL_PREV, this, "selectPrevChannel" );
+    dojo.subscribe( diom.topics.INPUT_CHANNEL_PART, this, "closeCurrentChannel" );
+    dojo.subscribe( diom.topics.INPUT_CHANNEL_INDEX, this, "selectChannelFromIndex" );
+    dojo.subscribe( diom.topics.UPDATE_NO_NEW_UPDATES, this, "showNoUpdatesDialog" );
+    dojo.subscribe( diom.topics.NICK_LIST_TOGGLE, this, "handleNickListControlClick" );
   },
 
   showNoUpdatesDialog: function( ) {
@@ -252,6 +254,11 @@ dojo.declare( "diom.view.View", null, {
         urlReq = new air.URLRequest( dojo.trim( url ) );
         air.navigateToURL(urlReq);
       }
+    }
+    if ( e.target.id === "nickListControl" ) {
+      dojo.stopEvent( e );
+      this.handleNickListControlClick( );
+      return;
     }
     if ( !e[ util.EVENT_HANDLED ] ) {
       this.input.focus( );
@@ -582,7 +589,18 @@ dojo.declare( "diom.view.View", null, {
   handlePrefBtnClick: function ( e ) {
     return new diom.view.preferences.Preferences( this.model.prefs.getPrefs( ) );
   },
-
+  handleNickListControlClick: function ( ) {
+    if ( this.nickListCollapsed ) {
+      dojo.removeClass( this.nickList, "collapsed" );
+      dojo.removeClass( this.activityWindow, "expanded" );
+      dojo.removeClass( dojo.byId( "nickListControl" ), "collapsed" );
+    } else {
+      dojo.addClass( this.nickList, "collapsed" );
+      dojo.addClass( this.activityWindow, "expanded" );
+      dojo.addClass( dojo.byId( "nickListControl" ), "collapsed" );
+    }
+    this.nickListCollapsed = !this.nickListCollapsed;
+  },
   handleTitleBarClick: function ( e ) {
 		var id, funcName;
     dojo.stopEvent( e );

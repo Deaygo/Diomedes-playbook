@@ -1,17 +1,4 @@
 
-#nickList {
-  width: 144px;
-  position: absolute;
-  right: 0px;
-  top: 0px;
-  bottom: 0px;
-  overflow-y: scroll;
-  overflow-x: auto;
-  font-size: 85%;
-  border: 1px solid;
-  padding: 3px;
-}
-
 #nickList span.nickButton {
   display: block;
   width: 100%;

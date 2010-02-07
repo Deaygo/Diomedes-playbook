@@ -1,6 +1,7 @@
 .dialog {
   position: absolute;
   border: 1px solid;
+  z-index: 4;
 }
 .dialogHeader {
   border: 1px solid;
