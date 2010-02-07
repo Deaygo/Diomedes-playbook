@@ -12,6 +12,7 @@ Starting release log at version 0.1.24 revision 435, new entries at top
       * New Greek Helmet Application Icon
     Better paste handling, if it's a big paste, asks for confirmation
     Bug fix: rejoining channel when logging is on bug fixed.
+    Added \win feature
 
  - Release 0.1.24 February 02, 2010
 
