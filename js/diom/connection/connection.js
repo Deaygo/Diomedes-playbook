@@ -783,7 +783,10 @@ dojo.declare( "diom.connection.Connection", null, {
         }
       }
       //delete channel from connection
-      delete this.channels[ channelName ];
+      if ( this.channels[ channelName ] ) {
+        this.channels[ channelName ].destroy( );
+        delete this.channels[ channelName ];
+      }
       dojo.publish( diom.topics.CHANNELS_CHANGED, [ "part", channelName, this.server ] );
     }
   },
