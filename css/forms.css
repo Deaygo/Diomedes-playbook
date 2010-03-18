@@ -3,9 +3,9 @@ body {
   overflow-x: hidden;
 }
 
-h1 { 
-  padding 3px; 
-  font-size: 14px;
+h1 {
+  padding 3px;
+  font-size: 100%;
 }
 form {
   margin: 3px;
@@ -15,7 +15,7 @@ label {
   width: 250px;
   float: left;
   text-align: right;
-  font-size: 12px;
+  font-size: 90%;
   padding: 5px 2px;
 }
 input, button {
@@ -28,7 +28,7 @@ input, button {
   margin: 3px;
 }
 .formItemNote {
-  font-size: 12px;
+  font-size: 90%;
   clear: both;
   text-align: center;
 }

@@ -1,21 +1,21 @@
 #linkLog {
-  font-size: 13px;
+  font-size: 95%;
 }
 #linkLog h1 {
-  font-size: 16px;
+  font-size: 110%;
 }
 #linkLog h2 {
-  font-size: 15px;
+  font-size: 105%;
 }
 #linkLog h3 {
-  font-size: 14px;
+  font-size: 100%;
 }
 .linkLogItem {
   margin-bottom: 30px;
   border: solid 1px;
   padding: 5px;
 }
-.linkLogItem .meta, 
+.linkLogItem .meta,
 .linkLogItem .headers {
   margin-bottom: 15px;
 }

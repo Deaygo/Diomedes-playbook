@@ -49,10 +49,10 @@ dojo.declare( "diom.view.FormInput", null, {
 
     var data, lines;
 
+    dojo.stopEvent( event );
     data = event.clipboardData.getData( "text/plain" );
     lines = data.split( air.File.lineEnding );
     if ( lines.length > 1 ) {
-      dojo.stopEvent( event );
       if ( lines.length > this.BIG_PASTE_LINE_NUMBER_COUNT ) {
         if ( !confirm( "You're about to paste " + lines.length + " lines of text, proceed?" ) ) {
           return;
@@ -62,6 +62,8 @@ dojo.declare( "diom.view.FormInput", null, {
       while ( lines.length ) {
         this.announceInput( lines.shift( ) );
       }
+    } else {
+      this.setValue( data );
     }
   },
   handleContextMenu: function ( event ) {

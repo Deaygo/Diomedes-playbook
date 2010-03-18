@@ -139,11 +139,11 @@ body {
   display: none !important;
 }
 .aboutDialog {
-  font-size: 12px;
+  font-size: 80%;
 }
 
 .aboutDialog h1 {
-  font-size: 18px;
+  font-size: 110%;
 }
 dt {
   margin-top: 10px;
@@ -154,15 +154,15 @@ dd {
   margin: 5px;
 }
 #mainHelp {
-  font-size: 12px;
+  font-size: 80%;
   margin: 5px;
 }
 #mainHelp h1 {
-  font-size: 16px;
+  font-size: 110%;
   margin: 10px 0px;
 }
 #mainHelp h2 {
-  font-size: 14px;
+  font-size: 100%;
   margin: 5px 0px;
 }
 input[type="submit"], button {
