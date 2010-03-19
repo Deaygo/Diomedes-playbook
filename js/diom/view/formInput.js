@@ -47,7 +47,8 @@ dojo.declare( "diom.view.FormInput", null, {
   },
   handlePaste: function ( event ) {
 
-    var data, lines;
+    var data, lines, currentContent, pos,
+      newContent;
 
     dojo.stopEvent( event );
     data = event.clipboardData.getData( "text/plain" );
@@ -63,7 +64,10 @@ dojo.declare( "diom.view.FormInput", null, {
         this.announceInput( lines.shift( ) );
       }
     } else {
-      this.setValue( data );
+      pos = this.getCursorPosition( );
+      currentContent = this.getValue( );
+      newContent = currentContent.slice( 0, pos) + data + currentContent.slice( pos );
+      this.setValue( newContent );
     }
   },
   handleContextMenu: function ( event ) {
