@@ -287,7 +287,7 @@ dojo.declare( "diom.IRCClient", null, {
   },
 
   handleData: function ( line ) {
-    var endFragment = null,
+    var endFragment = null, parts, user,
       b, i, msg, cmdParts, newNick, host;
     this.log( "Handling line: " + line );
     if ( line[ 0 ] !== ":" ) {
@@ -320,10 +320,10 @@ dojo.declare( "diom.IRCClient", null, {
         line = line.substr( 0, line.length - 1 ); //strip end \r
       }
     }
-    i = line.lastIndexOf( ":" );
+    i = line.search( " :" );
     if ( i !== -1 ) {
-      msg = line.substr( i + 1 );
-      line = line.substr( 0, i - 1 ); //getting rid of ":"
+      msg = line.substr( i + 2 );
+      line = line.substr( 0, i ); //getting rid of ":"
     } else {
       msg = null;
     }
