@@ -1,5 +1,9 @@
 Starting release log at version 0.1.24 revision 435, new entries at top
 
+ - Release 0.1.28
+    Bug Fix: ipv6 support added.
+    Bug Fix: user highlighted in an action fixed.
+
  - Release 0.1.26
     Bug Fix: activity window doesn't scroll down after expanding nicklist
     Added short cut aliases for:
