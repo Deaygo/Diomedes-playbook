@@ -320,7 +320,7 @@ dojo.declare( "diom.IRCClient", null, {
         line = line.substr( 0, line.length - 1 ); //strip end \r
       }
     }
-    i = line.search( ":" );
+    i = line.lastIndexOf( ":" );
     if ( i !== -1 ) {
       msg = line.substr( i + 1 );
       line = line.substr( 0, i - 1 ); //getting rid of ":"

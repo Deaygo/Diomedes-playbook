@@ -336,7 +336,7 @@ dojo.declare( "diom.connection.Connection", null, {
     user = this.getUser( nick );
     if ( user ) { user.setHost( host ); }
     msg = new diom.connection.ActivityItem( "action", nick, target, msg, user, host );
-    if ( this.referencesUser( msg.msg ) ) {
+    if ( this.referencesUser( msg.msg, target, nick ) ) {
       msg.setReferencesUser( );
     }
     this.addActivityToChannel( target, msg );
