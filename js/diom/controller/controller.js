@@ -14,8 +14,8 @@ dojo.declare( "diom.controller.Controller", null, {
   constructor: function ( model, view ) {
     this.model = model;
     this.view = view;
-		this.appVersion = null;
-		this.setAppVersion( );
+    this.appVersion = null;
+    this.setAppVersion( );
     this.view.setAppVersion( this.appVersion );
     this.channelSubscription = null;
     this.channelList = new diom.controller.ChannelList( );
@@ -63,24 +63,24 @@ dojo.declare( "diom.controller.Controller", null, {
     dojo.subscribe(  diom.topics.USER_ACTIVITY, this, "handleUserActivity" );
   },
 
-	setAppVersion: function ( ) {
-		var u, version;
-		if ( air ) {
-			//rhino tests don't have air
-			u = new air.ApplicationUpdater( );
-			version = u.currentVersion;
-		} else {
-			version = "";
-		}
-		this.appVersion = "Diomedes IRC Version: " + version;
-	},
+  setAppVersion: function ( ) {
+    var u, version;
+    if ( air ) {
+      //rhino tests don't have air
+      u = new air.ApplicationUpdater( );
+      version = u.currentVersion;
+    } else {
+      version = "";
+    }
+    this.appVersion = "Diomedes IRC Version: " + version;
+  },
 
   getIgnores: function ( ) {
     this.model.ignores.getIgnores( dojo.hitch( this, "handleIgnores" ) );
   },
 
   handleIgnores: function ( ignores ) {
-		var i, ignore, currentIgnores;
+    var i, ignore, currentIgnores;
     if ( !ignores ) {
       this.ignores = [];
     } else {
@@ -103,7 +103,7 @@ dojo.declare( "diom.controller.Controller", null, {
   },
 
   handleAliases: function ( aliases ) {
-		var i, alias;
+    var i, alias;
     if ( !aliases ) {
       this.aliases = {};
       return;
@@ -128,15 +128,15 @@ dojo.declare( "diom.controller.Controller", null, {
   },
 
   getNetworkByHost: function  ( host ) {
-		var networkName, network;
+    var networkName, network;
     for ( networkName in this.networks ) {
-			if ( this.networks.hasOwnProperty( networkName ) ) {
-				network = this.networks[ networkName ];
-				if ( host === network.getHost( ) ) {
-					return network;
-				}
-			}
-		}
+      if ( this.networks.hasOwnProperty( networkName ) ) {
+        network = this.networks[ networkName ];
+        if ( host === network.getHost( ) ) {
+          return network;
+        }
+      }
+    }
     return null;
   },
 
@@ -160,7 +160,7 @@ dojo.declare( "diom.controller.Controller", null, {
   },
 
   handleGetNetworks: function ( networks ) {
-		var i, network, connection;
+    var i, network, connection;
     util.log("handleGetNetworks");
     if ( !networks ) { return; }
     for ( i = 0; i < networks.length; i++ ) {
@@ -180,11 +180,11 @@ dojo.declare( "diom.controller.Controller", null, {
 
   handleUpdateNetworks: function ( networks ) {
     var networksFound = {},
-			networkName, i, network, storedNetwork;
+      networkName, i, network, storedNetwork;
     for ( networkName in this.networks ) {
-			if ( this.networks.hasOwnProperty( networkName ) ) {
-      	networksFound[ networkName ] = 0;
-			}
+      if ( this.networks.hasOwnProperty( networkName ) ) {
+        networksFound[ networkName ] = 0;
+      }
     }
     if ( networks ) {
       for ( i = 0; i< networks.length; i++ ) {
@@ -199,9 +199,9 @@ dojo.declare( "diom.controller.Controller", null, {
       }
     }
     for ( networkName in networksFound ) {
-			if ( networksFound.hasOwnProperty( networkName ) ) {
-      	this.removeNetwork( networkName );
-			}
+      if ( networksFound.hasOwnProperty( networkName ) ) {
+        this.removeNetwork( networkName );
+      }
     }
   },
 
@@ -274,8 +274,8 @@ dojo.declare( "diom.controller.Controller", null, {
   },
 
   handleInput: function ( input, server ) {
-		var argsR, cmd, nick, hostParts, host, port,
-			networkName, network, connection;
+    var argsR, cmd, nick, hostParts, host, port,
+      networkName, network, connection;
     util.log( "input: " + input + " server: " + server );
     if ( input.search( "/" ) === 0 ) {
       //it's a command
@@ -350,7 +350,7 @@ dojo.declare( "diom.controller.Controller", null, {
   },
 
   closeNetworkOrConnection: function ( host ) {
-		var network;
+    var network;
     if ( this.view.getConfirmation( "close a connection" ) ) {
       network = this.getNetworkByHost( host );
       if ( network ) {
@@ -362,7 +362,7 @@ dojo.declare( "diom.controller.Controller", null, {
   },
 
   createInputFromAlias: function ( alias, args ) {
-		var cmd, i, arg, token;
+    var cmd, i, arg, token;
     if ( !this.currentConnection ) { return; }
     cmd = alias.command;
     args = this.replaceTokens( args, this.currentConnection );
@@ -376,7 +376,7 @@ dojo.declare( "diom.controller.Controller", null, {
   },
 
   replaceTokens: function ( args, connection ) {
-		var tokens, newArgs, i, arg;
+    var tokens, newArgs, i, arg;
     if ( !args || !args.length ) { return args; }
     tokens = {
       "$nick" : connection.getNick( ),
@@ -396,7 +396,7 @@ dojo.declare( "diom.controller.Controller", null, {
   },
 
   closeConnection: function ( host ) {
-		var currentHost, connection;
+    var currentHost, connection;
     if ( !host ) { return; }
     currentHost = null;
     if ( this.currentConnection ) {
@@ -417,7 +417,7 @@ dojo.declare( "diom.controller.Controller", null, {
   },
 
   handleChannelChange: function ( type, channelName, serverName, arg ) {
-		var currentChannelName;
+    var currentChannelName;
     //handles changes to channel list
     //XXX: this sucks, this special magical flag shit, how does handleChannelsChange have
     //any guarantee that these types wont change, etc
@@ -442,7 +442,7 @@ dojo.declare( "diom.controller.Controller", null, {
   },
 
   setCurrentChannel: function ( channel ) {
-		var serverName, channelName;
+    var serverName, channelName;
     if ( this.currentConnection ) {
       util.log("set currentChannel");
       if ( this.channelSubscription ) {
@@ -508,9 +508,9 @@ dojo.declare( "diom.controller.Controller", null, {
   },
 
   updateChannelFromTimer: function ( args ) {
-		var channelName, serverName;
-		channelName = args[ 0 ];
-		serverName = args[ 1];
+    var channelName, serverName;
+    channelName = args[ 0 ];
+    serverName = args[ 1];
     this.queryTimer[ serverName ][ channelName ] = null;
     this.updateChannel( channelName, serverName );
   },
@@ -524,7 +524,7 @@ dojo.declare( "diom.controller.Controller", null, {
   },
 
   handleUserActivity: function ( serverName, channelName ) {
-		var connection, channel, users;
+    var connection, channel, users;
     connection = this.channelList.getConnection( serverName );
     if ( connection ) {
       channel = this.channelList.getChannel( channelName, serverName );
@@ -539,7 +539,7 @@ dojo.declare( "diom.controller.Controller", null, {
   },
 
   updateChannel: function ( channelName, serverName ) {
-		var connection, channel, nick;
+    var connection, channel, nick;
     util.log("updateChannel channelName: " + channelName + " serverName: " + serverName );
     connection = this.channelList.getConnection( serverName );
     if ( connection ) {
