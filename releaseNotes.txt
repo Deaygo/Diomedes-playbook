@@ -1,5 +1,8 @@
 Starting release log at version 0.1.24 revision 435, new entries at top
 
+ - Release 0.1.30 June 03, 2010
+    Performance improvements and stability enhancements.
+
  - Release 0.1.29 June 02, 2010
     Bug Fix: major IPV6 bug fix regression handled.
 
