@@ -39,7 +39,6 @@ dojo.declare( "diom.IRCClient", null, {
     this.realName = realName;
 
     //Buffers for Handling IRC issues
-    this.beginningFragment = null;
     this.namesList = {}; //stores names during NAMES irc list requests (multiple lines)
     this.topics = {}; //stores topics by channel name;
     this.lastCTCPReq = new Date( ).getTime( );
@@ -286,7 +285,7 @@ dojo.declare( "diom.IRCClient", null, {
       this._send( "PONG " + pong );
       return;
     } else if ( this.connectionEstablished ) {
-      //this.determineLineType(line);
+      this.acceptConnection(line);
     } else {
       this.serverDelegate( this.server , line, null );
     }
@@ -300,42 +299,9 @@ dojo.declare( "diom.IRCClient", null, {
     }
   },
 
-  handleData: function ( line ) {
+  acceptConnection: function ( line ) {
+    var i, msg, cmdParts, newNick;
 
-    var endFragment = null,
-      b, i, msg, cmdParts, newNick, host;
-
-    this.log( "Handling line: " + line );
-    if ( line[ 0 ] !== ":" ) {
-      this.log( "lost beginning of line, line length: " + line.length );
-      endFragment = line;
-    } else {
-      line = line.substr( 1 ); //strip beginning :
-    }
-    if ( line.substr( -1 ) !== "\r" ) {
-      this.beginningFragment = line;
-      return;
-    } else {
-      if ( endFragment ) {
-        //lost a line between data reads
-        //connection asynch so no guarantee
-        this.log( "lost a line,  beginning: " + this.beginningFragment + " end:" + endFragment );
-        if( line.search( "ERROR" ) === 0 ) {
-            util.log("error caught");
-            this.closeConnection( line );
-            return;
-        }
-        if ( this.beginningFragment ) {
-          //attempting to recover
-          b = this.beginningFragment;
-          this.beginningFragment = null;
-          this.handleData( ":" + b + endFragment );
-        }
-        return;
-      } else {
-        line = line.substr( 0, line.length - 1 ); //strip end \r
-      }
-    }
     i = line.search( " :" );
     if ( i !== -1 ) {
       msg = line.substr( i + 2 );
@@ -350,7 +316,6 @@ dojo.declare( "diom.IRCClient", null, {
     if ( !this.connectionAccepted && ( line.search( this.COMMAND_NUMBERS.INVALID_PASSWORD ) !== -1 ) ) {
       if ( this.connectionDelegate ) {
         this.connectionDelegate( "Invalid password.", false, false );
-        //this.serverDelegate( this.getIndex( cmdParts, 0 ), "Invalid Password, type /pass PASSWORD using the correct password", this.getIndex( cmdParts, 0 ) );
         this.close( );
         this.setDisconnectedStatus( );
       }
@@ -370,15 +335,25 @@ dojo.declare( "diom.IRCClient", null, {
         this.connectionDelegate( "Connected to server.", true, false );
       }
     }
+    this.determineMsgType( cmdParts, msg );
+  },
+
+  /**
+  * there are either messages from the server
+  * or messages from a user.
+  */
+  determineMsgType: function ( cmdParts, msg ) {
+
+    var host;
+
     host = this.getIndex( cmdParts, 0 );
-    //there are either messages from the server
-    //or messages from a user
     if ( host && host === this.host ) {
       this.handleServerMessage( cmdParts, msg );
     } else {
       this.handleUserMessage( cmdParts, msg );
     }
   },
+
 
   INVITE: function ( nick, host, cmd, target, msg ) {
     if ( target && this.inviteDelegate && this.isChannelName( msg ) ) {
