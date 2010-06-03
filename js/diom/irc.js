@@ -252,7 +252,7 @@ dojo.declare( "diom.IRCClient", null, {
     this.data += data;
     i = this.data.search("\r\n");
     while ( i !== -1 ) {
-      line = this.data.substring(0,i+2);
+      line = this.data.substring(0,i);
       this.data = this.data.substring(i+2);
       i = this.data.search("\r\n");
       this.handleLine(line);
@@ -276,7 +276,7 @@ dojo.declare( "diom.IRCClient", null, {
     }
     if ( line.search( "ERROR" ) === 0 ) {
         this.log( "Found ERROR" );
-        this.closeConnection( data );
+        this.closeConnection( line );
         return;
     }
     if ( line.search( "PING" ) === 0 ) {
@@ -285,7 +285,8 @@ dojo.declare( "diom.IRCClient", null, {
       this._send( "PONG " + pong );
       return;
     } else if ( this.connectionEstablished ) {
-      this.acceptConnection(line);
+      line = line.substring(1); //Eliminating leading ':'.
+      this.acceptConnection(line); 
     } else {
       this.serverDelegate( this.server , line, null );
     }
@@ -300,6 +301,7 @@ dojo.declare( "diom.IRCClient", null, {
   },
 
   acceptConnection: function ( line ) {
+
     var i, msg, cmdParts, newNick;
 
     i = line.search( " :" );
