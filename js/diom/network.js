@@ -13,7 +13,7 @@ dojo.provide( "diom.network" );
 dojo.declare( "diom.Network", null, {
 
   constructor: function ( data, model, channelList, prefs, appVersion, ignores ) {
-		var id;
+    var id;
     this.prefs = util.cloneObject( prefs.getPrefs( ) );
     this.ignores = ignores;
     this.prefs.nick = data.nick;
@@ -107,7 +107,7 @@ dojo.declare( "diom.Network", null, {
   },
 
   connect: function ( ) {
-		var parts, port;
+    var parts, port;
     if ( !this.servers.length ) { return; }
     if ( this.currentHost ) {
       dojo.publish( diom.topics.CONNECTION_CLOSE, [ this.currentHost ] );
@@ -154,7 +154,7 @@ dojo.declare( "diom.Network", null, {
   },
 
   joinDefaultChannels: function ( ) {
-		var channelsData, channels, i, channel;
+    var channelsData, channels, i, channel;
     channelsData = this.channels;
     channels = [];
     for ( i = 0; i < channelsData.length; i ++ ) {
