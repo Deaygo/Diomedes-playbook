@@ -28,6 +28,7 @@ dojo.declare( "diom.IRCClient", null, {
     this.connectionAccepted = false;
     this.createConnection( );
     this.PING_TIME_OUT_WAIT = 60000;
+    this.data = "";
 
     this.pollTime = 0;
 
@@ -160,6 +161,7 @@ dojo.declare( "diom.IRCClient", null, {
 
   connect: function ( ) {
     if ( this._isConnected) { return; }
+    this.data = "";
     this.log( "Attempting connection on server: " + this.server + ", on host: " + this.host );
     this.stayConnected = true;
     this.socketMonitor = new air.SocketMonitor( this.server, this.port );
@@ -194,6 +196,7 @@ dojo.declare( "diom.IRCClient", null, {
   },
 
   setDisconnectedStatus: function( ) {
+    this.data = "";
     this.stopPingService( );
     this.connectionEstablished = false;
     this.connectionAccepted = false;
@@ -241,40 +244,51 @@ dojo.declare( "diom.IRCClient", null, {
   },
 
   onSocketData: function ( e ) {
-    var data, i, d, _d, dataR, pong;
+
+    var data, i, line;
+
     if ( !this._isConnected ) { return; } //not sure why this happens but it does
     data = this.socket.readUTFBytes( this.socket.bytesAvailable );
     this.log( "RAW rec:" + data );
-    if ( !this.connectionEstablished ) {
-      _d = data.split( "\r\n" );
-      for ( i = 0; i < _d.length; i++ ) {
-        if ( !this.connectionEstablished && this.serverDelegate && _d[ i ] ) {
-          this.serverDelegate( this.server , _d[ i ], null );
-        }
-      }
-      if ( data.search( "NOTICE" ) !== -1 || data.search( this.COMMAND_NUMBERS.SERVER_CONNECT ) !== -1 )  {
-        this.log( "found ident" );
-        this.log( "Connection established." );
-        this.connectionEstablished = true;
-      } else if ( data.search( "ERROR" ) !== -1 ) {
-        this.closeConnection( data );
-        return;
-      }
-    }
-    dataR = data.split( "\n" );
-    if ( this.connectionEstablished ) {
-      for ( i = 0; i < dataR.length; i++ ) {
-        d = dataR[ i ];
-        if ( d.search( "PING" ) === 0 ) {
-          pong = d.split(" ")[ 1 ];
-          this._send( "PONG " + pong );
-        } else if ( d.length ) {
-          this.handleData( d );
-        }
-      }
+    this.data += data;
+    i = this.data.search("\r\n");
+    while ( i !== -1 ) {
+      line = this.data.substring(0,i+2);
+      this.data = this.data.substring(i+2);
+      i = this.data.search("\r\n");
+      this.handleLine(line);
     }
     if ( this.socket && this.socket.connected ) {
       this.socket.flush( );
+    }
+  },
+
+  handleLine: function ( line ) {
+
+    var pong;
+
+    this.log("LINE: " + line);
+    if ( !this.connectionEstablished ) {
+      this.log("Connection not established yet.");
+      if ( line.search( "NOTICE" ) !== -1 || line.search( this.COMMAND_NUMBERS.SERVER_CONNECT ) !== -1 )  {
+        this.log( "Connection established." );
+        this.connectionEstablished = true;
+      }
+    }
+    if ( line.search( "ERROR" ) === 0 ) {
+        this.log( "Found ERROR" );
+        this.closeConnection( data );
+        return;
+    }
+    if ( line.search( "PING" ) === 0 ) {
+      this.log( "Found PING" );
+      pong = line.split(" ")[ 1 ];
+      this._send( "PONG " + pong );
+      return;
+    } else if ( this.connectionEstablished ) {
+      //this.determineLineType(line);
+    } else {
+      this.serverDelegate( this.server , line, null );
     }
   },
 
@@ -287,8 +301,10 @@ dojo.declare( "diom.IRCClient", null, {
   },
 
   handleData: function ( line ) {
-    var endFragment = null, parts, user,
+
+    var endFragment = null,
       b, i, msg, cmdParts, newNick, host;
+
     this.log( "Handling line: " + line );
     if ( line[ 0 ] !== ":" ) {
       this.log( "lost beginning of line, line length: " + line.length );
@@ -1036,7 +1052,7 @@ dojo.declare( "diom.IRCClient", null, {
     if ( this.socket && this.socket.connected ) {
       this.socket.writeUTFBytes( data );
       this.socket.flush( );
-      this.log( data );
+      this.log( "RAW _send:" + data );
     } else {
       this.log( "Falied send, not connected: " + data );
     }
@@ -1085,6 +1101,7 @@ dojo.declare( "diom.IRCClient", null, {
   },
 
   destroy: function ( data ) {
+    delete this.data;
     this.log( "destroying irc client" );
     this.close( );
     delete this.socket;
