@@ -456,7 +456,6 @@ dojo.declare( "diom.controller.Controller", null, {
 
     var currentChannelName;
 
-    console.log("CHANNEL CHANGED " + channelName);
     //handles changes to channel list
     //XXX: this sucks, this special magical flag shit, how does handleChannelsChange have
     //any guarantee that these types wont change, etc
@@ -602,9 +601,8 @@ dojo.declare( "diom.controller.Controller", null, {
   handleUserActivity: function ( serverName, channelName, connectionId ) {
 
     var connection, channel, users;
-    connection = this.channelList.getConnection( connectionId );
 
-    console.log("HANDLE USER ACTIVITY " + channelName);
+    connection = this.channelList.getConnection( connectionId );
     if ( connection ) {
       channel = this.channelList.getChannel( channelName, connectionId );
       if ( !channel ) {

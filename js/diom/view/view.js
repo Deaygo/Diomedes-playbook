@@ -264,7 +264,6 @@ dojo.declare( "diom.view.View", null, {
       this.nickList.appendChild( this.activeWin.nickWindow.getNode( ) );
     }
     this.activeWin.changeView( );
-    //console.log("activeWin nickWindow:" + this.activeWin.nickWindow.getNicks());
     this.input.changeChannel( this.activeWin.nickWindow.getNicks( ), serverName, channelName, connectionId );
   },
 
@@ -359,7 +358,6 @@ dojo.declare( "diom.view.View", null, {
   */
   updateNickView: function ( users, serverName, channelName, connectionId ) {
     this.createActivityViewIfNeeded( channelName, serverName, connectionId );
-    //console.log("update nick window");
     this.getActivityWindow( channelName, serverName, connectionId ).nickWindow.update( users, channelName );
   },
 
@@ -375,7 +373,6 @@ dojo.declare( "diom.view.View", null, {
     var r, channelsR, serverName, server, activeChannels, highlightedChannels,
       channelKey, activity, highlight, channelName, connectionId, serverChannel;
 
-    //console.dump(channelsWithActivity);
     util.log("updateChannelView");
     if ( !channels ) { return; }
     r = [];
@@ -590,7 +587,6 @@ dojo.declare( "diom.view.View", null, {
   */
   updateActivityView: function ( messages, userNick, channelName, serverName, connectionId ) {
     this.createActivityViewIfNeeded( channelName, serverName, connectionId );
-    //console.log("update activity window");
     this.getActivityWindow( channelName, serverName, connectionId ).update( messages, userNick, channelName );
   },
 
