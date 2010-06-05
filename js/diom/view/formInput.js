@@ -165,7 +165,7 @@ dojo.declare( "diom.view.FormInput", null, {
     this.serverName = serverName;
     this.connectionid = connectionId;
     this.channelName = channelName;
-    //console.warn("update input changeChannel nicks: " + nicks + " channelName: " + channelName );
+    console.warn("update input changeChannel nicks: " + nicks + " channelName: " + channelName );
     this.nicks = nicks;
   },
 
