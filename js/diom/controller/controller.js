@@ -428,7 +428,7 @@ dojo.declare( "diom.controller.Controller", null, {
     }
     connection = this.channelList.getConnection( connectionId );
     connection.sendCommand( "quit", ["Leaving."], this.getCurrentChannelName( ) );
-    this.channelList.destroyConnection( conncetionId );
+    this.channelList.destroyConnection( connectionId );
     this.handleChannelChange( "destroy", null , host, null, connectionId );
     if ( currentHost === host ) {
       this.view.clearActivityView( );
@@ -574,9 +574,6 @@ dojo.declare( "diom.controller.Controller", null, {
   * @private
   */
   updateChannelFromTimer: function ( channelName, serverName, connectionId ) {
-    channelName = args[ 0 ];
-    serverName = args[ 1 ];
-    connectionId = args[ 2 ];
     this.queryTimer[ serverName ][ channelName ] = null;
     this.updateChannel( channelName, serverName, connectionId );
   },

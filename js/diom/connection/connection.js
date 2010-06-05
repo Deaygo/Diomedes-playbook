@@ -5,7 +5,7 @@
 /*jslint nomen: false */
 /*jslint plusplus: false */
 /*jslint passfail: true */
-/*global window, dojo, util, diom */
+/*global window, dojo, dojox, util, diom */
 
 dojo.provide( "diom.connection.connection" );
 
