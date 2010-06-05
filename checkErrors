@@ -4,6 +4,7 @@
 set -e
 
 checkFiles=(
+  "diom/controller/controller"
   "diom/diom"
   "diom/logger"
   "diom/include"
@@ -16,7 +17,6 @@ checkFiles=(
   "diom/topics"
   "diom/network"
   "diom/util"
-  "diom/controller/controller"
   "diom/controller/updater"
   "diom/controller/linkLog"
   "diom/controller/linkInfoFetcher"

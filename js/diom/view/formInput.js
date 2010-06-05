@@ -26,6 +26,7 @@ dojo.declare( "diom.view.FormInput", null, {
     this.reset( );
     this.channelName = null;
     this.serverName = null;
+    this.connectionId = null;
     this.channels = [];
     this.errorNode = null;
     dojo.subscribe(  diom.topics.NICK_CHANGE, this, "handleNickChange" );
@@ -118,7 +119,7 @@ dojo.declare( "diom.view.FormInput", null, {
 
   setValue: function ( value ) {
 
-		var length, input;
+    var length, input;
 
     value.split( "<br/>" ).join( "\n" );
     value.split( " " ).join( "&nbsp;" );
@@ -132,7 +133,7 @@ dojo.declare( "diom.view.FormInput", null, {
   },
   handleInput: function ( e ) {
 
-		var _input, inputs, i, input;
+    var _input, inputs, i, input;
 
     dojo.stopEvent( e );
     _input = this.getValue( );
@@ -153,10 +154,17 @@ dojo.declare( "diom.view.FormInput", null, {
     }
   },
 
-  changeChannel: function ( nicks, serverName, channelName ) {
+  /**
+  * @param {Array} nicks
+  * @param {String} serverName
+  * @param {String} channelName
+  * @param {String} connectionId
+  * @public
+  */
+  changeChannel: function ( nicks, serverName, channelName, connectionId ) {
     this.serverName = serverName;
+    this.connectionId = connectionId;
     this.channelName = channelName;
-    console.warn("update input changeChannel nicks: " + nicks + " channelName: " + channelName );
     this.nicks = nicks;
   },
 
@@ -164,9 +172,15 @@ dojo.declare( "diom.view.FormInput", null, {
     this.channels = channels;
   },
 
-  handleNickChange: function ( nicks, serverName, channelName ) {
-    if ( serverName === this.serverName && channelName === this.channelName ) {
-      console.warn("update input nicks handleNick Change: " + nicks + " channelName: " + channelName);
+  /**
+  * @param {Array} nicks
+  * @param {String} serverName
+  * @param {String} channelName
+  * @param {String} connectionId
+  * @private
+  */
+  handleNickChange: function ( nicks, serverName, channelName, connectionId ) {
+    if ( connectionId === this.connectionId && channelName === this.channelName ) {
       this.nicks = nicks;
     }
   },
@@ -200,7 +214,7 @@ dojo.declare( "diom.view.FormInput", null, {
   },
   handleInputChange: function ( e ) {
     //dojo.stopEvent should prevent insert of characters
-		var key, index;
+    var key, index;
     key = e.keyCode;
     if ( key === 9 ) {
       //tab
@@ -278,7 +292,7 @@ dojo.declare( "diom.view.FormInput", null, {
   },
 
   handleHistoryUp: function ( ) {
-		var value;
+    var value;
     this.historyIndex++;
     value = this.history[ this.historyIndex - 1 ];
     if ( value ) {
@@ -292,7 +306,7 @@ dojo.declare( "diom.view.FormInput", null, {
   },
 
   handleHistoryDown: function ( ) {
-		var value;
+    var value;
     if ( this.historyIndex ) {
       this.historyIndex--;
       value = this.history[ this.historyIndex - 1 ];
@@ -331,9 +345,9 @@ dojo.declare( "diom.view.FormInput", null, {
 
   tabCompletion: function ( e ) {
 
-		var n, startIndex, word, value, c, lc,
-			list, i, listItem, listItemLC, beg,
-			end;
+    var n, startIndex, word, value, c, lc,
+      list, i, listItem, listItemLC, beg,
+      end;
 
     n = e.srcElement;
     this.needsResetting = true;

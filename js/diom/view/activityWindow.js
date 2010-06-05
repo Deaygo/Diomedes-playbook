@@ -9,7 +9,15 @@ dojo.provide( "diom.view.activityWindow" );
 
 dojo.declare( "diom.view.ActivityWindow", null, {
 
-  constructor: function ( serverName, channelName, maxItems, timeFormat ) {
+  /**
+  * @param {String} serverName
+  * @param {String} channelName
+  * @param {Number} maxItems
+  * @param {String} timeFormat
+  * @param {String} connectionId
+  * @constructor
+  */
+  constructor: function ( serverName, channelName, maxItems, timeFormat, connectionId ) {
     this.linkRegex = /(https?:\/\/([\w\-]+\.)*[\w\-]+\.[\w\-]+(\/\S*)?)\s?/g;
     this.colorCode = String.fromCharCode( 3 );
     this.normalCode = String.fromCharCode( 17 );
@@ -35,12 +43,13 @@ dojo.declare( "diom.view.ActivityWindow", null, {
       "#C0C0C0", //grey
       "#A8A8A8" //lightgrey
     ];
-    this.nickWindow = new diom.view.NickWindow( serverName, channelName );
+    this.nickWindow = new diom.view.NickWindow( serverName, channelName, connectionId );
     this.topic = null;
     this.win = document.createElement( "div" );
     this.win.setAttribute( "class", "activityWin" );
     this.serverName = serverName;
     this.channelName = channelName;
+    this.connectionId = connectionId;
     this.isInStyle = false;
     this.isInBold = false;
     this.maxItems = maxItems;
@@ -49,6 +58,18 @@ dojo.declare( "diom.view.ActivityWindow", null, {
     dojo.subscribe(  diom.topics.CHANNEL_TOPIC, this, "handleTopic" );
   },
 
+  /**
+  * @public
+  * @return {String}
+  */
+  getConnectionId: function () {
+    return this.connectionId;
+  },
+
+  /**
+  * @param {String} msg
+  * @return {String}
+  */
   sanitize: function ( msg ) {
     if ( msg ) {
       msg = msg.split( "&" ).join( "&amp;" );
@@ -80,14 +101,21 @@ dojo.declare( "diom.view.ActivityWindow", null, {
     return this.topic;
   },
 
-  handleTopic: function ( serverName, channelName, topic ) {
-    if ( serverName === this.serverName && channelName === this.channelName ) {
+  /**
+  * @param {String} serverName
+  * @param {String} channel
+  * @param {String} topic
+  * @param {String} connectionId
+  * @private
+  */
+  handleTopic: function ( serverName, channelName, topic, connectionId ) {
+    if ( connectionId === this.connectionId && channelName === this.channelName ) {
       this.topic = topic;
     }
   },
 
   setTimeFormat: function ( timePrefs ) {
-		var i, time;
+    var i, time;
     for ( i = 0; i < timePrefs.length; i++ ) {
       time = timePrefs[ i ];
       if ( "selected" in time ) {
@@ -103,7 +131,7 @@ dojo.declare( "diom.view.ActivityWindow", null, {
   },
 
   shrinkActivity: function ( len ) {
-		var w, i;
+    var w, i;
     w = this.win;
     for ( i = this.win.childNodes.length; i > len; i-- ) {
       w.removeChild( w.firstChild );
@@ -115,9 +143,9 @@ dojo.declare( "diom.view.ActivityWindow", null, {
   },
 
   update: function ( messages, userNick, channelName ) {
-		var w, diff, variance, isAtBottom, r, newMsg, showBrackets,
-			isServer, isAction, isNotice, referencesUser, m, isSelf,
-			dates, childNodes, n, msg, nick;
+    var w, diff, variance, isAtBottom, r, newMsg, showBrackets,
+      isServer, isAction, isNotice, referencesUser, m, isSelf,
+      dates, childNodes, n, msg, nick;
     //XXX: need to switch from using msg properties to using msg getters and setters
     w = this.win;
     diff = Math.abs( w.scrollTop - ( w.scrollHeight - w.offsetHeight ) );
@@ -204,7 +232,7 @@ dojo.declare( "diom.view.ActivityWindow", null, {
   },
 
   formatDate: function ( date_ ) {
-		var year, month, day, hour, clock, minute, second;
+    var year, month, day, hour, clock, minute, second;
     year = this.formatDateItem( date_.getFullYear( ) );
     month = this.formatDateItem( date_.getMonth( ) + 1 );
     day = this.formatDateItem( date_.getDate( ) );
@@ -261,7 +289,7 @@ dojo.declare( "diom.view.ActivityWindow", null, {
   },
 
   findBold: function ( msg ) {
-		var pos, beg, middle, end, newMsg;
+    var pos, beg, middle, end, newMsg;
     pos = msg.search( this.boldCode );
     if ( pos !== -1 ) {
       beg = msg.slice( 0, pos );
@@ -282,8 +310,8 @@ dojo.declare( "diom.view.ActivityWindow", null, {
   },
 
   findColors: function ( msg ) {
-		var pos, styles, styleLength, possibleCode, setResult,
-			commaPos, beg, middleParts, middle, end, newMsg;
+    var pos, styles, styleLength, possibleCode, setResult,
+      commaPos, beg, middleParts, middle, end, newMsg;
     pos = msg.search( this.colorCode );
     styles = [];
     styleLength = 0;
@@ -331,19 +359,19 @@ dojo.declare( "diom.view.ActivityWindow", null, {
   },
 
   logLinks: function ( msg, nick ) {
-		var d, anchors, i, a;
+    var d, anchors, i, a;
     d = document.createElement( "div" );
     d.innerHTML = msg;
     anchors = d.getElementsByTagName( "a" );
     if ( anchors && anchors.length ) {
       for ( i = 0; i < anchors.length; i++ )  {
         a = anchors[ i ];
-        dojo.publish( diom.topics.LINK_FOUND, [ a.getAttribute( "href" ), this.serverName, this.channelName, nick ] );
-				a = null;
+        dojo.publish( diom.topics.LINK_FOUND, [ a.getAttribute( "href" ), this.serverName, this.channelName, nick, this.connectionId ] );
+        a = null;
       }
     }
-		anchors = null;
-		d = null;
+    anchors = null;
+    d = null;
   },
 
   findLinks: function ( msg, nick ) {
@@ -355,7 +383,7 @@ dojo.declare( "diom.view.ActivityWindow", null, {
   },
 
   setColorStyle: function ( possibleCode, isBackground ) {
-		var color, styleString, styleLength, styleName;
+    var color, styleString, styleLength, styleName;
     color = parseInt( possibleCode, 10 );
     styleLength = 0;
     if ( isBackground ) {

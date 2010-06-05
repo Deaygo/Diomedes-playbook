@@ -10,6 +10,8 @@
 dojo.provide( "diom.include" );
 
 /*add any dojo.require here */
+dojo.require("dojox.uuid.generateTimeBasedUuid");
+dojo.require("dojox.uuid.Uuid");
 
 //some kind of dojo build error requires
 //setting the first require omitModuleCheck option to true
