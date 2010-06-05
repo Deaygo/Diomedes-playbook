@@ -166,6 +166,7 @@ dojo.declare( "diom.view.FormInput", null, {
 
   handleNickChange: function ( nicks, serverName, channelName ) {
     if ( serverName === this.serverName && channelName === this.channelName ) {
+      console.warn("update input nicks handleNick Change: " + nicks + " channelName: " + channelName);
       this.nicks = nicks;
     }
   },
