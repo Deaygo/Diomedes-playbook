@@ -420,17 +420,21 @@ dojo.declare( "diom.controller.Controller", null, {
   * @param {String} connectionId;
   */
   closeConnection: function ( host, connectionId ) {
-    var currentHost, connection;
-    if ( !host ) { return; }
+
+    var currentHost, connection, currentConnectionId;
+
+    if ( !connectionId ) { return; }
     currentHost = null;
+    currentConnectionId = null;
     if ( this.currentConnection ) {
       currentHost = this.currentConnection.server;
+      currentConnectionId = this.currentConnection.getConnection();
     }
     connection = this.channelList.getConnection( connectionId );
     connection.sendCommand( "quit", ["Leaving."], this.getCurrentChannelName( ) );
     this.channelList.destroyConnection( connectionId );
     this.handleChannelChange( "destroy", null , host, null, connectionId );
-    if ( currentHost === host ) {
+    if ( currentConnectionId === connectionId ) {
       this.view.clearActivityView( );
       this.view.clearNickView( );
       delete this.currentConnection;
@@ -449,10 +453,13 @@ dojo.declare( "diom.controller.Controller", null, {
   * @private
   */
   handleChannelChange: function ( type, channelName, serverName, arg, connectionId ) {
+
     var currentChannelName;
+
     //handles changes to channel list
     //XXX: this sucks, this special magical flag shit, how does handleChannelsChange have
     //any guarantee that these types wont change, etc
+    console.log("handleChannelChange");
     this.view.updateChannelView( this.channelList.getChannels( ), this.channelsWithActivity, this.channelsHighlighted, this.channelList.getServerChannels() );
     if ( this.currentConnection && type && type === "part" ) {
       currentChannelName = this.currentConnection.getChannelName( this.currentChannel.name );
@@ -465,7 +472,7 @@ dojo.declare( "diom.controller.Controller", null, {
       this.handleChannelSelect( serverName, "SERVER",  null, connectionId );
       this.currentConnection = this.channelList.getConnection( connectionId );
       this.setCurrentChannel( this.channelList.getServerChannel( connectionId ) );
-    } else if ( serverName && type && type === "join" ) {
+    } else if ( connectionId && type && type === "join" ) {
       this.currentConnection = this.channelList.getConnection( connectionId );
       this.setCurrentChannel( this.currentConnection.getChannel( channelName ) );
     } else if ( this.currentConnection && type && type === "join" ) {
@@ -494,10 +501,10 @@ dojo.declare( "diom.controller.Controller", null, {
       channelName = this.currentConnection.getChannelName( channel.name );
       connectionId = this.currentConnection.getConnectionId( );
       this.view.changeView( serverName, channelName, channel.getTopic( ), connectionId );
-      if ( serverName in this.channelsWithActivity  && channelName in this.channelsWithActivity[ connectionId ] ) {
+      if ( connectionId in this.channelsWithActivity  && channelName in this.channelsWithActivity[ connectionId ] ) {
         delete this.channelsWithActivity[ connectionId ][ channelName ];
       }
-      if ( serverName in this.channelsHighlighted  && channelName in this.channelsHighlighted[ connectionId ] ) {
+      if ( connectionId in this.channelsHighlighted  && channelName in this.channelsHighlighted[ connectionId ] ) {
         delete this.channelsHighlighted[ connectionId ][ channelName ];
       }
       this.currentChannel = channel;
@@ -515,19 +522,19 @@ dojo.declare( "diom.controller.Controller", null, {
   * @private
   */
   handleChannelActivity: function ( channelName, serverName, isPM, connectionId ) {
-    if ( !( serverName in this.queryTimer ) ) {
-      this.queryTimer[ serverName ] = {};
+    if ( !( connectionId in this.queryTimer ) ) {
+      this.queryTimer[ connectionId ] = {};
     }
-    if ( !( channelName in this.queryTimer[ serverName ] ) ) {
-      this.queryTimer[ serverName ][ channelName ] = null;
+    if ( !( channelName in this.queryTimer[ connectionId ] ) ) {
+      this.queryTimer[ connectionId ][ channelName ] = null;
     }
-    if ( this.queryTimer[ serverName ][ channelName ] ) {
-      window.clearTimeout( this.queryTimer[ serverName ][ channelName ] );
-      this.queryTimer[ serverName][ channelName ] = null;
+    if ( this.queryTimer[ connectionId ][ channelName ] ) {
+      window.clearTimeout( this.queryTimer[ connectionId ][ channelName ] );
+      this.queryTimer[ connectionId ][ channelName ] = null;
     }
-    this.queryTimer[ serverName ][ channelName ] = window.setTimeout( dojo.hitch( this, "updateChannelFromTimer", channelName, serverName, connectionId ), 100 );
+    this.queryTimer[ connectionId ][ channelName ] = window.setTimeout( dojo.hitch( this, "updateChannelFromTimer", channelName, serverName, connectionId ), 100 );
     if ( this.currentConnection && isPM ) {
-      if ( !( this.currentConnection.server === serverName && channelName === this.currentConnection.getChannelName( this.currentChannel.name ) ) ) {
+      if ( !( this.currentConnection.getConnectionId() === connectionId && channelName === this.currentConnection.getChannelName( this.currentChannel.name ) ) ) {
         this.updateUnreadActivity( this.channelsWithActivity, channelName, serverName, connectionId );
       }
     }
@@ -542,7 +549,7 @@ dojo.declare( "diom.controller.Controller", null, {
   */
   handleHighlight: function ( channelName, serverName, nick, connectionId ) {
     if ( this.currentConnection ) {
-      if ( !( this.currentConnection.server === serverName && channelName === this.currentConnection.getChannelName( this.currentChannel.name ) ) ) {
+      if ( !( this.currentConnection.getConnectionId() === connectionId && channelName === this.currentConnection.getChannelName( this.currentChannel.name ) ) ) {
         this.updateUnreadActivity( this.channelsHighlighted, channelName, serverName, connectionId );
       }
     }
@@ -574,7 +581,7 @@ dojo.declare( "diom.controller.Controller", null, {
   * @private
   */
   updateChannelFromTimer: function ( channelName, serverName, connectionId ) {
-    this.queryTimer[ serverName ][ channelName ] = null;
+    this.queryTimer[ connectionId ][ channelName ] = null;
     this.updateChannel( channelName, serverName, connectionId );
   },
 

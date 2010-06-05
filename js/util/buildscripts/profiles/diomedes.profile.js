@@ -1,12 +1,13 @@
 dependencies = {
-	layers: [
-		{
-			name: "../diom/diom.js",
+  layers: [
+    {
+      name: "../diom/diom.js",
       resourceName: [ "diom.diom" ],
-			dependencies: [ "diom.diom" ]
-		}
-	],
+      dependencies: [ "diom.diom" ]
+    }
+  ],
 
-	prefixes: [
-	]
+  prefixes: [
+    [ "dojox", "../dojox" ],
+  ]
 };

@@ -373,6 +373,7 @@ dojo.declare( "diom.view.View", null, {
     var r, channelsR, serverName, server, activeChannels, highlightedChannels,
       channelKey, activity, highlight, channelName, connectionId, serverChannel;
 
+    console.dump(channelsWithActivity);
     util.log("updateChannelView");
     if ( !channels ) { return; }
     r = [];
@@ -506,7 +507,7 @@ dojo.declare( "diom.view.View", null, {
     }
     if ( this.activeWin ) {
       currentChannel = ( channelKey === this.activeWin.channelName &&
-        server === this.activeWin.serverName );
+        connectionId === this.activeWin.getConnectionId() );
     } else {
       currentChannel = false;
     }
@@ -551,10 +552,12 @@ dojo.declare( "diom.view.View", null, {
       this.activityWindows[ connectionId ] = {};
     }
     if ( !( channelName in this.activityWindows[ connectionId ] ) ) {
-      this.activityWindows[ connectionId ][ channelName ] = new diom.view.ActivityWindow( serverName,
+      this.activityWindows[ connectionId ][ channelName ] = new diom.view.ActivityWindow( 
+          serverName,
           channelName,
           this.model.prefs.getPrefs( ).historyLength,
-          this.model.prefs.getPrefs( ).multiOptionPrefs.time
+          this.model.prefs.getPrefs( ).multiOptionPrefs.time,
+          connectionId
       );
     }
   },
@@ -567,10 +570,9 @@ dojo.declare( "diom.view.View", null, {
   */
   getActivityWindow: function ( channelName, serverName, connectionId ) {
     channelName = channelName.toLowerCase( );
-    serverName = serverName.toLowerCase( );
-    if ( serverName in this.activityWindows ) {
-      if ( channelName in this.activityWindows[ serverName ] ) {
-        return this.activityWindows[ serverName ][ channelName ];
+    if ( connectionId in this.activityWindows ) {
+      if ( channelName in this.activityWindows[ connectionId ] ) {
+        return this.activityWindows[ connectionId ][ channelName ];
       }
     }
     return null;
