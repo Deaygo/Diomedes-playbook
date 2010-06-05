@@ -453,7 +453,7 @@ dojo.declare( "diom.controller.Controller", null, {
     //handles changes to channel list
     //XXX: this sucks, this special magical flag shit, how does handleChannelsChange have
     //any guarantee that these types wont change, etc
-    this.view.updateChannelView( this.channelList.getChannels( ), this.channelsWithActivity, this.channelsHighlighted, connectionId );
+    this.view.updateChannelView( this.channelList.getChannels( ), this.channelsWithActivity, this.channelsHighlighted, this.channelList.getServerChannels() );
     if ( this.currentConnection && type && type === "part" ) {
       currentChannelName = this.currentConnection.getChannelName( this.currentChannel.name );
       if ( this.currentConnection.getConnectionId() === connectionId && currentChannelName === channelName ) {

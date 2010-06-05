@@ -365,29 +365,31 @@ dojo.declare( "diom.view.View", null, {
   * @param {Array} channels
   * @param {Array} channelsWithActivity
   * @param {Array} channelsWithHighlight
-  * @param {String} connectionId
+  * @param {Array} serverChannelList
   * @public
   */
-  updateChannelView: function ( channels, channelsWithActivity, channelsWithHighlight, connectionId ) {
+  updateChannelView: function ( channels, channelsWithActivity, channelsWithHighlight, serverChannelList ) {
 
     var r, channelsR, serverName, server, activeChannels, highlightedChannels,
-      channelKey, activity, highlight, channelName, index;
+      channelKey, activity, highlight, channelName, connectionId, serverChannel;
 
     util.log("updateChannelView");
     if ( !channels ) { return; }
     r = [];
     channelsR = [];
-    for ( index in channels ) {
-      if ( channels.hasOwnProperty( index ) ) {
+    for ( connectionId in channels ) {
+      if ( channels.hasOwnProperty( connectionId ) ) {
+        serverChannel = serverChannelList[ connectionId];
+        serverName = serverChannel.getName();
         r.push( this.getChannelButton( serverName, serverName, serverName, "SERVER", null, null, connectionId ) );
-        server = channels[ serverName ];
-        if ( serverName in channelsWithActivity ) {
-          activeChannels = channelsWithActivity[ serverName ];
+        server = channels[ connectionId ];
+        if ( connectionId in channelsWithActivity ) {
+          activeChannels = channelsWithActivity[ connectionId ];
         } else {
           activeChannels = null;
         }
-        if ( serverName in channelsWithHighlight ) {
-          highlightedChannels = channelsWithHighlight[ serverName ];
+        if ( connectionId in channelsWithHighlight ) {
+          highlightedChannels = channelsWithHighlight[ connectionId ];
         } else {
           highlightedChannels = null;
         }

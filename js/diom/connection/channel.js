@@ -39,7 +39,7 @@ dojo.declare( "diom.connection.Channel", null, {
 
   getChannelName: function ( target ) {
     return target.toLowerCase( );
-	},
+  },
 
   setTopic: function ( topic ) {
     this.topic = topic;
@@ -50,7 +50,7 @@ dojo.declare( "diom.connection.Channel", null, {
   },
 
   renameUser: function ( oldNick, newNick ) {
-  	var user;
+    var user;
     if ( oldNick in this.users ) {
       user = this.users[ oldNick ];
       delete this.users[ oldNick ];
@@ -59,7 +59,7 @@ dojo.declare( "diom.connection.Channel", null, {
   },
 
   addModes: function ( modes ) {
-  	var i, mode, nick, user, channelName;
+    var i, mode, nick, user, channelName;
     for ( i = 0; i < modes.length; i++ ) {
       mode = modes[i];
       nick = mode.arg;
@@ -105,11 +105,11 @@ dojo.declare( "diom.connection.Channel", null, {
   },
 
   remUsers: function ( ) {
-  	var nick;
+    var nick;
     for ( nick in this.users ) {
-			if ( this.users.hasOwnProperty( nick ) ) {
-      	delete this.users[ nick ];
-			}
+      if ( this.users.hasOwnProperty( nick ) ) {
+        delete this.users[ nick ];
+      }
     }
     this.users = {};
   },
@@ -141,7 +141,7 @@ dojo.declare( "diom.connection.Channel", null, {
       this.logger.write( );
     }
     this.publishActivity( ( msg.cmd in { "privmsg" : 1, "action" : 1 } ) );
-		msg = null;
+    msg = null;
   },
 
   clearActivity: function ( ) {

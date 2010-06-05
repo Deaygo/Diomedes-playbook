@@ -90,14 +90,33 @@ dojo.declare( "diom.controller.ChannelList", null, {
   */
   getChannels: function ( ) {
 
-    var channels = {}, i;
+    var channels, connectionId;
 
-    for ( i in this.connections ) {
-      if ( this.connections.hasOwnProperty( i ) ) {
-        channels[ i ] = this.connections[ i ].getChannels( );
+    channels = {};
+    for ( connectionId in this.connections ) {
+      if ( this.connections.hasOwnProperty( connectionId ) ) {
+        channels[ connectionId ] = this.connections[ connectionId ].getChannels( );
       }
     }
     return channels;
+  },
+
+  /**
+  * @public
+  * @return {Array}
+  */
+  getServerChannels: function ( ) {
+
+    var connectionId, channels;
+
+    channels = {};
+    for ( connectionId in this.connections ) {
+      if ( this.connections.hasOwnProperty( connectionId ) ) {
+        channels[ connectionId ] = this.connections[ connectionId ].getServerChannel( );
+      }
+    }
+    return channels;
+
   },
 
   /**
