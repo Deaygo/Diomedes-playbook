@@ -54,12 +54,19 @@ dojo.declare( "diom.view.NickWindow", null, {
   },
 
   getNicks: function ( ) {
+    console.log("get nicks: " + this.nicks);
     return this.nicks;
   },
 
+  /**
+  * @param {Object} users
+  * @param {String} channelName
+  */
   update: function ( users, channelName ) {
+
     var mode, r, usersR, creatorsR, opsR, halfOpsR, voicedR,
       nicks, tmpNicks, i, nick, user;
+
     r = [];
     usersR = [];
     creatorsR = [];
@@ -101,12 +108,22 @@ dojo.declare( "diom.view.NickWindow", null, {
     r = r.concat( voicedR );
     r = r.concat( usersR );
     this.setContents( this.win, r.join( "" ), false );
+    console.info("nicks: " + nicks.length);
+    console.dump(this.nicks);
     this.nicks = nicks;
     dojo.publish( diom.topics.NICK_CHANGE, [ nicks, this.serverName, this.channelName, this.connectionId ] );
   },
 
+  /**
+  * @param {Object} users
+  * @private
+  * @return {Array}
+  */
   sort: function ( users ) {
-    var r = [], nick;
+
+    var r, nick;
+
+    r = [];
     for ( nick in users ) {
       if ( users.hasOwnProperty( nick ) ) {
         r.push( nick );
