@@ -54,7 +54,7 @@ dojo.declare( "diom.view.NickWindow", null, {
   },
 
   getNicks: function ( ) {
-    console.log("get nicks: " + this.nicks);
+    //console.log("get nicks: " + this.nicks);
     return this.nicks;
   },
 
@@ -108,8 +108,8 @@ dojo.declare( "diom.view.NickWindow", null, {
     r = r.concat( voicedR );
     r = r.concat( usersR );
     this.setContents( this.win, r.join( "" ), false );
-    console.info("nicks: " + nicks.length);
-    console.dump(this.nicks);
+    //console.info("nicks: " + nicks.length);
+    //console.dump(this.nicks);
     this.nicks = nicks;
     dojo.publish( diom.topics.NICK_CHANGE, [ nicks, this.serverName, this.channelName, this.connectionId ] );
   },

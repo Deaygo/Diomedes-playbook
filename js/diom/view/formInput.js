@@ -165,7 +165,7 @@ dojo.declare( "diom.view.FormInput", null, {
     this.serverName = serverName;
     this.connectionid = connectionId;
     this.channelName = channelName;
-    console.warn("update input changeChannel nicks: " + nicks + " channelName: " + channelName );
+    //console.warn("update input changeChannel nicks: " + nicks + " channelName: " + channelName );
     this.nicks = nicks;
   },
 
@@ -190,7 +190,7 @@ dojo.declare( "diom.view.FormInput", null, {
   */
   handleNickChange: function ( nicks, serverName, channelName, connectionId ) {
     if ( connectionId === this.connectionId && channelName === this.channelName ) {
-      console.warn("update input nicks handleNick Change: " + nicks + " channelName: " + channelName);
+      //console.warn("update input nicks handleNick Change: " + nicks + " channelName: " + channelName);
       this.nicks = nicks;
     }
   },
