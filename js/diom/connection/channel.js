@@ -8,7 +8,7 @@ dojo.provide( "diom.connection.channel" );
 
 dojo.declare( "diom.connection.Channel", null, {
 
-  constructor: function ( name, type, server, logPref ) {
+  constructor: function ( name, type, server, logPref, connectionId ) {
     this.name = name;
     this.type = type;
     this.server = server;
@@ -16,6 +16,7 @@ dojo.declare( "diom.connection.Channel", null, {
     this.topic = null;
     this.activityList = new diom.connection.ActivityList( );
     this.logPref = logPref;
+    this.connectionId = connectionId;
     this.logger = new diom.Logger( server, name );
     this.isLogOpen = false;
     if ( logPref ) {
@@ -148,11 +149,11 @@ dojo.declare( "diom.connection.Channel", null, {
   },
 
   publishActivity: function ( isPM ) {
-    dojo.publish( diom.topics.CHANNEL_ACTIVITY, [ this.getChannelName( this.name ), this.server, isPM ] );
+    dojo.publish( diom.topics.CHANNEL_ACTIVITY, [ this.getChannelName( this.name ), this.server, isPM, this.connectionId ] );
   },
 
   publishUserActivity: function ( ) {
-    dojo.publish( diom.topics.USER_ACTIVITY, [ this.server, this.getChannelName( this.name ) ] );
+    dojo.publish( diom.topics.USER_ACTIVITY, [ this.server, this.getChannelName( this.name ), this.connectionId ] );
   },
 
   getActivity: function ( msg ) {

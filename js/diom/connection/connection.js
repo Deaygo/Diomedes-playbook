@@ -27,6 +27,7 @@ dojo.declare( "diom.connection.Connection", null, {
     this.server = server;
     this.serverChannel = null;
     this.port = port;
+    this.connectionId = new dojox.uuid.Uuid(dojox.uuid.generateTimeBasedUuid());
     this.altNickTries = 0;
 
     this.pollTime = parseInt( preferences.pollTime, 10 );
@@ -65,6 +66,15 @@ dojo.declare( "diom.connection.Connection", null, {
     dojo.subscribe(  diom.topics.PREFS_CHANGE_AUTOJOIN, this, "setAutoJoin" );
     dojo.subscribe(  diom.topics.IGNORES_UPDATE, this, "handleIgnoresUpdate" );
     dojo.subscribe(  diom.topics.PREFS_CHANGE_LOGGING, this, "handleChangeLoggingPref" );
+  },
+
+  /**
+  * Get the connection's unique id.
+  * @public
+  * @return {String}
+  */
+  getConnectionId: function ( ) {
+    return this.connectionId.toString();
   },
 
   handleChangeLoggingPref: function ( newValue ) {
@@ -139,9 +149,9 @@ dojo.declare( "diom.connection.Connection", null, {
         }
       } else {
         util.log( "JOINING PM: " + target );
-        this.channels[ channelName ] = new diom.connection.Channel( channelName, this.CHANNEL_TYPES.PM, this.server, this.logPref );
+        this.channels[ channelName ] = new diom.connection.Channel( channelName, this.CHANNEL_TYPES.PM, this.server, this.logPref, this.getConnectionId() );
         channel = this.channels[ channelName ];
-        dojo.publish( diom.topics.CHANNELS_CHANGED, [] );
+        dojo.publish( diom.topics.CHANNELS_CHANGED, [ null, null, null, null, this.getConnectionId() ] );
         channel.addActivity( msg );
         if ( !( target in this.users ) ) {
           this.users[ target ] = new diom.connection.User( target, "" );
@@ -157,8 +167,8 @@ dojo.declare( "diom.connection.Connection", null, {
   connect: function () {
     this.stayConnected = true;
     this.client.connect( );
-    this.serverChannel = new diom.connection.Channel( this.server, this.CHANNEL_TYPES.SERVER, this.server, this.logPref );
-    dojo.publish( diom.topics.CHANNELS_CHANGED, [] );
+    this.serverChannel = new diom.connection.Channel( this.server, this.CHANNEL_TYPES.SERVER, this.server, this.logPref, this.getConnectionId() );
+    dojo.publish( diom.topics.CHANNELS_CHANGED, [ null, null, null, null, this.getConnectionId() ] );
   },
 
   reconnect: function ( ) {
@@ -204,7 +214,7 @@ dojo.declare( "diom.connection.Connection", null, {
       }
       this.serverChannel.addActivity( msg_ );
       util.log("PUBLISHING CONNECTION_DISCONNECTED: " + this.server );
-      dojo.publish( diom.topics.CONNECTION_DISCONNECTED, [ this.server ] );
+      dojo.publish( diom.topics.CONNECTION_DISCONNECTED, [ this.server, this.getConnectionId() ] );
       pollTime = this.pollTime;
       if ( !this.reconnectId && pollTime && this.stayConnected ) {
         this.reconnectId = window.setTimeout( dojo.hitch( this, "reconnect" ), pollTime * 1000 );
@@ -221,7 +231,7 @@ dojo.declare( "diom.connection.Connection", null, {
       if ( channels.length ) {
         this.client.join( channels );
       }
-      dojo.publish( diom.topics.CHANNELS_CHANGED, [ "connect", null, this.server ] );
+      dojo.publish( diom.topics.CHANNELS_CHANGED, [ "connect", null, this.server, null, this.getConnectionId() ] );
     }
   },
 
@@ -237,9 +247,9 @@ dojo.declare( "diom.connection.Connection", null, {
         this.channels[ channelName ].destroy( );
         delete this.channels[ channelName ];
       }
-      this.channels[ channelName ] = new diom.connection.Channel( target, this.CHANNEL_TYPES.CHANNEL, this.server, this.logPref );
+      this.channels[ channelName ] = new diom.connection.Channel( target, this.CHANNEL_TYPES.CHANNEL, this.server, this.logPref, this.getConnectionId() );
       this.client.getTopic( target );
-      dojo.publish( diom.topics.CHANNELS_CHANGED, [ "join", channelName, this.server ] );
+      dojo.publish( diom.topics.CHANNELS_CHANGED, [ "join", channelName, this.server, null, this.getConnectionId() ] );
       if ( channelName in this.names ) {
         this.addNamesToChannel( channelName, this.names[ channelName ] );
       } else {
@@ -326,7 +336,7 @@ dojo.declare( "diom.connection.Connection", null, {
       if ( channelName in this.channels ) {
         this.serverChannel.addActivity( msg );
         delete this.channels[ channelName ];
-        dojo.publish( diom.topics.CHANNELS_CHANGED, [ "part", channelName, this.server ] );
+        dojo.publish( diom.topics.CHANNELS_CHANGED, [ "part", channelName, this.server, null, this.getConnectionId() ] );
       }
     }
   },
@@ -360,7 +370,7 @@ dojo.declare( "diom.connection.Connection", null, {
     if ( msg && msg.length && ( nick !== _nick ) ) {
       referencesUser = ( msg.search( _nick.split("-").join("\\-").split( "|" ).join( "\\|" ).split( "^" ).join( "\\^" ) ) !== -1 );
       if ( referencesUser ) {
-        dojo.publish( diom.topics.USER_HIGHLIGHT, [ this.getChannelName( target ), this.server, _nick ] );
+        dojo.publish( diom.topics.USER_HIGHLIGHT, [ this.getChannelName( target ), this.server, _nick, this.getConnectionId() ] );
         return true;
       }
     }
@@ -429,7 +439,7 @@ dojo.declare( "diom.connection.Connection", null, {
       this.channels[ newChannelName ] = this.channels[ channelName ];
       this.channels[ newChannelName ].setName( newNick );
       delete this.channels[ channelName ];
-      dojo.publish( diom.topics.CHANNELS_CHANGED, [ "nick", channelName, this.server, newChannelName ] );
+      dojo.publish( diom.topics.CHANNELS_CHANGED, [ "nick", channelName, this.server, newChannelName, this.getConnectionId() ] );
     }
     if ( nick === this.getNick( ) ) {
       this.serverChannel.addActivity( msg );
@@ -506,7 +516,7 @@ dojo.declare( "diom.connection.Connection", null, {
       channel = this.channels[ channelName ];
       channel.setTopic( topic );
     }
-    dojo.publish( diom.topics.CHANNEL_TOPIC, [ this.server, channelName, topic ] );
+    dojo.publish( diom.topics.CHANNEL_TOPIC, [ this.server, channelName, topic, this.getConnectionId() ] );
     msg = null;
   },
 
@@ -526,7 +536,7 @@ dojo.declare( "diom.connection.Connection", null, {
   },
 
   addNewChannel: function ( name, type ) {
-    this.channels[ name ] = new diom.connection.Channel( name, type, this.server, this.logPref );
+    this.channels[ name ] = new diom.connection.Channel( name, type, this.server, this.logPref, this.getConnectionId() );
   },
 
   getChannels: function ( ) {
@@ -570,11 +580,11 @@ dojo.declare( "diom.connection.Connection", null, {
         msg = "";
         if ( args && args.length ) {
           channel = args.shift( );
-					if ( args.length ) {
-          	nick = args.shift( );
-					} else {
-						nick = null;
-					}
+          if ( args.length ) {
+            nick = args.shift( );
+          } else {
+            nick = null;
+          }
           if ( !nick ) {
             nick = channel;
             channel = target;
@@ -756,8 +766,8 @@ dojo.declare( "diom.connection.Connection", null, {
     }
   },
 
-  closeChannel: function ( serverName, channelName ) {
-    if ( serverName === this.server ) {
+  closeChannel: function ( serverName, channelName, connectionId ) {
+    if ( connectionId === this.getConnectionId() ) {
       this.partChannel( channelName, "Closed channel window." );
     }
   },
@@ -796,7 +806,7 @@ dojo.declare( "diom.connection.Connection", null, {
         this.channels[ channelName ].destroy( );
         delete this.channels[ channelName ];
       }
-      dojo.publish( diom.topics.CHANNELS_CHANGED, [ "part", channelName, this.server ] );
+      dojo.publish( diom.topics.CHANNELS_CHANGED, [ "part", channelName, this.server, null, this.getConnectionId() ] );
     }
   },
 
@@ -831,7 +841,5 @@ dojo.declare( "diom.connection.Connection", null, {
   }
 
 } );
-
-
 
 

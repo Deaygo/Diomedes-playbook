@@ -127,12 +127,16 @@ dojo.declare( "diom.controller.Controller", null, {
     }
   },
 
-  getNetworkByHost: function  ( host ) {
+  /**
+  * @param {String} connectionId
+  * @private
+  */
+  getNetworkByConnectionId: function  ( connectionId ) {
     var networkName, network;
     for ( networkName in this.networks ) {
       if ( this.networks.hasOwnProperty( networkName ) ) {
         network = this.networks[ networkName ];
-        if ( host === network.getHost( ) ) {
+        if ( connectionId === network.getConnectionId( ) ) {
           return network;
         }
       }
@@ -262,20 +266,35 @@ dojo.declare( "diom.controller.Controller", null, {
     this.model.networks.remNetwork( id );
   },
 
-  handleChannelSelect: function ( server, type, name ) {
+  /**
+  * @param {String} server
+  * @param {String} type
+  * @param {String} name
+  * @param {String} connectionId
+  * @private
+  */
+  handleChannelSelect: function ( server, type, name, connectionId ) {
     util.log( "handlechannelselect" );
     delete this.currentConnection;
-    this.currentConnection = this.channelList.getConnection( server );
+    this.currentConnection = this.channelList.getConnection( connectionId );
     if ( type === "SERVER" ) {
-      this.setCurrentChannel( this.channelList.getServerChannel( server ) );
+      this.setCurrentChannel( this.channelList.getServerChannel( connectionId ) );
     } else {
-      this.setCurrentChannel( this.channelList.getChannel( name, server ) );
+      this.setCurrentChannel( this.channelList.getChannel( name, connectionId ) );
     }
   },
 
-  handleInput: function ( input, server ) {
+  /**
+  * @param {String} input
+  * @param {String} server
+  * @param {String} connectionId
+  * @private
+  */
+  handleInput: function ( input, server, connectionId ) {
+
     var argsR, cmd, nick, hostParts, host, port,
       networkName, network, connection;
+
     util.log( "input: " + input + " server: " + server );
     if ( input.search( "/" ) === 0 ) {
       //it's a command
@@ -288,16 +307,10 @@ dojo.declare( "diom.controller.Controller", null, {
           hostParts = argsR[0].split(":");
           host = hostParts[0];
           port = ( ( hostParts.length > 1 ) ? hostParts[1] : null );
-          connection = this.channelList.getConnection( host );
-          if ( connection ) {
-            connection.connect( );
-            this.handleChannelSelect( host, "SERVER",  null );
-          } else {
-            this.channelList.createConnection( host, port, this.model.prefs.getPrefs( ), this.appVersion, this.ignores );
-            if ( !this.currentConnection ) {
-              this.currentConnection = this.channelList.getConnection( host );
-              this.setCurrentChannel( this.currentConnection.getServerChannel( ) );
-            }
+          connection = this.channelList.createConnection( host, port, this.model.prefs.getPrefs( ), this.appVersion, this.ignores );
+          if ( !this.currentConnection ) {
+            this.currentConnection = connection;
+            this.setCurrentChannel( connection.getServerChannel( ) );
           }
         } else {
           util.log( "not enough args given to connect to server" );
@@ -310,7 +323,7 @@ dojo.declare( "diom.controller.Controller", null, {
           network = this.getNetwork( networkName );
           if ( network ) {
             network.connect( );
-            this.currentConnection = network.getConnection( host );
+            this.currentConnection = network.getConnection( );
             this.setCurrentChannel( this.currentConnection.getServerChannel( ) );
           }
         }
@@ -320,19 +333,19 @@ dojo.declare( "diom.controller.Controller", null, {
         }
       } else if ( cmd === "close" ) {
         if ( this.currentConnection ) {
-          this.closeNetworkOrConnection( this.currentConnection.server );
+          this.closeNetworkOrConnection( this.currentConnection.server, this.currentConnection.getConnectionId() );
         }
       } else if ( cmd === "help" ) {
         this.view.displayHelp( );
       } else if ( cmd === "clear" ) {
         this.currentChannel.clearActivity( );
         this.view.clearActivityView( );
-      } else if ( cmd in this.aliases ) {
-        dojo.publish( diom.topics.USER_INPUT, [ this.createInputFromAlias( this.aliases[ cmd ], argsR ), server ] );
+      } else if ( cmd in this.aliases && server && connectionId ) {
+        dojo.publish( diom.topics.USER_INPUT, [ this.createInputFromAlias( this.aliases[ cmd ], argsR ), server, connectionId ] );
       } else {
         //hand command over to currentConnection
-        if ( server ) {
-          connection = this.channelList.getConnection( server );
+        if ( server && connectionId ) {
+          connection = this.channelList.getConnection( connectionId );
           if ( connection ) {
             connection.sendCommand( cmd, this.replaceTokens( argsR, connection ), server );
           }
@@ -349,14 +362,21 @@ dojo.declare( "diom.controller.Controller", null, {
     }
   },
 
-  closeNetworkOrConnection: function ( host ) {
+  /**
+  * @param {String} host
+  * @param {String} connectionId
+  * @private
+  */
+  closeNetworkOrConnection: function ( host, connectionId ) {
+
     var network;
+
     if ( this.view.getConfirmation( "close a connection" ) ) {
-      network = this.getNetworkByHost( host );
+      network = this.getNetworkByConnectionId( connectionId );
       if ( network ) {
         network.close( );
       } else {
-        this.closeConnection( host );
+        this.closeConnection( host, connectionId );
       }
     }
   },
@@ -395,17 +415,21 @@ dojo.declare( "diom.controller.Controller", null, {
     return newArgs;
   },
 
-  closeConnection: function ( host ) {
+  /**
+  * @param {String} host
+  * @param {String} connectionId;
+  */
+  closeConnection: function ( host, connectionId ) {
     var currentHost, connection;
     if ( !host ) { return; }
     currentHost = null;
     if ( this.currentConnection ) {
       currentHost = this.currentConnection.server;
     }
-    connection = this.channelList.getConnection( host );
+    connection = this.channelList.getConnection( connectionId );
     connection.sendCommand( "quit", ["Leaving."], this.getCurrentChannelName( ) );
-    this.channelList.destroyConnection( host );
-    this.handleChannelChange( "destroy", null , host );
+    this.channelList.destroyConnection( conncetionId );
+    this.handleChannelChange( "destroy", null , host, null, connectionId );
     if ( currentHost === host ) {
       this.view.clearActivityView( );
       this.view.clearNickView( );
@@ -416,33 +440,47 @@ dojo.declare( "diom.controller.Controller", null, {
     }
   },
 
-  handleChannelChange: function ( type, channelName, serverName, arg ) {
+  /**
+  * @param {String} type
+  * @param {String} channelName
+  * @param {String} serverName
+  * @param {String} arg
+  * @param {String} connectionId
+  * @private
+  */
+  handleChannelChange: function ( type, channelName, serverName, arg, connectionId ) {
     var currentChannelName;
     //handles changes to channel list
     //XXX: this sucks, this special magical flag shit, how does handleChannelsChange have
     //any guarantee that these types wont change, etc
-    this.view.updateChannelView( this.channelList.getChannels( ), this.channelsWithActivity, this.channelsHighlighted );
+    this.view.updateChannelView( this.channelList.getChannels( ), this.channelsWithActivity, this.channelsHighlighted, connectionId );
     if ( this.currentConnection && type && type === "part" ) {
       currentChannelName = this.currentConnection.getChannelName( this.currentChannel.name );
-      if ( this.currentConnection.server === serverName && currentChannelName === channelName ) {
-        this.setCurrentChannel( this.currentConnection.getServerChannel ( ) );
+      if ( this.currentConnection.getConnectionId() === connectionId && currentChannelName === channelName ) {
+        this.setCurrentChannel( this.currentConnection.getServerChannel( ) );
       }
     } else if ( this.currentConnection && type && type === "nick"  && arg ) {
       this.setCurrentChannel( this.currentConnection.getChannel( arg ) );
     } else if ( type && type === "connect" ) {
-      this.handleChannelSelect( serverName, "SERVER",  null );
-      this.currentConnection = this.channelList.getConnection( serverName );
-      this.setCurrentChannel( this.channelList.getServerChannel( serverName ) );
+      this.handleChannelSelect( serverName, "SERVER",  null, connectionId );
+      this.currentConnection = this.channelList.getConnection( connectionId );
+      this.setCurrentChannel( this.channelList.getServerChannel( connectionId ) );
     } else if ( serverName && type && type === "join" ) {
-      this.currentConnection = this.channelList.getConnection( serverName );
+      this.currentConnection = this.channelList.getConnection( connectionId );
       this.setCurrentChannel( this.currentConnection.getChannel( channelName ) );
     } else if ( this.currentConnection && type && type === "join" ) {
       this.setCurrentChannel( this.currentConnection.getChannel( channelName ) );
     }
   },
 
+  /**
+  * @param {Object} channel
+  * @private
+  */
   setCurrentChannel: function ( channel ) {
-    var serverName, channelName;
+
+    var serverName, channelName, connectionId;
+
     if ( this.currentConnection ) {
       util.log("set currentChannel");
       if ( this.channelSubscription ) {
@@ -454,21 +492,29 @@ dojo.declare( "diom.controller.Controller", null, {
       delete this.currentChannel;
       serverName = this.currentConnection.server;
       channelName = this.currentConnection.getChannelName( channel.name );
-      this.view.changeView( serverName, channelName, channel.getTopic( ) );
-      if ( serverName in this.channelsWithActivity  && channelName in this.channelsWithActivity[ serverName ] ) {
-        delete this.channelsWithActivity[ serverName ][ channelName ];
+      connectionId = this.currentConnection.getConnectionId( );
+      this.view.changeView( serverName, channelName, channel.getTopic( ), connectionId );
+      if ( serverName in this.channelsWithActivity  && channelName in this.channelsWithActivity[ connectionId ] ) {
+        delete this.channelsWithActivity[ connectionId ][ channelName ];
       }
-      if ( serverName in this.channelsHighlighted  && channelName in this.channelsHighlighted[ serverName ] ) {
-        delete this.channelsHighlighted[ serverName ][ channelName ];
+      if ( serverName in this.channelsHighlighted  && channelName in this.channelsHighlighted[ connectionId ] ) {
+        delete this.channelsHighlighted[ connectionId ][ channelName ];
       }
       this.currentChannel = channel;
       this.currentChannel.publishUserActivity();
       this.view.finishChannelChange( );
-      this.handleChannelChange( "set", channelName, serverName );
+      this.handleChannelChange( "set", channelName, serverName, null, connectionId );
     }
   },
 
-  handleChannelActivity: function ( channelName, serverName, isPM ) {
+  /**
+  * @param {String} channelName
+  * @param {String} serverName
+  * @param {Boolean} isPam
+  * @param {String} connectionId
+  * @private
+  */
+  handleChannelActivity: function ( channelName, serverName, isPM, connectionId ) {
     if ( !( serverName in this.queryTimer ) ) {
       this.queryTimer[ serverName ] = {};
     }
@@ -479,40 +525,60 @@ dojo.declare( "diom.controller.Controller", null, {
       window.clearTimeout( this.queryTimer[ serverName ][ channelName ] );
       this.queryTimer[ serverName][ channelName ] = null;
     }
-    this.queryTimer[ serverName ][ channelName ] = window.setTimeout( dojo.hitch( this, "updateChannelFromTimer", [ channelName, serverName ] ), 100 );
+    this.queryTimer[ serverName ][ channelName ] = window.setTimeout( dojo.hitch( this, "updateChannelFromTimer", channelName, serverName, connectionId ), 100 );
     if ( this.currentConnection && isPM ) {
       if ( !( this.currentConnection.server === serverName && channelName === this.currentConnection.getChannelName( this.currentChannel.name ) ) ) {
-        this.updateUnreadActivity( this.channelsWithActivity, channelName, serverName );
+        this.updateUnreadActivity( this.channelsWithActivity, channelName, serverName, connectionId );
       }
     }
   },
 
-  handleHighlight: function ( channelName, serverName, nick ) {
+  /**
+  * @param {String} channelName
+  * @param {String} serverName
+  * @param {String} nick
+  * @param {String} connectionId
+  * @private
+  */
+  handleHighlight: function ( channelName, serverName, nick, connectionId ) {
     if ( this.currentConnection ) {
       if ( !( this.currentConnection.server === serverName && channelName === this.currentConnection.getChannelName( this.currentChannel.name ) ) ) {
-        this.updateUnreadActivity( this.channelsHighlighted, channelName, serverName );
+        this.updateUnreadActivity( this.channelsHighlighted, channelName, serverName, connectionId );
       }
     }
   },
 
-  updateUnreadActivity: function ( o, channelName, serverName ) {
-      if ( !( serverName in o ) ) {
-        o[ serverName ] = {};
+  /**
+  * @param {Object} channels
+  * @param {String} channelName
+  * @param {String} serverName
+  * @param {String} connectionId
+  * @private
+  */
+  updateUnreadActivity: function ( channels, channelName, serverName, connectionId ) {
+      if ( !( connectionId in channels ) ) {
+        channels[ connectionId ] = {};
       }
-      if ( channelName in o[ serverName ] ) {
-        o[ serverName ][ channelName ]++;
+      if ( channelName in channels[ connectionId ] ) {
+        channels[ connectionId ][ channelName ]++;
       } else {
-        o[ serverName ][ channelName ] = 1;
+        channels[ connectionId ][ channelName ] = 1;
       }
-      this.handleChannelChange( "update", channelName, serverName ); //activity added to non current window;
+      this.handleChannelChange( "update", channelName, serverName, null, connectionId ); //activity added to non current window;
   },
 
-  updateChannelFromTimer: function ( args ) {
-    var channelName, serverName;
+  /**
+  * @param {String} channelName
+  * @param {String} serverName
+  * @param {String} connectionId
+  * @private
+  */
+  updateChannelFromTimer: function ( channelName, serverName, connectionId ) {
     channelName = args[ 0 ];
-    serverName = args[ 1];
+    serverName = args[ 1 ];
+    connectionId = args[ 2 ];
     this.queryTimer[ serverName ][ channelName ] = null;
-    this.updateChannel( channelName, serverName );
+    this.updateChannel( channelName, serverName, connectionId );
   },
 
   getCurrentChannelName: function ( ) {
@@ -523,32 +589,44 @@ dojo.declare( "diom.controller.Controller", null, {
     }
   },
 
-  handleUserActivity: function ( serverName, channelName ) {
+  /**
+  * @param {String} serverName
+  * @param {String} channelName
+  * @param {String} connectionId A uuid.
+  * @private
+  */
+  handleUserActivity: function ( serverName, channelName, connectionId ) {
     var connection, channel, users;
-    connection = this.channelList.getConnection( serverName );
+    connection = this.channelList.getConnection( connectionId );
     if ( connection ) {
-      channel = this.channelList.getChannel( channelName, serverName );
+      channel = this.channelList.getChannel( channelName, connectionId );
       if ( !channel ) {
         channel = connection.getServerChannel( );
       }
       if ( channel ) {
         users = channel.getUsers( );
-        this.view.updateNickView( users, serverName, channelName );
+        this.view.updateNickView( users, serverName, channelName, connectionId );
       }
     }
   },
 
-  updateChannel: function ( channelName, serverName ) {
+  /**
+  * @param {String} channelName
+  * @param {String} serverName
+  * @param {String} connectionId
+  * @private
+  */
+  updateChannel: function ( channelName, serverName, connectionId ) {
     var connection, channel, nick;
-    util.log("updateChannel channelName: " + channelName + " serverName: " + serverName );
-    connection = this.channelList.getConnection( serverName );
+    util.log("updateChannel channelName: " + channelName + " serverName: " + serverName + " connectionId: " + connectionId );
+    connection = this.channelList.getConnection( connectionId );
     if ( connection ) {
-      channel = this.channelList.getChannel( channelName, serverName );
+      channel = this.channelList.getChannel( channelName, connectionId );
       if ( !channel ) {
         channel = connection.getServerChannel( );
       }
       nick = connection.getNick( );
-      this.view.updateActivityView( channel.getActivity( ), nick, channelName, serverName );
+      this.view.updateActivityView( channel.getActivity( ), nick, channelName, serverName, connectionId );
     }
   },
 

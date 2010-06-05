@@ -13,7 +13,7 @@ dojo.provide( "diom.view.view" );
 dojo.declare( "diom.view.View", null, {
 
   constructor: function ( model ) {
-		var prefs;
+    var prefs;
     this.model = model;
     this.prevWord = null;
     this.input = new diom.view.FormInput( util.get( "textInput" ) );
@@ -105,9 +105,16 @@ dojo.declare( "diom.view.View", null, {
     document.title = msg;
   },
 
-  handleNickChange: function ( nicks, serverName, channelName ) {
+  /**
+  * @param {Array} nicks
+  * @param {String} serverName
+  * @param {String} channelName
+  * @param {String} connectionId
+  * @private
+  */
+  handleNickChange: function ( nicks, serverName, channelName, connectionId ) {
     var topic, tmp;
-    if ( this.activeWin.serverName === serverName && this.activeWin.channelName === channelName ) {
+    if ( this.activeWin.getConnectionId() === connectionId && this.activeWin.channelName === channelName ) {
       this.activeNickCount = nicks.length;
       tmp = document.title.split( ": " );
       tmp.shift( );
@@ -116,14 +123,21 @@ dojo.declare( "diom.view.View", null, {
     }
   },
 
-  handleTopic: function ( serverName, channelName, topic ) {
-    if ( this.activeWin.serverName === serverName && this.activeWin.channelName === channelName ) {
+  /**
+  * @param {String} serverName
+  * @param {String} channelName
+  * @param {String} topic
+  * @param {String} connectionId
+  * @private
+  */
+  handleTopic: function ( serverName, channelName, topic, connectionId ) {
+    if ( this.activeWin.getConnectionId() === connectionId && this.activeWin.channelName === channelName ) {
       this.setTopicView( channelName, topic );
     }
   },
 
   changeTheme: function ( themePrefs ) {
-		var i, theme;
+    var i, theme;
     for ( i = 0; i < themePrefs.length; i++ ) {
       theme = themePrefs[ i ];
       if ( "selected" in theme ) {
@@ -140,7 +154,7 @@ dojo.declare( "diom.view.View", null, {
   },
 
   changeFont: function ( fontPrefs, size ) {
-		var i, font;
+    var i, font;
     for ( i = 0; i < fontPrefs.length; i++ ) {
       font = fontPrefs[ i ];
       if ( "selected" in font ) {
@@ -228,9 +242,16 @@ dojo.declare( "diom.view.View", null, {
     dialog = new diom.view.Help( );
   },
 
-  changeView: function ( serverName, channelName, topic ) {
-    this.createActivityViewIfNeeded( channelName, serverName );
-    this.activeWin = this.getActivityWindow( channelName, serverName );
+  /**
+  * @param {String} serverName
+  * @param {String} channelName
+  * @param {String} topic
+  * @param {String} connectionId
+  * @public
+  */
+  changeView: function ( serverName, channelName, topic, connectionId ) {
+    this.createActivityViewIfNeeded( channelName, serverName, connectionId );
+    this.activeWin = this.getActivityWindow( channelName, serverName, connectionId );
     this.setTopicView( channelName, topic );
     if ( this.activityWindow.childNodes.length ) {
       this.activityWindow.replaceChild( this.activeWin.getNode( ), this.activityWindow.firstChild );
@@ -243,11 +264,11 @@ dojo.declare( "diom.view.View", null, {
       this.nickList.appendChild( this.activeWin.nickWindow.getNode( ) );
     }
     this.activeWin.changeView( );
-    this.input.changeChannel( this.activeWin.nickWindow.getNicks( ), serverName, channelName );
+    this.input.changeChannel( this.activeWin.nickWindow.getNicks( ), serverName, channelName, connectionId );
   },
 
   handleActivityWindowClick: function ( e ) {
-		var url, urlReq;
+    var url, urlReq;
     if ( e.target.nodeName === "A" ) {
       dojo.stopEvent( e );
       url = e.target.getAttribute("href");
@@ -269,38 +290,52 @@ dojo.declare( "diom.view.View", null, {
     }
   },
 
+  /**
+  * @param {HTMLElement} n
+  * @private
+  */
   closeTabFromNode: function ( n ) {
-		var server, name;
+
+    var server, name, connectionId;
+
     if ( n ) {
       server = n.getAttribute( "server" );
       name = n.getAttribute( "name" );
+      connectionId = n.getAttribute( "connectionId" );
       if ( name === server ) {
         window.setTimeout( function() {
-          dojo.publish( diom.topics.NETWORK_CLOSE, [ server ] );
+          dojo.publish( diom.topics.NETWORK_CLOSE, [ server, connectionId ] );
         }, 0);
       } else {
         window.setTimeout( function() {
-          dojo.publish( diom.topics.CHANNEL_CLOSE, [ server, name ] );
+          dojo.publish( diom.topics.CHANNEL_CLOSE, [ server, name, connectionId ] );
         }, 0);
       }
     }
   },
 
+  /**
+  * @param {HTMLElement} n
+  * @private
+  */
   selectChannelFromNode: function ( n ) {
-		var server, type, name;
+
+    var server, type, name, connectionId;
+
     if ( n ) {
       server = n.getAttribute( "server" );
       type = n.getAttribute( "type" );
       name = n.getAttribute( "name" );
+      connectionId = n.getAttribute( "connectionId" );
       window.setTimeout( function() {
-        dojo.publish( diom.topics.CHANNEL_SELECTED, [ server, type, name ] );
+        dojo.publish( diom.topics.CHANNEL_SELECTED, [ server, type, name, connectionId ] );
       }, 0);
     }
   },
 
 
   handleChannelListClick: function ( e ) {
-		var n;
+    var n;
     dojo.stopEvent( e );
     n = e.target;
     if ( !n ) { return; }
@@ -314,57 +349,72 @@ dojo.declare( "diom.view.View", null, {
     this.handleWindowClick( e );
   },
 
-
-  updateNickView: function ( users, serverName, channelName ) {
-    this.createActivityViewIfNeeded( channelName, serverName );
-    this.getActivityWindow( channelName, serverName ).nickWindow.update( users, channelName );
+  /**
+  * @param {Array} users
+  * @param {String} serverName
+  * @param {String} channelName
+  * @param {String} connectionId
+  * @public
+  */
+  updateNickView: function ( users, serverName, channelName, connectionId ) {
+    this.createActivityViewIfNeeded( channelName, serverName, connectionId );
+    this.getActivityWindow( channelName, serverName, connectionId ).nickWindow.update( users, channelName );
   },
 
-  updateChannelView: function ( channels, channelsWithActivity, channelsWithHighlight ) {
-		var r, channelsR, serverName, server, activeChannels, highlightedChannels,
-			channelKey, activity, highlight, channelName;
+  /**
+  * @param {Array} channels
+  * @param {Array} channelsWithActivity
+  * @param {Array} channelsWithHighlight
+  * @param {String} connectionId
+  * @public
+  */
+  updateChannelView: function ( channels, channelsWithActivity, channelsWithHighlight, connectionId ) {
+
+    var r, channelsR, serverName, server, activeChannels, highlightedChannels,
+      channelKey, activity, highlight, channelName, index;
+
     util.log("updateChannelView");
     if ( !channels ) { return; }
     r = [];
     channelsR = [];
-    for ( serverName in channels ) {
-			if ( channels.hasOwnProperty( serverName ) ) {
-				r.push( this.getChannelButton( serverName, serverName, serverName, "SERVER" ) );
-				server = channels[ serverName ];
-				if ( serverName in channelsWithActivity ) {
-					activeChannels = channelsWithActivity[ serverName ];
-				} else {
-					activeChannels = null;
-				}
-				if ( serverName in channelsWithHighlight ) {
-					highlightedChannels = channelsWithHighlight[ serverName ];
-				} else {
-					highlightedChannels = null;
-				}
-				for ( channelKey in server ) {
-					//channelKey is channelName in lowercase
-					if ( server.hasOwnProperty( channelKey ) ) {
-						channelsR.push( channelKey );
-						activity = 0;
-						if ( activeChannels && ( channelKey in activeChannels ) ) {
-							activity = activeChannels[ channelKey ];
-						}
-						highlight = false;
-						if ( highlightedChannels && ( channelKey in highlightedChannels ) ) {
-							highlight = true;
-						}
-						channelName = server[ channelKey ].getName( ); //channel
-						r.push( this.getChannelButton( serverName, channelKey, channelName, "CHANNEL",  activity, highlight) );
-					}
-				}
-			}
-		}
+    for ( index in channels ) {
+      if ( channels.hasOwnProperty( index ) ) {
+        r.push( this.getChannelButton( serverName, serverName, serverName, "SERVER", null, null, connectionId ) );
+        server = channels[ serverName ];
+        if ( serverName in channelsWithActivity ) {
+          activeChannels = channelsWithActivity[ serverName ];
+        } else {
+          activeChannels = null;
+        }
+        if ( serverName in channelsWithHighlight ) {
+          highlightedChannels = channelsWithHighlight[ serverName ];
+        } else {
+          highlightedChannels = null;
+        }
+        for ( channelKey in server ) {
+          //channelKey is channelName in lowercase
+          if ( server.hasOwnProperty( channelKey ) ) {
+            channelsR.push( channelKey );
+            activity = 0;
+            if ( activeChannels && ( channelKey in activeChannels ) ) {
+              activity = activeChannels[ channelKey ];
+            }
+            highlight = false;
+            if ( highlightedChannels && ( channelKey in highlightedChannels ) ) {
+              highlight = true;
+            }
+            channelName = server[ channelKey ].getName( ); //channel
+            r.push( this.getChannelButton( serverName, channelKey, channelName, "CHANNEL",  activity, highlight, connectionId) );
+          }
+        }
+      }
+    }
     this.setContents( this.channelList, r.join( "" ), false );
     this.input.setChannels( channelsR );
   },
 
   closeCurrentChannel: function ( ) {
-		var cl, nodes, i, prev, n;
+    var cl, nodes, i, prev, n;
     cl = this.channelList;
     nodes = cl.getElementsByTagName( "a" );
     if ( !nodes || !nodes.length ) { return; }
@@ -378,7 +428,7 @@ dojo.declare( "diom.view.View", null, {
   },
 
   selectPrevChannel: function ( ) {
-		var cl, nodes, prev, i, n;
+    var cl, nodes, prev, i, n;
     cl = this.channelList;
     nodes = cl.getElementsByTagName( "a" );
     if ( !nodes || !nodes.length ) { return; }
@@ -398,7 +448,7 @@ dojo.declare( "diom.view.View", null, {
   },
 
   selectChannelFromIndex: function ( index ) {
-		var cl, nodes;
+    var cl, nodes;
     util.log( "selecting channel from index: " + index );
     cl = this.channelList;
     nodes = cl.getElementsByTagName( "a" );
@@ -411,7 +461,7 @@ dojo.declare( "diom.view.View", null, {
   },
 
   selectNextChannel: function ( ) {
-		var cl, nodes, next, i, n;
+    var cl, nodes, next, i, n;
     cl = this.channelList;
     nodes = cl.getElementsByTagName( "a" );
     if ( !nodes || !nodes.length ) { return; }
@@ -431,8 +481,18 @@ dojo.declare( "diom.view.View", null, {
     this.selectChannelFromNode( next );
   },
 
-  getChannelButton: function ( server, channelKey, channelName, type, activity, highlight ) {
-		var channelActivity, currentChannel;
+  /**
+  * @param {String} server
+  * @param {String} channelKey
+  * @param {String} channelName
+  * @param {String} type
+  * @param {Number} activity
+  * @param {Boolean} higlight
+  * @param {String} connectionId
+  * @private
+  */
+  getChannelButton: function ( server, channelKey, channelName, type, activity, highlight, connectionId ) {
+    var channelActivity, currentChannel;
     //channelKey is channelName in lowercase
     channelActivity = "";
     if ( activity ) {
@@ -444,7 +504,7 @@ dojo.declare( "diom.view.View", null, {
     }
     if ( this.activeWin ) {
       currentChannel = ( channelKey === this.activeWin.channelName &&
-				server === this.activeWin.serverName );
+        server === this.activeWin.serverName );
     } else {
       currentChannel = false;
     }
@@ -459,6 +519,8 @@ dojo.declare( "diom.view.View", null, {
         this.sanitize( server ),
         '" name="',
         this.sanitize( channelKey ),
+        '" connectionId="',
+        connectionId,
         '">',
           ' <span class="closeChannelBtn"></span>',
           '</span> ',
@@ -475,14 +537,19 @@ dojo.declare( "diom.view.View", null, {
     this.input.focus( );
   },
 
-  createActivityViewIfNeeded: function ( channelName, serverName ) {
+  /**
+  * @param {String} channelName
+  * @param {String} serverName
+  * @param {String} connectionId
+  * @private
+  */
+  createActivityViewIfNeeded: function ( channelName, serverName, connectionId ) {
     channelName = channelName.toLowerCase( );
-    serverName = serverName.toLowerCase( );
-    if ( !( serverName in this.activityWindows ) ) {
-      this.activityWindows[ serverName ] = {};
+    if ( !( connectionId in this.activityWindows ) ) {
+      this.activityWindows[ connectionId ] = {};
     }
-    if ( !( channelName in this.activityWindows[ serverName ] ) ) {
-      this.activityWindows[ serverName ][ channelName ] = new diom.view.ActivityWindow( serverName,
+    if ( !( channelName in this.activityWindows[ connectionId ] ) ) {
+      this.activityWindows[ connectionId ][ channelName ] = new diom.view.ActivityWindow( serverName,
           channelName,
           this.model.prefs.getPrefs( ).historyLength,
           this.model.prefs.getPrefs( ).multiOptionPrefs.time
@@ -490,7 +557,13 @@ dojo.declare( "diom.view.View", null, {
     }
   },
 
-  getActivityWindow: function ( channelName, serverName ) {
+  /**
+  * @param {String} channelName
+  * @param {String} serverName
+  * @param {String} connectionId
+  * @private
+  */
+  getActivityWindow: function ( channelName, serverName, connectionId ) {
     channelName = channelName.toLowerCase( );
     serverName = serverName.toLowerCase( );
     if ( serverName in this.activityWindows ) {
@@ -501,26 +574,34 @@ dojo.declare( "diom.view.View", null, {
     return null;
   },
 
-  updateActivityView: function ( messages, userNick, channelName, serverName ) {
-    this.createActivityViewIfNeeded( channelName, serverName );
-    this.getActivityWindow( channelName, serverName ).update( messages, userNick, channelName );
+  /**
+  * @param {Array} messages
+  * @param {String} userNick
+  * @param {String} channelName
+  * @param {String} serverName
+  * @param {String} connectionId
+  * @public
+  */
+  updateActivityView: function ( messages, userNick, channelName, serverName, connectionId ) {
+    this.createActivityViewIfNeeded( channelName, serverName, connectionId );
+    this.getActivityWindow( channelName, serverName, connectionId ).update( messages, userNick, channelName );
   },
 
   highlight: function ( ) {
-		var na, nt, nw, icon;
-		if ( air ) {
-			na = air.NativeApplication;
-			nt = air.NotificationType;
-			nw = air.NativeWindow;
-			if ( na.supportsDockIcon ) {
-				//bounce dock icon
-				icon = na.nativeApplication.icon;
-				icon.bounce( nt.CRITICAL );
-			} else if ( nw.supportsNotification ) {
-				//flash taskbar
-				window.nativeWindow.notifyUser( nt.CRITICAL );
-			}
-		}
+    var na, nt, nw, icon;
+    if ( air ) {
+      na = air.NativeApplication;
+      nt = air.NotificationType;
+      nw = air.NativeWindow;
+      if ( na.supportsDockIcon ) {
+        //bounce dock icon
+        icon = na.nativeApplication.icon;
+        icon.bounce( nt.CRITICAL );
+      } else if ( nw.supportsNotification ) {
+        //flash taskbar
+        window.nativeWindow.notifyUser( nt.CRITICAL );
+      }
+    }
   },
 
   getInput: function ( ) {
@@ -605,7 +686,7 @@ dojo.declare( "diom.view.View", null, {
     this.nickListCollapsed = !this.nickListCollapsed;
   },
   handleTitleBarClick: function ( e ) {
-		var id, funcName;
+    var id, funcName;
     dojo.stopEvent( e );
     id = e.target.id;
     if ( id ) {
