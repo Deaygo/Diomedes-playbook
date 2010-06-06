@@ -428,7 +428,7 @@ dojo.declare( "diom.controller.Controller", null, {
     currentConnectionId = null;
     if ( this.currentConnection ) {
       currentHost = this.currentConnection.server;
-      currentConnectionId = this.currentConnection.getConnection();
+      currentConnectionId = this.currentConnection.getConnectionId();
     }
     connection = this.channelList.getConnection( connectionId );
     connection.sendCommand( "quit", ["Leaving."], this.getCurrentChannelName( ) );
