@@ -1,8 +1,15 @@
 Starting release log at version 0.1.24 revision 435, new entries at top
 
- - Release 0.1.32 June 06, 2010
-    Can now connect to the same server more than once!
+ - Release 0.1.34 June 07, 2010
+    Made pinging server an optional service. Makes it possible to use a BNC.
+    Happy birthday Diomedes IRC! Moving close to 0.2.0 release when updates
+    will slow down.
+
+ - Release 0.1.33 June 06, 2010
+    Cde pinging server an optional service. Makes it possible to use a BNC.
+    an now connect to the same server more than once!
     Tomorrow is the 1 year anniversary of the first commit for Diomedes IRC!
+de pinging server an optional service. Makes it possible to use a BNC.
 
  - Release 0.1.30 June 03, 2010
     Performance improvements and stability enhancements.
