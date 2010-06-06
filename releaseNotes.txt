@@ -1,5 +1,9 @@
 Starting release log at version 0.1.24 revision 435, new entries at top
 
+ - Release 0.1.32 June 06, 2010
+    Can now connect to the same server more than once!
+    Tomorrow is the 1 year anniversary of the first commit for Diomedes IRC!
+
  - Release 0.1.30 June 03, 2010
     Performance improvements and stability enhancements.
 

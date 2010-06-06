@@ -61,8 +61,12 @@ dojo.declare( "diom.Logger", null, {
   open: function ( ) {
     //not tested
     if ( this.fileStream ) { return; }
-    this.fileStream = new air.FileStream();
-    this.fileStream.open( this.file, air.FileMode.APPEND );
+    try {
+      this.fileStream = new air.FileStream();
+      this.fileStream.open( this.file, air.FileMode.APPEND );
+    } catch (e) {
+      delete this.fileStream;
+    }
   },
   close: function ( ) {
     //not tested
@@ -75,6 +79,9 @@ dojo.declare( "diom.Logger", null, {
     return this.lines;
   },
   write: function ( ) {
+    if (!this.fileStream) {
+      return;
+    }
     var lines = this._getLines( ), i;
     for( i = 0; i < lines.length; i++ ) {
       util.log( "\n\nWRITING LINES\n\n" );
