@@ -37,6 +37,7 @@ dojo.declare( "diom.connection.Connection", null, {
     this.setAutoJoin( preferences.autoJoin );
 
     this.client = new diom.IRCClient( server, port, [], nick, preferences.userName, preferences.realName, password );
+    this.changeServerPingPref(preferences.pingServer === "true");
     this.client.setClientInfo( appVersion );
     this.client.setFinger( preferences.finger );
 
@@ -66,6 +67,7 @@ dojo.declare( "diom.connection.Connection", null, {
     dojo.subscribe(  diom.topics.PREFS_CHANGE_AUTOJOIN, this, "setAutoJoin" );
     dojo.subscribe(  diom.topics.IGNORES_UPDATE, this, "handleIgnoresUpdate" );
     dojo.subscribe(  diom.topics.PREFS_CHANGE_LOGGING, this, "handleChangeLoggingPref" );
+    dojo.subscribe(  diom.topics.PREFS_CHANGE_PING_SERVER, this, "changeServerPingPref" );
   },
 
   /**
@@ -77,8 +79,25 @@ dojo.declare( "diom.connection.Connection", null, {
     return this.connectionId.toString();
   },
 
+  /**
+  * @param {Boolean} newValue 
+  * @private
+  */
   handleChangeLoggingPref: function ( newValue ) {
     this.logPref = newValue;
+  },
+
+  /**
+  * @param {Boolean} newValue 
+  * @private
+  */
+  changeServerPingPref: function ( newValue ) {
+    util.log("changing server pref: " + newValue);
+    if (newValue) {
+      this.client.enableServerPing();
+    } else {
+      this.client.disableServerPing();
+    }
   },
 
   handleIgnoresUpdate: function ( ignores ) {

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<preferences version="1.8">
+<preferences version="1.10">
   <preference name="nick" value="diomedesuser" />
   <preference name="altNick" value="diouser" />
   <preference name="userName" value="diomedesuser" />
@@ -10,9 +10,10 @@
   <preference name="font" value="verdana" />
   <preference name="fontSize" value="14" />
   <preference name="updateDelay" value="1" />
-  <preference name="updateURL" value="http://www.apphackers.com/diomedesVersionInfo.xml" />
+  <preference name="updateURL" value="http://www.apphacker.com/diomedesVersionInfo.xml" />
   <preference name="autoJoin" value="true" />
   <preference name="logging" value="false" />
+  <preference name="pingServer" value="true" />
   <preference name="databaseVersion" value="0" />
   <multiOptionPreference name="theme">
     <option selected="true" valueName="Default" value="default" />

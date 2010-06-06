@@ -11,6 +11,9 @@ dojo.provide( "diom.irc" );
 
 dojo.declare( "diom.IRCClient", null, {
 
+  /**
+  * @constructor
+  */
   constructor: function ( server, port, defaultChannels, nick, userName, realName, password ) {
 
     //Connection info
@@ -28,6 +31,7 @@ dojo.declare( "diom.IRCClient", null, {
     this.connectionAccepted = false;
     this.createConnection( );
     this.PING_TIME_OUT_WAIT = 60000;
+    this.pingServer = true;
     this.data = "";
 
     this.pollTime = 0;
@@ -71,6 +75,30 @@ dojo.declare( "diom.IRCClient", null, {
       "+":"+",
       "!":"!"
     };
+  },
+
+  /**
+  * Enable pinging the server which may improve connectivity.
+  * Sends a ping to the server regularly and listens for a pong 
+  * response. If no response with in a set time, assumes server
+  * is dead and disconnects. BNC's may have problems with this.
+  * Enabled by default.
+  * @public
+  */
+  enableServerPing: function () {
+    this.log("Enabling ping service.");
+    this.pingServer = true;
+    this.startPingService( );
+  },
+
+  /**
+  * Disable server pinging service.
+  * @public
+  */
+  disableServerPing: function () {
+    this.log("Disabling ping service.");
+    this.pingServer = false;
+    this.stopPingService( );
   },
 
   setFinger: function ( info ) {
@@ -217,7 +245,7 @@ dojo.declare( "diom.IRCClient", null, {
 
   startPingService: function ( ) {
     this.log( "startingPingService" );
-    if ( this.connectionEstablished ) {
+    if ( this.pingServer && this.connectionEstablished ) {
       this._send( "PING DiomedesIRC" );
       this.pingTimeoutID = window.setTimeout( dojo.hitch( this, "pingTimeout" ), this.PING_TIME_OUT_WAIT );
     }

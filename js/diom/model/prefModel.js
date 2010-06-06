@@ -22,7 +22,7 @@ dojo.declare( "diom.model.PrefModel", null, {
 
   checkPrefs: function ( ) {
 
-		var defaultPrefsFile, fileStream, xml,
+    var defaultPrefsFile, fileStream, xml,
       domParser, d, version, params, dialog;
 
     util.log( "Checking prefs." );
@@ -55,9 +55,9 @@ dojo.declare( "diom.model.PrefModel", null, {
   },
 
   updatePreferences: function( doc ) {
-		var prefs, name, newMVPrefs, oldMVPrefs, key,
-			selectedName, selectedValue, i, option,
-			hasValue, pref;
+    var prefs, name, newMVPrefs, oldMVPrefs, key,
+      selectedName, selectedValue, i, option,
+      hasValue, pref;
     prefs = this.getSingleValuePrefs( doc );
     for ( name in this.preferences ) {
       if ( name in prefs ) {
@@ -69,48 +69,48 @@ dojo.declare( "diom.model.PrefModel", null, {
     newMVPrefs = this.getMultiValuePrefs( doc );
     oldMVPrefs = this.preferences.multiOptionPrefs;
     for ( key in oldMVPrefs ) {
-			if ( oldMVPrefs.hasOwnProperty( key ) ) {
-				pref = oldMVPrefs[ key ];
-				if ( pref.length && key in newMVPrefs ) {
-					selectedName = null;
-					selectedValue = null;
-					for ( i = 0; i < pref.length; i++ ) {
-						option = pref[ i ];
-						if ( "selected" in option ) {
-							selectedName = option.valueName;
-							selectedValue = option.value;
-							break;
-						}
-					}
-					if ( selectedName ) {
-						//check to see if new preferences even have this value
-						hasValue = false;
-						pref = newMVPrefs[ key ];
-						for ( i = 0; i < pref.length; i++ ) {
-							option = pref[ i ];
-							if ( option.valueName === selectedName ) {
-								//don't bother relooping if users pref is already set as default:
-								//also don't bother saving users value if value for option name is now different
-								if ( !( "selected" in option && option.selected === true ) && option.value === selectedValue ) {
-									//reloop
-									hasValue = true;
-								}
-								break;
-							}
-						}
-						if ( hasValue ) {
-							for ( i = 0; i < pref.length; i++ ) {
-								option = pref[ i ];
-								if ( option.valueName === selectedName ) {
-									option.selected = true;
-								} else {
-									delete option.selected;
-								}
-							}
-						}
-					}
-				}
-			}
+      if ( oldMVPrefs.hasOwnProperty( key ) ) {
+        pref = oldMVPrefs[ key ];
+        if ( pref.length && key in newMVPrefs ) {
+          selectedName = null;
+          selectedValue = null;
+          for ( i = 0; i < pref.length; i++ ) {
+            option = pref[ i ];
+            if ( "selected" in option ) {
+              selectedName = option.valueName;
+              selectedValue = option.value;
+              break;
+            }
+          }
+          if ( selectedName ) {
+            //check to see if new preferences even have this value
+            hasValue = false;
+            pref = newMVPrefs[ key ];
+            for ( i = 0; i < pref.length; i++ ) {
+              option = pref[ i ];
+              if ( option.valueName === selectedName ) {
+                //don't bother relooping if users pref is already set as default:
+                //also don't bother saving users value if value for option name is now different
+                if ( !( "selected" in option && option.selected === true ) && option.value === selectedValue ) {
+                  //reloop
+                  hasValue = true;
+                }
+                break;
+              }
+            }
+            if ( hasValue ) {
+              for ( i = 0; i < pref.length; i++ ) {
+                option = pref[ i ];
+                if ( option.valueName === selectedName ) {
+                  option.selected = true;
+                } else {
+                  delete option.selected;
+                }
+              }
+            }
+          }
+        }
+      }
     }
     prefs.multiOptionPrefs = newMVPrefs;
     this.preferences = prefs;
@@ -123,7 +123,7 @@ dojo.declare( "diom.model.PrefModel", null, {
   },
 
   createFile: function ( fileStream ) {
-		var defaultPrefsFile, xml;
+    var defaultPrefsFile, xml;
     if ( !fileStream ) {
       defaultPrefsFile = air.File.applicationDirectory.resolvePath( this.fileName );
       fileStream = new air.FileStream( );
@@ -150,8 +150,8 @@ dojo.declare( "diom.model.PrefModel", null, {
   },
 
   getMultiValuePrefs: function ( doc ) {
-		var prefs, mNodes, i, pref, name,
-			options, j, option, o;
+    var prefs, mNodes, i, pref, name,
+      options, j, option, o;
     prefs = {};
     mNodes = doc.getElementsByTagName( "multiOptionPreference" );
     for ( i = 0; i < mNodes.length; i++ ) {
@@ -174,7 +174,7 @@ dojo.declare( "diom.model.PrefModel", null, {
   },
 
   getSingleValuePrefs: function ( doc ) {
-		var prefs, pNodes, i, pNode, name, value;
+    var prefs, pNodes, i, pNode, name, value;
     prefs = {};
     pNodes = doc.getElementsByTagName( "preference" );
     for ( i = 0; i < pNodes.length; i++ ) {
@@ -190,7 +190,7 @@ dojo.declare( "diom.model.PrefModel", null, {
   },
 
   getPrefsFromXML: function ( xml ) {
-		var domParser, d, prefs;
+    var domParser, d, prefs;
     domParser = new DOMParser( );
     d = domParser.parseFromString( xml , "text/xml" );
     //get prefs
@@ -202,10 +202,10 @@ dojo.declare( "diom.model.PrefModel", null, {
   },
 
   getPrefs: function ( ) {
-		var fileStream, file, xml;
+    var fileStream, file, xml;
     if ( !this.updated ) {
-			return util.cloneObject( this.preferences );
-		}
+      return util.cloneObject( this.preferences );
+    }
     this.updated = false;
     fileStream = new air.FileStream( );
     file = this.getFile( );
@@ -232,6 +232,9 @@ dojo.declare( "diom.model.PrefModel", null, {
     if ( prefs.logging !== this.preferences.logging ) {
       dojo.publish( diom.topics.PREFS_CHANGE_LOGGING, [ prefs.logging === "true" ] );
     }
+    if ( prefs.pingServer !== this.preferences.pingServer ) {
+      dojo.publish( diom.topics.PREFS_CHANGE_PING_SERVER, [ prefs.pingServer === "true" ] );
+    }
     if ( prefs.updateDelay !== this.preferences.updateDelay ) {
       dojo.publish( diom.topics.UPDATE_DELAY_CHANGE, [ prefs.updateDelay ] );
     }
@@ -245,9 +248,9 @@ dojo.declare( "diom.model.PrefModel", null, {
   },
 
   savePrefs: function ( ) {
-		var fileStream, d, name, multiOptionPrefs,
-			prefName, multiOptionPref, m, i, o, value,
-			p, x, s, option;
+    var fileStream, d, name, multiOptionPrefs,
+      prefName, multiOptionPref, m, i, o, value,
+      p, x, s, option;
     this.updated = true;
     fileStream = new air.FileStream( );
     fileStream.open( this.getFile( ), air.FileMode.WRITE ); //WRITE truncates
@@ -258,22 +261,22 @@ dojo.declare( "diom.model.PrefModel", null, {
         if ( name === "multiOptionPrefs" ) {
           multiOptionPrefs = this.preferences[ name ];
           for ( prefName in multiOptionPrefs ) {
-						if( multiOptionPrefs.hasOwnProperty( prefName ) ) {
-							multiOptionPref = multiOptionPrefs[ prefName ];
-							m = d.createElement( "multiOptionPreference" );
-							m.setAttribute( "name", prefName );
-							for ( i = 0; i < multiOptionPref.length; i++ ) {
-								option = multiOptionPref[ i ];
-								o = d.createElement( "option" );
-								if ( "selected" in option ) {
-									o.setAttribute( "selected", "true" );
-								}
-								o.setAttribute( "valueName", option.valueName );
-								o.setAttribute( "value", option.value );
-								m.appendChild( o );
-							}
-							d.firstChild.appendChild( m );
-						}
+            if( multiOptionPrefs.hasOwnProperty( prefName ) ) {
+              multiOptionPref = multiOptionPrefs[ prefName ];
+              m = d.createElement( "multiOptionPreference" );
+              m.setAttribute( "name", prefName );
+              for ( i = 0; i < multiOptionPref.length; i++ ) {
+                option = multiOptionPref[ i ];
+                o = d.createElement( "option" );
+                if ( "selected" in option ) {
+                  o.setAttribute( "selected", "true" );
+                }
+                o.setAttribute( "valueName", option.valueName );
+                o.setAttribute( "value", option.value );
+                m.appendChild( o );
+              }
+              d.firstChild.appendChild( m );
+            }
           }
         } else {
           value = this.preferences[ name ];

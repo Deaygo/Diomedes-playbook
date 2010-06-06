@@ -55,6 +55,7 @@ diom.topics = {
   PREFS_CHANGE_THEME: "/prefs/change/theme/",
   PREFS_CHANGE_AUTOJOIN: "/prefs/change/autojoin/",
   PREFS_CHANGE_LOGGING: "/prefs/change/logging/",
+  PREFS_CHANGE_PING_SERVER: "/prefs/change/ping_server/",
 
   LINK_FOUND: "/link/found",
   LINK_DATA: "/link/data/",
