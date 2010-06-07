@@ -59,6 +59,7 @@ diom.topics = {
   LINK_FOUND: "/link/found",
   LINK_DATA: "/link/data/",
   LINK_GET_INFO: "/link/get/info",
+  LINK_SHOW_INFO: "/link/show/info",
 
   NETWORK_ADD: "/network/add/",
   NETWORK_EDIT: "/network/edit/",

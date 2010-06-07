@@ -23,12 +23,8 @@
   text-decoration: underline;
 }
 .extraLinkInfo {
-  display: none;
   border: solid 1px;
   padding: 5px;
-}
-.extraLinkInfoCon:hover .extraLinkInfo {
-  display: block;
 }
 #linkLog table {
   width: 100%;

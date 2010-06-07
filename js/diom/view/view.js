@@ -267,8 +267,14 @@ dojo.declare( "diom.view.View", null, {
     this.input.changeChannel( this.activeWin.nickWindow.getNicks( ), serverName, channelName, connectionId );
   },
 
+  /**
+  * @param {Object} e
+  * @private
+  */
   handleActivityWindowClick: function ( e ) {
+
     var url, urlReq;
+
     if ( e.target.nodeName === "A" ) {
       dojo.stopEvent( e );
       url = e.target.getAttribute("href");
