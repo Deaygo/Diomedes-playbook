@@ -14,7 +14,6 @@ if ( !diom ) {
   diom = { };
 }
 
-
 diom.topics = {
 
   NOTIFY: "/notify/",
@@ -59,6 +58,7 @@ diom.topics = {
 
   LINK_FOUND: "/link/found",
   LINK_DATA: "/link/data/",
+  LINK_GET_INFO: "/link/get/info",
 
   NETWORK_ADD: "/network/add/",
   NETWORK_EDIT: "/network/edit/",

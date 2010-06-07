@@ -9,7 +9,7 @@ dojo.provide( "diom.controller.linkLog" );
 dojo.declare( "diom.controller.LinkLog", null, {
 
   constructor: function ( ) {
-    dojo.subscribe(  diom.topics.LINK_FOUND, this, "handleLink" );
+    dojo.subscribe(  diom.topics.LINK_GET_INFO, this, "handleLink" );
     this.fetchers = {};
     dojo.subscribe(  diom.topics.LINK_DATA, this, "handleLinkData" );
   },

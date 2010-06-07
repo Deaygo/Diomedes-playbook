@@ -10,7 +10,7 @@ dojo.provide( "diom.controller.linkInfoFetcher" );
 dojo.declare( "diom.controller.LinkInfoFetcher", null, {
 
   constructor: function ( link, serverName, channelName, nick ) {
-		var linkParts;
+    var linkParts;
     if ( !link ) { return; }
     //don't publish secure sites to link log to avoid annoying
     //bad security certificate popups
@@ -67,7 +67,7 @@ dojo.declare( "diom.controller.LinkInfoFetcher", null, {
   },
 
   onStatus: function ( e ) {
-		var isHTML, i, header;
+    var isHTML, i, header;
     this.headers = e.responseHeaders;
     this.httpStatus = e.status;
     this.responseURL = e.responseURL;
@@ -94,7 +94,7 @@ dojo.declare( "diom.controller.LinkInfoFetcher", null, {
 
 
   publishData: function( ) {
-		var d;
+    var d;
     d = new Date( ).toString( );
     dojo.publish( diom.topics.LINK_DATA, [
         this.url,

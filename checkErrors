@@ -4,6 +4,9 @@
 set -e
 
 checkFiles=(
+  "diom/view/linkView"
+  "diom/controller/linkLog"
+  "diom/controller/linkInfoFetcher"
   "diom/controller/controller"
   "diom/diom"
   "diom/logger"
@@ -18,12 +21,9 @@ checkFiles=(
   "diom/network"
   "diom/util"
   "diom/controller/updater"
-  "diom/controller/linkLog"
-  "diom/controller/linkInfoFetcher"
   "diom/controller/channelList"
   "diom/view/view"
   "diom/view/nickWindow"
-  "diom/view/linkView"
   "diom/view/formInput"
   "diom/view/activityWindow"
   "diom/view/dialog"

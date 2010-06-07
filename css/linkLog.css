@@ -30,3 +30,18 @@
 .extraLinkInfoCon:hover .extraLinkInfo {
   display: block;
 }
+#linkLog table {
+  width: 100%;
+}
+#linkLog th {
+  font-style: italic;
+}
+#linkLog th,
+#linkLog td {
+  padding: 3px;
+  text-align: center;
+}
+#linkLog td.link,
+#linkLog th.link {
+  text-align: right;
+}
