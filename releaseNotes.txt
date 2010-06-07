@@ -1,5 +1,9 @@
 Starting release log at version 0.1.24 revision 435, new entries at top
 
+ - Release 0.1.35 June 07, 2010
+    Birthday Bonus Bug Fix: Link log now only making expensive HTTP 
+    request if requested, not automatically.
+
  - Release 0.1.34 June 07, 2010
     Made pinging server an optional service. Makes it possible to use a BNC.
     Happy birthday Diomedes IRC! Moving close to 0.2.0 release when updates
