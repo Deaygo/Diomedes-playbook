@@ -165,6 +165,11 @@ dojo.declare( "diom.view.FormInput", null, {
     this.input.focus( );
     window.getSelection( ).collapseToEnd( );
   },
+
+  /**
+  * @param {Object} e
+  * @private
+  */
   handleInput: function ( e ) {
 
     var _input, inputs, i, input;
@@ -176,16 +181,33 @@ dojo.declare( "diom.view.FormInput", null, {
       this.announceInput( inputs[ i ] );
     }
   },
+
+  /**
+  * @param {string} input
+  */
   announceInput: function ( input ) {
     this.addToHistory( input );
+    this.historyIndex = 0;
     util.log("getInput: " + input );
     dojo.publish( diom.topics.USER_INPUT, [ input ] );
   },
+  /**
+  * Add an entry to the history, return true or
+  * false depending if item was added.
+  * @param {!string} input
+  * @private
+  * @return {boolean}
+  */
   addToHistory: function ( input ) {
-    this.history.unshift( input );
-    if ( this.history.length > this.MAX_HISTORY_LENGTH ) {
-      this.history.pop( );
+    //Don't add to history if the same as last item.
+    if (input && input.length && input !== this.history[0]) {
+      this.history.unshift( input );
+      if ( this.history.length > this.MAX_HISTORY_LENGTH ) {
+        this.history.pop( );
+      }
+      return true;
     }
+    return false;
   },
 
   /**
@@ -333,13 +355,29 @@ dojo.declare( "diom.view.FormInput", null, {
       }
     }
   },
+
+  /**
+  * @param {Object} e
+  * @private
+  */
   handleInputClick: function ( e ) {
     dojo.stopEvent( e );
     dojo.publish( diom.topics.POPUP_CLOSE );
   },
 
+  /**
+  * @private
+  */
   handleHistoryUp: function ( ) {
+
     var value;
+
+    if (!this.historyIndex) {
+      if ( this.addToHistory( this.getValue( ) ) ) {
+        //Increasing index an extra time since we just added something.
+        this.historyIndex++;
+      }
+    }
     this.historyIndex++;
     value = this.history[ this.historyIndex - 1 ];
     if ( value ) {
@@ -352,8 +390,13 @@ dojo.declare( "diom.view.FormInput", null, {
     this.needsResetting = true;
   },
 
+  /**
+  * @private
+  */
   handleHistoryDown: function ( ) {
+
     var value;
+
     if ( this.historyIndex ) {
       this.historyIndex--;
       value = this.history[ this.historyIndex - 1 ];
@@ -362,6 +405,9 @@ dojo.declare( "diom.view.FormInput", null, {
         this.needsResetting = true;
         return;
       }
+    }
+    if (!this.historyIndex) {
+      this.addToHistory( this.getValue( ) );
     }
     this.setValue( "" );
   },
