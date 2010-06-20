@@ -121,8 +121,11 @@ dojo.declare( "diom.view.FormInput", null, {
 
     var length, input;
 
-    value.split( "<br/>" ).join( "\n" );
-    value.split( " " ).join( "&nbsp;" );
+    value = value.split( "<br/>" ).join( "\n" );
+    value = value.split( "&" ).join( "&amp;" );
+    value = value.split( " " ).join( "&nbsp;" );
+    value = value.split( "<" ).join( "&lt;" );
+    value = value.split( ">" ).join( "&gt;" );
     document.execCommand( "selectAll", false, "" );
     document.execCommand( "insertHTML", false, value );
   },

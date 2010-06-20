@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <application xmlns="http://ns.adobe.com/air/application/2.0">
-  <id>diomedes.apphackers.com</id>
+  <id>dev.diomedes.apphackers.com</id>
   <version>0.1.36</version>
   <filename>Diomedes</filename>
   <initialWindow>
-    <content>index.html</content>    
+    <content>indexDev.html</content>
     <systemChrome>standard</systemChrome>
     <transparent>false</transparent>
     <visible>true</visible>
@@ -12,7 +12,7 @@
     <height>550</height>
     <x>150</x>
     <y>150</y>
-    <fullScreen>true</fullScreen>
+  <fullScreen>true</fullScreen>
   </initialWindow>
   <icon>
     <image128x128>icons/DiomedesIcon128.png</image128x128>

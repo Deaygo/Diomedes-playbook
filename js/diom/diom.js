@@ -8,4 +8,3 @@ dojo.provide( "diom.diom" );
 
 dojo.require( "diom.include" );
 
-

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Diomedes</title>
+  <link rel="stylesheet" type="text/css" media="screen" href="css/view.css" />
+  <link rel="stylesheet" type="text/css" media="screen" href="css/activityWindow.css" />
+  <link rel="stylesheet" type="text/css" media="screen" href="css/nickList.css" />
+  <link rel="stylesheet" type="text/css" media="screen" href="css/channelList.css" />
+  <link rel="stylesheet" type="text/css" media="screen" href="css/inputForm.css" />
+  <link rel="stylesheet" type="text/css" media="screen" href="css/linkLog.css" />
+  <link rel="stylesheet" type="text/css" media="screen" href="css/dialog.css" />
+  <link rel="stylesheet" type="text/css" media="screen" href="css/preferences.css" />
+  <link id="themeLink" rel="stylesheet" type="text/css" media="screen" href="css/themes/default.css" />
+</head>
+<body id="body" onUnload="appUnload( );">
+  <div id="view">
+    <div id="mainWindow">
+      <div id="activityWindow">
+        Try /help for more commands.
+      </div>
+      <div id="nickListControl"></div>
+      <div id="nickList"></div>
+      <br style="clear:both;" />
+    </div>
+    <div id="inputFormCon">
+        <div id="textInput" contentEditable="true" ></div>
+    </div>
+    <div id="linksBtn">
+    </div>
+    <div id="prefBtn">
+    </div>
+    <div id="titleBar" class="hidden">
+      <a href="#" class="titleBarBtn" id="AboutBtn">About</a>
+      <a href="#" class="titleBarBtn" id="HelpBtn">Help</a>
+      <a href="#" class="titleBarBtn" id="UpdateBtn">Check for updates</a>
+      <a href="#" class="titleBarBtn" id="LinksBtn">Link Log</a>
+      <a href="#" class="titleBarBtn" id="IgnoresBtn">Ignores</a>
+      <a href="#" class="titleBarBtn" id="AliasesBtn">Aliases</a>
+      <a href="#" class="titleBarBtn" id="PerformBtn">Performs</a>
+      <a href="#" class="titleBarBtn" id="ChannelsBtn">Channels</a>
+      <a href="#" class="titleBarBtn" id="ServersBtn">Servers</a>
+      <a href="#" class="titleBarBtn" id="NetworksBtn">Networks</a>
+      <a href="#" class="titleBarBtn" id="PrefBtn">Preferences</a>
+    </div>
+    <div id="channelList"></div>
+  </div>
+  <div class="hidden" id="popup">
+    <div id="closePopup" href="#">Close</div>
+    <div id="popupContents">
+    </div>
+  </div>
+  <script src="servicemonitor.swf" type="application/x-shockwave-flash"/>
+  <script src="applicationupdater_ui.swf" type="application/x-shockwave-flash" />
+  <script src="spellingEngine.swf" type="application/x-shockwave-flash" />
+  <script type="text/javascript" src="js/AIRAliases.js"></script>
+  <!--
+  -->
+  <script type="text/javascript" src="js/AIRIntrospector.js"></script>
+
+  <!-- section below is for production releases -->
+  <!--
+  <script type="text/javascript" src="js/release/dojo/dojo/dojo.js"></script>
+  <script type="text/javascript" src="js/release/dojo/diom/diom.js"></script>
+  -->
+
+  <!-- section below is for dev -->
+  <!--
+  <script type="text/javascript" src="js/dojo/dojo.js"></script>
+  <script type="text/javascript" src="js/diom/diom.js"></script>
+  -->
+
+  <!-- section below is for debugging -->
+  <script type="text/javascript" src="js/release/dojo/dojo/dojo.js.uncompressed.js"></script>
+  <script type="text/javascript" src="js/release/dojo/diom/diom.js.uncompressed.js"></script>
+
+  <script type="text/javascript">
+
+    var m, v, c;
+
+    var console =  air.Introspector.Console;
+
+    function checkClose ( e ) {
+      if ( !confirm( "Are you sure you want to quit?" ) ) {
+        dojo.stopEvent( e );
+      }
+    }
+
+    function appLoad ( ) {
+      util.log( "appLoad" );
+
+      m = new diom.model.Model( );
+      v = new diom.view.View( m );
+      c = new diom.controller.Controller( m, v );
+
+    }
+
+    function appUnload ( ) {
+      c.destroy( );
+      delete c;
+      v.destroy( );
+      delete v;
+    }
+
+    window.nativeWindow.addEventListener( air.Event.CLOSING, checkClose );
+    dojo.addOnLoad( appLoad );
+
+  </script>
+</body>
+</html>
+
