@@ -1,5 +1,9 @@
 Starting release log at version 0.1.24 revision 435, new entries at top
 
+ - Release 0.1.37 June 20, 2010
+    Bug Fix: fixed spell checking and other input issues.
+    Bug Fix: ports in URLS now work correctly.
+
  - Release 0.1.36 June 19, 2010
     Bug Fix: Pasting nicks was broken, as well as empty spaces. Now fixed.
     Now using the Adobe AIR 2.0.2 SDK.

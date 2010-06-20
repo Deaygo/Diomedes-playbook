@@ -46,6 +46,13 @@ dojo.declare( "diom.view.FormInput", null, {
     dojo.connect( this.input, "oncontextmenu", this, "handleContextMenu" );
     dojo.connect( this.input, "onpaste", this, "handlePaste" );
   },
+  template_tokens: {
+    SPACE: '{sp}',
+    OPEN_BRACKET: '<',
+    CLOSE_BRACKET: '>',
+    AMPERSAND: "&",
+    QUOTE: '"'
+  },
   handlePaste: function ( event ) {
 
     var data, lines, currentContent, pos,
@@ -117,17 +124,41 @@ dojo.declare( "diom.view.FormInput", null, {
     return value;
   },
 
-  setValue: function ( value ) {
+  /**
+  * Sets the text in the input value.
+  * @param {string} value
+  * @param {boolean} opt_safe If safe, don't escape anything.
+  * @private
+  */
+  setValue: function ( value, opt_safe ) {
 
     var length, input;
 
-    value = value.split( "<br/>" ).join( "\n" );
-    value = value.split( "&" ).join( "&amp;" );
-    value = value.split( " " ).join( "&nbsp;" );
-    value = value.split( "<" ).join( "&lt;" );
-    value = value.split( ">" ).join( "&gt;" );
+    if (!opt_safe) {
+      value = value.split( "<br/>" ).join( "\n" );
+      value = value.split( "&" ).join( "&amp;" );
+      value = value.split( " " ).join( "&nbsp;" );
+      value = value.split( "<" ).join( "&lt;" );
+      value = value.split( ">" ).join( "&gt;" );
+    }
+    value = this.applyTemplateVars(value);
     document.execCommand( "selectAll", false, "" );
     document.execCommand( "insertHTML", false, value );
+  },
+
+  /**
+  * Applies template tokens to output string.
+  * @param {string} value
+  * @private
+  * @return {string}
+  */
+  applyTemplateVars: function ( value ) {
+    value = value.split(this.template_tokens.SPACE).join( ' ' );
+    value = value.split(this.template_tokens.OPEN_BRACKET).join( '<' );
+    value = value.split(this.template_tokens.CLOSE_BRACKET).join( '>' );
+    value = value.split(this.template_tokens.QUOTE).join( '"' );
+    value = value.split(this.template_tokens.AMPERSAND).join( '&' );
+    return value;
   },
 
   focus: function ( ) {
@@ -210,10 +241,23 @@ dojo.declare( "diom.view.FormInput", null, {
       }
     }
     value = words.join( "&nbsp;" );
-    this.setValue( value );
+    this.setValue( value, true );
   },
   highlightSpellingError: function ( word ) {
-    return [ '<span class="spellingError">', word, '</span>' ].join( "" );
+    return [ 
+        this.template_tokens.OPEN_BRACKET,
+        'span',
+        this.template_tokens.SPACE,
+        'class=',
+        this.template_tokens.QUOTE,
+        'spellingError',
+        this.template_tokens.QUOTE,
+        this.template_tokens.CLOSE_BRACKET,
+        word,
+        this.template_tokens.OPEN_BRACKET,
+        '/span',
+        this.template_tokens.CLOSE_BRACKET
+      ].join( "" );
   },
   handleInputChange: function ( e ) {
     //dojo.stopEvent should prevent insert of characters
