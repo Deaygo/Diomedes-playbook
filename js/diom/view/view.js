@@ -58,42 +58,89 @@ dojo.declare( "diom.view.View", null, {
     dojo.subscribe( diom.topics.NICK_LIST_TOGGLE, this, "handleNickListControlClick" );
   },
 
+  /**
+  * @public
+  */
   showNoUpdatesDialog: function( ) {
     this.notify( "No new updates." );
   },
 
+  /**
+  * If there's an activity view, scroll it one
+  * page up.
+  * @public
+  */
   scrollUp: function ( ) {
     if ( this.activeWin ) {
       this.activeWin.scrollUp( );
     }
   },
 
+  /**
+  * If there's an activity view, scroll it one
+  * page down.
+  * @public
+  */
   scrollDown: function ( ) {
     if ( this.activeWin ) {
       this.activeWin.scrollDown( );
     }
   },
 
+  /**
+  * If there's an activity window, scroll
+  * all the way to the bottom.
+  * @public
+  */
+  scrollToBottom: function ( ) {
+    if ( this.activeWin ) {
+      this.activeWin.scrollToBottom( );
+    }
+  },
+
+  /**
+  * @param {!Object} e
+  * @private
+  */
   closePopup: function ( e ) {
     dojo.addClass( this.popup, "hidden" );
     this.popupContents.innerHTML = "";
   },
 
+  /**
+  * @param {!Object} e
+  * @private
+  */
   handleLinksBtnClick: function ( e ) {
     dojo.stopEvent( e );
     this.linkView.display( );
     dojo.removeClass( this.popup, "hidden" );
   },
 
+  /**
+  * @param {!Object} e
+  * @private
+  */
   handlePrefsBtnClick: function ( e ) {
     dojo.stopEvent( e );
     dojo.removeClass( this.titleBar, "hidden" );
   },
 
+  /**
+  * @param {!Object} e
+  * @private
+  */
   handleWindowClick: function ( e ) {
     dojo.addClass( this.titleBar, "hidden" );
   },
 
+  /**
+  * Sets the application's top document bar
+  * with a topic.
+  * @param {!string} channelName
+  * @param {!string} topic
+  * @public
+  */
   setTopicView: function ( channelName, topic ) {
     var msg = channelName, nickCount = "";
     if ( this.activeNickCount ) {
@@ -286,7 +333,6 @@ dojo.declare( "diom.view.View", null, {
     if ( e.target.id === "nickListControl" ) {
       dojo.stopEvent( e );
       this.handleNickListControlClick( );
-      this.scrollDown( );
       return;
     }
     if ( !e[ util.EVENT_HANDLED ] ) {
@@ -693,6 +739,7 @@ dojo.declare( "diom.view.View", null, {
       dojo.addClass( dojo.byId( "nickListControl" ), "collapsed" );
     }
     this.nickListCollapsed = !this.nickListCollapsed;
+    this.scrollToBottom();
   },
   handleTitleBarClick: function ( e ) {
     var id, funcName;

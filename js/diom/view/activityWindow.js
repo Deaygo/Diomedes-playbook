@@ -10,11 +10,11 @@ dojo.provide( "diom.view.activityWindow" );
 dojo.declare( "diom.view.ActivityWindow", null, {
 
   /**
-  * @param {String} serverName
-  * @param {String} channelName
+  * @param {string} serverName
+  * @param {string} channelName
   * @param {Number} maxItems
-  * @param {String} timeFormat
-  * @param {String} connectionId
+  * @param {string} timeFormat
+  * @param {string} connectionId
   * @constructor
   */
   constructor: function ( serverName, channelName, maxItems, timeFormat, connectionId ) {
@@ -60,15 +60,15 @@ dojo.declare( "diom.view.ActivityWindow", null, {
 
   /**
   * @public
-  * @return {String}
+  * @return {string}
   */
   getConnectionId: function () {
     return this.connectionId;
   },
 
   /**
-  * @param {String} msg
-  * @return {String}
+  * @param {string} msg
+  * @return {string}
   */
   sanitize: function ( msg ) {
     if ( msg ) {
@@ -89,23 +89,43 @@ dojo.declare( "diom.view.ActivityWindow", null, {
     }
   },
 
+  /**
+  * Scrolls ActivityWindow up one page.
+  * @public
+  */
   scrollUp: function ( ) {
       this.win.scrollTop -= this.win.clientHeight;
   },
 
+  /**
+  * Scrolls ActivityWindow down one page.
+  * @public
+  */
   scrollDown: function ( ) {
       this.win.scrollTop += this.win.clientHeight;
   },
 
+  /**
+  * Scrolls ActivityWindow all the way to the bottom.
+  * @public
+  */
+  scrollToBottom: function ( ) {
+      this.win.scrollTop = this.win.scrollHeight;
+  },
+
+  /**
+  * @public
+  * @return {string}
+  */
   getTopic: function ( ) {
     return this.topic;
   },
 
   /**
-  * @param {String} serverName
-  * @param {String} channel
-  * @param {String} topic
-  * @param {String} connectionId
+  * @param {string} serverName
+  * @param {string} channel
+  * @param {string} topic
+  * @param {string} connectionId
   * @private
   */
   handleTopic: function ( serverName, channelName, topic, connectionId ) {
@@ -210,7 +230,7 @@ dojo.declare( "diom.view.ActivityWindow", null, {
       w.appendChild( n );
     }
     if ( isAtBottom ) {
-      w.scrollTop = w.scrollHeight;
+      this.scrollToBottom();
     }
   },
 
