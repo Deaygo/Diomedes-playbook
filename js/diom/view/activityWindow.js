@@ -18,7 +18,7 @@ dojo.declare( "diom.view.ActivityWindow", null, {
   * @constructor
   */
   constructor: function ( serverName, channelName, maxItems, timeFormat, connectionId ) {
-    this.linkRegex = /(https?:\/\/([\w\-]+\.)*[\w\-]+\.[\w\-]+(\/\S*)?(:\d+)?)\s?/g;
+    this.linkRegex = /(https?:\/\/([\w\-]+\.)*[\w\-]+\.[\w\-]+(:\d+)?(\/\S*)?)\s?/g;
     this.colorCode = String.fromCharCode( 3 );
     this.normalCode = String.fromCharCode( 17 );
     this.boldCode = String.fromCharCode( 2 );
