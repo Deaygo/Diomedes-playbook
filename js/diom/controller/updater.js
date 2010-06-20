@@ -40,7 +40,7 @@ dojo.declare( "diom.controller.Updater", null, {
 
   changeUpdateURL: function ( updateURL ) {
     if ( this.appUpdater ) {
-      this.appUpdater.delay = updateURL;
+      this.appUpdater.updateURL = updateURL;
       this.appUpdater.initialize( );
     }
   },
