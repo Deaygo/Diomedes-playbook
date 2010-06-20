@@ -1,8 +1,13 @@
 Starting release log at version 0.1.24 revision 435, new entries at top
 
+ - Release 0.1.39 June 20, 2010
+    Bug Fix: Fixed nick list toggle scroll issue.
+    Bug Fix: Unsent input contents now added to history.
+    Bug Fix: Can now change update URL preference option.
+
  - Release 0.1.38 June 20, 2010
-    Bug Fix: fixed spell checking and other input issues.
-    Bug Fix: ports in URLS now work correctly.
+    Bug Fix: Fixed spell checking and other input issues.
+    Bug Fix: Ports in URLS now work correctly.
 
  - Release 0.1.36 June 19, 2010
     Bug Fix: Pasting nicks was broken, as well as empty spaces. Now fixed.
