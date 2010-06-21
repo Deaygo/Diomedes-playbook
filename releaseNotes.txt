@@ -1,5 +1,9 @@
 Starting release log at version 0.1.24 revision 435, new entries at top
 
+ - Release 0.1.40 June 20, 2010
+    Bug Fix: Improved spell check replacements and punctuation 
+    handling.
+
  - Release 0.1.39 June 20, 2010
     Bug Fix: Fixed nick list toggle scroll issue.
     Bug Fix: Unsent input contents now added to history.
