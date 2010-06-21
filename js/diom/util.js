@@ -4,67 +4,67 @@
 /*jslint passfail: true */
 /*global window, dojo, diom, air, document */
 
-dojo.provide( "diom.util" );
+dojo.provide("diom.util");
 
 var util;
 
-if ( !util ) {
+if (!util) {
   util = {};
 }
 
-if ( window.runtime && air ) {
+if (window.runtime && air) {
 
   util.EVENT_HANDLED = "eventhandled";
 
-  util.rand = function ( min, max ) {
-    return Math.floor( Math.random( ) * ( max - min + 1 ) ) + min;
+  util.rand = function (min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
   };
 
-  util.log = function ( msg ) {
-    var d = new Date( );
+  util.log = function (msg) {
+    var d = new Date();
     msg = "[" + d.toString() + "] UTIL LOG: " + msg + "\n";
-    air.trace( msg );
+    air.trace(msg);
     //console.log(msg);
 		d = null;
   };
 
-  util.findUp = function ( node, className ) {
-    if ( !node || !className ) { return null; }
-    if ( dojo.hasClass( node, className ) ) {
+  util.findUp = function (node, className) {
+    if (!node || !className) { return null; }
+    if (dojo.hasClass(node, className)) {
       return node;
-    } else if ( node.parentNode ) {
-      return util.findUp( node.parentNode, className );
+    } else if (node.parentNode) {
+      return util.findUp(node.parentNode, className);
     }
     return null;
   };
 
-  util.cloneObject = function ( o ) {
+  util.cloneObject = function (o) {
 		var newO, key;
     newO = {};
-    for ( key in o ) {
-      if ( o.hasOwnProperty( key ) && key !== "prototype" ) {
-        newO[ key ] = o[ key ];
+    for (key in o) {
+      if (o.hasOwnProperty(key) && key !== "prototype") {
+        newO[key] = o[key];
       }
     }
     return newO;
   };
 
-  util.get = function ( id, doc ) {
-		if ( doc ) {
-			return doc.getElementById( id );
+  util.get = function (id, doc) {
+		if (doc) {
+			return doc.getElementById(id);
 		}
-    return dojo.byId( id );
+    return dojo.byId(id);
   };
 
-  util.fromIndex = function ( arr, index ) {
-    if ( arr.length && arr.length > index ) {
+  util.fromIndex = function (arr, index) {
+    if (arr.length && arr.length > index) {
       return arr[index];
     } else {
       return null;
     }
   };
 
-  util.Timer = function ( ) {
+  util.Timer = function () {
     this.startTime = null;
     this.endTime = null;
   };
@@ -84,11 +84,11 @@ if ( window.runtime && air ) {
   };
 
   _utp.getTime = function () {
-    if ( this.startTime && this.endTime ) {
+    if (this.startTime && this.endTime) {
       util.log("Total time: " + (this.endTime - this.startTime));
       this.startTime = null;
       this.endTime = null;
-    } else if ( this.startTime ) {
+    } else if (this.startTime) {
       util.log("Finish not called.");
     } else {
       util.log("Start and finish timer before calling this method.");

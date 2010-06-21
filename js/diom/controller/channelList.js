@@ -5,15 +5,15 @@
 /*jslint passfail: true */
 /*global window, dojo, util, diom, air, runtime */
 
-dojo.provide( "diom.controller.channelList" );
+dojo.provide("diom.controller.channelList");
 
 
-dojo.declare( "diom.controller.ChannelList", null, {
+dojo.declare("diom.controller.ChannelList", null, {
 
   /**
   * @constructor
   */
-  constructor: function ( ) {
+  constructor: function () {
     this.connections = {};
   },
 
@@ -27,14 +27,14 @@ dojo.declare( "diom.controller.ChannelList", null, {
   * @public
   * @return {diom.connection.Connection}
   */
-  createConnection: function ( server, port, preferences, appVersion, ignores, password ) {
+  createConnection: function (server, port, preferences, appVersion, ignores, password) {
 
     var connection, connectionId;
 
-    connection = new diom.connection.Connection( server, port, preferences, appVersion, ignores, password );
+    connection = new diom.connection.Connection(server, port, preferences, appVersion, ignores, password);
     connectionId = connection.getConnectionId();
     this.connections[connectionId] = connection;
-    connection.connect( );
+    connection.connect();
     return connection;
   },
 
@@ -43,8 +43,8 @@ dojo.declare( "diom.controller.ChannelList", null, {
   * @public
   * @return {diom.connection.Channel}
   */
-  getServerChannel: function ( connectionId ) {
-    return this.connections[connectionId].getServerChannel( );
+  getServerChannel: function (connectionId) {
+    return this.connections[connectionId].getServerChannel();
   },
 
   /**
@@ -53,9 +53,9 @@ dojo.declare( "diom.controller.ChannelList", null, {
   * @public
   * @return {diom.connection.Channel}
   */
-  getChannel: function ( channelName, connectionId ) {
-    if ( connectionId in this.connections ) {
-      return this.connections[connectionId].getChannel( channelName );
+  getChannel: function (channelName, connectionId) {
+    if (connectionId in this.connections) {
+      return this.connections[connectionId].getChannel(channelName);
     }
     return null;
   },
@@ -64,10 +64,10 @@ dojo.declare( "diom.controller.ChannelList", null, {
   * @param {String} connectionId
   * @public
   */
-  destroyConnection: function ( connectionId ) {
-    if ( connectionId in this.connections ) {
-      this.connections[ connectionId ].destroy( );
-      delete this.connections[ connectionId ];
+  destroyConnection: function (connectionId) {
+    if (connectionId in this.connections) {
+      this.connections[connectionId].destroy();
+      delete this.connections[connectionId];
     }
   },
 
@@ -76,9 +76,9 @@ dojo.declare( "diom.controller.ChannelList", null, {
   * @public
   * @return {diom.connection.Connection}
   */
-  getConnection: function ( connectionId ) {
-    if ( connectionId in this.connections ) {
-      return this.connections[ connectionId ];
+  getConnection: function (connectionId) {
+    if (connectionId in this.connections) {
+      return this.connections[connectionId];
     } else {
       return null;
     }
@@ -88,14 +88,14 @@ dojo.declare( "diom.controller.ChannelList", null, {
   * @public
   * @return {Array}
   */
-  getChannels: function ( ) {
+  getChannels: function () {
 
     var channels, connectionId;
 
     channels = {};
-    for ( connectionId in this.connections ) {
-      if ( this.connections.hasOwnProperty( connectionId ) ) {
-        channels[ connectionId ] = this.connections[ connectionId ].getChannels( );
+    for (connectionId in this.connections) {
+      if (this.connections.hasOwnProperty(connectionId)) {
+        channels[connectionId] = this.connections[connectionId].getChannels();
       }
     }
     return channels;
@@ -105,14 +105,14 @@ dojo.declare( "diom.controller.ChannelList", null, {
   * @public
   * @return {Array}
   */
-  getServerChannels: function ( ) {
+  getServerChannels: function () {
 
     var connectionId, channels;
 
     channels = {};
-    for ( connectionId in this.connections ) {
-      if ( this.connections.hasOwnProperty( connectionId ) ) {
-        channels[ connectionId ] = this.connections[ connectionId ].getServerChannel( );
+    for (connectionId in this.connections) {
+      if (this.connections.hasOwnProperty(connectionId)) {
+        channels[connectionId] = this.connections[connectionId].getServerChannel();
       }
     }
     return channels;
@@ -126,4 +126,4 @@ dojo.declare( "diom.controller.ChannelList", null, {
     //TODO: destroy connections;
   }
 
-} );
+});

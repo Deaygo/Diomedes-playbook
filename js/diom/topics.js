@@ -7,10 +7,10 @@
 /*jslint passfail: true */
 /*global window, dojo, util */
 
-dojo.provide( "diom.topics" );
+dojo.provide("diom.topics");
 
 var diom;
-if ( !diom ) {
+if (!diom) {
   diom = { };
 }
 

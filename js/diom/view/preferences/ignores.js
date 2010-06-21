@@ -8,14 +8,14 @@
 /*jslint passfail: true */
 /*global window, dojo, util, diom, setTimeout */
 
-dojo.provide( "diom.view.preferences.ignores" );
+dojo.provide("diom.view.preferences.ignores");
 
-dojo.declare( "diom.view.preferences.Ignores", diom.view.preferences.PreferencesBase, {
+dojo.declare("diom.view.preferences.Ignores", diom.view.preferences.PreferencesBase, {
   "-chains-": {
     destroy: "before",
     constructor: "manual"
   },
-  constructor: function ( model, view ) {
+  constructor: function (model, view) {
     this.id = "Ignores";
     this.formId = "ignoresForm";
     this.closePrefsBtnConnection = null;
@@ -25,99 +25,99 @@ dojo.declare( "diom.view.preferences.Ignores", diom.view.preferences.Preferences
     this.addFormBtnConnection = null;
     this.model = model;
     this.view = view;
-    this.inherited( arguments );
+    this.inherited(arguments);
   },
-  handleLoad: function ( ) {
-    this.model.getIgnores( dojo.hitch( this, "initialize" ) );
+  handleLoad: function () {
+    this.model.getIgnores(dojo.hitch(this, "initialize"));
   },
-  initialize: function ( data ) {
-    this.displayIgnores( data );
-    this.closePrefsBtnConnection = dojo.connect( dojo.byId( "closeWindowBtn" ), "onclick", dojo.hitch( this, "handleClose" ) );
-    this.addFormBtnConnection = dojo.connect( dojo.byId( "addFormBtn" ), "onclick", dojo.hitch( this, "showAddForm" ) );
-    this.saveFormConnection = dojo.connect( dojo.byId( "ignoresForm" ), "onsubmit", dojo.hitch( this, "saveIgnores" ) );
-    this.closeFormBtnConnection = dojo.connect( dojo.byId( "closeFormBtn" ), "onclick", dojo.hitch( this, "closeForm" ) );
-    this.ignoresListConnection = dojo.connect( dojo.byId( "ignoresList" ), "onclick", dojo.hitch( this, "handleListClick" ) );
-    this.open( );
+  initialize: function (data) {
+    this.displayIgnores(data);
+    this.closePrefsBtnConnection = dojo.connect(dojo.byId("closeWindowBtn"), "onclick", dojo.hitch(this, "handleClose"));
+    this.addFormBtnConnection = dojo.connect(dojo.byId("addFormBtn"), "onclick", dojo.hitch(this, "showAddForm"));
+    this.saveFormConnection = dojo.connect(dojo.byId("ignoresForm"), "onsubmit", dojo.hitch(this, "saveIgnores"));
+    this.closeFormBtnConnection = dojo.connect(dojo.byId("closeFormBtn"), "onclick", dojo.hitch(this, "closeForm"));
+    this.ignoresListConnection = dojo.connect(dojo.byId("ignoresList"), "onclick", dojo.hitch(this, "handleListClick"));
+    this.open();
   },
-  clearForm: function ( ) {
-    dojo.byId( "regex" ).value = "";
-    this.inherited( arguments );
+  clearForm: function () {
+    dojo.byId("regex").value = "";
+    this.inherited(arguments);
   },
-  updateIgnores: function ( ) {
-    this.model.getIgnores( dojo.hitch( this, "displayIgnores" ) );
+  updateIgnores: function () {
+    this.model.getIgnores(dojo.hitch(this, "displayIgnores"));
   },
-  displayIgnores: function ( ignores ) {
+  displayIgnores: function (ignores) {
 
     var node, i, r;
 
-    node = dojo.byId( "ignoresList" );
+    node = dojo.byId("ignoresList");
     node.innerHTML = "";
     r = [];
-    if ( ignores && ignores.length ) {
-      for ( i = 0; i < ignores.length; i++ ) {
-        r.push( this.getIgnoreHTML( ignores[ i ] ) );
+    if (ignores && ignores.length) {
+      for (i = 0; i < ignores.length; i++) {
+        r.push(this.getIgnoreHTML(ignores[i]));
       }
     }
-    node.innerHTML = r.join( "" );
+    node.innerHTML = r.join("");
   },
-  getIgnoreHTML: function( ignore ) {
+  getIgnoreHTML: function(ignore) {
     return [
       '<div><span class="regex">', ignore.regex, '</span> ',
       '<button id="delete.', ignore.id, '">Delete</button> ',
-      '</div>'].join( "" );
+      '</div>'].join("");
   },
-  saveIgnores: function ( event ) {
+  saveIgnores: function (event) {
 
     var ignoreData, id;
 
-    dojo.stopEvent( event );
-    util.log( "Saving Ignores." );
+    dojo.stopEvent(event);
+    util.log("Saving Ignores.");
     ignoreData = {};
-    id = parseInt( dojo.byId( "id" ).value, 10 );
-    if ( !this.getItem( "regex", "Command", ignoreData ) ) { return; }
-    if ( !this.getItem( "active", "Active", ignoreData, true ) ) { return; }
-    if ( id === 0 ) {
-      dojo.publish( diom.topics.IGNORE_ADD, [ ignoreData ] );
-      this.closeForm( event );
-      this.updateIgnores( );
+    id = parseInt(dojo.byId("id").value, 10);
+    if (!this.getItem("regex", "Command", ignoreData)) { return; }
+    if (!this.getItem("active", "Active", ignoreData, true)) { return; }
+    if (id === 0) {
+      dojo.publish(diom.topics.IGNORE_ADD, [ignoreData]);
+      this.closeForm(event);
+      this.updateIgnores();
       return;
     }
-    this.closeForm( event );
+    this.closeForm(event);
   },
-  destroy: function ( ) {
-    dojo.disconnect( this.closePrefsBtnConnection );
+  destroy: function () {
+    dojo.disconnect(this.closePrefsBtnConnection);
     delete this.closePrefsBtnConnection;
-    dojo.disconnect( this.closeFormBtnConnection );
+    dojo.disconnect(this.closeFormBtnConnection);
     delete this.closeFormBtnConnection;
-    dojo.disconnect( this.ignoresListConnection );
+    dojo.disconnect(this.ignoresListConnection);
     delete this.ignoresListConnection;
-    dojo.disconnect( this.saveFormConnection );
+    dojo.disconnect(this.saveFormConnection);
     delete this.saveFormConnection;
-    dojo.disconnect( this.addFormBtnConnection );
+    dojo.disconnect(this.addFormBtnConnection);
     delete this.addFormBtnConnection;
-    this.inherited( arguments );
+    this.inherited(arguments);
   },
-  handleListClick: function ( event ) {
+  handleListClick: function (event) {
 
     var id, parts, cmd;
 
     id = event.target.id;
-    if ( id ) {
-      parts = id.split( "." );
-      if ( parts.length ) {
-        cmd = parts[ 0 ];
-        id = parts [ 1 ];
-        if ( cmd === "delete" ) {
-          this.deleteIgnore( id );
+    if (id) {
+      parts = id.split(".");
+      if (parts.length) {
+        cmd = parts[0];
+        id = parts [1];
+        if (cmd === "delete") {
+          this.deleteIgnore(id);
         }
       }
     }
   },
-  deleteIgnore: function ( id ) {
-    dojo.publish( diom.topics.IGNORE_DELETE, [ id ] );
-    this.updateIgnores( );
+  deleteIgnore: function (id) {
+    dojo.publish(diom.topics.IGNORE_DELETE, [id]);
+    this.updateIgnores();
   },
-  getContent: function ( ) {
+  getContent: function () {
     return [
       '<div class="preferences">',
         '<h1>Ignores</h1>',
@@ -150,9 +150,9 @@ dojo.declare( "diom.view.preferences.Ignores", diom.view.preferences.Preferences
           '<button id="closeWindowBtn">Close Window</button>',
         '</dv>',
       '</div>'
-    ].join( "" );
+   ].join("");
   }
-} );
+});
 
 
 

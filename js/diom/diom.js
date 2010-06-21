@@ -4,7 +4,7 @@
 /*jslint passfail: true */
 /*global window, dojo, util */
 
-dojo.provide( "diom.diom" );
+dojo.provide("diom.diom");
 
-dojo.require( "diom.include" );
+dojo.require("diom.include");
 

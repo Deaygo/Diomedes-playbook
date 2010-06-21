@@ -7,14 +7,14 @@
 /*jslint passfail: true */
 /*global window, dojo, util, diom */
 
-dojo.provide( "diom.network" );
+dojo.provide("diom.network");
 
 
-dojo.declare( "diom.Network", null, {
+dojo.declare("diom.Network", null, {
 
-  constructor: function ( data, model, channelList, prefs, appVersion, ignores ) {
+  constructor: function (data, model, channelList, prefs, appVersion, ignores) {
     var id;
-    this.prefs = util.cloneObject( prefs.getPrefs( ) );
+    this.prefs = util.cloneObject(prefs.getPrefs());
     this.ignores = ignores;
     this.prefs.nick = data.nick;
     this.prefs.altNick = data.altNick;
@@ -37,37 +37,37 @@ dojo.declare( "diom.Network", null, {
     this.currentConnectionId = null;
     this.TEST_CONNECTION_TIME = 5000;
     id = data.id;
-    model.getServers( id, dojo.hitch( this, "handleServerInfo" ) );
-    model.getChannels( id, dojo.hitch( this, "handleChannelInfo" ) );
-    model.getPerforms( id, dojo.hitch( this, "handlePerformInfo" ) );
+    model.getServers(id, dojo.hitch(this, "handleServerInfo"));
+    model.getChannels(id, dojo.hitch(this, "handleChannelInfo"));
+    model.getPerforms(id, dojo.hitch(this, "handlePerformInfo"));
     this.model = model;
-    this.checkInfoProgress( );
-    dojo.subscribe(  diom.topics.NETWORK_CHANGE, this, "handleNetworksChanged" );
-    dojo.subscribe(  diom.topics.IGNORES_UPDATE, this, "handleIgnoresUpdate" );
-    dojo.subscribe(  diom.topics.CHANNELS_CHANGED, this, "handleNetworkConnect" );
+    this.checkInfoProgress();
+    dojo.subscribe( diom.topics.NETWORK_CHANGE, this, "handleNetworksChanged");
+    dojo.subscribe( diom.topics.IGNORES_UPDATE, this, "handleIgnoresUpdate");
+    dojo.subscribe( diom.topics.CHANNELS_CHANGED, this, "handleNetworkConnect");
   },
 
-  handleIgnoresUpdate: function ( ignores ) {
+  handleIgnoresUpdate: function (ignores) {
     this.ignores = ignores;
   },
 
-  handleNetworkConnect: function ( type, channelName, host ) {
-    if ( type === "connect" && host === this.currentHost ) {
-      this.perform( );
+  handleNetworkConnect: function (type, channelName, host) {
+    if (type === "connect" && host === this.currentHost) {
+      this.perform();
     }
   },
 
-  handleNetworksChanged: function ( id ) {
+  handleNetworksChanged: function (id) {
     util.log("hnc in nn");
-    if ( id && id === this.data.id ) {
-      this.model.getServers( id, dojo.hitch( this, "handleServerInfo" ) );
-      this.model.getChannels( id, dojo.hitch( this, "handleChannelInfo" ) );
-      this.model.getPerforms( id, dojo.hitch( this, "handlePerformInfo" ) );
+    if (id && id === this.data.id) {
+      this.model.getServers(id, dojo.hitch(this, "handleServerInfo"));
+      this.model.getChannels(id, dojo.hitch(this, "handleChannelInfo"));
+      this.model.getPerforms(id, dojo.hitch(this, "handlePerformInfo"));
     }
   },
 
-  handleServerInfo: function ( servers ) {
-    if ( servers ) {
+  handleServerInfo: function (servers) {
+    if (servers) {
       this.servers = servers;
     } else {
       this.servers = [];
@@ -75,8 +75,8 @@ dojo.declare( "diom.Network", null, {
     this.serverInfoReceived = true;
   },
 
-  handleChannelInfo: function ( channels ) {
-    if ( channels ) {
+  handleChannelInfo: function (channels) {
+    if (channels) {
       this.channels = channels;
     } else {
       this.channels = [];
@@ -84,8 +84,8 @@ dojo.declare( "diom.Network", null, {
     this.channelInfoReceived = true;
   },
 
-  handlePerformInfo: function ( performs ) {
-    if ( performs ) {
+  handlePerformInfo: function (performs) {
+    if (performs) {
       this.performs = performs;
     } else {
       this.performs = [];
@@ -93,58 +93,58 @@ dojo.declare( "diom.Network", null, {
     this.performInfoReceived = true;
   },
 
-  checkInfoProgress: function ( ) {
-    if ( this.serverInfoReceived && this.channelInfoReceived && this.performInfoReceived ) {
-      this.autoConnect( );
+  checkInfoProgress: function () {
+    if (this.serverInfoReceived && this.channelInfoReceived && this.performInfoReceived) {
+      this.autoConnect();
     } else {
-      window.setTimeout( dojo.hitch( this, "checkInfoProgress" ), 1000 );
+      window.setTimeout(dojo.hitch(this, "checkInfoProgress"), 1000);
     }
   },
 
-  autoConnect: function ( ) {
-    if ( this.data && this.data.autoJoin && this.data.active ) {
-      this.connect( );
+  autoConnect: function () {
+    if (this.data && this.data.autoJoin && this.data.active) {
+      this.connect();
     }
   },
 
   /**
   * public@
   */
-  connect: function ( ) {
+  connect: function () {
 
     var parts, port;
 
-    if ( !this.servers.length ) { return; }
-    if ( this.currentHost ) {
-      dojo.publish( diom.topics.CONNECTION_CLOSE, [ this.currentHost, this.currentConnectionId ] );
+    if (!this.servers.length) { return; }
+    if (this.currentHost) {
+      dojo.publish(diom.topics.CONNECTION_CLOSE, [this.currentHost, this.currentConnectionId]);
       this.connection = null;
       this.currentHost = null;
       this.currentConnectionId = null;
     }
-    parts = this.getNextServer( ).split( ":" );
-    this.currentHost = util.fromIndex( parts, 0 );
-    port = util.fromIndex( parts, 1 );
-    this.connection = this.channelList.createConnection( this.currentHost, port, this.prefs, this.appVersion, this.ignores, this.getPassword( ) );
+    parts = this.getNextServer().split(":");
+    this.currentHost = util.fromIndex(parts, 0);
+    port = util.fromIndex(parts, 1);
+    this.connection = this.channelList.createConnection(this.currentHost, port, this.prefs, this.appVersion, this.ignores, this.getPassword());
     this.currentConnectionId = this.connection.getConnectionId();
-    dojo.publish( diom.topics.CHANNELS_CHANGED, [ "connect", this.currentHost, this.currentHost, null, this.currentConnectionId ] );
+    dojo.publish(diom.topics.CHANNELS_CHANGED, ["connect", this.currentHost, this.currentHost, null, this.currentConnectionId]);
   },
 
-  getNextServer: function ( ) {
-    if ( this.currentHostIndex === null || this.currentHostIndex === ( this.servers.length - 1 ) ) {
+  getNextServer: function () {
+    if (this.currentHostIndex === null || this.currentHostIndex === (this.servers.length - 1)) {
       this.currentHostIndex = 0;
     } else {
       do {
         this.currentHostIndex++;
-      } while ( !this.servers[ this.currentHostIndex ].active );
+      } while (!this.servers[this.currentHostIndex].active);
     }
-    return this.getServer( );
+    return this.getServer();
   },
 
   /**
   * @public
   * @return {String}
   */
-  getConnectionId: function ( ) {
+  getConnectionId: function () {
     return this.currentConnectionId;
   },
 
@@ -152,64 +152,64 @@ dojo.declare( "diom.Network", null, {
   * @public
   * @return {String}
   */
-  getHost: function ( ) {
+  getHost: function () {
     return this.currentHost;
   },
 
-  getServer: function ( ) {
-    return this.servers[ this.currentHostIndex ].name;
+  getServer: function () {
+    return this.servers[this.currentHostIndex].name;
   },
 
-  getPassword: function ( ) {
-    if ( this.servers && this.servers.length && ( this.servers[ this.currentHostIndex ] ) ) {
-      return this.servers[ this.currentHostIndex ].password;
+  getPassword: function () {
+    if (this.servers && this.servers.length && (this.servers[this.currentHostIndex])) {
+      return this.servers[this.currentHostIndex].password;
     } else {
       return "";
     }
   },
 
-  getConnection: function ( ) {
+  getConnection: function () {
     return this.connection;
   },
 
-  joinDefaultChannels: function ( ) {
+  joinDefaultChannels: function () {
     var channelsData, channels, i, channel;
     channelsData = this.channels;
     channels = [];
-    for ( i = 0; i < channelsData.length; i ++ ) {
-      channel = channelsData[ i ];
-      channels.push( channel.name );
+    for (i = 0; i < channelsData.length; i ++) {
+      channel = channelsData[i];
+      channels.push(channel.name);
     }
-    if ( channels.length ) {
-      util.log("this.connection: " + this.connection );
-      this.connection.sendCommand( "join", channels, null );
+    if (channels.length) {
+      util.log("this.connection: " + this.connection);
+      this.connection.sendCommand("join", channels, null);
     }
   },
 
-  perform: function ( ) {
+  perform: function () {
     var performs = this.performs;
-    if ( this.performsProgress >= performs.length ) {
-      this.joinDefaultChannels( );
+    if (this.performsProgress >= performs.length) {
+      this.joinDefaultChannels();
       this.performsProgress = 0;
       return;
     }
-    dojo.publish( diom.topics.USER_INPUT, [ util.fromIndex( performs, this.performsProgress ).command, this.currentHost, this.currentConnectionId ] );
+    dojo.publish(diom.topics.USER_INPUT, [util.fromIndex(performs, this.performsProgress).command, this.currentHost, this.currentConnectionId]);
     this.performsProgress++;
-    window.setTimeout( dojo.hitch( this, "perform" ), 2500 );
+    window.setTimeout(dojo.hitch(this, "perform"), 2500);
   },
 
-  close: function ( ) {
-    if ( this.currentHost ) {
-      dojo.publish( diom.topics.CONNECTION_CLOSE, [ this.currentHost, this.currentConnectionId ] );
-      this.connection.destroy( );
+  close: function () {
+    if (this.currentHost) {
+      dojo.publish(diom.topics.CONNECTION_CLOSE, [this.currentHost, this.currentConnectionId]);
+      this.connection.destroy();
       this.connection = null;
       this.currentHost = null;
       this.currentConnectionId = null;
     }
   },
 
-  destroy: function ( ) {
-    this.close( );
+  destroy: function () {
+    this.close();
   }
 
-} );
+});

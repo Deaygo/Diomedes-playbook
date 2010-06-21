@@ -8,61 +8,61 @@
 /*jslint passfail: true */
 /*global window, dojo, util, diom, air, document */
 
-dojo.provide( "diom.view.view" );
+dojo.provide("diom.view.view");
 
-dojo.declare( "diom.view.View", null, {
+dojo.declare("diom.view.View", null, {
 
-  constructor: function ( model ) {
+  constructor: function (model) {
     var prefs;
     this.model = model;
     this.prevWord = null;
-    this.input = new diom.view.FormInput( util.get( "textInput" ) );
-    this.popup = util.get( "popup" );
-    this.popupContents = util.get( "popupContents" );
-    this.linkView = new diom.view.LinkView( this.popupContents );
-    this.activityWindow = util.get( "activityWindow" );
-    this.channelList = util.get( "channelList" );
-    this.titleBar = util.get( "titleBar" );
-    this.nickList = util.get( "nickList" );
+    this.input = new diom.view.FormInput(util.get("textInput"));
+    this.popup = util.get("popup");
+    this.popupContents = util.get("popupContents");
+    this.linkView = new diom.view.LinkView(this.popupContents);
+    this.activityWindow = util.get("activityWindow");
+    this.channelList = util.get("channelList");
+    this.titleBar = util.get("titleBar");
+    this.nickList = util.get("nickList");
     this.font = null;
-    prefs = this.model.prefs.getPrefs( );
-    this.changeFont( prefs.multiOptionPrefs.font, prefs.fontSize );
-    this.changeTheme( prefs.multiOptionPrefs.theme );
+    prefs = this.model.prefs.getPrefs();
+    this.changeFont(prefs.multiOptionPrefs.font, prefs.fontSize);
+    this.changeTheme(prefs.multiOptionPrefs.theme);
     this.activityWindows = {};
     this.activeWin = null;
     this.activeNickCount = 0;
     this.nickListCollapsed = false;
     this.appVersion = "";
 
-    dojo.connect( this.channelList, "onclick", this, "handleChannelListClick" );
-    dojo.connect( window, "onclick", this, "handleActivityWindowClick" );
-    dojo.connect( this.titleBar, "onclick", this, "handleTitleBarClick" );
-    dojo.connect( util.get( "prefBtn" ), "onclick", this, "handlePrefsBtnClick" );
-    dojo.connect( util.get( "linksBtn" ), "onclick", this, "handleLinksBtnClick" );
-    dojo.connect( util.get( "closePopup" ), "onclick", this, "closePopup" );
-    dojo.connect( window, "onclick", this, "handleWindowClick" );
-    dojo.subscribe( diom.topics.POPUP_CLOSE, this, "handleWindowClick" );
-    dojo.subscribe( diom.topics.USER_HIGHLIGHT, this, "highlight" );
-    dojo.subscribe( diom.topics.PREFS_CHANGE_FONT, this, "changeFont" );
-    dojo.subscribe( diom.topics.PREFS_CHANGE_THEME, this, "changeTheme" );
-    dojo.subscribe( diom.topics.NOTIFY, this, "notify" );
-    dojo.subscribe( diom.topics.CHANNEL_TOPIC, this, "handleTopic" );
-    dojo.subscribe( diom.topics.NICK_CHANGE, this, "handleNickChange" );
-    dojo.subscribe( diom.topics.INPUT_PAGE_UP, this, "scrollUp" );
-    dojo.subscribe( diom.topics.INPUT_PAGE_DOWN, this, "scrollDown" );
-    dojo.subscribe( diom.topics.INPUT_CHANNEL_NEXT, this, "selectNextChannel" );
-    dojo.subscribe( diom.topics.INPUT_CHANNEL_PREV, this, "selectPrevChannel" );
-    dojo.subscribe( diom.topics.INPUT_CHANNEL_PART, this, "closeCurrentChannel" );
-    dojo.subscribe( diom.topics.INPUT_CHANNEL_INDEX, this, "selectChannelFromIndex" );
-    dojo.subscribe( diom.topics.UPDATE_NO_NEW_UPDATES, this, "showNoUpdatesDialog" );
-    dojo.subscribe( diom.topics.NICK_LIST_TOGGLE, this, "handleNickListControlClick" );
+    dojo.connect(this.channelList, "onclick", this, "handleChannelListClick");
+    dojo.connect(window, "onclick", this, "handleActivityWindowClick");
+    dojo.connect(this.titleBar, "onclick", this, "handleTitleBarClick");
+    dojo.connect(util.get("prefBtn"), "onclick", this, "handlePrefsBtnClick");
+    dojo.connect(util.get("linksBtn"), "onclick", this, "handleLinksBtnClick");
+    dojo.connect(util.get("closePopup"), "onclick", this, "closePopup");
+    dojo.connect(window, "onclick", this, "handleWindowClick");
+    dojo.subscribe(diom.topics.POPUP_CLOSE, this, "handleWindowClick");
+    dojo.subscribe(diom.topics.USER_HIGHLIGHT, this, "highlight");
+    dojo.subscribe(diom.topics.PREFS_CHANGE_FONT, this, "changeFont");
+    dojo.subscribe(diom.topics.PREFS_CHANGE_THEME, this, "changeTheme");
+    dojo.subscribe(diom.topics.NOTIFY, this, "notify");
+    dojo.subscribe(diom.topics.CHANNEL_TOPIC, this, "handleTopic");
+    dojo.subscribe(diom.topics.NICK_CHANGE, this, "handleNickChange");
+    dojo.subscribe(diom.topics.INPUT_PAGE_UP, this, "scrollUp");
+    dojo.subscribe(diom.topics.INPUT_PAGE_DOWN, this, "scrollDown");
+    dojo.subscribe(diom.topics.INPUT_CHANNEL_NEXT, this, "selectNextChannel");
+    dojo.subscribe(diom.topics.INPUT_CHANNEL_PREV, this, "selectPrevChannel");
+    dojo.subscribe(diom.topics.INPUT_CHANNEL_PART, this, "closeCurrentChannel");
+    dojo.subscribe(diom.topics.INPUT_CHANNEL_INDEX, this, "selectChannelFromIndex");
+    dojo.subscribe(diom.topics.UPDATE_NO_NEW_UPDATES, this, "showNoUpdatesDialog");
+    dojo.subscribe(diom.topics.NICK_LIST_TOGGLE, this, "handleNickListControlClick");
   },
 
   /**
   * @public
   */
-  showNoUpdatesDialog: function( ) {
-    this.notify( "No new updates." );
+  showNoUpdatesDialog: function() {
+    this.notify("No new updates.");
   },
 
   /**
@@ -70,9 +70,9 @@ dojo.declare( "diom.view.View", null, {
   * page up.
   * @public
   */
-  scrollUp: function ( ) {
-    if ( this.activeWin ) {
-      this.activeWin.scrollUp( );
+  scrollUp: function () {
+    if (this.activeWin) {
+      this.activeWin.scrollUp();
     }
   },
 
@@ -81,9 +81,9 @@ dojo.declare( "diom.view.View", null, {
   * page down.
   * @public
   */
-  scrollDown: function ( ) {
-    if ( this.activeWin ) {
-      this.activeWin.scrollDown( );
+  scrollDown: function () {
+    if (this.activeWin) {
+      this.activeWin.scrollDown();
     }
   },
 
@@ -92,9 +92,9 @@ dojo.declare( "diom.view.View", null, {
   * all the way to the bottom.
   * @public
   */
-  scrollToBottom: function ( ) {
-    if ( this.activeWin ) {
-      this.activeWin.scrollToBottom( );
+  scrollToBottom: function () {
+    if (this.activeWin) {
+      this.activeWin.scrollToBottom();
     }
   },
 
@@ -102,8 +102,8 @@ dojo.declare( "diom.view.View", null, {
   * @param {!Object} e
   * @private
   */
-  closePopup: function ( e ) {
-    dojo.addClass( this.popup, "hidden" );
+  closePopup: function (e) {
+    dojo.addClass(this.popup, "hidden");
     this.popupContents.innerHTML = "";
   },
 
@@ -111,27 +111,27 @@ dojo.declare( "diom.view.View", null, {
   * @param {!Object} e
   * @private
   */
-  handleLinksBtnClick: function ( e ) {
-    dojo.stopEvent( e );
-    this.linkView.display( );
-    dojo.removeClass( this.popup, "hidden" );
+  handleLinksBtnClick: function (e) {
+    dojo.stopEvent(e);
+    this.linkView.display();
+    dojo.removeClass(this.popup, "hidden");
   },
 
   /**
   * @param {!Object} e
   * @private
   */
-  handlePrefsBtnClick: function ( e ) {
-    dojo.stopEvent( e );
-    dojo.removeClass( this.titleBar, "hidden" );
+  handlePrefsBtnClick: function (e) {
+    dojo.stopEvent(e);
+    dojo.removeClass(this.titleBar, "hidden");
   },
 
   /**
   * @param {!Object} e
   * @private
   */
-  handleWindowClick: function ( e ) {
-    dojo.addClass( this.titleBar, "hidden" );
+  handleWindowClick: function (e) {
+    dojo.addClass(this.titleBar, "hidden");
   },
 
   /**
@@ -141,12 +141,12 @@ dojo.declare( "diom.view.View", null, {
   * @param {!string} topic
   * @public
   */
-  setTopicView: function ( channelName, topic ) {
+  setTopicView: function (channelName, topic) {
     var msg = channelName, nickCount = "";
-    if ( this.activeNickCount ) {
+    if (this.activeNickCount) {
       nickCount = " (" + this.activeNickCount + ") ";
     }
-    if ( topic ) {
+    if (topic) {
       msg += nickCount + ": " + topic;
     }
     document.title = msg;
@@ -159,14 +159,14 @@ dojo.declare( "diom.view.View", null, {
   * @param {String} connectionId
   * @private
   */
-  handleNickChange: function ( nicks, serverName, channelName, connectionId ) {
+  handleNickChange: function (nicks, serverName, channelName, connectionId) {
     var topic, tmp;
-    if ( this.activeWin.getConnectionId() === connectionId && this.activeWin.channelName === channelName ) {
+    if (this.activeWin.getConnectionId() === connectionId && this.activeWin.channelName === channelName) {
       this.activeNickCount = nicks.length;
-      tmp = document.title.split( ": " );
-      tmp.shift( );
-      topic = tmp.join( ": " );
-      this.setTopicView( channelName, topic );
+      tmp = document.title.split(": ");
+      tmp.shift();
+      topic = tmp.join(": ");
+      this.setTopicView(channelName, topic);
     }
   },
 
@@ -177,116 +177,116 @@ dojo.declare( "diom.view.View", null, {
   * @param {String} connectionId
   * @private
   */
-  handleTopic: function ( serverName, channelName, topic, connectionId ) {
-    if ( this.activeWin.getConnectionId() === connectionId && this.activeWin.channelName === channelName ) {
-      this.setTopicView( channelName, topic );
+  handleTopic: function (serverName, channelName, topic, connectionId) {
+    if (this.activeWin.getConnectionId() === connectionId && this.activeWin.channelName === channelName) {
+      this.setTopicView(channelName, topic);
     }
   },
 
-  changeTheme: function ( themePrefs ) {
+  changeTheme: function (themePrefs) {
     var i, theme;
-    for ( i = 0; i < themePrefs.length; i++ ) {
-      theme = themePrefs[ i ];
-      if ( "selected" in theme ) {
-        this.setTheme( theme.value );
+    for (i = 0; i < themePrefs.length; i++) {
+      theme = themePrefs[i];
+      if ("selected" in theme) {
+        this.setTheme(theme.value);
         return;
       }
     }
   },
 
-  setTheme: function ( themeName ) {
+  setTheme: function (themeName) {
     var cssPath = "/css/themes/", n;
-    n = util.get( "themeLink" );
-    n.setAttribute( "href", [ cssPath, themeName, ".css" ].join( "" ) );
+    n = util.get("themeLink");
+    n.setAttribute("href", [cssPath, themeName, ".css"].join(""));
   },
 
-  changeFont: function ( fontPrefs, size ) {
+  changeFont: function (fontPrefs, size) {
     var i, font;
-    for ( i = 0; i < fontPrefs.length; i++ ) {
-      font = fontPrefs[ i ];
-      if ( "selected" in font ) {
-        this.setFont( font.value, size );
+    for (i = 0; i < fontPrefs.length; i++) {
+      font = fontPrefs[i];
+      if ("selected" in font) {
+        this.setFont(font.value, size);
         return;
       }
     }
   },
 
-  setFont: function ( font, size ) {
+  setFont: function (font, size) {
     this.font = font;
-    size = parseInt( size, 10 );
-    if ( size < 8 ) {
+    size = parseInt(size, 10);
+    if (size < 8) {
       size = 8;
-    } else if ( size > 32 ) {
+    } else if (size > 32) {
       size = 32;
     }
-    size = size.toString( );
-    util.get( "body" ).setAttribute( "style", [
+    size = size.toString();
+    util.get("body").setAttribute("style", [
       "font-family: ",
       font,
       ";",
       "font-size: ",
       size,
       "px;"
-    ].join( "" ) );
+  ].join(""));
   },
 
-  notify: function ( msg ) {
+  notify: function (msg) {
 
     var dialog, params;
 
-    if ( msg ) {
+    if (msg) {
       params = {
         center: true,
         auto: true,
         title: "Notice",
         content: msg
       };
-      dialog = new diom.view.dialog.Dialog( params );
+      dialog = new diom.view.dialog.Dialog(params);
     }
   },
 
-  setAppVersion: function ( info ) {
+  setAppVersion: function (info) {
     this.appVersion = info;
   },
 
-  sanitize: function ( msg ) {
-    if ( msg ) {
-      msg = msg.split( "&" ).join( "&amp;" );
-      msg = msg.split( "<" ).join( "&lt;" );
-      msg = msg.split( ">" ).join( "&gt;" );
-      msg = msg.split( '"' ).join( "&quot;" );
+  sanitize: function (msg) {
+    if (msg) {
+      msg = msg.split("&").join("&amp;");
+      msg = msg.split("<").join("&lt;");
+      msg = msg.split(">").join("&gt;");
+      msg = msg.split('"').join("&quot;");
     }
     return msg;
   },
 
-  getConfirmation: function ( msg ) {
-    return window.confirm( "You're about to " + msg + ". Are you sure? " );
+  getConfirmation: function (msg) {
+    return window.confirm("You're about to " + msg + ". Are you sure? ");
   },
 
-  setContents: function ( node, contents, synchronous ) {
-    if ( synchronous ) {
+  setContents: function (node, contents, synchronous) {
+    if (synchronous) {
       node.innerHTML = contents;
     } else {
       //performance gain
-      window.setTimeout( function() { node.innerHTML = contents; }, 0 );
+      window.setTimeout(function() { node.innerHTML = contents; }, 0);
     }
   },
 
-  clearActivityView: function ( ) {
-    if ( this.activeWin ) {
-      this.activeWin.clear( );
+  clearActivityView: function () {
+    if (this.activeWin) {
+      this.activeWin.clear();
     }
   },
 
-  clearNickView: function ( ) {
-    this.activeWin.nickWindow.clear( );
+  clearNickView: function () {
+    this.activeWin.nickWindow.clear();
   },
 
-  displayHelp: function ( ) {
+  displayHelp: function () {
 
     var dialog;
 
-    dialog = new diom.view.Help( );
+    dialog = new diom.view.Help();
   },
 
   /**
@@ -296,49 +296,49 @@ dojo.declare( "diom.view.View", null, {
   * @param {String} connectionId
   * @public
   */
-  changeView: function ( serverName, channelName, topic, connectionId ) {
-    this.createActivityViewIfNeeded( channelName, serverName, connectionId );
-    this.activeWin = this.getActivityWindow( channelName, serverName, connectionId );
-    this.setTopicView( channelName, topic );
-    if ( this.activityWindow.childNodes.length ) {
-      this.activityWindow.replaceChild( this.activeWin.getNode( ), this.activityWindow.firstChild );
+  changeView: function (serverName, channelName, topic, connectionId) {
+    this.createActivityViewIfNeeded(channelName, serverName, connectionId);
+    this.activeWin = this.getActivityWindow(channelName, serverName, connectionId);
+    this.setTopicView(channelName, topic);
+    if (this.activityWindow.childNodes.length) {
+      this.activityWindow.replaceChild(this.activeWin.getNode(), this.activityWindow.firstChild);
     } else {
-      this.activityWindow.appendChild( this.activeWin.getNode( ) );
+      this.activityWindow.appendChild(this.activeWin.getNode());
     }
-    if ( this.nickList.childNodes.length ) {
-      this.nickList.replaceChild( this.activeWin.nickWindow.getNode( ), this.nickList.firstChild );
+    if (this.nickList.childNodes.length) {
+      this.nickList.replaceChild(this.activeWin.nickWindow.getNode(), this.nickList.firstChild);
     } else {
-      this.nickList.appendChild( this.activeWin.nickWindow.getNode( ) );
+      this.nickList.appendChild(this.activeWin.nickWindow.getNode());
     }
-    this.activeWin.changeView( );
-    this.input.changeChannel( this.activeWin.nickWindow.getNicks( ), serverName, channelName, connectionId );
+    this.activeWin.changeView();
+    this.input.changeChannel(this.activeWin.nickWindow.getNicks(), serverName, channelName, connectionId);
   },
 
   /**
   * @param {Object} e
   * @private
   */
-  handleActivityWindowClick: function ( e ) {
+  handleActivityWindowClick: function (e) {
 
     var url, urlReq;
 
-    if ( e.target.nodeName === "A" ) {
-      dojo.stopEvent( e );
+    if (e.target.nodeName === "A") {
+      dojo.stopEvent(e);
       url = e.target.getAttribute("href");
-      if ( url ) {
-        urlReq = new air.URLRequest( dojo.trim( url ) );
+      if (url) {
+        urlReq = new air.URLRequest(dojo.trim(url));
         air.navigateToURL(urlReq);
       }
     }
-    if ( e.target.id === "nickListControl" ) {
-      dojo.stopEvent( e );
-      this.handleNickListControlClick( );
+    if (e.target.id === "nickListControl") {
+      dojo.stopEvent(e);
+      this.handleNickListControlClick();
       return;
     }
-    if ( !e[ util.EVENT_HANDLED ] ) {
-      this.input.focus( );
-      this.handleWindowClick( e );
-      this.scrollDown( );
+    if (!e[util.EVENT_HANDLED]) {
+      this.input.focus();
+      this.handleWindowClick(e);
+      this.scrollDown();
     }
   },
 
@@ -346,21 +346,21 @@ dojo.declare( "diom.view.View", null, {
   * @param {HTMLElement} n
   * @private
   */
-  closeTabFromNode: function ( n ) {
+  closeTabFromNode: function (n) {
 
     var server, name, connectionId;
 
-    if ( n ) {
-      server = n.getAttribute( "server" );
-      name = n.getAttribute( "name" );
-      connectionId = n.getAttribute( "connectionId" );
-      if ( name === server ) {
-        window.setTimeout( function() {
-          dojo.publish( diom.topics.NETWORK_CLOSE, [ server, connectionId ] );
+    if (n) {
+      server = n.getAttribute("server");
+      name = n.getAttribute("name");
+      connectionId = n.getAttribute("connectionId");
+      if (name === server) {
+        window.setTimeout(function() {
+          dojo.publish(diom.topics.NETWORK_CLOSE, [server, connectionId]);
         }, 0);
       } else {
-        window.setTimeout( function() {
-          dojo.publish( diom.topics.CHANNEL_CLOSE, [ server, name, connectionId ] );
+        window.setTimeout(function() {
+          dojo.publish(diom.topics.CHANNEL_CLOSE, [server, name, connectionId]);
         }, 0);
       }
     }
@@ -370,35 +370,35 @@ dojo.declare( "diom.view.View", null, {
   * @param {HTMLElement} n
   * @private
   */
-  selectChannelFromNode: function ( n ) {
+  selectChannelFromNode: function (n) {
 
     var server, type, name, connectionId;
 
-    if ( n ) {
-      server = n.getAttribute( "server" );
-      type = n.getAttribute( "type" );
-      name = n.getAttribute( "name" );
-      connectionId = n.getAttribute( "connectionId" );
-      window.setTimeout( function() {
-        dojo.publish( diom.topics.CHANNEL_SELECTED, [ server, type, name, connectionId ] );
+    if (n) {
+      server = n.getAttribute("server");
+      type = n.getAttribute("type");
+      name = n.getAttribute("name");
+      connectionId = n.getAttribute("connectionId");
+      window.setTimeout(function() {
+        dojo.publish(diom.topics.CHANNEL_SELECTED, [server, type, name, connectionId]);
       }, 0);
     }
   },
 
 
-  handleChannelListClick: function ( e ) {
+  handleChannelListClick: function (e) {
     var n;
-    dojo.stopEvent( e );
+    dojo.stopEvent(e);
     n = e.target;
-    if ( !n ) { return; }
-    if ( dojo.hasClass( n, "closeChannelBtn" ) ) {
-      n = util.findUp( n, "channelBtn" );
-      this.closeTabFromNode( n );
+    if (!n) { return; }
+    if (dojo.hasClass(n, "closeChannelBtn")) {
+      n = util.findUp(n, "channelBtn");
+      this.closeTabFromNode(n);
       return;
     }
-    n = util.findUp( n, "channelBtn" );
-    this.selectChannelFromNode( n );
-    this.handleWindowClick( e );
+    n = util.findUp(n, "channelBtn");
+    this.selectChannelFromNode(n);
+    this.handleWindowClick(e);
   },
 
   /**
@@ -408,9 +408,9 @@ dojo.declare( "diom.view.View", null, {
   * @param {String} connectionId
   * @public
   */
-  updateNickView: function ( users, serverName, channelName, connectionId ) {
-    this.createActivityViewIfNeeded( channelName, serverName, connectionId );
-    this.getActivityWindow( channelName, serverName, connectionId ).nickWindow.update( users, channelName );
+  updateNickView: function (users, serverName, channelName, connectionId) {
+    this.createActivityViewIfNeeded(channelName, serverName, connectionId);
+    this.getActivityWindow(channelName, serverName, connectionId).nickWindow.update(users, channelName);
   },
 
   /**
@@ -420,119 +420,119 @@ dojo.declare( "diom.view.View", null, {
   * @param {Array} serverChannelList
   * @public
   */
-  updateChannelView: function ( channels, channelsWithActivity, channelsWithHighlight, serverChannelList ) {
+  updateChannelView: function (channels, channelsWithActivity, channelsWithHighlight, serverChannelList) {
 
     var r, channelsR, serverName, server, activeChannels, highlightedChannels,
       channelKey, activity, highlight, channelName, connectionId, serverChannel;
 
     util.log("updateChannelView");
-    if ( !channels ) { return; }
+    if (!channels) { return; }
     r = [];
     channelsR = [];
-    for ( connectionId in channels ) {
-      if ( channels.hasOwnProperty( connectionId ) ) {
-        serverChannel = serverChannelList[ connectionId];
+    for (connectionId in channels) {
+      if (channels.hasOwnProperty(connectionId)) {
+        serverChannel = serverChannelList[connectionId];
         serverName = serverChannel.getName();
-        r.push( this.getChannelButton( serverName, serverName, serverName, "SERVER", null, null, connectionId ) );
-        server = channels[ connectionId ];
-        if ( connectionId in channelsWithActivity ) {
-          activeChannels = channelsWithActivity[ connectionId ];
+        r.push(this.getChannelButton(serverName, serverName, serverName, "SERVER", null, null, connectionId));
+        server = channels[connectionId];
+        if (connectionId in channelsWithActivity) {
+          activeChannels = channelsWithActivity[connectionId];
         } else {
           activeChannels = null;
         }
-        if ( connectionId in channelsWithHighlight ) {
-          highlightedChannels = channelsWithHighlight[ connectionId ];
+        if (connectionId in channelsWithHighlight) {
+          highlightedChannels = channelsWithHighlight[connectionId];
         } else {
           highlightedChannels = null;
         }
-        for ( channelKey in server ) {
+        for (channelKey in server) {
           //channelKey is channelName in lowercase
-          if ( server.hasOwnProperty( channelKey ) ) {
-            channelsR.push( channelKey );
+          if (server.hasOwnProperty(channelKey)) {
+            channelsR.push(channelKey);
             activity = 0;
-            if ( activeChannels && ( channelKey in activeChannels ) ) {
-              activity = activeChannels[ channelKey ];
+            if (activeChannels && (channelKey in activeChannels)) {
+              activity = activeChannels[channelKey];
             }
             highlight = false;
-            if ( highlightedChannels && ( channelKey in highlightedChannels ) ) {
+            if (highlightedChannels && (channelKey in highlightedChannels)) {
               highlight = true;
             }
-            channelName = server[ channelKey ].getName( ); //channel
-            r.push( this.getChannelButton( serverName, channelKey, channelName, "CHANNEL",  activity, highlight, connectionId) );
+            channelName = server[channelKey].getName(); //channel
+            r.push(this.getChannelButton(serverName, channelKey, channelName, "CHANNEL",  activity, highlight, connectionId));
           }
         }
       }
     }
-    this.setContents( this.channelList, r.join( "" ), false );
-    this.input.setChannels( channelsR );
+    this.setContents(this.channelList, r.join(""), false);
+    this.input.setChannels(channelsR);
   },
 
-  closeCurrentChannel: function ( ) {
+  closeCurrentChannel: function () {
     var cl, nodes, i, prev, n;
     cl = this.channelList;
-    nodes = cl.getElementsByTagName( "a" );
-    if ( !nodes || !nodes.length ) { return; }
+    nodes = cl.getElementsByTagName("a");
+    if (!nodes || !nodes.length) { return; }
     prev = null;
-    for ( i = 0; i < nodes.length; i++ ) {
-      n = nodes[ i ];
-      if ( dojo.hasClass( n, "currentChannel" ) ) {
-        this.closeTabFromNode( n );
+    for (i = 0; i < nodes.length; i++) {
+      n = nodes[i];
+      if (dojo.hasClass(n, "currentChannel")) {
+        this.closeTabFromNode(n);
       }
     }
   },
 
-  selectPrevChannel: function ( ) {
+  selectPrevChannel: function () {
     var cl, nodes, prev, i, n;
     cl = this.channelList;
-    nodes = cl.getElementsByTagName( "a" );
-    if ( !nodes || !nodes.length ) { return; }
+    nodes = cl.getElementsByTagName("a");
+    if (!nodes || !nodes.length) { return; }
     prev = null;
-    for ( i = 0; i < nodes.length; i++ ) {
-      n = nodes[ i ];
-      if ( dojo.hasClass( n, "currentChannel" ) ) {
-        if ( i === 0 ) {
-          prev = nodes[ nodes.length - 1 ];
+    for (i = 0; i < nodes.length; i++) {
+      n = nodes[i];
+      if (dojo.hasClass(n, "currentChannel")) {
+        if (i === 0) {
+          prev = nodes[nodes.length - 1];
         } else {
-          prev = nodes[ i - 1 ];
+          prev = nodes[i - 1];
         }
         break;
       }
     }
-    this.selectChannelFromNode( prev );
+    this.selectChannelFromNode(prev);
   },
 
-  selectChannelFromIndex: function ( index ) {
+  selectChannelFromIndex: function (index) {
     var cl, nodes;
-    util.log( "selecting channel from index: " + index );
+    util.log("selecting channel from index: " + index);
     cl = this.channelList;
-    nodes = cl.getElementsByTagName( "a" );
-    if ( !nodes || !nodes.length || nodes.length < ( index + 1 ) ) { return; }
-    util.log( nodes );
-    util.log( nodes.length );
-    util.log( index in nodes );
-    util.log( nodes[ index ] );
-    this.selectChannelFromNode( nodes[ index ] );
+    nodes = cl.getElementsByTagName("a");
+    if (!nodes || !nodes.length || nodes.length < (index + 1)) { return; }
+    util.log(nodes);
+    util.log(nodes.length);
+    util.log(index in nodes);
+    util.log(nodes[index]);
+    this.selectChannelFromNode(nodes[index]);
   },
 
-  selectNextChannel: function ( ) {
+  selectNextChannel: function () {
     var cl, nodes, next, i, n;
     cl = this.channelList;
-    nodes = cl.getElementsByTagName( "a" );
-    if ( !nodes || !nodes.length ) { return; }
+    nodes = cl.getElementsByTagName("a");
+    if (!nodes || !nodes.length) { return; }
     next = null;
-    for ( i = 0; i < nodes.length; i++ ) {
-      n = nodes[ i ];
-      if ( dojo.hasClass( n, "currentChannel" ) ) {
+    for (i = 0; i < nodes.length; i++) {
+      n = nodes[i];
+      if (dojo.hasClass(n, "currentChannel")) {
         next = n.nextSibling;
-        if ( i < nodes.length - 1 ) {
-          next = nodes[ ++i ];
+        if (i < nodes.length - 1) {
+          next = nodes[++i];
         } else {
-          next = nodes[ 0 ];
+          next = nodes[0];
         }
         break;
       }
     }
-    this.selectChannelFromNode( next );
+    this.selectChannelFromNode(next);
   },
 
   /**
@@ -545,34 +545,34 @@ dojo.declare( "diom.view.View", null, {
   * @param {String} connectionId
   * @private
   */
-  getChannelButton: function ( server, channelKey, channelName, type, activity, highlight, connectionId ) {
+  getChannelButton: function (server, channelKey, channelName, type, activity, highlight, connectionId) {
     var channelActivity, currentChannel;
     //channelKey is channelName in lowercase
     channelActivity = "";
-    if ( activity ) {
+    if (activity) {
       channelActivity = [
         ' <span class="channelActivity">&nbsp;',
         activity,
         ' </span> '
-      ].join( "" );
+    ].join("");
     }
-    if ( this.activeWin ) {
-      currentChannel = ( channelKey === this.activeWin.channelName &&
-        connectionId === this.activeWin.getConnectionId() );
+    if (this.activeWin) {
+      currentChannel = (channelKey === this.activeWin.channelName &&
+        connectionId === this.activeWin.getConnectionId());
     } else {
       currentChannel = false;
     }
     return [
         ' <a href="#" class="channelBtn',
-        ( activity ? " hasActivity " : "" ),
-        ( highlight ? " highlight " : "" ),
-        ( currentChannel  ? " currentChannel " : "" ),
+        (activity ? " hasActivity " : ""),
+        (highlight ? " highlight " : ""),
+        (currentChannel  ? " currentChannel " : ""),
         '" type="',
-        this.sanitize( type ),
+        this.sanitize(type),
         '" server="',
-        this.sanitize( server ),
+        this.sanitize(server),
         '" name="',
-        this.sanitize( channelKey ),
+        this.sanitize(channelKey),
         '" connectionId="',
         connectionId,
         '">',
@@ -581,14 +581,14 @@ dojo.declare( "diom.view.View", null, {
           ' <span class="channelBtnWrapper"> ',
           channelActivity,
           ' <span class="channelBtnName" >',
-            this.sanitize( channelName ),
+            this.sanitize(channelName),
           ' </span>',
         '</a> '
-      ].join( "" );
+    ].join("");
   },
 
-  finishChannelChange: function ( ) {
-    this.input.focus( );
+  finishChannelChange: function () {
+    this.input.focus();
   },
 
   /**
@@ -597,19 +597,19 @@ dojo.declare( "diom.view.View", null, {
   * @param {String} connectionId
   * @private
   */
-  createActivityViewIfNeeded: function ( channelName, serverName, connectionId ) {
-    channelName = channelName.toLowerCase( );
-    if ( !( connectionId in this.activityWindows ) ) {
-      this.activityWindows[ connectionId ] = {};
+  createActivityViewIfNeeded: function (channelName, serverName, connectionId) {
+    channelName = channelName.toLowerCase();
+    if (!(connectionId in this.activityWindows)) {
+      this.activityWindows[connectionId] = {};
     }
-    if ( !( channelName in this.activityWindows[ connectionId ] ) ) {
-      this.activityWindows[ connectionId ][ channelName ] = new diom.view.ActivityWindow( 
+    if (!(channelName in this.activityWindows[connectionId])) {
+      this.activityWindows[connectionId][channelName] = new diom.view.ActivityWindow(
           serverName,
           channelName,
-          this.model.prefs.getPrefs( ).historyLength,
-          this.model.prefs.getPrefs( ).multiOptionPrefs.time,
+          this.model.prefs.getPrefs().historyLength,
+          this.model.prefs.getPrefs().multiOptionPrefs.time,
           connectionId
-      );
+    );
     }
   },
 
@@ -619,11 +619,11 @@ dojo.declare( "diom.view.View", null, {
   * @param {String} connectionId
   * @private
   */
-  getActivityWindow: function ( channelName, serverName, connectionId ) {
-    channelName = channelName.toLowerCase( );
-    if ( connectionId in this.activityWindows ) {
-      if ( channelName in this.activityWindows[ connectionId ] ) {
-        return this.activityWindows[ connectionId ][ channelName ];
+  getActivityWindow: function (channelName, serverName, connectionId) {
+    channelName = channelName.toLowerCase();
+    if (connectionId in this.activityWindows) {
+      if (channelName in this.activityWindows[connectionId]) {
+        return this.activityWindows[connectionId][channelName];
       }
     }
     return null;
@@ -637,38 +637,38 @@ dojo.declare( "diom.view.View", null, {
   * @param {String} connectionId
   * @public
   */
-  updateActivityView: function ( messages, userNick, channelName, serverName, connectionId ) {
-    this.createActivityViewIfNeeded( channelName, serverName, connectionId );
-    this.getActivityWindow( channelName, serverName, connectionId ).update( messages, userNick, channelName );
+  updateActivityView: function (messages, userNick, channelName, serverName, connectionId) {
+    this.createActivityViewIfNeeded(channelName, serverName, connectionId);
+    this.getActivityWindow(channelName, serverName, connectionId).update(messages, userNick, channelName);
   },
 
-  highlight: function ( ) {
+  highlight: function () {
     var na, nt, nw, icon;
-    if ( air ) {
+    if (air) {
       na = air.NativeApplication;
       nt = air.NotificationType;
       nw = air.NativeWindow;
-      if ( na.supportsDockIcon ) {
+      if (na.supportsDockIcon) {
         //bounce dock icon
         icon = na.nativeApplication.icon;
-        icon.bounce( nt.CRITICAL );
-      } else if ( nw.supportsNotification ) {
+        icon.bounce(nt.CRITICAL);
+      } else if (nw.supportsNotification) {
         //flash taskbar
-        window.nativeWindow.notifyUser( nt.CRITICAL );
+        window.nativeWindow.notifyUser(nt.CRITICAL);
       }
     }
   },
 
-  getInput: function ( ) {
-    return this.input.getValue( );
+  getInput: function () {
+    return this.input.getValue();
   },
 
-  destroy: function ( ) {
-    util.log( "destroying view" );
+  destroy: function () {
+    util.log("destroying view");
     this.input.destroy();
   },
 
-  handleAboutBtnClick: function ( e ) {
+  handleAboutBtnClick: function (e) {
 
     var params, callback, s;
 
@@ -682,7 +682,7 @@ dojo.declare( "diom.view.View", null, {
         '<p>IRC: #diomedes on irc.freenode.org</p><br/>',
         '<p>Thank you for using Diomedes!</p>',
       '</div>'
-    ].join( "" );
+  ].join("");
 
     params = {
       center: true,
@@ -690,68 +690,68 @@ dojo.declare( "diom.view.View", null, {
       title: "About Diomedes IRC",
       content: s
     };
-    return new diom.view.dialog.Dialog( params );
+    return new diom.view.dialog.Dialog(params);
   },
 
-  handleUpdateBtnClick: function ( e ) {
-    dojo.publish( diom.topics.UPDATE_CHECK, [] );
+  handleUpdateBtnClick: function (e) {
+    dojo.publish(diom.topics.UPDATE_CHECK, []);
   },
 
-  handleHelpBtnClick: function ( e ) {
-    this.displayHelp( );
+  handleHelpBtnClick: function (e) {
+    this.displayHelp();
   },
 
-  handlePerformBtnClick: function ( e ) {
-    return new diom.view.preferences.Performs( this.model.networks, this );
+  handlePerformBtnClick: function (e) {
+    return new diom.view.preferences.Performs(this.model.networks, this);
   },
 
-  handleChannelsBtnClick: function ( e ) {
-    return new diom.view.preferences.Channels( this.model.networks, this );
+  handleChannelsBtnClick: function (e) {
+    return new diom.view.preferences.Channels(this.model.networks, this);
   },
 
-  handleServersBtnClick: function ( e ) {
-    return new diom.view.preferences.Servers( this.model.networks, this );
+  handleServersBtnClick: function (e) {
+    return new diom.view.preferences.Servers(this.model.networks, this);
   },
 
-  handleIgnoresBtnClick: function ( e ) {
-    return new diom.view.preferences.Ignores( this.model.ignores, this );
+  handleIgnoresBtnClick: function (e) {
+    return new diom.view.preferences.Ignores(this.model.ignores, this);
   },
 
-  handleAliasesBtnClick: function ( e ) {
-    return new diom.view.preferences.Aliases( this.model.aliases, this );
+  handleAliasesBtnClick: function (e) {
+    return new diom.view.preferences.Aliases(this.model.aliases, this);
   },
 
-  handleNetworksBtnClick: function ( e ) {
-    return new diom.view.preferences.Networks( this.model.networks, this.model.prefs.getPrefs( ), this );
+  handleNetworksBtnClick: function (e) {
+    return new diom.view.preferences.Networks(this.model.networks, this.model.prefs.getPrefs(), this);
   },
 
-  handlePrefBtnClick: function ( e ) {
-    return new diom.view.preferences.Preferences( this.model.prefs.getPrefs( ) );
+  handlePrefBtnClick: function (e) {
+    return new diom.view.preferences.Preferences(this.model.prefs.getPrefs());
   },
-  handleNickListControlClick: function ( ) {
-    if ( this.nickListCollapsed ) {
-      dojo.removeClass( this.nickList, "collapsed" );
-      dojo.removeClass( this.activityWindow, "expanded" );
-      dojo.removeClass( dojo.byId( "nickListControl" ), "collapsed" );
+  handleNickListControlClick: function () {
+    if (this.nickListCollapsed) {
+      dojo.removeClass(this.nickList, "collapsed");
+      dojo.removeClass(this.activityWindow, "expanded");
+      dojo.removeClass(dojo.byId("nickListControl"), "collapsed");
     } else {
-      dojo.addClass( this.nickList, "collapsed" );
-      dojo.addClass( this.activityWindow, "expanded" );
-      dojo.addClass( dojo.byId( "nickListControl" ), "collapsed" );
+      dojo.addClass(this.nickList, "collapsed");
+      dojo.addClass(this.activityWindow, "expanded");
+      dojo.addClass(dojo.byId("nickListControl"), "collapsed");
     }
     this.nickListCollapsed = !this.nickListCollapsed;
     this.scrollToBottom();
   },
-  handleTitleBarClick: function ( e ) {
+  handleTitleBarClick: function (e) {
     var id, funcName;
-    dojo.stopEvent( e );
+    dojo.stopEvent(e);
     id = e.target.id;
-    if ( id ) {
+    if (id) {
       funcName = "handle" + id + "Click";
-      if ( this[ funcName ] ) {
-        this[ funcName ]( e );
+      if (this[funcName]) {
+        this[funcName](e);
       }
     }
-    this.handleWindowClick( e );
+    this.handleWindowClick(e);
   }
 
-} );
+});

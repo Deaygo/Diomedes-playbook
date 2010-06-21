@@ -30,7 +30,7 @@ dojo.declare("diom.view.FormInput", null, {
     this.channels = [];
     this.punctuation  = [',','\'','"','.',';','!','?',':','(',')','[',']'];
     this.errorNode = null;
-    dojo.subscribe( diom.topics.NICK_CHANGE, this, "handleNickChange");
+    dojo.subscribe(diom.topics.NICK_CHANGE, this, "handleNickChange");
     this.spellEngine = new window.runtime.com.adobe.linguistics.spelling.SpellChecker();
     this.dict = new window.runtime.com.adobe.linguistics.spelling.SpellingDictionary();
     this.fakeBlank = String.fromCharCode(160);
@@ -320,7 +320,7 @@ dojo.declare("diom.view.FormInput", null, {
     ending_punctuation = [];
     word = this.stripPunctuation(word, beginning_punctuation, ending_punctuation);
     return [
-        beginning_punctuation.join( "" ),
+        beginning_punctuation.join(""),
         this.template_tokens.OPEN_BRACKET,
         'span',
         this.template_tokens.SPACE,
@@ -333,8 +333,8 @@ dojo.declare("diom.view.FormInput", null, {
         this.template_tokens.OPEN_BRACKET,
         '/span',
         this.template_tokens.CLOSE_BRACKET,
-        ending_punctuation.join( "" )
-     ].join("");
+        ending_punctuation.join("")
+    ].join("");
   },
   handleInputChange: function (e) {
     //dojo.stopEvent should prevent insert of characters
