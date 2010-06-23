@@ -1,1 +1,66 @@
 Diomedes is an IRC Client written for Adobe AIR
+
+Creator: Apphacker (Bjorn Tipling) apphacker@gmail.com
+
+Website: http://apphacker.com
+
+Features:
+
+  * Network, server, and channel preferences with performs.
+  * Multi-server connections
+  * Server passwords supported.
+  * Can connect to the same server more than once.
+  * BNC compatible (tested with ZNC)
+  * Powerful link log that provides HTTP headers, URL resolution and more.
+  * Multiple themes and customizable interface.
+  * Ability to ping server for better connections.
+  * Built in spell checker.
+  * Ignores and aliases for commands.
+  * Logging.
+  * Tab completion for nicks and channel names.
+  * Key shortcuts.
+  * IRSSI style /win # or /w channel switching.
+  * Support for most IRC commands (IRC Extensions not supported yet)
+  * Simple UI
+  * Built in automatic software updates to get critical updates fast.
+  * Cross platform - built on Adobe AIR
+
+Coming Soon in 0.3:
+
+ * SSL support
+ * Per channel logging option
+ * Customizable CSS and template updates for channel windows
+ * UI overhaul
+
+Instructions for running the dev environment:
+
+Running the dev environment requieres the Adobe AIR SDK for Ajax:
+
+  Download http://www.adobe.com/cfusion/entitlement/index.cfm?e=airsdk
+
+Also required is a bash environment, as currently the dev setup uses bash scripts.
+Windows developers can probably use cygwin, but I haven't tested this.
+
+Various different configurations are provided:
+
+ * Diomedes-app.xml For production. Requires a release be built (instructions below).
+    Air inspector is disabled.
+ * Diomedes-app-dev.xml For development. No release required. Use this for general development.
+    changes will be available immediately. Air inspector enabled
+ * Diomedes-app-debug.xml For debugging. Requires a release. Uses the uncompressed version of the 
+    release to make it easy to find errors when exceptions are thrown. AIR inspector enabled.
+
+If you installed the Adobe AIR SDK in ~/air then run the dev setup as so:
+~/air/bin/adl Diomedes-app-dev.xml
+
+When you make changes restart the application.
+
+Please ensure that any patches pass the jSlint tests. You can run those with 
+./checkErrors from trunk. Also add your name and email to AUTHORS if it
+isn't there already.
+
+./createRelease will create a release for debugging.
+
+./createScript will attempt to create a production release after running tests, but this will
+fail unless you provide your own certificate and modify the script to point to this.
+
