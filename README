@@ -38,6 +38,11 @@ Running the dev environment requires the Adobe AIR SDK for Ajax:
 
   Download http://www.adobe.com/cfusion/entitlement/index.cfm?e=airsdk
 
+Diomedes is built using JavaScript and the Dojo framework:
+
+Documentation for Dojo:
+http://www.dojotoolkit.org/reference-guide/dojo/index.html#dojo-index
+
 Also required is a bash environment, as currently the dev setup uses bash scripts.
 Windows developers can probably use cygwin, but I haven't tested this.
 
