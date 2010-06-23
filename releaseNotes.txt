@@ -1,5 +1,10 @@
 Starting release log at version 0.1.24 revision 435, new entries at top
 
+ - Release 0.1.41 June 22, 2010
+    Bug Fix: Network info now updated without having to restart.
+    Bug Fix: Performs for similar networks, but different connections 
+    no longer called.
+
  - Release 0.1.40 June 20, 2010
     Bug Fix: Improved spell check replacements and punctuation 
     handling.
