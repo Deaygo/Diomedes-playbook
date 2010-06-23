@@ -1,5 +1,12 @@
 Starting release log at version 0.1.24 revision 435, new entries at top
 
+ - Release 0.2.0 June 22, 2010
+   Bug fix: Password form cleared when adding new servers.
+   Bug fix: Updated README for dev instructions.
+   Release 0.2.0!!!! Yay. This a stable alpha, new changes will
+   go into a different app, this will result in no breaking updates!
+   Also ending the 0.1.* never ending cycle!
+
  - Release 0.1.41 June 22, 2010
     Bug Fix: Network info now updated without having to restart.
     Bug Fix: Performs for similar networks, but different connections 
