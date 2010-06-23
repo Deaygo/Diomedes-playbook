@@ -14,6 +14,11 @@ dojo.declare("diom.view.preferences.Servers", diom.view.preferences.PreferencesB
     destroy: "before",
     constructor: "manual"
   },
+  /**
+  * @param {diom.model.Model} model
+  * @param {diom.view.View} view
+  * @constructor
+  */
   constructor: function (model, view) {
     this.id = "Servers";
     this.formId = "serverForm";
@@ -29,9 +34,18 @@ dojo.declare("diom.view.preferences.Servers", diom.view.preferences.PreferencesB
     this.view = view;
     this.inherited(arguments);
   },
+
+  /**
+  * @private
+  */
   handleLoad: function () {
     this.model.getNetworks(dojo.hitch(this, "initialize"));
   },
+
+  /** 
+  * @param {Object} data
+  * @public
+  */
   initialize: function (data) {
     this.networks = data;
     this.closePrefsBtnConnection = dojo.connect(dojo.byId("closeWindowBtn"), "onclick", dojo.hitch(this, "handleClose"));
@@ -42,6 +56,11 @@ dojo.declare("diom.view.preferences.Servers", diom.view.preferences.PreferencesB
     this.displayNetworks();
     this.open();
   },
+
+  /**
+  * @param {!Object} event
+  * @private
+  */
   saveServer: function (event) {
 
     var serverData, id;
@@ -61,6 +80,10 @@ dojo.declare("diom.view.preferences.Servers", diom.view.preferences.PreferencesB
     this.clearForm();
     this.selectNetwork();
   },
+
+  /**
+  * @private
+  */
   deselectServer: function () {
 
     var node;
@@ -115,6 +138,10 @@ dojo.declare("diom.view.preferences.Servers", diom.view.preferences.PreferencesB
   showServerInfo: function () {
     dojo.removeClass(dojo.byId("serverInfo"), "hidden");
   },
+  /**
+  * @param {Object} event
+  * @private
+  */
   handleListClick: function (event) {
 
     var id, parts, cmd, networkId;
@@ -132,10 +159,28 @@ dojo.declare("diom.view.preferences.Servers", diom.view.preferences.PreferencesB
       }
     }
   },
+
+  /**
+  * @private
+  */
+  clearForm: function () {
+    dojo.byId("password").value = "";
+    this.inherited(arguments);
+  },
+
+  /**
+  * @param {number} id
+  * @param {number} networkId
+  * @private
+  */
   deleteServer: function (id, networkId) {
     dojo.publish(diom.topics.SERVER_DELETE, [id, networkId]);
     this.selectNetwork();
   },
+
+  /**
+  * @private
+  */
   getContent: function () {
     return [
       '<div class="preferences">',

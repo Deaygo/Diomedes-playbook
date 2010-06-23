@@ -23,7 +23,7 @@ Starting release log at version 0.1.24 revision 435, new entries at top
     Now using the Adobe AIR 2.0.2 SDK.
 
  - Release 0.1.35 June 07, 2010
-    Birthday Bonus Bug Fix: Link log now only making expensive HTTP 
+    Birthday Bonus Bug Fix: Link log now only making expensive HTTP
     request if requested, not automatically.
 
  - Release 0.1.34 June 07, 2010
@@ -32,10 +32,9 @@ Starting release log at version 0.1.24 revision 435, new entries at top
     will slow down.
 
  - Release 0.1.33 June 06, 2010
-    Cde pinging server an optional service. Makes it possible to use a BNC.
-    an now connect to the same server more than once!
+    Made pinging server an optional service. Makes it possible to use a BNC.
+    can now connect to the same server more than once!
     Tomorrow is the 1 year anniversary of the first commit for Diomedes IRC!
-de pinging server an optional service. Makes it possible to use a BNC.
 
  - Release 0.1.30 June 03, 2010
     Performance improvements and stability enhancements.
