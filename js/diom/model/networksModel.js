@@ -20,7 +20,9 @@ dojo.declare("diom.model.NetworksModel", null, {
   },
 
   createTables: function () {
-		var st, types, tableName;
+
+    var st, types, tableName;
+
     util.log("createTables");
     st = this.model.SQL_TYPES;
     types = {
@@ -73,7 +75,9 @@ dojo.declare("diom.model.NetworksModel", null, {
   },
 
   getNetworks: function (resultsHandler) {
-		var sql, p;
+
+    var sql, p;
+
     util.log("getNetworks");
     sql = "SELECT * FROM networks";
     p = {};
@@ -81,7 +85,9 @@ dojo.declare("diom.model.NetworksModel", null, {
   },
 
   addNetwork: function (name, nick, altNick, userName, realName, finger, autoJoin, active) {
-		var sql, p;
+
+    var sql, p;
+
     util.log("adding network.");
     sql = "INSERT INTO networks (name, nick, altNick, userName, realName, finger, autoJoin, active) " +
       "Values (:name, :nick, :altNick, :userName, :realName, :finger, :autoJoin, :active)";
@@ -100,7 +106,9 @@ dojo.declare("diom.model.NetworksModel", null, {
   },
 
   editNetwork: function (id, name, nick, altNick, userName, realName, finger, autoJoin, active) {
-		var sql, p;
+
+    var sql, p;
+
     util.log("Edit network.");
     sql = "UPDATE networks SET name = :name, nick = :nick, altNick = :altNick, userName = :userName, " +
       "realName = :realName, finger = :finger, autoJoin = :autoJoin, active = :active  " +
@@ -121,7 +129,9 @@ dojo.declare("diom.model.NetworksModel", null, {
   },
 
   remNetwork: function (id) {
-		var sql, p;
+
+    var sql, p;
+
     util.log("Removing network.");
     p = { id : id };
     sql = "DELETE FROM networks WHERE id = :id";
@@ -137,14 +147,18 @@ dojo.declare("diom.model.NetworksModel", null, {
   },
 
   getServers: function (networkId, resultsHandler) {
-		var sql, p;
+
+    var sql, p;
+
     sql = "SELECT * FROM servers WHERE networkId = :networkId";
     p = { networkId : networkId };
     this.model._executeSQL(sql, air.SQLMode.READ, this.model._getResultHandler(resultsHandler), p);
   },
 
   addServer: function (networkId, name, active, password) {
-		var sql, p;
+
+    var sql, p;
+
     sql = "INSERT INTO servers (networkId, name, active, password) " +
       "Values (:networkId, :name, :active, :password)";
     p = {
@@ -158,7 +172,9 @@ dojo.declare("diom.model.NetworksModel", null, {
   },
 
   editServer: function (id, networkId, name, autoJoin, active) {
-		var sql, p;
+
+    var sql, p;
+
     sql = "UPDATE servers SET networkId = :networkId, name = :name, autoJoin = :autoJoin, active = :active " +
       "WHERE id = :id ";
     p = {
@@ -173,7 +189,9 @@ dojo.declare("diom.model.NetworksModel", null, {
   },
 
   remServer: function (id, networkId) {
-		var sql, p;
+
+    var sql, p;
+
     sql = "DELETE FROM servers WHERE id = :id";
     p = { id : id };
     this.model._executeSQL(sql, air.SQLMode.UPDATE, dojo.hitch(this, "_handleChange"), p);
@@ -181,14 +199,18 @@ dojo.declare("diom.model.NetworksModel", null, {
   },
 
   getChannels: function (networkId, resultsHandler) {
-		var sql, p;
+
+    var sql, p;
+
     sql = "SELECT * FROM channels WHERE networkId = :networkId";
     p = { networkId : networkId };
     this.model._executeSQL(sql, air.SQLMode.READ, this.model._getResultHandler(resultsHandler), p);
   },
 
   addChannel: function (networkId, name, autoJoin) {
-		var sql, p;
+
+    var sql, p;
+
     sql = "INSERT INTO channels (networkId, name, autoJoin) " +
       "VALUES (:networkId, :name, :autoJoin)";
     p = { networkId : networkId, name : name, autoJoin : autoJoin };
@@ -197,7 +219,9 @@ dojo.declare("diom.model.NetworksModel", null, {
   },
 
   remChannel: function (id, networkId) {
-		var sql, p;
+
+    var sql, p;
+
     sql = "DELETE FROM channels WHERE id = :id";
     p = { id : id };
     this.model._executeSQL(sql, air.SQLMode.UPDATE, dojo.hitch(this, "_handleChange"), p);
@@ -205,7 +229,9 @@ dojo.declare("diom.model.NetworksModel", null, {
   },
 
   getPerforms: function (networkId, resultsHandler) {
-		var sql, p;
+
+    var sql, p;
+
     sql = "SELECT * FROM performs WHERE networkId = :networkId";
     p = { networkId : networkId };
     this.model._executeSQL(sql, air.SQLMode.READ, this.model._getResultHandler(resultsHandler), p);
@@ -214,7 +240,9 @@ dojo.declare("diom.model.NetworksModel", null, {
   addPerform: function (networkId, name, command, active) {
     //XXX: maybe use default names such as performX where X is a number
     //so as to not force people to think up a name for each perform
-		var sql, p;
+
+    var sql, p;
+
     sql = "INSERT INTO performs (networkId, name, command, active) " +
       "VALUES (:networkId, :name, :command, :active)";
     p = {
@@ -228,7 +256,9 @@ dojo.declare("diom.model.NetworksModel", null, {
   },
 
   editPerform: function (id, networkId, name, command, active) {
-		var sql, p;
+
+    var sql, p;
+
     sql = "UPDATE performs SET networkId = :networkId, name = :name " +
       "command = :command, active = :active WHERE id = :id";
     p = {
@@ -243,7 +273,9 @@ dojo.declare("diom.model.NetworksModel", null, {
   },
 
   remPerform: function (id, networkId) {
-		var sql, p;
+
+    var sql, p;
+
     sql = "DELETE FROM performs WHERE id = :id";
     p = { id : id };
     this.model._executeSQL(sql, air.SQLMode.UPDATE, dojo.hitch(this, "_handleChange"), p);
@@ -251,7 +283,9 @@ dojo.declare("diom.model.NetworksModel", null, {
   },
 
   _handleCreateTable: function (e, tableName) {
-		var args;
+
+    var args;
+
     if (tableName) {
       this.model.log("Created NetworksModel table: "  + tableName);
     }
