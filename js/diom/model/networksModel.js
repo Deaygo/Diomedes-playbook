@@ -74,6 +74,29 @@ dojo.declare("diom.model.NetworksModel", null, {
     this._alterTables();
   },
 
+  /**
+  * Get information about just one network
+  * given an id.
+  * @param {number} id
+  * @param {function(object)} resultsHandler
+  * @public
+  */
+  getNetwork: function (id, resultsHandler) {
+
+    var sql, p;
+
+    util.log("getNetwork");
+    sql = "SELECT * FROM networks WHERE id = :id";
+    p = {
+      id: id
+    };
+    this.model._executeSQL(sql, air.SQLMode.READ, this.model._getResultHandler(resultsHandler), p);
+  },
+
+  /**
+  * @param {function(object)} resultsHandler
+  * @public
+  */
   getNetworks: function (resultsHandler) {
 
     var sql, p;

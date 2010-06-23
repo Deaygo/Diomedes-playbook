@@ -12,8 +12,19 @@ dojo.provide("diom.network");
 
 dojo.declare("diom.Network", null, {
 
+  /**
+  * @param {Object} data
+  * @param {diom.model.Network} model
+  * @param {diom.model.ChannelList} channelList
+  * @param {Object} prefs
+  * @param {string} appVersion
+  * @param {Object} ignores
+  * @constructor
+  */
   constructor: function (data, model, channelList, prefs, appVersion, ignores) {
+
     var id;
+
     this.prefs = util.cloneObject(prefs.getPrefs());
     this.ignores = ignores;
     this.prefs.nick = data.nick;
@@ -21,6 +32,7 @@ dojo.declare("diom.Network", null, {
     this.prefs.userName = data.userName;
     this.prefs.realName = data.realName;
     this.prefs.finger = data.finger;
+    this.networkId = data.id;
     this.appVersion = appVersion;
     this.data = data;
     this.channelList = channelList;
@@ -51,21 +63,53 @@ dojo.declare("diom.Network", null, {
     this.ignores = ignores;
   },
 
-  handleNetworkConnect: function (type, channelName, host) {
-    if (type === "connect" && host === this.currentHost) {
+  /**
+  * @param {string} type
+  * @param {string} channelName
+  * @param {string} host
+  * @param {Object} arg
+  * @param {string} connectionId
+  * @private
+  */
+  handleNetworkConnect: function (type, channelName, host, arg, connectionId) {
+    if (type === "connect" && connectionId === this.currentConnectionId) {
       this.perform();
     }
   },
 
+  /**
+  * @param {number} id
+  * @private
+  */
   handleNetworksChanged: function (id) {
     util.log("hnc in nn");
     if (id && id === this.data.id) {
+      this.model.getNetwork(id, dojo.hitch(this, "handleNetworkInfo"));
       this.model.getServers(id, dojo.hitch(this, "handleServerInfo"));
       this.model.getChannels(id, dojo.hitch(this, "handleChannelInfo"));
       this.model.getPerforms(id, dojo.hitch(this, "handlePerformInfo"));
     }
   },
 
+  /**
+  * @param {Object} data
+  * @private
+  */
+  handleNetworkInfo: function (data) {
+    if (dojo.isObject(data) && data[0]) {
+      data = data[0];
+      this.prefs.nick = data.nick;
+      this.prefs.altNick = data.altNick;
+      this.prefs.userName = data.userName;
+      this.prefs.realName = data.realName;
+      this.prefs.finger = data.finger;
+    }
+  },
+
+  /**
+  * @param {Array} servers
+  * @private
+  */
   handleServerInfo: function (servers) {
     if (servers) {
       this.servers = servers;

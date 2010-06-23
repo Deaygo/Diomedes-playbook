@@ -163,8 +163,14 @@ dojo.declare("diom.controller.Controller", null, {
     }
   },
 
+  /**
+  * @param {Array} networks
+  * @private
+  */
   handleGetNetworks: function (networks) {
+
     var i, network, connection;
+
     util.log("handleGetNetworks");
     if (!networks) { return; }
     for (i = 0; i < networks.length; i++) {
