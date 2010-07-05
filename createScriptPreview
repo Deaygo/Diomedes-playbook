@@ -8,8 +8,10 @@ set -e
 jsFiles=(
   "AIRAliases"
   "AIRIntrospector"
-  "release/dojo/dojo/dojo.js.uncompressed"
-  "release/dojo/diom/diom.js.uncompressed"
+  #"release/dojo/dojo/dojo.js.uncompressed"
+  #"release/dojo/diom/diom.js.uncompressed"
+  "release/dojo/dojo/dojo"
+  "release/dojo/diom/diom"
 )
 numFiles=${#jsFiles[@]}
 

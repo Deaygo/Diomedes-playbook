@@ -5,7 +5,7 @@
   <version>0.3.1</version>
   <filename>Diomedes Preview</filename>
   <initialWindow>
-    <content>indexDebug.html</content>
+    <content>index.html</content>
     <systemChrome>standard</systemChrome>
     <transparent>false</transparent>
     <visible>true</visible>
