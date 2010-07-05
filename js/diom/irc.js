@@ -242,6 +242,10 @@ dojo.declare("diom.IRCClient", null, {
     }
   },
 
+  /**
+  * @param {Object} e
+  * @private
+  */
   onConnect: function (e) {
     this.log("Found server, connecting...");
     if (this.password) {
@@ -250,6 +254,23 @@ dojo.declare("diom.IRCClient", null, {
     this._send("NICK " + this.nick);
     this._send("USER " + this.userName + " " + this.server + " serverName " + " :"  + this.realName);
     this._isConnected = true;
+  },
+
+  /**
+  * @param {Object} e
+  * @private
+  */
+  onError: function (e) {
+
+    var msg;
+
+    this.log("IoError :(");
+    msg = [
+      "Cannot connect to server due to an unkown error. I know that's not very helpful, ",
+      "but what else can I say? Maybe you tried to use SSL and there's a certificate issue?",
+      "The server exploded? You exploded? Still there?"
+    ].join("");
+    this.closeConnection(msg);
   },
 
   startPingService: function () {
@@ -1081,11 +1102,13 @@ dojo.declare("diom.IRCClient", null, {
   */
   createConnection: function () {
     if (this.secure) {
+      this.log("Using SecureSocket");
       this.socket = new air.SecureSocket();
     } else {
       this.socket = new air.Socket();
     }
     this.socket.addEventListener(air.Event.CONNECT, dojo.hitch(this, "onConnect"));
+    this.socket.addEventListener(air.IOErrorEvent.IO_ERROR, dojo.hitch(this, "onError"));
     this.socket.addEventListener(air.ProgressEvent.SOCKET_DATA, dojo.hitch(this, "onSocketData"));
   },
 
@@ -1106,7 +1129,11 @@ dojo.declare("diom.IRCClient", null, {
     }
   },
 
-  closeConnection: function (msg) {
+  /**
+  * @param {opt_msg} opt_msg
+  * @public@
+  */
+  closeConnection: function (opt_msg) {
     this.stayConnected = false;
     this._isConnected = false;
     this.connectionEstablished = false;
@@ -1114,8 +1141,8 @@ dojo.declare("diom.IRCClient", null, {
     this.close();
     if (this.connectionDelegate) {
       var quitMsg = "Quit: ";
-      if (msg) {
-        quitMsg += msg;
+      if (opt_msg) {
+        quitMsg += opt_msg;
       }
       this.connectionDelegate(quitMsg, false, false);
     }
