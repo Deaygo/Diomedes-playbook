@@ -178,17 +178,26 @@ dojo.declare("diom.model.NetworksModel", null, {
     this.model._executeSQL(sql, air.SQLMode.READ, this.model._getResultHandler(resultsHandler), p);
   },
 
-  addServer: function (networkId, name, active, password) {
+  /**
+  * @param {!number} networkId
+  * @param {!string} name
+  * @param {!boolean} active
+  * @param {!string} password
+  * @param {!boolean} ssl
+  * @public
+  */
+  addServer: function (networkId, name, active, password, ssl) {
 
     var sql, p;
 
-    sql = "INSERT INTO servers (networkId, name, active, password) " +
-      "Values (:networkId, :name, :active, :password)";
+    sql = "INSERT INTO servers (networkId, name, active, password, ssl) " +
+      "Values (:networkId, :name, :active, :password, :ssl)";
     p = {
       networkId : networkId,
       name : name,
       active : active,
-      password: password
+      password: password,
+      ssl: ssl
     };
     this.model._executeSQL(sql, air.SQLMode.UPDATE, dojo.hitch(this, "_handleChange"), p);
     dojo.publish(diom.topics.NETWORK_CHANGE, [networkId]);
@@ -318,10 +327,16 @@ dojo.declare("diom.model.NetworksModel", null, {
     }
   },
 
+  /**
+  * @private
+  */
   _alterTables: function () {
     if (this.model.currentVersion < 1) {
       //added password options for servers (v 1, first time versioning the database):
-      this.model._addColumn("servers", "password", "TEXT", dojo.hitch(this, "_handleChange"), dojo.hitch(this, "_handleError"));
+      this.model._addColumn("servers", "password", this.model.SQL_TYPES.TEXT, dojo.hitch(this, "_handleChange"), dojo.hitch(this, "_handleError"));
+    }
+    if (this.model.currentVersion < 2) {
+      this.model._addColumn("servers", "ssl", this.model.SQL_TYPES.BOOL, dojo.hitch(this, "_handleChange"), dojo.hitch(this, "_handleError"));
     }
   },
 

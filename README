@@ -71,3 +71,7 @@ isn't there already.
 ./createScript will attempt to create a production release after running tests, but this will
 fail unless you provide your own certificate and modify the script to point to this.
 
+MISC
+
+If there's an update in the database make sure to update the CURRENT_DB_VERSION in js/diom/model/model.js
+If there's a preference version update, make sure to update the preferences version in preferences.xml

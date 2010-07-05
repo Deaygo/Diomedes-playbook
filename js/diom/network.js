@@ -168,7 +168,15 @@ dojo.declare("diom.Network", null, {
     parts = this.getNextServer().split(":");
     this.currentHost = util.fromIndex(parts, 0);
     port = util.fromIndex(parts, 1);
-    this.connection = this.channelList.createConnection(this.currentHost, port, this.prefs, this.appVersion, this.ignores, this.getPassword());
+    this.connection = this.channelList.createConnection(
+      this.currentHost,
+      port,
+      this.isCurrentServerSecure(),
+      this.prefs,
+      this.appVersion,
+      this.ignores,
+      this.getPassword()
+    );
     this.currentConnectionId = this.connection.getConnectionId();
     dojo.publish(diom.topics.CHANNELS_CHANGED, ["connect", this.currentHost, this.currentHost, null, this.currentConnectionId]);
   },
@@ -200,6 +208,18 @@ dojo.declare("diom.Network", null, {
     return this.currentHost;
   },
 
+  /**
+  * @private
+  * @return {boolean}
+  */
+  isCurrentServerSecure: function () {
+    return this.servers[this.currentHostIndex].ssl;
+  },
+
+  /**
+  * @private
+  * @return {string}
+  */
   getServer: function () {
     return this.servers[this.currentHostIndex].name;
   },

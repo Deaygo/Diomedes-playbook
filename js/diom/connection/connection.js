@@ -13,7 +13,17 @@ dojo.declare("diom.connection.Connection", null, {
 
   CHANNEL_TYPES: { "SERVER":"server", "PM":"pm", "CHANNEL":"channel" },
 
-  constructor: function (server, port, preferences, appVersion, ignores, password) {
+  /**
+  * @param {!string} server
+  * @param {!number} port
+  * @param {boolean} secure Flag that indicates to use SSL or not.
+  * @param {Object} preferences
+  * @param {Object} appVersion
+  * @param {Array} ignores
+  * @param {string} password
+  * @constructor
+  */
+  constructor: function (server, port, secure, preferences, appVersion, ignores, password) {
 
     var nick = preferences.nick;
     this.channels = {};
@@ -36,7 +46,7 @@ dojo.declare("diom.connection.Connection", null, {
     this.autoJoin = null;
     this.setAutoJoin(preferences.autoJoin);
 
-    this.client = new diom.IRCClient(server, port, [], nick, preferences.userName, preferences.realName, password);
+    this.client = new diom.IRCClient(server, port, secure, [], nick, preferences.userName, preferences.realName, password);
     this.changeServerPingPref(preferences.pingServer === "true");
     this.client.setClientInfo(appVersion);
     this.client.setFinger(preferences.finger);

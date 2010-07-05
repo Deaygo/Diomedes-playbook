@@ -20,6 +20,7 @@ dojo.declare("diom.controller.ChannelList", null, {
   /**
   * @param {String} server
   * @param {String} port
+  * @param {boolean} secure Flag that indicates to use SSL or not.
   * @param {Object} preferences
   * @param {String} appVersion
   * @param {Object} ignores
@@ -27,11 +28,11 @@ dojo.declare("diom.controller.ChannelList", null, {
   * @public
   * @return {diom.connection.Connection}
   */
-  createConnection: function (server, port, preferences, appVersion, ignores, password) {
+  createConnection: function (server, port, secure, preferences, appVersion, ignores, password) {
 
     var connection, connectionId;
 
-    connection = new diom.connection.Connection(server, port, preferences, appVersion, ignores, password);
+    connection = new diom.connection.Connection(server, port, secure, preferences, appVersion, ignores, password);
     connectionId = connection.getConnectionId();
     this.connections[connectionId] = connection;
     connection.connect();

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <application xmlns="http://ns.adobe.com/air/application/2.0">
-  <id>dev.diomedes.apphackers.com</id>
+  <id>com.apphacker.diomedes.debug</id>
   <version>0.1.36</version>
   <filename>Diomedes</filename>
   <initialWindow>

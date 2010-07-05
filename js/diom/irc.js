@@ -12,15 +12,24 @@ dojo.provide("diom.irc");
 dojo.declare("diom.IRCClient", null, {
 
   /**
+  * @param {!string} server
+  * @param {!number} port
+  * @param {Array} default_channels
+  * @param {!string} nick
+  * @param {!string} userName
+  * @param {!string} realName
+  * @param {boolean} secure
+  * @param {string=} opt_password
   * @constructor
   */
-  constructor: function (server, port, defaultChannels, nick, userName, realName, password) {
+  constructor: function (server, port, secure, defaultChannels, nick, userName, realName, opt_password) {
 
     //Connection info
     this.host = null;
     this.server = server;
-    this.password = (password ? password : null);
+    this.password = (opt_password ? opt_password : null);
     this.port = (port ? port : 6667);
+    this.secure = secure;
 
     //Socket and connectivity
     this.socket = null;
@@ -1067,8 +1076,15 @@ dojo.declare("diom.IRCClient", null, {
     util.log("\n" + data);
   },
 
+  /**
+  * @private
+  */
   createConnection: function () {
-    this.socket = new air.Socket();
+    if (this.secure) {
+      this.socket = new air.SecureSocket();
+    } else {
+      this.socket = new air.Socket();
+    }
     this.socket.addEventListener(air.Event.CONNECT, dojo.hitch(this, "onConnect"));
     this.socket.addEventListener(air.ProgressEvent.SOCKET_DATA, dojo.hitch(this, "onSocketData"));
   },

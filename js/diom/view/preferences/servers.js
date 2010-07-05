@@ -73,6 +73,7 @@ dojo.declare("diom.view.preferences.Servers", diom.view.preferences.PreferencesB
     serverData.networkId = parseInt(dojo.byId("networkId").value, 10);
     if (!this.getItem("name", "Server name", serverData, false, true)) { return; }
     if (!this.getItem("active", "Active", serverData, true, true)) { return; }
+    if (!this.getItem("ssl", "SSL", serverData, true, true)) { return; }
     if (!this.getItem("password", "Password", serverData, false, false)) { return; }
     if (id === 0) {
       dojo.publish(diom.topics.SERVER_ADD, [serverData]);
@@ -196,13 +197,16 @@ dojo.declare("diom.view.preferences.Servers", diom.view.preferences.PreferencesB
             '<input type="hidden" id="id" value="0"/>',
             '<input type="hidden" id="networkId" value="0"/>',
             '<div class="formItem">',
-              '<label for="name">Name: </label> <input type="text" id="name" />',
+              '<label for="name">Name (address:port): </label> <input type="text" id="name" />',
             '</div>',
             '<div class="formItem">',
               '<label for="password">Password: </label> <input type="password" id="password" />',
             '</div>',
             '<div class="formItem">',
               '<label for="active">Active: </label> <input type="checkbox" id="active"  checked="true"/>',
+            '</div>',
+            '<div class="formItem">',
+              '<label for="ssl">SSL: </label> <input type="checkbox" id="ssl" />',
             '</div>',
             '<div class="preferencesList">',
               '<input type="submit" value="Save" />',

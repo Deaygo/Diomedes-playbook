@@ -12,8 +12,11 @@ dojo.provide("diom.model.model");
 
 dojo.declare("diom.model.Model", null, {
 
-  CURRENT_DB_VERSION: 1,
+  CURRENT_DB_VERSION: 2,
 
+  /**
+  * @constructor
+  */
   constructor: function () {
 
     var isCurrent;
@@ -43,14 +46,14 @@ dojo.declare("diom.model.Model", null, {
   },
 
   _openSQLConn: function (type, errorHandler) {
-		var dbFile;
+    var dbFile;
     if (!type) {
       this.log("Required params missing for _openSQLConn");
       return;
     }
     if (!errorHandler) {
-			errorHandler = dojo.hitch(this, "_handleError", ["openSQLConnection"]);
-		}
+      errorHandler = dojo.hitch(this, "_handleError", ["openSQLConnection"]);
+    }
     if (this.conn) { this.closeConnection(); }
     this.conn = new air.SQLConnection();
     dbFile = air.File.applicationStorageDirectory.resolvePath(this.DATABASE_NAME);
@@ -62,14 +65,14 @@ dojo.declare("diom.model.Model", null, {
   },
 
   _executeSQL: function (sql, type, resultsHandler, parameters, errorHandler, isRexecution) {
-		var s, i;
+    var s, i;
     if (!sql || !type || !resultsHandler) {
       this.log("Required params missing for _executeSQL");
       return;
     }
     if (!errorHandler) {
-			errorHandler = dojo.hitch(this, "_handleError", ["SQL: " + sql]);
-		}
+      errorHandler = dojo.hitch(this, "_handleError", ["SQL: " + sql]);
+    }
     if (!this.conn || !this.conn.connected) {
       this._openSQLConn(type, errorHandler);
     }
@@ -95,7 +98,7 @@ dojo.declare("diom.model.Model", null, {
   },
 
   _statementResultHandler: function (e, resultsHandler) {
-		var result;
+    var result;
     result = this.statement.getResult();
     delete this.statement;
     this.statement = null;
@@ -108,7 +111,7 @@ dojo.declare("diom.model.Model", null, {
   },
 
   _getFilterResult: function (args, e,  results) {
-		var resultsHandler = args[0];
+    var resultsHandler = args[0];
     resultsHandler(results.data);
   },
 
@@ -129,16 +132,16 @@ dojo.declare("diom.model.Model", null, {
 
   _createTable: function (name, types, resultsHandler, parameters, errorHandler) {
 
-		var sql, typeNames;
+    var sql, typeNames;
 
     this.log("Creating Table.");
     sql = [];
     sql = sql.concat(["CREATE TABLE IF NOT EXISTS ", name, " ("]);
     for (typeNames in types) {
-			if (types.hasOwnProperty(typeNames)) {
-				sql.push([typeNames, types[typeNames]].join(" "));
-				sql.push(", ");
-			}
+      if (types.hasOwnProperty(typeNames)) {
+        sql.push([typeNames, types[typeNames]].join(" "));
+        sql.push(", ");
+      }
     }
     sql.pop(); //get rid of last comma
     sql.push(")");

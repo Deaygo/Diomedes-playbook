@@ -252,7 +252,7 @@ dojo.declare("diom.controller.Controller", null, {
   },
 
   handleServerAdd: function (data) {
-    this.model.networks.addServer(data.networkId, data.name, data.active, data.password);
+    this.model.networks.addServer(data.networkId, data.name, data.active, data.password, data.ssl);
   },
 
   handlePrefsSave: function (prefs) {
@@ -313,7 +313,7 @@ dojo.declare("diom.controller.Controller", null, {
           hostParts = argsR[0].split(":");
           host = hostParts[0];
           port = ((hostParts.length > 1) ? hostParts[1] : null);
-          connection = this.channelList.createConnection(host, port, this.model.prefs.getPrefs(), this.appVersion, this.ignores);
+          connection = this.channelList.createConnection(host, port, false, this.model.prefs.getPrefs(), this.appVersion, this.ignores);
           if (!this.currentConnection) {
             this.currentConnection = connection;
             this.setCurrentChannel(connection.getServerChannel());
