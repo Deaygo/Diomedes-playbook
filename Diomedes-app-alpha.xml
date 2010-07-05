@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <application xmlns="http://ns.adobe.com/air/application/2.0">
-  <id>diomedes.apphackers.com</id>
-  <version>0.1.36</version>
-  <filename>Diomedes</filename>
+  <id>com.apphacker.diomedes.preview</id>
+  <publisherID>08C1330ADB9ED321EECBBD0ECEF1738A5ED21319.1</publisherID>
+  <version>0.3.1</version>
+  <filename>Diomedes Preview</filename>
   <initialWindow>
-    <content>index.html</content>	
-	<systemChrome>standard</systemChrome>
-	<transparent>false</transparent>
+    <content>indexDebug.html</content>
+    <systemChrome>standard</systemChrome>
+    <transparent>false</transparent>
     <visible>true</visible>
     <width>900</width>
     <height>550</height>
-	<fullScreen>true</fullScreen>
+    <x>150</x>
+    <y>150</y>
   </initialWindow>
   <icon>
     <image128x128>icons/DiomedesIcon128.png</image128x128>
@@ -19,4 +21,5 @@
     <image16x16>icons/DiomedesIcon16.png</image16x16>
   </icon>
 </application>
+
 

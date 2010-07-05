@@ -265,10 +265,12 @@ dojo.declare("diom.IRCClient", null, {
     var msg;
 
     this.log("IoError :(");
+    if ("serverCertificateStatus" in this.socket) {
+      this.log(this.socket.serverCertificateStatus);
+    }
     msg = [
-      "Cannot connect to server due to an unkown error. I know that's not very helpful, ",
-      "but what else can I say? Maybe you tried to use SSL and there's a certificate issue?",
-      "The server exploded? You exploded? Still there?"
+      "Cannot connect to server due to an unkown error. ",
+      "Check out the wiki for more info: http://wiki.github.com/apphacker/Diomedes/"
     ].join("");
     this.closeConnection(msg);
   },
