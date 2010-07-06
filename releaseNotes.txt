@@ -2,6 +2,7 @@ Starting release log at version 0.1.24 revision 435, new entries at top
 
  - Next Release
    SSL Connections enabled.
+   Added per channel logging option - only log channels explicitly set up that way.
 
  - Release 0.2.0 June 22, 2010
    Bug fix: Password form cleared when adding new servers.
