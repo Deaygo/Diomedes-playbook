@@ -12,7 +12,7 @@ dojo.provide("diom.model.model");
 
 dojo.declare("diom.model.Model", null, {
 
-  CURRENT_DB_VERSION: 2,
+  CURRENT_DB_VERSION: 3,
 
   /**
   * @constructor

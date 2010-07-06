@@ -21,14 +21,17 @@ dojo.declare("diom.connection.Connection", null, {
   * @param {Object} appVersion
   * @param {Array} ignores
   * @param {string} password
+  * @param {Array.string} logChannels An array of properly formmated channel
+  * names (i.e. lower case) to log.
   * @constructor
   */
-  constructor: function (server, port, secure, preferences, appVersion, ignores, password) {
+  constructor: function (server, port, secure, preferences, appVersion, ignores, password, logChannels) {
 
     var nick = preferences.nick;
     this.channels = {};
     this.users = {};
     this.preferences = preferences;
+    this.logChannels = logChannels;
     //XXX: really need to fix the preferences thing - a nice global preferences custom object needed:
     this.logPref = preferences.logging === true || preferences.logging === "true";
     this.ignores = ignores;
@@ -178,6 +181,7 @@ dojo.declare("diom.connection.Connection", null, {
         }
       } else {
         util.log("JOINING PM: " + target);
+        //Use log pref for PMs only.
         this.channels[channelName] = new diom.connection.Channel(channelName, this.CHANNEL_TYPES.PM, this.server, this.logPref, this.getConnectionId());
         channel = this.channels[channelName];
         dojo.publish(diom.topics.CHANNELS_CHANGED, [null, null, null, null, this.getConnectionId()]);
@@ -196,7 +200,8 @@ dojo.declare("diom.connection.Connection", null, {
   connect: function () {
     this.stayConnected = true;
     this.client.connect();
-    this.serverChannel = new diom.connection.Channel(this.server, this.CHANNEL_TYPES.SERVER, this.server, this.logPref, this.getConnectionId());
+    //No longer logging server channels.
+    this.serverChannel = new diom.connection.Channel(this.server, this.CHANNEL_TYPES.SERVER, this.server, false, this.getConnectionId());
     dojo.publish(diom.topics.CHANNELS_CHANGED, [null, null, null, null, this.getConnectionId()]);
   },
 
@@ -264,8 +269,17 @@ dojo.declare("diom.connection.Connection", null, {
     }
   },
 
+  /**
+  * @param {!string} nick
+  * @param {!string} host
+  * @param {string} target
+  * @private
+  */
   handleJoin: function (nick, host, target) {
-    var channelName, _nick, user, channel, msg;
+
+    var channelName, _nick, user, channel, msg,
+      logChannel;
+
     //add nick to connection users
     if (!nick || !target) { return; }
     channelName = this.getChannelName(target);
@@ -276,7 +290,12 @@ dojo.declare("diom.connection.Connection", null, {
         this.channels[channelName].destroy();
         delete this.channels[channelName];
       }
-      this.channels[channelName] = new diom.connection.Channel(target, this.CHANNEL_TYPES.CHANNEL, this.server, this.logPref, this.getConnectionId());
+      logChannel = false;
+      if (this.logChannels.indexOf(channelName) !== -1) {
+        util.log("Logging channel: " + channelName);
+        logChannel = true;
+      }
+      this.channels[channelName] = new diom.connection.Channel(target, this.CHANNEL_TYPES.CHANNEL, this.server, logChannel, this.getConnectionId());
       this.client.getTopic(target);
       dojo.publish(diom.topics.CHANNELS_CHANGED, ["join", channelName, this.server, null, this.getConnectionId()]);
       if (channelName in this.names) {
@@ -562,10 +581,6 @@ dojo.declare("diom.connection.Connection", null, {
     } else {
       return null;
     }
-  },
-
-  addNewChannel: function (name, type) {
-    this.channels[name] = new diom.connection.Channel(name, type, this.server, this.logPref, this.getConnectionId());
   },
 
   getChannels: function () {

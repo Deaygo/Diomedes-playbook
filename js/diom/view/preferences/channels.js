@@ -85,6 +85,7 @@ dojo.declare("diom.view.preferences.Channels", diom.view.preferences.Preferences
     channelData.networkId = parseInt(dojo.byId("networkId").value, 10);
     if (!this.getItem("name", "Channel name", channelData, false, true)) { return; }
     if (!this.getItem("autoJoin", "Auto join", channelData, true, true)) { return; }
+    if (!this.getItem("log", "Log", channelData, true, true)) { return; }
     if (id === 0) {
       dojo.publish(diom.topics.CHANNEL_ADD, [channelData]);
     }
@@ -145,6 +146,9 @@ dojo.declare("diom.view.preferences.Channels", diom.view.preferences.Preferences
             '</div>',
             '<div class="formItem">',
               '<label for="autoJoin">Auto join: </label> <input type="checkbox" id="autoJoin"  checked="true"/>',
+            '</div>',
+            '<div class="formItem">',
+              '<label for="log">Log: </label> <input type="checkbox" id="log"  checked="true"/>',
             '</div>',
             '<div class="preferencesList">',
               '<input type="submit" value="Save" />',

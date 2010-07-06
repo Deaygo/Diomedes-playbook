@@ -244,7 +244,7 @@ dojo.declare("diom.controller.Controller", null, {
   },
 
   handleChannelAdd: function (data) {
-    this.model.networks.addChannel(data.networkId, data.name, data.autoJoin);
+    this.model.networks.addChannel(data.networkId, data.name, data.autoJoin, data.log);
   },
 
   handleServerDelete: function (id, networkId) {

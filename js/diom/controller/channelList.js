@@ -25,14 +25,24 @@ dojo.declare("diom.controller.ChannelList", null, {
   * @param {String} appVersion
   * @param {Object} ignores
   * @param {String} password
+  * @param {Array.string} logChannels An array of channels to log.
   * @public
   * @return {diom.connection.Connection}
   */
-  createConnection: function (server, port, secure, preferences, appVersion, ignores, password) {
+  createConnection: function (server, port, secure, preferences, appVersion, ignores, password, logChannels) {
 
     var connection, connectionId;
 
-    connection = new diom.connection.Connection(server, port, secure, preferences, appVersion, ignores, password);
+    connection = new diom.connection.Connection(
+      server,
+      port,
+      secure,
+      preferences,
+      appVersion,
+      ignores,
+      password,
+      logChannels
+    );
     connectionId = connection.getConnectionId();
     this.connections[connectionId] = connection;
     connection.connect();

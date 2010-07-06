@@ -308,7 +308,7 @@ dojo.declare("diom.view.preferences.Preferences", diom.view.preferences.Preferen
             '<label for="autoJoin">Auto join on invite: </label> <input type="checkbox" id="autoJoin" />',
           '</div>',
           '<div class="formItem">',
-            '<label for="logging">Enable logging: </label> <input type="checkbox" id="logging" />',
+            '<label for="logging">Log private messages: </label> <input type="checkbox" id="logging" />',
             '<p class="formItemNote">Logs are in your documents directory.</p>',
           '</div>',
           '<div class="formItem">',

@@ -230,6 +230,11 @@ dojo.declare("diom.model.NetworksModel", null, {
     dojo.publish(diom.topics.NETWORK_CHANGE, [networkId]);
   },
 
+  /**
+  * @param {!number} networkId
+  * @param {function(object)} resultsHandler
+  * @public
+  */
   getChannels: function (networkId, resultsHandler) {
 
     var sql, p;
@@ -239,17 +244,34 @@ dojo.declare("diom.model.NetworksModel", null, {
     this.model._executeSQL(sql, air.SQLMode.READ, this.model._getResultHandler(resultsHandler), p);
   },
 
-  addChannel: function (networkId, name, autoJoin) {
+  /**
+  * {!number} networkId
+  * {!string} name
+  * {boolean} autoJoin
+  * {boolean} log
+  * @public
+  */
+  addChannel: function (networkId, name, autoJoin, log) {
 
     var sql, p;
 
-    sql = "INSERT INTO channels (networkId, name, autoJoin) " +
-      "VALUES (:networkId, :name, :autoJoin)";
-    p = { networkId : networkId, name : name, autoJoin : autoJoin };
+    sql = "INSERT INTO channels (networkId, name, autoJoin, log) " +
+      "VALUES (:networkId, :name, :autoJoin, :log)";
+    p = {
+      networkId: networkId,
+      name: name,
+      autoJoin: autoJoin,
+      log: log
+    };
     this.model._executeSQL(sql, air.SQLMode.UPDATE, dojo.hitch(this, "_handleChange"), p);
     dojo.publish(diom.topics.NETWORK_CHANGE, [networkId]);
   },
 
+  /**
+  * @param {!number} id
+  * @Param {!number} networkId
+  * @public
+  */
   remChannel: function (id, networkId) {
 
     var sql, p;
@@ -337,6 +359,10 @@ dojo.declare("diom.model.NetworksModel", null, {
     }
     if (this.model.currentVersion < 2) {
       this.model._addColumn("servers", "ssl", this.model.SQL_TYPES.BOOL, dojo.hitch(this, "_handleChange"), dojo.hitch(this, "_handleError"));
+    }
+    if (this.model.currentVersion < 3) {
+      //adding per channel logging
+      this.model._addColumn("channels", "log", this.model.SQL_TYPES.BOOL, dojo.hitch(this, "_handleChange"), dojo.hitch(this, "_handleError"));
     }
   },
 

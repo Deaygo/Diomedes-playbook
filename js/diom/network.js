@@ -175,7 +175,8 @@ dojo.declare("diom.Network", null, {
       this.prefs,
       this.appVersion,
       this.ignores,
-      this.getPassword()
+      this.getPassword(),
+      this.getLogChannels()
     );
     this.currentConnectionId = this.connection.getConnectionId();
     dojo.publish(diom.topics.CHANNELS_CHANGED, ["connect", this.currentHost, this.currentHost, null, this.currentConnectionId]);
@@ -224,6 +225,27 @@ dojo.declare("diom.Network", null, {
     return this.servers[this.currentHostIndex].name;
   },
 
+  /**
+  * @private
+  * @return {Array.string}
+  */
+  getLogChannels: function () {
+
+    var logChannels;
+
+    logChannels = [];
+    dojo.forEach(this.channels, function(channel) {
+      if (channel.log) {
+        logChannels.push(diom.connection.Connection.prototype.getChannelName(channel.name));
+      }
+    });
+    return logChannels;
+  },
+
+  /**
+  * @private
+  * @return {string}
+  */
   getPassword: function () {
     if (this.servers && this.servers.length && (this.servers[this.currentHostIndex])) {
       return this.servers[this.currentHostIndex].password;
@@ -232,10 +254,17 @@ dojo.declare("diom.Network", null, {
     }
   },
 
+  /**
+  * @public
+  * @return {diom.connection.Connection}
+  */
   getConnection: function () {
     return this.connection;
   },
 
+  /**
+  * @private
+  */
   joinDefaultChannels: function () {
     var channelsData, channels, i, channel;
     channelsData = this.channels;
@@ -250,6 +279,9 @@ dojo.declare("diom.Network", null, {
     }
   },
 
+  /**
+  * @private
+  */
   perform: function () {
     var performs = this.performs;
     if (this.performsProgress >= performs.length) {
@@ -262,6 +294,9 @@ dojo.declare("diom.Network", null, {
     window.setTimeout(dojo.hitch(this, "perform"), 2500);
   },
 
+  /**
+  * @public
+  */
   close: function () {
     if (this.currentHost) {
       dojo.publish(diom.topics.CONNECTION_CLOSE, [this.currentHost, this.currentConnectionId]);
@@ -272,6 +307,9 @@ dojo.declare("diom.Network", null, {
     }
   },
 
+  /**
+  * @public
+  */
   destroy: function () {
     this.close();
   }
