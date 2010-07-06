@@ -663,10 +663,14 @@ dojo.declare("diom.IRCClient", null, {
     return target;
   },
 
+  /**
+  * @enum
+  */
   COMMAND_NUMBERS: {
     "SERVER_CONNECT" : "001",
     "SERVER_INFO" : "004",
     "MAP" : "005",
+    "MODE": "221",
     "NUM_OPS" : "252",
     "NUM_UNKNOWN" : "253",
     "NUM_CHANNELS" : "254",
@@ -752,6 +756,9 @@ dojo.declare("diom.IRCClient", null, {
         break;
       case this.COMMAND_NUMBERS.NICK_AWAY:
         msg = [aboutArg, " is away: ", msg].join("");
+        break;
+      case this.COMMAND_NUMBERS.MODE:
+        msg = ["Modes are: ", aboutArg].join("");
         break;
       case this.COMMAND_NUMBERS.END_OF_WHO:
       case this.COMMAND_NUMBERS.END_OF_WHOIS:
