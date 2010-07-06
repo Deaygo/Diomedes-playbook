@@ -825,22 +825,43 @@ dojo.declare("diom.IRCClient", null, {
     }
   },
 
-  getTopic: function (target) {
+  /**
+  * @param {!string} channelName A valid channel name.
+  * @public
+  */
+  getTopic: function (channelName) {
+
     var topic;
-    if (this.topicDelegate && (target in this.topics) ) {
-      topic = this.topics[target];
-      this.topicDelegate(topic.host, target, topic.topic, topic.nick, topic.time);
+
+    if (this.topicDelegate && (channelName in this.topics) ) {
+      topic = this.topics[channelName];
+      this.topicDelegate(topic.host, channelName, topic.topic, topic.nick, topic.time);
     }
   },
 
+  /**
+  * Send a raw string to the server.
+  * @param {!string} msg
+  * @public
+  */
   sendRaw: function (msg) {
     this._send(msg);
   },
 
+  /**
+  * Sends username:password to server.
+  * @param {!string} password Must be in the format username:password probably.
+  * @public
+  */
   pass: function (password) {
     this._send(["PASS", password].join(" "));
   },
 
+  /**
+  * Join one channel or an array of channels.
+  * @param {string|Array} channels
+  * @public
+  */
   join: function (channels) {
     if (dojo.isString(channels)) {
       this._send(["JOIN", channels].join(" "));
@@ -1095,6 +1116,11 @@ dojo.declare("diom.IRCClient", null, {
     }
   },
 
+  /**
+  * Special logging wrapper.
+  * @param {!string} data:w
+  * @private
+  */
   log: function (data) {
     util.log("\n" + data);
   },
@@ -1114,6 +1140,12 @@ dojo.declare("diom.IRCClient", null, {
     this.socket.addEventListener(air.ProgressEvent.SOCKET_DATA, dojo.hitch(this, "onSocketData"));
   },
 
+  /**
+  * Returns true if given name is possibly a valid RFC 2821 channel name.
+  * @param {!string} name
+  * @public
+  * @return {boolean}
+  */
   isChannelName: function (name) {
     //as per RFC 2812
     //returns if given string could be a channel name
@@ -1122,6 +1154,9 @@ dojo.declare("diom.IRCClient", null, {
     return false;
   },
 
+  /**
+  * @private
+  */
   close: function () {
     if (this.socket && this.socket.connected) {
       this.socket.close();
@@ -1150,7 +1185,10 @@ dojo.declare("diom.IRCClient", null, {
     }
   },
 
-  destroy: function (data) {
+  /**
+  * @public
+  */
+  destroy: function () {
     delete this.data;
     this.log("destroying irc client");
     this.close();

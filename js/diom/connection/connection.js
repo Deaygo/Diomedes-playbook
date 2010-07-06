@@ -746,6 +746,13 @@ dojo.declare("diom.connection.Connection", null, {
         }
         this.client.sendQuit(msg);
         break;
+      case "quote":
+        msg = "";
+        if (args && args.length) {
+          msg = args.join(" ");
+        }
+        this.client.sendRaw(msg);
+        break;
       case "ctcp":
         if (args && args.length > 1) {
           target = args.shift();
@@ -861,6 +868,9 @@ dojo.declare("diom.connection.Connection", null, {
     }
   },
 
+  /**
+  * @public
+  */
   destroy: function () {
     var user, channel;
     this.stayConnected = false;
