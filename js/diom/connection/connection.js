@@ -21,17 +21,17 @@ dojo.declare("diom.connection.Connection", null, {
   * @param {Object} appVersion
   * @param {Array} ignores
   * @param {string} password
-  * @param {Array.string} logChannels An array of properly formmated channel
+  * @param {Array.string=} opt_logChannels An array of properly formmated channel
   * names (i.e. lower case) to log.
   * @constructor
   */
-  constructor: function (server, port, secure, preferences, appVersion, ignores, password, logChannels) {
+  constructor: function (server, port, secure, preferences, appVersion, ignores, password, opt_logChannels) {
 
     var nick = preferences.nick;
     this.channels = {};
     this.users = {};
     this.preferences = preferences;
-    this.logChannels = logChannels;
+    this.logChannels = (opt_logChannels ? opt_logChannels : []);
     //XXX: really need to fix the preferences thing - a nice global preferences custom object needed:
     this.logPref = preferences.logging === true || preferences.logging === "true";
     this.ignores = ignores;
