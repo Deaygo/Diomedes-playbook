@@ -12,8 +12,15 @@ dojo.provide("diom.view.view");
 
 dojo.declare("diom.view.View", null, {
 
+  /**
+  * @constructor
+  */
   constructor: function (model) {
+
     var prefs;
+
+    var cb = new diom.view.ChannelButton();
+    console.log(cb.domNode.innerHTML);
     this.model = model;
     this.prevWord = null;
     this.input = new diom.view.FormInput(util.get("textInput"));
@@ -507,10 +514,6 @@ dojo.declare("diom.view.View", null, {
     cl = this.channelList;
     nodes = cl.getElementsByTagName("a");
     if (!nodes || !nodes.length || nodes.length < (index + 1)) { return; }
-    util.log(nodes);
-    util.log(nodes.length);
-    util.log(index in nodes);
-    util.log(nodes[index]);
     this.selectChannelFromNode(nodes[index]);
   },
 

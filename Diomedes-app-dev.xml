@@ -2,7 +2,7 @@
 <application xmlns="http://ns.adobe.com/air/application/2.0">
   <id>dev.diomedes.apphackers.com</id>
   <publisherID>08C1330ADB9ED321EECBBD0ECEF1738A5ED21319.1</publisherID>
-  <version>0.1.36</version>
+  <version>0.3.0</version>
   <filename>Diomedes</filename>
   <initialWindow>
     <content>indexDev.html</content>

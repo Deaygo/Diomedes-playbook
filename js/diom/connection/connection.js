@@ -40,7 +40,7 @@ dojo.declare("diom.connection.Connection", null, {
     this.server = server;
     this.serverChannel = null;
     this.port = port;
-    this.connectionId = new dojox.uuid.Uuid(dojox.uuid.generateTimeBasedUuid());
+    this.connectionId = diom.idGenerator.getNextId();
     this.altNickTries = 0;
 
     this.pollTime = parseInt(preferences.pollTime, 10);

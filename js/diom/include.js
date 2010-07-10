@@ -9,7 +9,12 @@
 
 dojo.provide("diom.include");
 
-/*add any dojo.require here */
+/* Need Dijits. */
+dojo.require("dijit._Widget");
+dojo.require("dijit._Templated");
+dojo.require("dojo.cache");
+
+/* Add any dojo.require here. */
 dojo.require("dojox.uuid.generateTimeBasedUuid");
 dojo.require("dojox.uuid.Uuid");
 
@@ -23,6 +28,7 @@ dojo.require("diom.network");
 dojo.require("diom.util");
 dojo.require("diom.irc");
 dojo.require("diom.logger");
+dojo.require("diom.uniqueIdGenerator");
 
 //connection
 dojo.require("diom.connection.connection");
@@ -46,6 +52,7 @@ dojo.require("diom.view.linkView");
 dojo.require("diom.view.nickWindow");
 dojo.require("diom.view.dialog");
 dojo.require("diom.view.help");
+dojo.require("diom.view.channelButton");
 dojo.require("diom.view.preferences.preferences");
 dojo.require("diom.view.preferences.networks");
 dojo.require("diom.view.preferences.servers");

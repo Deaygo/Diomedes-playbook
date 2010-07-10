@@ -88,6 +88,7 @@
     function appLoad ( ) {
       util.log( "appLoad" );
 
+      diom.idGenerator = new diom.UniqueIdGenerator();
       m = new diom.model.Model( );
       v = new diom.view.View( m );
       c = new diom.controller.Controller( m, v );

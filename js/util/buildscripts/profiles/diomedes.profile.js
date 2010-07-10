@@ -9,5 +9,6 @@ dependencies = {
 
   prefixes: [
     [ "dojox", "../dojox" ],
+    [ "dijit", "../dijit" ],
   ]
 };
