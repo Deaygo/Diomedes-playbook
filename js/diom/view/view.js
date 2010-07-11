@@ -19,8 +19,6 @@ dojo.declare("diom.view.View", null, {
 
     var prefs;
 
-    var cb = new diom.view.ChannelButton();
-    console.log(cb.domNode.innerHTML);
     this.model = model;
     this.prevWord = null;
     this.input = new diom.view.FormInput(util.get("textInput"));
@@ -29,6 +27,7 @@ dojo.declare("diom.view.View", null, {
     this.linkView = new diom.view.LinkView(this.popupContents);
     this.activityWindow = util.get("activityWindow");
     this.channelList = util.get("channelList");
+    this.channelMap = new diom.view.ChannelMap();
     this.titleBar = util.get("titleBar");
     this.nickList = util.get("nickList");
     this.font = null;
@@ -64,6 +63,12 @@ dojo.declare("diom.view.View", null, {
     dojo.subscribe(diom.topics.UPDATE_NO_NEW_UPDATES, this, "showNoUpdatesDialog");
     dojo.subscribe(diom.topics.NICK_LIST_TOGGLE, this, "handleNickListControlClick");
   },
+
+  /**
+  * @private
+  * @type {diom.view.channelMap}
+  */
+  channelMap: null,
 
   /**
   * @public

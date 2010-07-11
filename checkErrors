@@ -4,6 +4,8 @@
 set -e
 
 checkFiles=(
+  "diom/view/channelMap"
+  "diom/view/channelButton"
   "diom/view/linkView"
   "diom/controller/linkLog"
   "diom/controller/linkInfoFetcher"

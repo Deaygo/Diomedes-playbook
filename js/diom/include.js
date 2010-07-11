@@ -53,6 +53,7 @@ dojo.require("diom.view.nickWindow");
 dojo.require("diom.view.dialog");
 dojo.require("diom.view.help");
 dojo.require("diom.view.channelButton");
+dojo.require("diom.view.channelMap");
 dojo.require("diom.view.preferences.preferences");
 dojo.require("diom.view.preferences.networks");
 dojo.require("diom.view.preferences.servers");
