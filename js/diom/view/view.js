@@ -446,7 +446,7 @@ dojo.declare("diom.view.View", null, {
       });
       channelBtnId = channelBtn.getId();
       this.channelMap.addButton(channelBtn);
-      //add channelButton to dom here
+      dojo.place(channelBtn.domNode, this.channelList, "last");
     }
     return channelBtn;
   },
@@ -465,7 +465,7 @@ dojo.declare("diom.view.View", null, {
 
     if(channelBtnId) {
       index = currentIds.indexOf(channelBtnId);
-      tempR = [].concat(currentIds.slice(0, index), currentIds(index + 1));
+      tempR = [].concat(currentIds.slice(0, index), currentIds.slice(index + 1));
       currentIds = tempR;
     }
     return currentIds;
@@ -491,7 +491,7 @@ dojo.declare("diom.view.View", null, {
         serverName = serverChannelList[connectionId].getName();
         //r.push(this.getChannelButton(serverName, serverName, serverName, "SERVER", null, null, connectionId));
         channelBtnId = this.channelMap.getButtonIdWithInfo(serverName, connectionId);
-        this.getOrCreateChannelButton(channelKey, channelName, connectionId, channelBtnId, currentIds);
+        this.getOrCreateChannelButton(serverName, serverName, connectionId, channelBtnId);
         currentIds = this.checkId(channelBtnId, currentIds);
         channelMap = channels[connectionId];
         if (connectionId in channelsWithActivity) {
@@ -510,7 +510,7 @@ dojo.declare("diom.view.View", null, {
             channelName = channelMap[channelKey].getName();
             channelsR.push(channelName);
             channelBtnId = this.channelMap.getButtonIdWithInfo(channelKey, connectionId);
-            channelBtn = this.getOrCreateChannelButton(channelKey, channelName, connectionId, channelBtnId, currentIds);
+            channelBtn = this.getOrCreateChannelButton(channelKey, channelName, connectionId, channelBtnId);
             currentIds = this.checkId(channelBtnId, currentIds);
             if (activeChannels && (channelKey in activeChannels)) {
               channelBtn.setActivity(activeChannels[channelKey]);

@@ -7,9 +7,9 @@
 /*jslint passfail: true */
 /*global window, dojo, dijit, util, diom */
 
-dojo.provide("diom.view.channelButton");
+dojo.provide("diom.view.channelMap");
 
-dojo.declare("diom.view.ChannelButton", null, {
+dojo.declare("diom.view.ChannelMap", null, {
   /**
   * @constructor
   */
@@ -75,7 +75,7 @@ dojo.declare("diom.view.ChannelButton", null, {
       delete this._channels[id];
       pos = this._channelList.indexOf(id);
       if (pos !== -1) {
-        newR = [].concat(this.channelList.slice(0, pos), this.channelList.slice(pos+1));
+        newR = [].concat(this._channelList.slice(0, pos), this._channelList.slice(pos+1));
         this._channelList = newR;
       }
     }
@@ -139,7 +139,9 @@ dojo.declare("diom.view.ChannelButton", null, {
   * @return {Array.<string>}
   */
   getAllIds: function () {
-    return this._channelList;
+    //Don't want to return a reference to the array
+    //so sending a copy.
+    return this._channelList.slice(0);
   },
   /**
   * Get the next button id, the one after the active button id in the

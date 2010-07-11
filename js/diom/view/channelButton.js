@@ -41,7 +41,7 @@ dojo.declare("diom.view.ChannelButton", [dijit._Widget, dijit._Templated], {
   * @private
   */
   _handleClick: function (event) {
-    //alert("clicked");
+    alert("clicked");
   },
   /**
   * @param {!number} count
