@@ -22,7 +22,6 @@ dojo.declare("diom.view.ChannelButton", [dijit._Widget, dijit._Templated], {
   * @constructor
   */
   constructor: function (props) {
-    this._id = diom.idGenerator.getNextId();
   },
   /**
   * @private
@@ -45,15 +44,36 @@ dojo.declare("diom.view.ChannelButton", [dijit._Widget, dijit._Templated], {
     //alert("clicked");
   },
   /**
+  * @param {!number} count
+  * @public
+  */
+  setActivity: function (count) {
+  },
+  /**
+  * @public
+  */
+  clearActivity: function () {
+  },
+  /**
+  * Make channel button appear highlighted.
+  * @public
+  */
+  highlight: function () {
+  },
+  /**
   * @private
   */
   postCreate: function () {
     if (!this.channelName) {
       throw "Missing required channelName in ChannelButton";
     }
+    if (!this.channelKey) {
+      throw "Missing required channelKey in ChannelButton";
+    }
     if (!this.connectionId) {
       throw "Missing connection Id in ChannelButton";
     }
+    this._id = this.channelKey + this.connectionId;
   }
 });
 

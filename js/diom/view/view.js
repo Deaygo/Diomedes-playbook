@@ -424,7 +424,52 @@ dojo.declare("diom.view.View", null, {
     this.createActivityViewIfNeeded(channelName, serverName, connectionId);
     this.getActivityWindow(channelName, serverName, connectionId).nickWindow.update(users, channelName);
   },
+  /**
+  * @param {!string} channelKey
+  * @param {!string} channelName
+  * @param {!string} connectionId
+  * @param {!string} channelBtnId
+  * @private
+  * @return {!diom.view.ChannelButton}
+  */
+  getOrCreateChannelButton: function (channelKey, channelName, connectionId, channelBtnId) {
 
+    var channelBtn;
+
+    if (channelBtnId) {
+      channelBtn = this.channelMap.getButtonWithId(channelBtnId);
+    } else {
+      channelBtn = new diom.view.ChannelButton({
+        channelName: channelName,
+        channelKey: channelKey,
+        connectionId: connectionId
+      });
+      channelBtnId = channelBtn.getId();
+      this.channelMap.addButton(channelBtn);
+      //add channelButton to dom here
+    }
+    return channelBtn;
+  },
+  /**
+  * Eliminating known channels so they are not pruned at the end.
+  * Whatever is left in currentIds at the end of channelUpdateView
+  * are removed, assumed to no longer exist.
+  * @param {!string} channelBtnId
+  * @param {!Array.<string>} currentIds
+  * @private
+  * @return {!Array.<string>}
+  */
+  checkId: function (channelBtnId, currentIds) {
+
+    var  index, tempR;
+
+    if(channelBtnId) {
+      index = currentIds.indexOf(channelBtnId);
+      tempR = [].concat(currentIds.slice(0, index), currentIds(index + 1));
+      currentIds = tempR;
+    }
+    return currentIds;
+  },
   /**
   * @param {Array} channels
   * @param {Array} channelsWithActivity
@@ -434,19 +479,21 @@ dojo.declare("diom.view.View", null, {
   */
   updateChannelView: function (channels, channelsWithActivity, channelsWithHighlight, serverChannelList) {
 
-    var r, channelsR, serverName, server, activeChannels, highlightedChannels,
-      channelKey, activity, highlight, channelName, connectionId, serverChannel;
+    var channelButtons, currentIds, channelsR, serverName, channelMap, activeChannels, highlightedChannels,
+      channelKey, channelName, connectionId, channelBtn, channelBtnId;
 
     util.log("updateChannelView");
     if (!channels) { return; }
-    r = [];
+    currentIds = this.channelMap.getAllIds();
     channelsR = [];
     for (connectionId in channels) {
       if (channels.hasOwnProperty(connectionId)) {
-        serverChannel = serverChannelList[connectionId];
-        serverName = serverChannel.getName();
-        r.push(this.getChannelButton(serverName, serverName, serverName, "SERVER", null, null, connectionId));
-        server = channels[connectionId];
+        serverName = serverChannelList[connectionId].getName();
+        //r.push(this.getChannelButton(serverName, serverName, serverName, "SERVER", null, null, connectionId));
+        channelBtnId = this.channelMap.getButtonIdWithInfo(serverName, connectionId);
+        this.getOrCreateChannelButton(channelKey, channelName, connectionId, channelBtnId, currentIds);
+        currentIds = this.checkId(channelBtnId, currentIds);
+        channelMap = channels[connectionId];
         if (connectionId in channelsWithActivity) {
           activeChannels = channelsWithActivity[connectionId];
         } else {
@@ -457,25 +504,27 @@ dojo.declare("diom.view.View", null, {
         } else {
           highlightedChannels = null;
         }
-        for (channelKey in server) {
-          //channelKey is channelName in lowercase
-          if (server.hasOwnProperty(channelKey)) {
-            channelsR.push(channelKey);
-            activity = 0;
+        for (channelKey in channelMap) {
+          //channelKey is channelName in lowercase, channelName may have weird capitalization.
+          if (channelMap.hasOwnProperty(channelKey)) {
+            channelName = channelMap[channelKey].getName();
+            channelsR.push(channelName);
+            channelBtnId = this.channelMap.getButtonIdWithInfo(channelKey, connectionId);
+            channelBtn = this.getOrCreateChannelButton(channelKey, channelName, connectionId, channelBtnId, currentIds);
+            currentIds = this.checkId(channelBtnId, currentIds);
             if (activeChannels && (channelKey in activeChannels)) {
-              activity = activeChannels[channelKey];
+              channelBtn.setActivity(activeChannels[channelKey]);
             }
-            highlight = false;
             if (highlightedChannels && (channelKey in highlightedChannels)) {
-              highlight = true;
+              channelBtn.highlight();
             }
-            channelName = server[channelKey].getName(); //channel
-            r.push(this.getChannelButton(serverName, channelKey, channelName, "CHANNEL",  activity, highlight, connectionId));
           }
         }
       }
     }
-    this.setContents(this.channelList, r.join(""), false);
+    dojo.forEach(currentIds, dojo.hitch(this, function (id) {
+      this.channelMap.removeButtonWithId(id);
+    }));
     this.input.setChannels(channelsR);
   },
 

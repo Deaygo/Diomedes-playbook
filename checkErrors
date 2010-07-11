@@ -4,6 +4,7 @@
 set -e
 
 checkFiles=(
+  "diom/view/view"
   "diom/view/channelMap"
   "diom/view/channelButton"
   "diom/view/linkView"
@@ -24,7 +25,6 @@ checkFiles=(
   "diom/util"
   "diom/controller/updater"
   "diom/controller/channelList"
-  "diom/view/view"
   "diom/view/nickWindow"
   "diom/view/formInput"
   "diom/view/activityWindow"

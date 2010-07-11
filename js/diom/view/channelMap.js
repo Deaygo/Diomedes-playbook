@@ -116,25 +116,30 @@ dojo.declare("diom.view.ChannelButton", null, {
   },
   /**
   * Get a diom.view.ChannelButton's id by providing
-  * channelName and connection Id.
-  * @param {!string} channelName A properly formatted channel name.
+  * channelKey and connection Id.
+  * @param {!string} channelKey A properly formatted channel name.
   * @param {!string} connectionId
   * @public
   * @return {string}
   */
-  getButtonIdWithInfo: function (channelName, connectionId) {
+  getButtonIdWithInfo: function (channelKey, connectionId) {
 
-    var i, button;
+    var id;
 
-    for (i in this._channels) {
-      if (this._channels.hasOwnProperty(i)) {
-        button  = this._channels[i];
-        if (button.channelName === channelName && button.connectionId === connectionId) {
-          return button.id;
-        }
-      }
+    //Button id is actually just channelKey + connectionId:
+    id = channelKey + connectionId; //Guaranteed to be unique.
+    if (id in this._channels) {
+      return id;
     }
     return null;
+  },
+  /**
+  * Get the list of button ids currently shown.
+  * @public
+  * @return {Array.<string>}
+  */
+  getAllIds: function () {
+    return this._channelList;
   },
   /**
   * Get the next button id, the one after the active button id in the
