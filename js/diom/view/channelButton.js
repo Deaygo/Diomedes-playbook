@@ -44,21 +44,55 @@ dojo.declare("diom.view.ChannelButton", [dijit._Widget, dijit._Templated], {
     alert("clicked");
   },
   /**
+  * @param {!Object} event
+  * @private
+  */
+  _handleClose: function (event) {
+    alert("closed");
+  },
+  /**
   * @param {!number} count
   * @public
   */
   setActivity: function (count) {
+    dojo.addClass(this.domNode, "hasActivity");
+    this.channelActivity.innerHTML = count;
   },
   /**
   * @public
   */
   clearActivity: function () {
+    dojo.removeClass(this.domNode, "hasActivity");
+    this.channelActivity.innerHTML = "";
   },
   /**
   * Make channel button appear highlighted.
   * @public
   */
   highlight: function () {
+    dojo.addClass(this.domNode, "highlight");
+  },
+  /**
+  * Remove highlight appearance.
+  * @public
+  */
+  removeHighlight: function () {
+    dojo.removeClass(this.domNode, "highlight");
+  },
+  /**
+  * Set active appearance, that is make it appear to be the current
+  * active channel.
+  * @public
+  */
+  setActive: function () {
+    dojo.addClass(this.domNode, "currentChannel");
+  },
+  /**
+  * Show as inactive channel.
+  * @public
+  */
+  setInactive: function () {
+    dojo.removeClass(this.domNode, "currentChannel");
   },
   /**
   * @private

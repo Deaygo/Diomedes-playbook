@@ -1,4 +1,7 @@
-<div  id="${_id}">
-  <span class="channelCloseBtn" dojoAttachEvent="onclick:_handleClick"></span>
-  <span class="channelName">${channelName}</span>
+<a class="channelBtn" dojoAttachEvent="onclick:_handleClick" id="${_id}">
+  <span class="closeChannelBtn" dojoAttachEvent="onclick:_handleClose"></span>
+  <span class="channelBtnWrapper">
+    <span class="channelActivity" dojoAttachPoint="channelActivity"></span>
+  </span>
+  <span class="channelBtnName">${channelName}</span>
 </div>

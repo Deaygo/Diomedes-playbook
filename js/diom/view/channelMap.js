@@ -49,6 +49,7 @@ dojo.declare("diom.view.ChannelMap", null, {
       this._channels[id] = button;
     }
     this._channelList.push(id);
+    this.setActiveButton(id);
   },
   /**
   * @param {!string} id
@@ -92,7 +93,7 @@ dojo.declare("diom.view.ChannelMap", null, {
 
     for( i in this._channels) {
       if (this._channels.hasOwnProperty(i)) {
-        button = this.channels[i];
+        button = this._channels[i];
         this.removeButtonWithId(button.getId());
       }
     }
@@ -109,10 +110,22 @@ dojo.declare("diom.view.ChannelMap", null, {
   * @public
   */
   setActiveButton: function (id) {
+
+    var buttonId, button;
+
     if (!(id in this._channels)) {
       throw "Invalid ChannelButton id";
     }
+    buttonId = this._activeChannelButtonId;
+    if (buttonId) {
+      button = this._channels[buttonId];
+      button.setInactive();
+    }
     this._activeChannelButtonId = id;
+    button = this._channels[id];
+    button.clearActivity();
+    button.removeHighlight();
+    button.setActive();
   },
   /**
   * @param {string} id

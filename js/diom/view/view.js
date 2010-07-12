@@ -504,7 +504,7 @@ dojo.declare("diom.view.View", null, {
         }
       }
     }
-    console.dump(currentIds);
+    util.log("Number of channel buttons to remove: " + currentIds.length);
     dojo.forEach(currentIds, dojo.hitch(this, function (id) {
       this.channelMap.removeButtonWithId(id);
     }));
