@@ -217,7 +217,7 @@ dojo.declare("diom.view.ChannelMap", null, {
       throw "Invalid button id in channel list.";
     }
     index--;
-    if (index <= 0) {
+    if (index < 0) {
       return this._channelList[this._channelList.length - 1];
     }
     return this._channelList[index];
