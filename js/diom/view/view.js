@@ -40,7 +40,6 @@ dojo.declare("diom.view.View", null, {
     this.nickListCollapsed = false;
     this.appVersion = "";
 
-    dojo.connect(this.channelList, "onclick", this, "handleChannelListClick");
     dojo.connect(window, "onclick", this, "handleActivityWindowClick");
     dojo.connect(this.titleBar, "onclick", this, "handleTitleBarClick");
     dojo.connect(util.get("prefBtn"), "onclick", this, "handlePrefsBtnClick");
@@ -397,22 +396,6 @@ dojo.declare("diom.view.View", null, {
     }
   },
 
-
-  handleChannelListClick: function (e) {
-    var n;
-    dojo.stopEvent(e);
-    n = e.target;
-    if (!n) { return; }
-    if (dojo.hasClass(n, "closeChannelBtn")) {
-      n = util.findUp(n, "channelBtn");
-      this.closeTabFromNode(n);
-      return;
-    }
-    n = util.findUp(n, "channelBtn");
-    this.selectChannelFromNode(n);
-    this.handleWindowClick(e);
-  },
-
   /**
   * @param {Array} users
   * @param {String} serverName
@@ -489,7 +472,6 @@ dojo.declare("diom.view.View", null, {
     for (connectionId in channels) {
       if (channels.hasOwnProperty(connectionId)) {
         serverName = serverChannelList[connectionId].getName();
-        //r.push(this.getChannelButton(serverName, serverName, serverName, "SERVER", null, null, connectionId));
         channelBtnId = this.channelMap.getButtonIdWithInfo(serverName, connectionId);
         this.getOrCreateChannelButton(serverName, serverName, connectionId, channelBtnId);
         currentIds = this.checkId(channelBtnId, currentIds);
@@ -522,6 +504,7 @@ dojo.declare("diom.view.View", null, {
         }
       }
     }
+    console.dump(currentIds);
     dojo.forEach(currentIds, dojo.hitch(this, function (id) {
       this.channelMap.removeButtonWithId(id);
     }));
@@ -529,67 +512,44 @@ dojo.declare("diom.view.View", null, {
   },
 
   closeCurrentChannel: function () {
-    var cl, nodes, i, prev, n;
-    cl = this.channelList;
-    nodes = cl.getElementsByTagName("a");
-    if (!nodes || !nodes.length) { return; }
-    prev = null;
-    for (i = 0; i < nodes.length; i++) {
-      n = nodes[i];
-      if (dojo.hasClass(n, "currentChannel")) {
-        this.closeTabFromNode(n);
-      }
-    }
+
+    var buttonId;
+
+    buttonId = this.channelMap.getActiveButtonId();
+    this.channelMap.selectPrevChannel();
+    this.selectPrevChannel();
+    this.channelMap.removeButtonWithId(buttonId);
   },
 
   selectPrevChannel: function () {
-    var cl, nodes, prev, i, n;
-    cl = this.channelList;
-    nodes = cl.getElementsByTagName("a");
-    if (!nodes || !nodes.length) { return; }
-    prev = null;
-    for (i = 0; i < nodes.length; i++) {
-      n = nodes[i];
-      if (dojo.hasClass(n, "currentChannel")) {
-        if (i === 0) {
-          prev = nodes[nodes.length - 1];
-        } else {
-          prev = nodes[i - 1];
-        }
-        break;
-      }
+
+    var buttonId;
+
+    buttonId = this.channelMap.getPreviousButtonId();
+    if (buttonId) {
+      this.channelMap.setActiveButton(buttonId);
     }
-    this.selectChannelFromNode(prev);
   },
 
   selectChannelFromIndex: function (index) {
-    var cl, nodes;
-    util.log("selecting channel from index: " + index);
-    cl = this.channelList;
-    nodes = cl.getElementsByTagName("a");
-    if (!nodes || !nodes.length || nodes.length < (index + 1)) { return; }
-    this.selectChannelFromNode(nodes[index]);
+
+    var allButtons, buttonId;
+
+    allButtons = this.channelMap.getAllIds();
+    if (index && index >= 0 && index < allButtons.length) {
+      buttonId = allButtons[index];
+      this.channelMap.setActiveButton(buttonId);
+    }
   },
 
   selectNextChannel: function () {
-    var cl, nodes, next, i, n;
-    cl = this.channelList;
-    nodes = cl.getElementsByTagName("a");
-    if (!nodes || !nodes.length) { return; }
-    next = null;
-    for (i = 0; i < nodes.length; i++) {
-      n = nodes[i];
-      if (dojo.hasClass(n, "currentChannel")) {
-        next = n.nextSibling;
-        if (i < nodes.length - 1) {
-          next = nodes[++i];
-        } else {
-          next = nodes[0];
-        }
-        break;
-      }
+
+    var buttonId;
+
+    buttonId = this.channelMap.getNextButtonId();
+    if (buttonId) {
+      this.channelMap.setActiveButton(buttonId);
     }
-    this.selectChannelFromNode(next);
   },
 
   /**

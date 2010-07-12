@@ -115,6 +115,12 @@ dojo.declare("diom.view.ChannelMap", null, {
     this._activeChannelButtonId = id;
   },
   /**
+  * @param {string} id
+  */
+  getActiveButtonId: function () {
+    return this._activeChannelButtonId;
+  },
+  /**
   * Get a diom.view.ChannelButton's id by providing
   * channelKey and connection Id.
   * @param {!string} channelKey A properly formatted channel name.
