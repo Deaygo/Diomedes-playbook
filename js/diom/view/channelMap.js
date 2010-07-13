@@ -69,10 +69,16 @@ dojo.declare("diom.view.ChannelMap", null, {
   */
   removeButtonWithId: function (id) {
 
-    var pos, newR;
+    var pos, newR, button;
 
     if (id in this._channels) {
-      this._channels[id].destroy();
+      button = this._channels[id];
+      dojo.publish(diom.topics.CHANNEL_CLOSE, [
+        button.serverName,
+        button.channelKey,
+        button.connectionId
+      ]);
+      button.destroy();
       delete this._channels[id];
       pos = this._channelList.indexOf(id);
       if (pos !== -1) {
@@ -126,6 +132,12 @@ dojo.declare("diom.view.ChannelMap", null, {
     button.clearActivity();
     button.removeHighlight();
     button.setActive();
+    dojo.publish(diom.topics.CHANNEL_SELECTED, [
+      button.serverName,
+      button.channelType,
+      button.channelKey,
+      button.connectionId
+    ]);
   },
   /**
   * @param {string} id
