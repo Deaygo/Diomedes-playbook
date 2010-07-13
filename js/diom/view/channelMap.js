@@ -16,6 +16,8 @@ dojo.declare("diom.view.ChannelMap", null, {
   constructor: function () {
     this._channels = {};
     this._channelList = [];
+    dojo.subscribe(diom.topics.CHANNEL_BUTTON_CLICK, dojo.hitch(this, "setActiveButton"));
+    dojo.subscribe(diom.topics.CHANNEL_BUTTON_CLOSE_CLICK, dojo.hitch(this, "removeButtonWithId"));
   },
   /**
   * The current active channelButton id.

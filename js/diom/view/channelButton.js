@@ -41,14 +41,14 @@ dojo.declare("diom.view.ChannelButton", [dijit._Widget, dijit._Templated], {
   * @private
   */
   _handleClick: function (event) {
-    alert("clicked");
+    dojo.publish(diom.topics.CHANNEL_BUTTON_CLICK, [this.getId()]);
   },
   /**
   * @param {!Object} event
   * @private
   */
   _handleClose: function (event) {
-    alert("closed");
+    dojo.publish(diom.topics.CHANNEL_BUTTON_CLOSE_CLICK, [this.getId()]);
   },
   /**
   * @param {!number} count
