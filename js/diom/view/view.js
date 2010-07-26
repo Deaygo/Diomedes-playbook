@@ -27,6 +27,10 @@ dojo.declare("diom.view.View", null, {
     this.linkView = new diom.view.LinkView(this.popupContents);
     this.activityWindow = util.get("activityWindow");
     this.channelList = util.get("channelList");
+    dojo.connect(this.channelList, "dragenter", dojo.hitch(this, "_handleDragEnter"));
+    dojo.connect(this.channelList, "dragover", dojo.hitch(this, "_handleDragOver"));
+    dojo.connect(this.channelList, "dragleave", dojo.hitch(this, "_handleDragLeave"));
+    dojo.connect(this.channelList, "drop", function () { alert("fucking drop"); });
     this.channelMap = new diom.view.ChannelMap();
     this.titleBar = util.get("titleBar");
     this.nickList = util.get("nickList");
@@ -41,7 +45,7 @@ dojo.declare("diom.view.View", null, {
     this.appVersion = "";
 
     dojo.connect(window, "onclick", this, "handleActivityWindowClick");
-    dojo.connect(this.titleBar, "onclick", this, "handleTitleBarClick");
+    dojo.connect(this.titleBar, "onclick", this, "_handleTitleBarClick");
     dojo.connect(util.get("prefBtn"), "onclick", this, "handlePrefsBtnClick");
     dojo.connect(util.get("linksBtn"), "onclick", this, "handleLinksBtnClick");
     dojo.connect(util.get("closePopup"), "onclick", this, "closePopup");
@@ -782,17 +786,53 @@ dojo.declare("diom.view.View", null, {
     this.nickListCollapsed = !this.nickListCollapsed;
     this.scrollToBottom();
   },
-  handleTitleBarClick: function (e) {
+  /**
+  * @param {!Object} event
+  * @private
+  */
+  _handleTitleBarClick: function (event) {
     var id, funcName;
-    dojo.stopEvent(e);
-    id = e.target.id;
+    dojo.stopEvent(event);
+    id = event.target.id;
     if (id) {
       funcName = "handle" + id + "Click";
       if (this[funcName]) {
-        this[funcName](e);
+        this[funcName](event);
       }
     }
-    this.handleWindowClick(e);
-  }
+    this.handleWindowClick(event);
+  },
+  /**
+  * @param {!Object} event
+  * @private
+  */
+  _handleDragEnter: function (event) {
+    event.preventDefault();
+    console.log("enter");
+  },
+  /**
+  * @param {!Object} event
+  * @private
+  */
+  _handleDragOver: function (event) {
+    event.preventDefault();
+    console.log("over");
+    //console.dump(event);
+  },
+  /**
+  * @param {!Object} event
+  * @private
+  */
+  _handleDragLeave: function (event) {
+    event.preventDefault();
+    console.log("leave");
+  },
+  /**
+  * @param {!Object} event
+  * @private
+  */
+  _handleDrop: function (event) {
+    alert("drop");
+  },
 
 });

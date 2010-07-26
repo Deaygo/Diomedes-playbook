@@ -17,6 +17,9 @@
   padding: 3px;
   text-align: center;
   font-size: 90%;
+  cursor: pointer;
+  -webkit-user-drag: element;
+  -webkit-user-select: none;
 }
 .closeChannelBtn {
   display: block;

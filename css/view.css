@@ -46,6 +46,7 @@ body {
   overflow-x: hidden;
   overflow-y: auto;
   height: 60px;
+  white-space: nowrap;
 }
 #activityWindow {
   right: 161px;
